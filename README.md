@@ -5,6 +5,8 @@ Powder is the future of all torrent requirements, it's a hybrid between a Torren
 
 It can do everything that a Torrent Client can, everything that a Video/Audio Player can and much more!
 
+*When streaming a Video from a Torrent, you can Right Click and select Torrent Data in order to see the Torrent Control Panel.*
+
 Current Features
 ==============
 - Downloads Subtitles in All Languages from Open Subtitles
