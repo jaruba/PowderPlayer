@@ -11,14 +11,14 @@ Current Features
 ==============
 - Downloads Subtitles in All Languages from Open Subtitles
 
+- Supports Internal Video Subtitles and Audio Tracks
+
 - If torrent has multiple video files it adds them to a playlist
 
-- Always on Top Feature
+- Can be associated with Magnet Links, Torrent Files and Video Files
 
 - Works with any Torrent Files/Links, Magnet Links (not only torrents with videos), Youtube Links and all [VLC Supported Media Files](http://www.videolan.org/vlc/features.php?cat=video)
 
-- Supports internal Subtitles and Audio Tracks
+- Always on Top Feature
 
 - Can be opened multiple times (for torrents, if you close a window, it removes everything that it downloaded in that instance)
-
-- Can be associated with Magnet Links, Torrent Files and Video Files
