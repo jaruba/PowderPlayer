@@ -936,6 +936,7 @@ function runURL(torLink) {
 
 	$('#main').css("display","none");
 	$('#player_wrapper').css("min-height","100%").css("height","100%").css("width","auto");
+	wjs("#webchimera").plugin.emitJsMessage("[gobackvar]0");
 	
 	win.zoomLevel = 0;
 	

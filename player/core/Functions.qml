@@ -392,6 +392,7 @@ Rectangle {
 				delete changedSettings;
 				// end Reset properties related to .setTotalLength()
 			}
+			if (startsWith(message,"[gobackvar]0")) goneBack = 0;
 			if (startsWith(message,"[refresh-playlist]")) {
 				playlist.addPlaylistItems(); // Refresh Playlist GUI
 				if (vlcPlayer.playlist.itemCount > 1) {
