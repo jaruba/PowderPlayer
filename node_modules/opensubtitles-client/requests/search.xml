@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<methodCall>
+  <methodName>SearchSubtitles</methodName>
+  <params>
+    <param>
+      <value>
+        <string>{{token}}</string>
+      </value>
+    </param>
+    <param>
+      <value>
+        <array>
+          <data>
+            <value>
+              <struct>
+                <member>
+                  <name>sublanguageid</name>
+                  <value>
+                    <string>{{lang}}</string>
+                  </value>
+                </member>
+                <member>
+                  <name>query</name>
+                  <value>
+                    <string>{{query}}</string>
+                  </value>
+                </member>
+              </struct>
+            </value>
+          </data>
+        </array>
+      </value>
+    </param>
+  </params>
+</methodCall>

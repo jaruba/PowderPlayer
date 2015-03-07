@@ -1,0 +1,25 @@
+<?xml version="1.0"?><methodCall>
+  <methodName>LogIn</methodName>
+  <params>
+    <param>
+      <value>
+        <string></string>
+      </value>
+    </param>
+    <param>
+      <value>
+        <string></string>
+      </value>
+    </param>
+    <param>
+      <value>
+        <string>en</string>
+      </value>
+    </param>
+    <param>
+      <value>
+        <string>OpenSubtitlesPlayer v4.7</string>
+      </value>
+    </param>
+  </params>
+</methodCall>

@@ -1,0 +1,18 @@
+{
+  "name": "Powder",
+  "main": "app://powder/index.html",
+  "single-instance": false,
+  "chromium-args": "--load-plugin=plugins\\npWebChimera.dll",
+  "window": {
+    "icon": "icon.png",
+    "toolbar": false,
+    "frame": true,
+    "width": 530,
+    "height": 440,
+    "min_width": 530,
+    "min_height": 440
+  },
+  "webkit": {
+    "plugin": true
+  }
+}

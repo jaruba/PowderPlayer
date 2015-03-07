@@ -1,0 +1,112 @@
+2013-03-23  Timothy J Fontaine  <tjfontaine@gmail.com>
+  * Add SPF record type, same as TXT
+  * Emit platform ready on windows (Oleg Elifantiev)
+  * Split packet parsing into its own library
+  * Split caching into its own library
+
+2013-03-03  Timothy J Fontaine  <tjfontaine@gmail.com>
+  * Assert missing fields
+  * Truncate integer fields
+
+2013-02-14  Timothy J Fontaine  <tjfontaine@gmail.com>
+  * Bump to v0.4.1
+  * Disable caching for now
+  * Fix AAAA packing of records
+
+2013-01-09  Timothy J Fontaine  <tjfontaine@gmail.com>
+  * Bump to v0.4.0
+  * Fix TCPServer
+  * Split dependencies out of package
+  * Refactor Cache and MemoryStore
+  * Export Lookup function
+
+2012-12-23  Timothy J Fontaine  <tjfontaine@gmail.com>
+  * Bump to v0.3.4
+  * Update buffercursor to 0.0.5
+  * Allow creation of NAPTR records
+
+2012-12-07  Timothy J Fontaine  <tjfontaine@gmail.com>
+  * Bump to v0.3.3
+  * Make cache layer more generic
+
+2012-12-06  Timothy J Fontaine  <tjfontaine@gmail.com>
+  * Bump to v0.3.2
+  * Revamp benchmark script
+  * Properly set EDNS0 options
+  * Don't overrite `type` and `class` fields of a record
+
+2012-09-25  Timothy J Fontaine  <tjfontaine@gmail.com>
+  * Bump to v0.3.1
+  * Fix win32 to set the actual hostsfiel
+
+2012-09-17  Timothy J Fontaine  <tjfontaine@gmail.com>
+  * Bump to v0.3.0
+  * Add more tests and benchmark
+  * More compatible with c-ares
+  * Add rudimentary in-memory cache
+  * Add NAPTR record type
+  * On > 0.8 make sockets be unref for faster destructing
+
+2012-07-22  Timothy J Fontaine  <tjfontaine@gmail.com>
+  * Bump to v0.2.0
+  * Rewrite outbound queue to be simpler
+
+2012-07-08  Timothy J Fontaine  <tjfontaine@gmail.com>
+  * Bump to v0.1.0
+  * State machine to encode and decode packets
+
+2012-03-20  Timothy J Fontaine  <tjfontaine@gmail.com>
+  * Bump to v0.0.7
+  * Ignore requests/responses less than the minimal size of a query [server, client]
+  * Remove clone dependency [module]
+  * Embed ipaddr.js [module]
+  * Fix label parsing [client, server]
+  * Long query names should result in ENOTFOUND [client]
+  * resolve(..., 'PTR') should use reverse, reverse should check hosts [client]
+  * Autopromote should work for eDNS packets as well [client, server]
+  * Fix server socket assignment [server]
+  * toString to various types to produce dig like output [client, server]
+  * Conosolidate various sources files into logical groups [module]
+  * Lint to match upstream's style [module]
+
+2012-03-06  Timothy J Fontaine  <tjfontaine@gmail.com>
+  * Bump to v0.0.6
+  * Split TCP/UDP Server, expose as createTCPServer/createUDPServer [server, module]
+  * Request server may just be an string of an ip address [client]
+  * Question type may be a string of record type [client]
+  * Don't watch for resolve/hosts changes by default [client]
+  * Add mechanism to forcibly reload the platform [client]
+  * Add unready event that is fired when reinitializing platform [client]
+  * Expose platform [module]
+
+2012-03-01  Timothy J Fontaine  <tjfontaine@gmail.com>
+  * Bump to v0.0.5
+  * Add test suite [module] (issue #12)
+  * Add qtypeToName/nameToQtype for convenience [module]
+  * Add Request mechanism to cusotmize queries [module]
+  * Add field name, buffer, and position to [un]pack errors [module]
+  * Add PendingRequests.autopromote to always promote ResourceRecords [module]
+  * Fix Platform.search_path it should be an array [client]
+
+2012-02-25  Timothy J Fontaine  <tjfontaine@gmail.com>
+  * Bump to v0.0.4
+  * Add clone dependency (it's used in client) [module]
+  * Don't instantiate fields for every question [client, server] (issue #8)
+  * Allocate only the size Buffer needed for Packet [client, server]
+
+2012-02-24  Timothy J Fontaine  <tjfontaine@gmail.com>
+  * Bump to v0.0.3
+  * Considerable performance increase [client, server] (issue #8)
+  * Label compression is case sensitive [client, server]
+  * Remove dependency on clone and pystruct [client, server]
+  * Consolidate TCP logic [client, server] (issue #3)
+
+2012-02-14  Timothy J Fontaine  <tjfontaine@gmail.com>
+  * Bump to v0.0.2
+  * Add rudimentary TCP support [client, server]
+  * Rate limit queries to name servers [client]
+  * Single buffer creation for message packing [client, server]
+  * Label compression [client, server]
+  * Expose consts for use by servers [module]
+  * Specify specific server for querying against [client]
+  * Remove dependency on bufferjs [module]

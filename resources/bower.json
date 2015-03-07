@@ -1,0 +1,20 @@
+{
+  "name": "easyModal.js",
+  "version": "1.3.1",
+  "homepage": "http://flaviusmatis.github.io/easyModal.js/",
+  "authors": [
+    "Flavius Matis"
+  ],
+  "description": "A minimal jQuery modal that works with your CSS.",
+  "main": "jquery.easyModal.js",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jQuery": ">=1.7.0"
+  }
+}

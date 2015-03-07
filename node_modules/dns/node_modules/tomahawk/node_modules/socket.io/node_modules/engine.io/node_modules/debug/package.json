@@ -1,0 +1,46 @@
+{
+  "name": "debug",
+  "version": "0.6.0",
+  "description": "small debugging utility",
+  "keywords": [
+    "debug",
+    "log",
+    "debugger"
+  ],
+  "author": {
+    "name": "TJ Holowaychuk",
+    "email": "tj@vision-media.ca"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "mocha": "*"
+  },
+  "main": "index",
+  "engines": {
+    "node": "*"
+  },
+  "_npmUser": {
+    "name": "tjholowaychuk",
+    "email": "tj@vision-media.ca"
+  },
+  "_id": "debug@0.6.0",
+  "optionalDependencies": {},
+  "_engineSupported": true,
+  "_npmVersion": "1.1.9",
+  "_nodeVersion": "v0.6.12",
+  "_defaultsLoaded": true,
+  "dist": {
+    "shasum": "ce9d5d025d5294b3f0748a494bebaf3c9fd8734f",
+    "tarball": "http://registry.npmjs.org/debug/-/debug-0.6.0.tgz"
+  },
+  "maintainers": [
+    {
+      "name": "tjholowaychuk",
+      "email": "tj@vision-media.ca"
+    }
+  ],
+  "directories": {},
+  "_shasum": "ce9d5d025d5294b3f0748a494bebaf3c9fd8734f",
+  "_from": "debug@0.6.0",
+  "_resolved": "https://registry.npmjs.org/debug/-/debug-0.6.0.tgz"
+}

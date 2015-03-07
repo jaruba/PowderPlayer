@@ -1,0 +1,6 @@
+support
+test
+docs
+Gruntfile.js
+example/daemon
+*.sock

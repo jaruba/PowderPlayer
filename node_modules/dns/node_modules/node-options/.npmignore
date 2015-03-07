@@ -1,0 +1,4 @@
+coverage/
+test/
+node_modules/
+.coveralls.yml

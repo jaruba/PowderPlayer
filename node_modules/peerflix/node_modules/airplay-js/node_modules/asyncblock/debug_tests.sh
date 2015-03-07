@@ -1,0 +1,1 @@
+node --debug --debug-brk ./node_modules/vows/bin/vows ./tests/* --spec

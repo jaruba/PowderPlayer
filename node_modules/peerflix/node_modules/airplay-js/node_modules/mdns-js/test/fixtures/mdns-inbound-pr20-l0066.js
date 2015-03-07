@@ -1,0 +1,1 @@
+{ addresses: [], query: [ '_services._dns-sd._udp.local' ] }

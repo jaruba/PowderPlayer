@@ -1,0 +1,63 @@
+#!/usr/bin/env node
+(function () {
+    var fs        = require('fs'),
+        path      = require('path'),
+        opts      = require('node-options'),
+        pkgConfig = opts.readPackageConfig(path.join(__dirname, '..', 'package.json'));
+
+    ///////////////////////////////////////////////////////////////////////////
+    //
+    pkgConfig = opts.mergeEnvironment(pkgConfig);
+
+    ///////////////////////////////////////////////////////////////////////////
+    //
+    pkgConfig = opts.overlayConfig(pkgConfig.config, pkgConfig, '.tomahawk');
+
+    ///////////////////////////////////////////////////////////////////////////
+    //
+    // The "options" parameter is an object read from the package.json file.
+    // Every property of that object can be overwritten through the command
+    // line argument (e.g. --"property"=newValue)
+    var result = opts.parse(process.argv.slice(2), pkgConfig);
+    pkgConfig = opts.overlayConfig(pkgConfig.config, pkgConfig,  '.tomahawk');
+
+    ///////////////////////////////////////////////////////////////////////////
+    //
+    var winston  = require('winston'),
+        meta     = {
+            "module" : pkgConfig.name || "Tomahawk",
+            "pid"    : process.pid
+        },
+        logger   = new (winston.Logger)({ transports: [
+            new (winston.transports.Console)({
+                "level"    : pkgConfig.level || "info",
+                "json"     : false,
+                "colorize" : true
+            })
+        ]});
+
+    ///////////////////////////////////////////////////////////////////////////
+    //
+    // If an argument was passed on the command line, but was not defined in
+    // the "configuration" property of the package.json, lets print the USAGE.
+    if (result.errors) {
+        logger.log('error', opts.usage(pkgConfig), meta);
+        logger.log('error', opts.error(result.errors), meta);
+        process.exit(-1);
+    } else if (result.args.length > 0) {
+        logger.log('error', opts.usage(pkgConfig), meta);
+        logger.log('error', opts.error(result.args), meta);
+        process.exit(-1);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    //
+    // If not, start as a Web Server. The server will provide both an HTML
+    // frontend and a JSON Web Service.
+    var tomahawk = require(path.join(pkgConfig.rootPath, "lib", "tomahawk"));
+    pkgConfig.www      = pkgConfig.www ? (pkgConfig.www.charAt(0) === '/' ? pkgConfig.www : path.join(process.cwd(), pkgConfig.www)) : pkgConfig.www;
+    logger.log('debug', 'options=%j', pkgConfig, meta);
+    pkgConfig.meta     = meta;
+    pkgConfig.logger   = logger;
+    tomahawk.create(pkgConfig).start();
+}).call();

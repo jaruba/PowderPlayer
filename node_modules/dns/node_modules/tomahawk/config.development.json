@@ -1,0 +1,16 @@
+{
+        "headers"    : [
+            "Access-Control-Allow-Origin  : *",
+            "Access-Control-Allow-Methods : GET,PUT,POST,DELETE",
+            "Access-Control-Allow-Headers : Content-Type",
+            "X-Frame-Options              : ALLOWALL"
+        ],
+        "cgi"        : [
+            {
+            	"route"   : "/version",
+            	"method"  : "GET",
+            	"command" : "/bin/sh",
+            	"args"    : ["-c",  "echo '{\"version\":\"1.0.0\"}'"]
+            }
+        ]
+}

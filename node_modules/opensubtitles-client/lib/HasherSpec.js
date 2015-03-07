@@ -1,0 +1,34 @@
+
+var expect = require("expect.js");
+
+describe('HasherSpec', function(){
+
+
+    beforeEach(function(done){
+
+        done();
+
+    });
+
+  
+    it('.getHash()', function(done){
+
+        var Hasher = require('./Hasher');
+
+        var filename = __dirname + "/../examples/videoviewdemo.mp4";
+        
+        Hasher.getHash(filename)
+        .done(function(hash){
+            
+            expect(hash).to.be('5f49e317c7557f0d');  
+
+            done();  
+
+        });
+
+        
+        
+    });
+
+  
+});

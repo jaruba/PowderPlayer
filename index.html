@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<link rel="stylesheet" href="resources/pure-min.css">
+<link rel="stylesheet" href="resources/bootstrap-progressbar/css/bootstrap-progressbar-3.3.0.min.css">
+
+<meta charset="UTF-8">
+<title>Powder Player</title>
+<style>
+
+@font-face {
+  font-family: 'Droid Sans';
+  src: url('resources/DroidSans.ttf');
+}
+
+@font-face {
+  font-family: 'Droid Sans Bold';
+  src: url('resources/DroidSans-Bold.ttf');
+}
+
+@font-face {
+  font-family: 'Glyphs';
+  src: url('player/themes/sleek/fonts/glyphicons.ttf');
+}
+
+* { margin: 0 }
+
+html, body { height: 100% }
+
+body {
+	font-family: 'Droid Sans', sans-serif;
+	background: #fff;
+	overflow-y:hidden;
+	overflow-x:hidden;
+	height: 100%
+}
+
+#player_wrapper {
+    min-height: 100%;
+    height: 1px;
+	width: 1px;
+    margin: 0 auto;
+	overflow: hidden;
+}
+#holdCenter {
+	width: 418px;
+	display: block;
+	padding: 10px;
+	background: rgba(0,0,0,0.3);
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+	border-radius: 6px
+}
+#main {
+    height: 100%;
+    width: 100%;
+    display: table;
+}
+.wrapper {
+    display: table-cell;
+    height: 100%;
+    vertical-align: middle;
+}
+#logoBig {
+	margin-top: 47px;
+	margin-bottom: 13px;
+	margin-left: 21px;
+}
+#formHolder {
+	display: block;
+	padding: 6px 10px;
+	padding-right: 19px;
+	background: rgba(255,255,255,0.7);
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+	border-radius: 6px
+}
+#magnetForm { height: 47px }
+#magnetLink { width:300px }
+#magnetSubmit {
+	position: relative;
+	top: 1px;
+	left: 8px
+}
+#holder {
+  border: 3px dashed #ccc;
+  min-width: 580px;
+  mix-height: 380px;
+  width: 90%;
+  height: 90%;
+  max-width: 726px;
+  max-height: 525px;
+  background: #f4f4f4;
+  margin: 20px;
+}
+#holder.hover { border: 3px dashed #383838 }
+#torrentBut { -webkit-box-shadow: 0px 2px 0px 0px rgba(61,142,96,1); -moz-box-shadow: 0px 2px 0px 0px rgba(61,142,96,1); box-shadow: 0px 2px 0px 0px rgba(61,142,96,1); background: #00b850; cursor: pointer }
+#torrentBut:hover { -webkit-box-shadow: 0px 2px 0px 0px rgba(0,113,49,1); -moz-box-shadow: 0px 2px 0px 0px rgba(0,113,49,1); box-shadow: 0px 2px 0px 0px rgba(0,113,49,1); background: #0D8843; }
+#videoBut { -webkit-box-shadow: 0px 2px 0px 0px rgba(61,135,170,1); -moz-box-shadow: 0px 2px 0px 0px rgba(61,135,170,1); box-shadow: 0px 2px 0px 0px rgba(61,135,170,1); background: #1ca8ed; cursor: pointer }
+#videoBut:hover { -webkit-box-shadow: 0px 2px 0px 0px rgba(2,89,131,1); -moz-box-shadow: 0px 2px 0px 0px rgba(2,89,131,1); box-shadow: 0px 2px 0px 0px rgba(2,89,131,1); background: #036FA4 }
+#linkBut { -webkit-box-shadow: 0px 2px 0px 0px rgba(210,83,61,1); -moz-box-shadow: 0px 2px 0px 0px rgba(210,83,61,1); box-shadow: 0px 2px 0px 0px rgba(210,83,61,1); background: #f1664f; cursor: pointer }
+#linkBut:hover { -webkit-box-shadow: 0px 2px 0px 0px rgba(175,38,17,1); -moz-box-shadow: 0px 2px 0px 0px rgba(175,38,17,1); box-shadow: 0px 2px 0px 0px rgba(175,38,17,1); background: #DE4027 }
+.mainButtons { color: #fff; width: 130px; height: 110px; border-radius: 4px; display: inline-block }
+.easy-modal,
+.easy-modal-animated,
+.second-easy-modal-animated,
+.third-easy-modal-animated {
+	width: 438px;
+	padding: 2em;
+	box-shadow: 1px 1px 3px rgba(0,0,0,0.35);
+	background-color: white;
+}
+.third-easy-modal-animated {
+	padding: 5px;
+	top: 22% !important;
+}
+a.mainLinks {
+	color: #1ca8ed;
+	text-decoration: underline;
+}
+a.mainLinks:hover {
+	text-decoration: none
+}
+#header_container { background: #5AA5C9; border-bottom:1px solid #b5b5b5; left:0; position:fixed; width:100%; top:0; padding-top: 8px; z-index: 1001 }
+#header{ line-height:25px; margin:0 auto; width:100%; text-align:center; font-size: 15px; color: color: #5B5C5C; }
+.progress .progressbar-back-text { right: 0 }
+.files { cursor: pointer }
+.files:hover { background-color: #E0F4FD !important }
+.progress { background-color: #ebebea }
+
+i.glyphs {
+	font-family: 'Glyphs';
+	width: 34px;
+	height: 32px;
+	display: inline-block;
+	text-align: center;
+	line-height: 32px;
+	border-radius: 4px;
+	color: #fff;
+	font-style: normal;
+	cursor: pointer;
+}
+i.pause {
+	font-size: 28px !important;
+	position: relative;
+	top: -1px;
+}
+i.settings {
+	background-color: #5cb85c !important;
+	font-size: 27px;
+	position: relative;
+	top: -2px;
+}
+
+i.play:before {
+	content: "\E82D";
+}
+i.pause:before {
+	content: "\E82E";
+}
+i.settings:before {
+	content: "\E801";
+}
+
+i.play:hover {
+	background-color: #EF4A1F !important;
+}
+i.pause:hover {
+	background-color: #CE9707 !important;
+}
+i.settings:hover {
+	background-color: #4A8B00 !important;
+}
+
+a.pl-settings {
+	color: #ccc;
+	font-size: 30px;
+	text-decoration: none;
+	float: right;
+	font-style: normal;
+	margin-right: 11px;
+	margin-top: 3px;
+}
+a.pl-settings:hover {
+	color: #FFA741
+}
+i.player-settings:before {
+	font-family: 'Glyphs';
+	content: "\E801";
+	font-style: normal
+}
+
+.actionButton {
+	width: 100%;
+	height: 43px;
+	line-height: 43px;
+	cursor: pointer
+}
+.actionButton:hover {
+	background-color: #0088cc;
+	color: #ffffff
+}
+
+#file-settings {
+	padding: 5px;
+	top: 22% !important
+}
+
+.dropdown.dropdown-tip:before {
+	left: 138px !important;
+}
+
+.dropdown.dropdown-tip:after {
+  left: 139px !important;
+}
+
+#dropdown-1 {
+	right: 5% !important;
+	left: initial !important;
+}
+
+#optionsBut {
+	display: inline-block;
+	height: 19px;
+	line-height: 19px;
+	width: 59px;
+	text-align: center;
+	float: right;
+	font-size: 13px;
+	color: #fff;
+	background-color: #ff704a;
+	border: 1px solid #b95e0d;
+	text-decoration: none
+}
+#optionsBut:hover {
+	background-color: #F65024
+}
+h2 {
+	margin-bottom: 10px;
+	color: #fff;
+	font-size: 20px;
+	margin: 0;
+	padding: 9px;
+	background-color: #5cb85c;
+	font-family: 'Droid Sans Bold';
+	font-weight: normal;
+	opacity: 0.6;
+}
+</style>
+<link rel="stylesheet" type="text/css" href="resources/animate.min.css">
+<script src="player/webchimera.js" type="text/javascript"></script>
+<script src="resources/jquery-2.1.3.min.js" type="text/javascript"></script>
+<script src="resources/jquery.easyModal.js" type="text/javascript"></script>
+<script src="resources/bootstrap-progressbar/bootstrap-progressbar.min.js" type="text/javascript"></script>
+<link type="text/css" rel="stylesheet" href="resources/bootstrap-dropdown/jquery.dropdown.css" />
+<script type="text/javascript" src="resources/bootstrap-dropdown/jquery.dropdown.js"></script>
+
+</head>
+
+<body>
+    <div id="main" style="opacity: 0"><div class="wrapper"><center>
+    <div id="holder"><a class="pl-settings easy-modal-open" href="#player-settings"><i class="player-settings"></i></a><img src="images/powder-logo.png" id="logoBig"><br><b style="font-family: 'Droid Sans Bold', sans-serif; font-size: 36px; color: #767a7b; display: inline-block; margin-bottom: 2px">Drag & Drop a File</b><br><span style="font-size: 21px; color: #767a7b; font-weight: 100; margin-top: 13px; display: inline-block; margin-bottom: 11px">or select an option below</span><br><br><div style="width: 510px"><a href="#" onClick="chooseFile('#torrentDialog'); return false"><div id="torrentBut" class="mainButtons" style="float:left"><img src="images/torrent-icon.png" style="margin-top: 15px; margin-bottom: 11px"><br>Add Torrent</div></a><a href="#" onClick="chooseFile('#fileDialog'); return false"><div id="videoBut" class="mainButtons"><img src="images/video-icon.png" style="  margin-top: 19px; margin-bottom: 16px"><br>Add Video</div></a><a class="easy-modal-open" onClick="checkInternet(function(isConnected) { if (isConnected) { $('#internet-error').hide(); $('#internet-ok').show(1); $('#magnetLink').focus() } else { $('#internet-ok').hide(); $('#internet-error').show(1); } }); $('#open-url').css('top', Math.round(($(window).height() - 187) / 2)+'px');" href="#open-url"><div id="linkBut" class="mainButtons" style="margin-right: 0; float: right"><img src="images/link-icon.png" style="margin-top: 20px; margin-bottom: 9px"><br>Use a URL</div></a></div><br><br><span style="color: #8c8c8c; line-height: 29px; margin-bottom: 40px; display: inline-block;"><b style="font-family: 'Droid Sans Bold', sans-serif">Supports:</b> Torrent Files / Links, Magnet Links, Youtube Links,<br>Youtube Playlist Links and all <a class="mainLinks" onClick="gui.Shell.openExternal('http://www.videolan.org/vlc/features.php?cat=video'); return false" href="http://www.videolan.org/vlc/features.php?cat=video" target="_blank">VLC Supported Media Formats</a>.</span>
+    </div></center></div></div>
+<div id="player_wrapper"></div>
+<center>
+<div id="header_container" style="display:none">
+<div id="header">
+<div style="width: 90%; margin-left: 5%">
+<div style="width: 70%; float: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #fff; text-align: left"><span id="headerText"></span></div>
+<div style="width: 30%; float: right;">
+<a id="optionsBut" href="#" data-dropdown="#dropdown-1" style="">Options</a>
+</div></div>
+<center>
+<div id="all-download" class="progress" style="width: 90%; margin-top: 5px; margin-bottom: 1px">
+    <div class="progress-bar progress-bar-warning" role="progressbar" data-transitiongoal="0"></div>
+</div>
+<div style="width: 90%; margin-top: 1px; color: #fff; text-align: center; font-size: 13px"><span style="float: left">Downloaded: <span id="downPart">0 kB</span> / <span id="downAll">0 kB</span></span><span>Speed: <span id="speed">0.0 kB/s</span></span><span style="float: right">Peers: <span id="nrPeers">0</span></span></div>
+</center>
+<script>
+$(document).ready(function() {
+    $('.progress .progress-bar').progressbar({display_text: 'center'});
+});
+</script>
+</div>
+</div>
+<div id="filesList" style="position: relative; width: 100%; z-index: 1000; font-size: 13px; color: #585247">
+</div>
+</center>
+<div class="easy-modal-animated" id="open-url">
+<div id="internet-ok">
+<div id="holdCenter">
+        <div id="formHolder">
+            <form class="pure-form pure-form-aligned" onsubmit="runURL(document.getElementById('magnetLink').value); $('.easy-modal-animated').trigger('closeModal'); return false;" id="magnetForm">
+                <fieldset>
+                    <div class="pure-control-group">
+                        <input id="magnetLink" type="text" name="magnet" placeholder="Magnet URI or Video URL" onFocus="this.select();" onMouseUp="return false;">
+                        <button id="magnetSubmit" type="submit" class="pure-button pure-button-primary">Stream</button>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+</div>
+    <button class="animated-close pure-button" title="Close" style="margin-top: 10px">Close</button>
+</div>
+<div id="internet-error" style="display: none">
+<center>
+You require an internet connection to use this feature.<br><br>
+<button class="animated-close pure-button" title="I understand" style="margin-top: 10px">I understand</button>
+</center>
+</div>
+</div>
+<div class="second-easy-modal-animated" id="file-settings">
+<center>
+<h2 style="margin-bottom: 10px">Select an Action</h2>
+<div id="playAction" onClick="" class="actionButton">Play Now</div>
+<div id="openAction" onClick="" class="actionButton">Open File</div>
+<div id="openFolderAction" onClick="" class="actionButton">Open Containing Folder</div>
+<div id="copyStream" onClick="" class="actionButton">Copy Stream URL</div>
+<div id="closeAction"class="second-animated-close actionButton">Close</div>
+</center>
+</div>
+<div class="third-easy-modal-animated" id="player-settings">
+<center>
+<h2 style="margin-bottom: 10px">Player Settings</h2>
+<div onClick="regMagnet(); return false" class="actionButton">Associate with Magnet Links</div>
+<div onClick="regTorrent(); return false" class="actionButton">Associate with Torrent Files</div>
+<div onClick="regVideos(); return false" class="actionButton">Associate with Video Files</div>
+<div id="closeAction"class="third-animated-close actionButton">Close</div>
+</center>
+</div>
+<input style="display:none;" id="fileDialog" type="file" accept=".m3u,video/*,audio/*" />
+<input style="display:none;" id="torrentDialog" type="file" accept=".torrent" />
+<a id="open-file-settings" class="easy-modal-open" href="#file-settings" style="display: none">File Settings</a>
+<div id="dropdown-1" class="dropdown dropdown-tip" style="font-size: 13px">
+    <ul class="dropdown-menu">
+        <li><a onClick="gui.Shell.openItem(powGlobals['engine'].path+'\\'); return false" href="#">Open Folder</a></li>
+        <li class="dropdown-divider"></li>
+        <li><a onClick="gui.Clipboard.get().set('magnet:?xt=urn:btih:'+powGlobals['engine'].infoHash.toUpperCase(),'text'); return false" href="#">Copy Magnet URI</a></li>
+        <li class="dropdown-divider"></li>
+        <li><a onClick="for (ij = 0; typeof powGlobals['files'][ij] !== 'undefined'; ij++) playEl(ij); return false" href="#">Start All</a></li>
+        <li><a onClick="for (ij = 0; typeof powGlobals['files'][ij] !== 'undefined'; ij++) pauseEl(ij); return false" href="#">Pause All</a></li>
+        <li class="dropdown-divider"></li>
+        <li><a onClick="$('html, body').animate({ scrollTop: 0 }, 'slow'); return false" href="#">Back to Video</a></li>
+        <li><a onClick="goBack(); return false" href="#">Remove Torrent</a></li>
+    </ul>
+</div>
+<script src="engine.js" type="text/javascript"></script>
+
+</body>
+
+</html>

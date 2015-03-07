@@ -1,0 +1,11 @@
+{
+  "name": "jquery-dropdown",
+  "version": "1.0.5",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/claviska/jquery-dropdown.git"
+  },
+  "dependencies": {
+    "jquery": "~1.8.0"
+  }
+}

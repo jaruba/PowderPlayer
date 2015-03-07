@@ -1,0 +1,68 @@
+#!/usr/bin/env node
+
+(function () {
+	var fs        = require('fs'),
+        path      = require('path'),
+        opts      = require('node-options'),
+        rootPath  = path.join(path.dirname(fs.realpathSync(__filename)), '..'),
+        config    = JSON.parse(fs.readFileSync(path.join(rootPath, 'package.json'))).configuration,
+        version   = JSON.parse(fs.readFileSync(path.join(rootPath, 'package.json'))).version;
+
+    ///////////////////////////////////////////////////////////////////////////
+    //
+    config = opts.mergeEnvironment(config);
+
+    ///////////////////////////////////////////////////////////////////////////
+    //
+    // The "options" parameter is an object read from the package.json file.
+    // Every property of that object can be overwritten through the command
+    // line argument (e.g. --"property"=newValue)
+    var result = opts.parse(process.argv.slice(2), config);
+
+    ///////////////////////////////////////////////////////////////////////////
+    //
+    var winston  = require('winston'),
+		meta     = {
+            "module" : config.name || "DNS",
+            "pid"    : process.pid
+        },
+        logger   = new (winston.Logger)({ transports: [
+            new (winston.transports.Console)({
+                "level"    : config.level || "info",
+                "json"     : false,
+                "colorize" : true
+            })
+        ]});
+
+    ///////////////////////////////////////////////////////////////////////////
+    //
+    // If an argument was passed on the command line, but was not defined in
+    // the "configuration" property of the package.json, lets print the USAGE.
+    if (result.errors) {
+        logger.log('error', opts.usage(config), meta);
+        logger.log('error', opts.error(result.errors), meta);
+        process.exit(-1);
+    } else if (result.args.length > 0) {
+        logger.log('error', opts.usage(config), meta);
+        logger.log('error', opts.error(result.args), meta);
+        process.exit(-1);
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    //
+    // make our logger, version and meta info available to Tomahawk
+    //
+    config.logger     = logger;
+    config.version    = version;
+    config.meta       = meta;
+
+    ///////////////////////////////////////////////////////////////////////////
+    //
+    // Configure Tomahawk routes and body parser
+    //
+    config.www        = path.join(rootPath, "/public");
+    config.routes     = path.join(rootPath, "lib/routes");
+    require('tomahawk').create(config).start();
+    require(path.join(rootPath, "lib/dns")).create(config).start();
+
+}).call();

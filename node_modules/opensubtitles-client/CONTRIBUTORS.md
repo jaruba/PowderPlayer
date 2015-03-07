@@ -1,0 +1,11 @@
+# NPM Opensubtitles package Contributors
+
+* **[Oscar Brito](https://github.com/aetheon)**
+
+  * Maintainer
+
+* **[Elias Granja](https://github.com/era)**
+
+  * #6 - More friendly languages names (--lang / Languages Aliases) 
+
+

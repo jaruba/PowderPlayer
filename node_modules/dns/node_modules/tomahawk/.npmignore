@@ -1,0 +1,10 @@
+.git/
+node_modules/
+.travis.yml
+*.log
+.idea/
+echo-cgi
+package.json.latest
+tomahawk.iml
+txt
+version-cgi

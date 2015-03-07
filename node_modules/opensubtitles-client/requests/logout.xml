@@ -1,0 +1,10 @@
+<?xml version="1.0"?><methodCall>
+  <methodName>LogOut</methodName>
+  <params>
+    <param>
+      <value>
+        <string>{{logout}}</string>
+      </value>
+    </param>
+  </params>
+</methodCall>

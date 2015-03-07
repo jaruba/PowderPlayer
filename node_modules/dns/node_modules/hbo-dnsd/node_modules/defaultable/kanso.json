@@ -1,0 +1,11 @@
+{
+    "name": "defaultable",
+    "version": "0.6.2",
+    "website": "https://github.com/iriscouch/defaultable",
+    "modules": "defaultable.js",
+    "dependencies": {
+        "modules": ">=0.0.8",
+        "path": ">=0.2.6"
+    },
+    "description": "Transparent, drop-in helper for overridable, inheritable defaults in CommonJS modules"
+}

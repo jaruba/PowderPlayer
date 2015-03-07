@@ -1,0 +1,52 @@
+Machine name: mini-001.local
+OS: Darwin 11.2.0
+CPU: Macmini5,1 x64 2300 Mhz
+Virtual machine: true
+----
+asyncblock version: 1.9.0
+node version: v0.6.7
+----
+Memory: { rss: '13 MB', heapTotal: '6 MB', heapUsed: '4 MB' }
+
+
+When creating 100,000 asyncblocks: 4200 ms
+Memory: { rss: '57 MB', heapTotal: '55 MB', heapUsed: '21 MB' }
+·
+When creating 100,000 asyncblock.nostacks: 2254 ms
+Memory: { rss: '54 MB', heapTotal: '50 MB', heapUsed: '33 MB' }
+·
+When creating 100,000 asyncblock.enumerators: 4087 ms
+Memory: { rss: '56 MB', heapTotal: '45 MB', heapUsed: '20 MB' }
+·
+When doing 100,000 echos with add / wait in series: 1476 ms
+Memory: { rss: '51 MB', heapTotal: '40 MB', heapUsed: '12 MB' }
+·
+When doing 100,000 echos with add / wait in parallel: 1010 ms
+Memory: { rss: '119 MB', heapTotal: '107 MB', heapUsed: '86 MB' }
+·
+When doing 100,000 echos with get / set in series: 1709 ms
+Memory: { rss: '116 MB', heapTotal: '104 MB', heapUsed: '52 MB' }
+·
+When doing 100,000 echos with flow.func in series: 2555 ms
+Memory: { rss: '118 MB', heapTotal: '106 MB', heapUsed: '19 MB' }
+·
+When doing 100,000 echos with flow.sync(1) in series: 2088 ms
+Memory: { rss: '118 MB', heapTotal: '107 MB', heapUsed: '8 MB' }
+·
+When doing 100,000 echos with flow.sync(2) in series: 2888 ms
+Memory: { rss: '118 MB', heapTotal: '107 MB', heapUsed: '17 MB' }
+·
+When doing 100,000 echos with flow.future(1) in series: 2167 ms
+Memory: { rss: '50 MB', heapTotal: '39 MB', heapUsed: '14 MB' }
+·
+When doing 100,000 echos with flow.future(2) in series: 3201 ms
+Memory: { rss: '56 MB', heapTotal: '44 MB', heapUsed: '27 MB' }
+·
+When doing 100,000 asyncblock.wraps: 1439 ms
+Memory: { rss: '57 MB', heapTotal: '46 MB', heapUsed: '4 MB' }
+·
+When doing 100,000 asyncblock.wrap sync calls: 2243 ms
+Memory: { rss: '59 MB', heapTotal: '48 MB', heapUsed: '13 MB' }
+·
+When doing 100,000 yields with asyncblock.enumerator: 8318 ms
+Memory: { rss: '143 MB', heapTotal: '132 MB', heapUsed: '85 MB' }
