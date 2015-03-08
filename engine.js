@@ -185,6 +185,9 @@ win.on('focus', function() { focused = true; });
 win.on('blur', function() { focused = false; }); 
 
 function isPlaying() {
+	if (firstTime == 0) {
+		wjs("#webchimera").plugin.subtitle.track = 0;
+	}
 	if (firstTime == 0) if (typeof powGlobals["engine"] === 'undefined') {
 		findHash();
 	}
