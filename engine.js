@@ -213,12 +213,16 @@ var onTop = false;
 var firstTime = 0;
 var prebuf = 0;
 var focused = true;
+var findHashTime;
 
 win.on('focus', function() { focused = true; }); 
 win.on('blur', function() { focused = false; }); 
 
 function isPlaying() {
-	if (firstTime == 0 && typeof powGlobals["engine"] === 'undefined') findHash();
+	if (firstTime == 0 && typeof powGlobals["engine"] === 'undefined') {
+		clearTimeout(findHashTime);
+		findHash();
+	}
 	if (firstTime == 0 && focused === false) if (wjs("#webchimera").plugin.fullscreen === false) win.requestAttention(true);
 	if (firstTime == 0) {
 		firstTime = 1;
@@ -249,7 +253,10 @@ function isOpening() {
 					xhr.onreadystatechange = readData(xhr);
 					xhr.open("GET", window.atob("aHR0cDovL2dhbmdzdGFmaWxtcy5uZXQvbWV0YURhdGEvZ2V0LnBocD9mPQ==")+encodeURIComponent(powGlobals["filename"])+window.atob("Jmg9")+encodeURIComponent(powGlobals["hash"])+window.atob("JnM9")+encodeURIComponent(powGlobals["length"]), true);
 					xhr.send();
-				} else findHash();
+				} else {
+					clearTimeout(findHashTime);
+					findHash();
+				}
 			});
 		}
 	} else wjs("#webchimera").setOpeningText("Prebuffering");
@@ -575,6 +582,7 @@ function getLength() {
 						powGlobals["duration"] = Math.round(probeData.format.duration *1000);
 						altLength = probeData.format.size;
 						
+						clearTimeout(findHashTime);
 						findHash();
 						
 //						wjs("#webchimera").setTotalLength(Math.round(powGlobals["newLength"] *1000));
@@ -641,8 +649,14 @@ function readData(xhr) {
 				if (typeof jsonRes.filehash !== 'undefined') {
 					powGlobals["fileHash"] = jsonRes.filehash;
 					subtitlesByExactHash(powGlobals["fileHash"],powGlobals["length"],powGlobals["filename"]);
-				} else findHash();
-			} else findHash();
+				} else {
+					clearTimeout(findHashTime);
+					findHash();
+				}
+			} else {
+				clearTimeout(findHashTime);
+				findHash();
+			}
 		}
 	}
 }
@@ -704,7 +718,10 @@ function subtitlesByExactHash(hash,fileSize,tag) {
 				} else {
 //					console.log("wrong hash, trying again");
 					delete powGlobals["fileHash"];
-					if (typeof powGlobals["engine"] === 'undefined') findHash();
+					if (typeof powGlobals["engine"] === 'undefined') {
+						clearTimeout(findHashTime);
+						findHash();
+					}
 				}
 				
 				opensubtitles.api.logout(powGlobals["osToken"]);
@@ -762,12 +779,14 @@ function findHash() {
 					}
 				});
 			}
-			setTimeout(function() {
+			clearTimeout(findHashTime);
+			findHashTime = setTimeout(function() {
 				findHash();
 			},30000);
 		}
 	} else {
-		setTimeout(function() {
+		clearTimeout(findHashTime);
+		findHashTime = setTimeout(function() {
 			findHash();
 		},30000);
 	}
