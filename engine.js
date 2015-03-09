@@ -1,3 +1,9 @@
+if (typeof localStorage.maxPeers === 'undefined') localStorage.maxPeers = 100;
+if (typeof localStorage.tmpDir === 'undefined') localStorage.tmpDir = 'Temp';
+$("#max-peers").text(localStorage.maxPeers);
+$("#spinner").val(localStorage.maxPeers);
+$("#def-folder").text(localStorage.tmpDir);
+
 // natural sort order function for playlist
 function alphanumCase(a, b) {
   function chunkify(t) {
@@ -51,6 +57,17 @@ function regMagnet() {
         gui.Shell.openExternal(require('path').dirname(process.execPath)+'\\register-magnet.reg'); 
     });
 }
+
+function openPeerSelector() {
+	if($('#max-peers').is(':visible')) $('#max-peers').hide(0,function() { $('.ui-spinner').show(0); })
+}
+
+$('#max-peers-hov').hover(function() { }, function() {
+	if ($('.ui-spinner').is(":hover") === false) if ($('.ui-spinner').is(':visible')) $('.ui-spinner').hide(0,function() {
+		$('#max-peers').text($('#spinner').val()).show(0);
+		localStorage.maxPeers = parseInt($('#spinner').val());
+	})
+});
 
 var isReady = 0;
 var downSpeed;
@@ -134,6 +151,13 @@ $(function() {
 		transitionOut: 'animated bounceOutRight',
 		closeButtonClass: '.third-animated-close'
 	});
+	$('.forth-easy-modal-animated').easyModal({
+		top: 200,
+		overlay: 0.2,
+		transitionIn: 'animated bounceInLeft',
+		transitionOut: 'animated bounceOutRight',
+		closeButtonClass: '.forth-animated-close'
+	});
 });
 
 function checkInternet(cb) {
@@ -162,6 +186,13 @@ function chooseFile(name) {
 				$('.easy-modal-animated').trigger('openModal');
 			}
 		});
+	} else if (name == '#folderDialog') {
+		var chooser = $(name);
+		chooser.change(function(evt) {
+			$("#def-folder").text($(this).val());
+			localStorage.tmpDir = $(this).val();
+		});
+		chooser.trigger('click');		
 	} else {
 		var chooser = $(name);
 		chooser.change(function(evt) { runURL($(this).val()); });
@@ -802,7 +833,16 @@ wjs.init.prototype.addTorrent = function(torLink) {
 		if (typeof torLink !== 'object' && Buffer.isBuffer(torLink) === false && torLink.split('.').pop().toLowerCase() == "torrent") torLink = fs.readFileSync(torLink);
 		
 		// load the torrent with peerflix
-		powGlobals["engine"] = peerflix(torLink);
+		if (localStorage.tmpDir == 'Temp') {
+			powGlobals["engine"] = peerflix(torLink,{
+				connections: localStorage.maxPeers
+			});			
+		} else {
+			powGlobals["engine"] = peerflix(torLink,{
+				connections: localStorage.maxPeers,
+				path: localStorage.tmpDir
+			});
+		}
 						
 		powGlobals["engine"].swarm.on('wire', onmagnet)
 		
