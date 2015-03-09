@@ -211,6 +211,17 @@ holder.ondragleave = function () { this.className = ''; return false; };
 holder.ondrop = function (e) {
   e.preventDefault();
   win.focus();
+  
+  // if multiple files dropped and one is a torrent, only add the torrent
+  if (e.dataTransfer.files.length > 1) {
+	  for (var i = 0; i < e.dataTransfer.files.length; ++i) {
+		  if (e.dataTransfer.files[i].path.split('.').pop().toLowerCase() == 'torrent') {
+			  runURL(e.dataTransfer.files[i].path);
+			  return false;
+		  }
+	  }
+  }
+  // end only 1 torrent limit
 
   setOnlyFirst = 2;
 
@@ -218,7 +229,6 @@ holder.ondrop = function (e) {
   
   for (var i = 0; i < e.dataTransfer.files.length; ++i) {
 	  fileArray[i] = e.dataTransfer.files[i].path;
-//	  console.log(e.dataTransfer.files[i].path);
   }
   
 	// playlist natural order
