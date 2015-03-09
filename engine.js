@@ -195,7 +195,13 @@ function chooseFile(name) {
 		chooser.trigger('click');		
 	} else {
 		var chooser = $(name);
-		chooser.change(function(evt) { runURL($(this).val()); });
+		chooser.change(function(evt) {
+			if ($(this).val().indexOf(";") > -1) {
+				runMultiple($(this).val().split(";"));
+			} else {
+				runURL($(this).val());
+			}
+		});
 	
 		chooser.trigger('click');
 	}
@@ -212,24 +218,27 @@ holder.ondrop = function (e) {
   e.preventDefault();
   win.focus();
   
+  if (e.dataTransfer.files.length == 1) {
+	  runURL(e.dataTransfer.files[0].path);
+  } else {
+	  var newFiles = [];
+	  for (var i = 0; i < e.dataTransfer.files.length; ++i) newFiles[i] = e.dataTransfer.files[i].path;
+	  runMultiple(newFiles);
+  }
+  this.className = '';
+  return false;
+};
+
+function runMultiple(fileArray) {
+	
   // if multiple files dropped and one is a torrent, only add the torrent
-  if (e.dataTransfer.files.length > 1) {
-	  for (var i = 0; i < e.dataTransfer.files.length; ++i) {
-		  if (e.dataTransfer.files[i].path.split('.').pop().toLowerCase() == 'torrent') {
-			  runURL(e.dataTransfer.files[i].path);
-			  return false;
-		  }
-	  }
+  if (fileArray.length > 1) for (var i = 0; i < fileArray.length; ++i) if (fileArray[i].split('.').pop().toLowerCase() == 'torrent') {
+	  runURL(fileArray[i]);
+	  return false;
   }
   // end only 1 torrent limit
 
   setOnlyFirst = 2;
-
-  var fileArray = [];
-  
-  for (var i = 0; i < e.dataTransfer.files.length; ++i) {
-	  fileArray[i] = e.dataTransfer.files[i].path;
-  }
   
 	// playlist natural order
 	if (fileArray.length > 1) {
@@ -250,9 +259,8 @@ holder.ondrop = function (e) {
 		}
 	}
 	// end playlist natural order
-  for (ij = 0; typeof fileArray[ij] !== 'undefined'; ij++) {
-	runURL(fileArray[ij]);
-  }
+
+  for (ij = 0; typeof fileArray[ij] !== 'undefined'; ij++) runURL(fileArray[ij]);
   
   powGlobals["videos"] = [];
   
@@ -263,10 +271,8 @@ holder.ondrop = function (e) {
   }
   setOnlyFirst = 0;
   
-  this.className = '';
-
   return false;
-};
+}
 
 wjs("#player_wrapper").addPlayer({ id: "webchimera", theme: "sleek", autoplay: 1, progressCache: 1 });
 
