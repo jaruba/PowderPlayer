@@ -305,6 +305,7 @@ var OS = require("opensubtitles-api");
 var os = new OS();
 var onTop = false;
 var firstTime = 0;
+var firstTimeEver = 1;
 var prebuf = 0;
 var focused = true;
 var findHashTime;
@@ -322,6 +323,10 @@ function isPlaying() {
 	}
 	if (firstTime == 0 && focused === false) if (wjs("#webchimera").plugin.fullscreen === false) win.requestAttention(true);
 	if (firstTime == 0) {
+		if (firstTimeEver == 1 && wjs("#webchimera").plugin.fullscreen == false) {
+			firstTimeEver = 0;
+			win.resizeTo(Math.round(wjs("#webchimera").plugin.video.width*0.98), wjs("#webchimera").plugin.video.height);
+		}
 		firstTime = 1;
 		wjs("#webchimera").plugin.subtitle.track = 0;
 	}
@@ -600,6 +605,7 @@ function goBack() {
 		wjs("#webchimera").plugin.emitJsMessage("[on-top]"+onTop);
 	}
 	firstTime = 0;
+	firstTimeEver = 1;
 	win.title = "Powder Player";
 }
 
