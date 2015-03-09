@@ -212,10 +212,46 @@ holder.ondrop = function (e) {
   e.preventDefault();
   win.focus();
 
+  setOnlyFirst = 2;
+
+  var fileArray = [];
+  
   for (var i = 0; i < e.dataTransfer.files.length; ++i) {
+	  fileArray[i] = e.dataTransfer.files[i].path;
 //	  console.log(e.dataTransfer.files[i].path);
-	  runURL(e.dataTransfer.files[i].path);
   }
+  
+	// playlist natural order
+	if (fileArray.length > 1) {
+		perfect = false;
+		while (!perfect) {
+			perfect = true;
+			for (ij = 0; typeof fileArray[ij] !== 'undefined'; ij++) {
+				if (typeof fileArray[ij+1] !== 'undefined') {
+					difference = alphanumCase(fileArray[ij],fileArray[ij+1]);
+					if (difference > 0) {
+						perfect = false;
+						tempHold = fileArray[ij];
+						fileArray[ij] = fileArray[ij+1];
+						fileArray[ij+1] = tempHold;
+					}
+				}
+			}
+		}
+	}
+	// end playlist natural order
+  for (ij = 0; typeof fileArray[ij] !== 'undefined'; ij++) {
+	runURL(fileArray[ij]);
+  }
+  
+  powGlobals["videos"] = [];
+  
+  for (ij = 0; typeof fileArray[ij] !== 'undefined'; ij++) {
+	powGlobals["videos"][ij] = [];
+	powGlobals["videos"][ij]["filename"] = fileArray[ij].split('\\').pop();
+	powGlobals["videos"][ij]["path"] = fileArray[ij];
+  }
+  setOnlyFirst = 0;
   
   this.className = '';
 
@@ -233,6 +269,7 @@ wjs("#webchimera").catchEvent('MediaPlayerOpening', isOpening);
 var supportedVideo = ["mkv", "avi", "mp4", "mpg", "mpeg", "webm", "flv", "ogg", "ogv", "mov", "wmv", "3gp", "3g2"];
 var powGlobals = [];
 var torPieces = [];
+var setOnlyFirst = 0;
 var altLength = 0;
 var fs = require('fs');
 var probe = require('node-ffprobe');
@@ -245,12 +282,14 @@ var firstTime = 0;
 var prebuf = 0;
 var focused = true;
 var findHashTime;
+var doSubsLocal = 0;
 
 win.on('focus', function() { focused = true; }); 
 win.on('blur', function() { focused = false; }); 
 
 function isPlaying() {
-	if (firstTime == 0 && typeof powGlobals["engine"] === 'undefined') {
+	if (doSubsLocal == 1 && typeof powGlobals["engine"] === 'undefined') {
+		doSubsLocal = 0;
 		clearTimeout(findHashTime);
 		findHash();
 	}
@@ -290,8 +329,14 @@ function isOpening() {
 				}
 			});
 		}
-	} else wjs("#webchimera").setOpeningText("Prebuffering");
-	
+	} else {
+		wjs("#webchimera").setOpeningText("Prebuffering");
+		win.title = getName(powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["filename"]);
+		powGlobals["filename"] = powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["filename"];
+		powGlobals["path"] = powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["path"];
+		delete powGlobals["fileHash"];
+		doSubsLocal = 1;
+	}
 }
 
 function getReadableFileSizeString(fileSizeInBytes) {
@@ -1017,7 +1062,10 @@ function runURL(torLink) {
 		});
 		wjs("#webchimera").plugin.emitJsMessage("[saved-sub]"+localStorage.subLang);
 
-		win.title = getName(powGlobals["filename"]);
+		if (setOnlyFirst == 0 || setOnlyFirst == 2) {
+			if (setOnlyFirst == 2) setOnlyFirst = 1;
+			win.title = getName(powGlobals["filename"]);
+		}
 	}
 
 	wjs("#webchimera").setOpeningText("Loading resource");
