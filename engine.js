@@ -200,6 +200,10 @@ function chooseFile(name) {
 				runMultiple($(this).val().split(";"));
 			} else {
 				runURL($(this).val());
+				powGlobals["videos"] = [];
+				powGlobals["videos"][0] = [];
+				powGlobals["videos"][0]["filename"] = $(this).val().split('\\').pop();
+				powGlobals["videos"][0]["path"] = $(this).val();
 			}
 		});
 	
@@ -220,6 +224,12 @@ holder.ondrop = function (e) {
   
   if (e.dataTransfer.files.length == 1) {
 	  runURL(e.dataTransfer.files[0].path);
+	  if (e.dataTransfer.files[0].path.split('.').pop().toLowerCase() != 'torrent') {
+		powGlobals["videos"] = [];
+		powGlobals["videos"][0] = [];
+		powGlobals["videos"][0]["filename"] = e.dataTransfer.files[0].path.split('\\').pop();
+		powGlobals["videos"][0]["path"] = e.dataTransfer.files[0].path;
+	  }
   } else {
 	  var newFiles = [];
 	  for (var i = 0; i < e.dataTransfer.files.length; ++i) newFiles[i] = e.dataTransfer.files[i].path;
@@ -305,6 +315,7 @@ win.on('blur', function() { focused = false; });
 
 function isPlaying() {
 	if (doSubsLocal == 1 && typeof powGlobals["engine"] === 'undefined') {
+		wjs("#webchimera").setDownloaded(0.0000000000000000001);
 		doSubsLocal = 0;
 		clearTimeout(findHashTime);
 		findHash();
@@ -478,11 +489,9 @@ function checkDownloaded(piece) {
 	} else {
 		$("#downPart").text(getReadableFileSizeString(Math.floor(powGlobals["engine"].torrent.length)));
 	}
-//	console.log("pieces: "+powGlobals["allPieces"]);
 	updDownload = Math.floor((powGlobals["allPieces"] / (((powGlobals["engine"].torrent.length - powGlobals["engine"].torrent.lastPieceLength) / powGlobals["engine"].torrent.pieceLength) +1)) *100);
 	if (updDownload != powGlobals["lastDownload"]) {
 		powGlobals["lastDownload"] = updDownload;
-//		console.log("math: "+updDownload);
 		if (updDownload >= 100) {
 			$('#all-download .progress-bar').removeClass("progress-bar-warning").addClass("progress-bar-danger").attr('data-transitiongoal', 100).progressbar({display_text: 'center'});
 		} else {
@@ -490,14 +499,10 @@ function checkDownloaded(piece) {
 		}
 	}
 
-//console.log("hello 1");
 	for (kj = 0; typeof powGlobals["files"][kj] !== 'undefined'; kj++) {
-//console.log("hello 2");
 		if (piece >= powGlobals["files"][kj]["firstPiece"] && piece <= powGlobals["files"][kj]["lastPiece"] && piece > 0) {
-//console.log("hello 3 - piece: "+piece);
 			powGlobals["files"][kj]["downloaded"]++;
 			updDownload = Math.floor((powGlobals["files"][kj]["downloaded"] / (powGlobals["files"][kj]["lastPiece"] - powGlobals["files"][kj]["firstPiece"])) *100);
-//			console.log("math for file "+kj+": "+updDownload+" / "+powGlobals["files"][kj]["lastDownload"]);
 			if (updDownload != powGlobals["files"][kj]["lastDownload"]) {
 				newFileSize = Math.floor(powGlobals["files"][kj]["length"] * (updDownload /100));
 				if (newFileSize > powGlobals["files"][kj]["length"]) {
@@ -505,7 +510,6 @@ function checkDownloaded(piece) {
 				} else {
 					$("#down-fl"+kj).text(getReadableFileSizeString(Math.floor(powGlobals["files"][kj]["length"] * (updDownload /100))));
 				}
-//	console.log("hello 5");
 				powGlobals["files"][kj]["lastDownload"] = updDownload;
 				if (updDownload >= 100) {
 					$("#action"+kj).removeClass("pause").addClass("settings").attr("onClick","settingsEl("+kj+")");
@@ -516,8 +520,6 @@ function checkDownloaded(piece) {
 			}
 		}
 	}
-
-//	console.log("checked Download");
 }
 
 var onmagnet = function () {
@@ -612,7 +614,6 @@ function handle(event) {
 			localStorage.subLang = saveSub;
 		}
 	} else if (event == "[torrent-data]") {
-//		window.scrollTo(0, $("#player_wrapper").height());
 		if (wjs("#webchimera").plugin.fullscreen) wjs("#webchimera").plugin.fullscreen = false;
 		$("#filesList").css("min-height",$("#player_wrapper").height());
 		$("html, body").animate({ scrollTop: $("#player_wrapper").height() }, "slow");
@@ -669,20 +670,17 @@ function getLength() {
 		if (exists) {
 			probe(powGlobals["path"], function(err, probeData) {
 				if (typeof probeData !== 'undefined') {
-					if (typeof powGlobals["engine"] !== 'undefined') {
-//						console.log(probeData);
+					if (typeof powGlobals["engine"] === 'undefined') {
 						powGlobals["duration"] = Math.round(probeData.format.duration *1000);
 						altLength = probeData.format.size;
 						
 						clearTimeout(findHashTime);
 						findHash();
-						
-//						wjs("#webchimera").setTotalLength(Math.round(powGlobals["newLength"] *1000));
 					} else {
 						globalOldLength = powGlobals["newLength"];
 						powGlobals["newLength"] = probeData.format.duration;
 						if (globalOldLength != powGlobals["newLength"]) {
-							setTimeout(function() { getLength(); },60000);
+							setTimeout(function() { getLength(); },30000);
 						} else {
 							if (powGlobals["newLength"] < 1200) {
 								setTimeout(function() { getLength(); },60000);
@@ -710,7 +708,7 @@ function fileExists() {
 	if (typeof powGlobals["duration"] === 'undefined') {
 		fs.exists(""+powGlobals["path"], function(exists) {
 			if (exists) {
-				if (wjs("#webchimera").plugin.time > 60000) {
+				if (wjs("#webchimera").plugin.time > 30000) {
 					getLength();
 				} else setTimeout(function() { fileExists(); },30000);
 			} else setTimeout(function() { fileExists(); },30000);
@@ -768,9 +766,6 @@ function subtitlesByExactHash(hash,fileSize,tag) {
 					var howMany = [];
 					var theSubs = [];
 									
-//					console.log("found hash");
-//					console.log(results);
-									
 					for (i = 0; typeof results[i] !== 'undefined'; i++) {
 						if (results[i]["SubFormat"].toLowerCase() == "srt" || results[i]["SubFormat"].toLowerCase() == "sub") {
 							subLang = results[i]["LanguageName"];
@@ -808,7 +803,6 @@ function subtitlesByExactHash(hash,fileSize,tag) {
 					wjs("#webchimera").plugin.playlist.items[wjs("#webchimera").plugin.playlist.currentItem].setting = JSON.stringify(newSettings);
 					wjs("#webchimera").plugin.emitJsMessage("[refresh-subtitles]");
 				} else {
-//					console.log("wrong hash, trying again");
 					delete powGlobals["fileHash"];
 					if (typeof powGlobals["engine"] === 'undefined') {
 						clearTimeout(findHashTime);
@@ -1100,10 +1094,6 @@ function runURL(torLink) {
 }
 if (gui.App.argv.length > 0) {
 	runURL(gui.App.argv[0]);
-//	console.log("argv: "+gui.App.argv[0]);
-//	for (i = 0; typeof gui.App.argv[i] !== 'undefined'; i++) {
-// only first argument supported atm		
-//	}
 } else {
 	win.on('loaded', function() { $('#main').animate({ opacity: 1 },200, function() {
 		$("body").css("overflow-x","visible");
@@ -1114,8 +1104,3 @@ if (gui.App.argv.length > 0) {
 	});
 	});
 }
-
-//gui.App.on('open', function(dataInfo) {
-//	console.log("open: "+dataInfo.split(" ")[1]);
-//	runUrl(dataInfo.split(" ")[1]);
-//});

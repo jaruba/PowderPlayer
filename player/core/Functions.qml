@@ -631,6 +631,7 @@ Rectangle {
 			vlcPlayer.playlist.play();
 		}
 		vlcPlayer.position = lastPos;
+		settings.newProgress = lastPos;
 
 		settings.dragging = false;
 	}
