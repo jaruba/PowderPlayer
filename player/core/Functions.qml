@@ -402,6 +402,7 @@ Rectangle {
 				}
 				if (settings.autoplay == 1 && vlcPlayer.state == 0 && vlcPlayer.playlist.itemCount > 0) vlcPlayer.playlist.playItem(0); 
 			}
+			if (startsWith(message,"[clear-subtitles]")) subMenu.clearAll();
 			if (startsWith(message,"[refresh-subtitles]")) {
 				var itemSettings = {};
 				if (isJson(vlcPlayer.playlist.items[vlcPlayer.playlist.currentItem].setting)) itemSettings = JSON.parse(vlcPlayer.playlist.items[vlcPlayer.playlist.currentItem].setting);

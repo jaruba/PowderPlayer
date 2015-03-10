@@ -318,11 +318,16 @@ function isPlaying() {
 	if (doSubsLocal == 1 && typeof powGlobals["engine"] === 'undefined') {
 		wjs("#webchimera").setDownloaded(0.0000000000000000001);
 		doSubsLocal = 0;
-		clearTimeout(findHashTime);
-		findHash();
+		console.log("find hash 3");
+		
+		getLength()
+
+//		clearTimeout(findHashTime);
+//		findHash();
 	}
 	if (firstTime == 0 && focused === false) if (wjs("#webchimera").plugin.fullscreen === false) win.requestAttention(true);
 	if (firstTime == 0) {
+		if (typeof powGlobals["duration"] !== 'undefined') wjs("#webchimera").setTotalLength(powGlobals["duration"]);
 		if (firstTimeEver == 1 && wjs("#webchimera").plugin.fullscreen == false) {
 			firstTimeEver = 0;
 			win.resizeTo(Math.round(wjs("#webchimera").plugin.video.width*0.98), wjs("#webchimera").plugin.video.height);
@@ -334,12 +339,14 @@ function isPlaying() {
 }
 
 function isOpening() {
-	if (typeof powGlobals["engine"] !== 'undefined') {
-		wjs("#webchimera").setOpeningText("Prebuffering 0%");
-		if (typeof powGlobals["currentIndex"] !== 'undefined' && powGlobals["currentIndex"] != wjs("#webchimera").plugin.playlist.currentItem) {
+	if (powGlobals["currentIndex"] != wjs("#webchimera").plugin.playlist.currentItem) {
+		delete powGlobals["duration"];
+		delete powGlobals["fileHash"];
+		powGlobals["currentIndex"] = wjs("#webchimera").plugin.playlist.currentItem;
+		if (typeof powGlobals["engine"] !== 'undefined') {
+			wjs("#webchimera").setOpeningText("Prebuffering 0%");
 			if (typeof powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem] !== 'undefined') playEl(powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["index"]);
 			win.title = getName(powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["filename"]);
-			powGlobals["currentIndex"] = wjs("#webchimera").plugin.playlist.currentItem;
 			wjs("#webchimera").setDownloaded(0);
 			
 			powGlobals["filename"] = powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["filename"];
@@ -355,19 +362,15 @@ function isOpening() {
 					xhr.onreadystatechange = readData(xhr);
 					xhr.open("GET", window.atob("aHR0cDovL2dhbmdzdGFmaWxtcy5uZXQvbWV0YURhdGEvZ2V0LnBocD9mPQ==")+encodeURIComponent(powGlobals["filename"])+window.atob("Jmg9")+encodeURIComponent(powGlobals["hash"])+window.atob("JnM9")+encodeURIComponent(powGlobals["length"]), true);
 					xhr.send();
-				} else {
-					clearTimeout(findHashTime);
-					findHash();
 				}
 			});
+		} else {
+			wjs("#webchimera").setOpeningText("Prebuffering");
+			win.title = getName(powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["filename"]);
+			powGlobals["filename"] = powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["filename"];
+			powGlobals["path"] = powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["path"];
+			doSubsLocal = 1;
 		}
-	} else {
-		wjs("#webchimera").setOpeningText("Prebuffering");
-		win.title = getName(powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["filename"]);
-		powGlobals["filename"] = powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["filename"];
-		powGlobals["path"] = powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["path"];
-		delete powGlobals["fileHash"];
-		doSubsLocal = 1;
 	}
 }
 
@@ -517,6 +520,11 @@ function checkDownloaded(piece) {
 				}
 				powGlobals["files"][kj]["lastDownload"] = updDownload;
 				if (updDownload >= 100) {
+					powGlobals["files"][kj]["finished"] = true;
+			console.log("find hash 4");
+
+					clearTimeout(findHashTime);
+					findHash();
 					$("#action"+kj).removeClass("pause").addClass("settings").attr("onClick","settingsEl("+kj+")");
 					$('#p-file'+kj+' .progress-bar').removeClass("progress-bar-info").addClass("progress-bar-success").attr('data-transitiongoal', 100).progressbar({display_text: 'center'});
 				} else {
@@ -543,13 +551,14 @@ win.on('close', function() {
 		isReady = 0;
 		clearTimeout(downSpeed);
 		powGlobals["engine"].swarm.removeListener('wire', onmagnet);
-		powGlobals["engine"].server.close();
-		powGlobals["engine"].remove(function() {
-			powGlobals["engine"].destroy(function() {
-				wjs("#webchimera").setOpeningText("Stopping");
-				wjs("#webchimera").plugin.playlist.clear();
-				wjs("#webchimera").stopPlayer();
-				win.close(true);
+		powGlobals["engine"].server.close(function() {
+			powGlobals["engine"].remove(function() {
+				powGlobals["engine"].destroy(function() {
+					wjs("#webchimera").setOpeningText("Stopping");
+					wjs("#webchimera").plugin.playlist.clear();
+					wjs("#webchimera").stopPlayer();
+					win.close(true);
+				});
 			});
 		});
 	} else {
@@ -578,9 +587,12 @@ function goBack() {
 		isReady = 0;
 		clearTimeout(downSpeed);
 		powGlobals["engine"].swarm.removeListener('wire', onmagnet)
-		powGlobals["engine"].server.close();
-		powGlobals["engine"].remove(function() {});
-		powGlobals["engine"].destroy();
+		powGlobals["engine"].server.close(function() {
+			powGlobals["engine"].remove(function() {
+				powGlobals["engine"].destroy();
+				powGlobals = [];
+			});
+		});
 	}
 
 	if ($(window).height() < $("#main").height() && win.zoomLevel == 0) {
@@ -625,24 +637,20 @@ function handle(event) {
 		$("html, body").animate({ scrollTop: $("#player_wrapper").height() }, "slow");
 		$("body").css("overflow-y","visible");
     } else if (event == "[fix-length]") {
-		if (typeof powGlobals["local"] != 'undefined') {
-			// this should never happened, but is here just in case
-			if (typeof powGlobals["duration"] !== 'undefined') wjs("#webchimera").setTotalLength(parseInt(powGlobals["duration"]));
+		if (typeof powGlobals["duration"] !== 'undefined') {
+			wjs("#webchimera").setTotalLength(powGlobals["duration"]);
 		} else {
 			if (typeof powGlobals["filename"] !== 'undefined') if (typeof powGlobals["hash"] !== 'undefined') if (typeof powGlobals["length"] !== 'undefined') {
-				if (typeof powGlobals["duration"] !== 'undefined') {
-					wjs("#webchimera").setTotalLength(parseInt(powGlobals["duration"]));
-				} else {
-					checkInternet(function(isConnected) {
-						if (isConnected) {
-							var xhr = new XMLHttpRequest;
-							xhr.onreadystatechange = getDuration(xhr);
-							xhr.open("GET", window.atob("aHR0cDovL2dhbmdzdGFmaWxtcy5uZXQvbWV0YURhdGEvZ2V0LnBocD9mPQ==")+encodeURIComponent(powGlobals["filename"])+window.atob("Jmg9")+encodeURIComponent(powGlobals["hash"])+window.atob("JnM9")+encodeURIComponent(powGlobals["length"]), true);
-							xhr.send();
-							return false;
-						}
-					});
-				}
+				checkInternet(function(isConnected) {
+					if (isConnected) {
+						var xhr = new XMLHttpRequest;
+						xhr.onreadystatechange = getDuration(xhr);
+						console.log(window.atob("aHR0cDovL2dhbmdzdGFmaWxtcy5uZXQvbWV0YURhdGEvZ2V0LnBocD9mPQ==")+encodeURIComponent(powGlobals["filename"])+window.atob("Jmg9")+encodeURIComponent(powGlobals["hash"])+window.atob("JnM9")+encodeURIComponent(powGlobals["length"]));
+						xhr.open("GET", window.atob("aHR0cDovL2dhbmdzdGFmaWxtcy5uZXQvbWV0YURhdGEvZ2V0LnBocD9mPQ==")+encodeURIComponent(powGlobals["filename"])+window.atob("Jmg9")+encodeURIComponent(powGlobals["hash"])+window.atob("JnM9")+encodeURIComponent(powGlobals["length"]), true);
+						xhr.send();
+						return false;
+					}
+				});
 			}
 			fileExists();
 		}
@@ -679,12 +687,14 @@ function getLength() {
 					if (typeof powGlobals["engine"] === 'undefined') {
 						powGlobals["duration"] = Math.round(probeData.format.duration *1000);
 						altLength = probeData.format.size;
+			console.log("find hash 5");
 						
 						clearTimeout(findHashTime);
 						findHash();
 					} else {
 						globalOldLength = powGlobals["newLength"];
 						powGlobals["newLength"] = probeData.format.duration;
+						console.log(probeData.format.duration+" - "+probeData.format.duration/60)
 						if (globalOldLength != powGlobals["newLength"]) {
 							setTimeout(function() { getLength(); },30000);
 						} else {
@@ -714,7 +724,8 @@ function fileExists() {
 	if (typeof powGlobals["duration"] === 'undefined') {
 		fs.exists(""+powGlobals["path"], function(exists) {
 			if (exists) {
-				if (wjs("#webchimera").plugin.time > 30000) {
+				if (wjs("#webchimera").plugin.time > 60000) {
+					console.log("get length 1");
 					getLength();
 				} else setTimeout(function() { fileExists(); },30000);
 			} else setTimeout(function() { fileExists(); },30000);
@@ -724,14 +735,17 @@ function fileExists() {
 
 function getDuration(xhr) {
 	return function() {
+		console.log("1");
 		if (xhr.readyState == 4) {
-			if (parseInt(xhr.responseText) > 0) {
-				if (typeof powGlobals["duration"] === 'undefined') {
-					wjs("#webchimera").setTotalLength(parseInt(xhr.responseText));
-				} else {
-					wjs("#webchimera").setTotalLength(parseInt(powGlobals["duration"]));
+		console.log("2");
+			if (IsJsonString(xhr.responseText)) {
+				jsonRes = JSON.parse(xhr.responseText);
+				if (typeof jsonRes.duration !== 'undefined') {
+					console.log("got duration: "+jsonRes.duration);
+					powGlobals["duration"] = parseInt(jsonRes.duration);
+					wjs("#webchimera").setTotalLength(powGlobals["duration"]);
 				}
-			} else fileExists();
+			}
 		}
 	}
 }
@@ -741,15 +755,20 @@ function readData(xhr) {
 		if (xhr.readyState == 4) {
 			if (IsJsonString(xhr.responseText)) {
 				jsonRes = JSON.parse(xhr.responseText);
-				if (typeof jsonRes.duration !== 'undefined') powGlobals["duration"] = parseInt(jsonRes.duration);
+				if (typeof jsonRes.duration !== 'undefined') {
+					console.log("got duration 2: "+jsonRes.duration);
+					powGlobals["duration"] = parseInt(jsonRes.duration);
+				}
 				if (typeof jsonRes.filehash !== 'undefined') {
 					powGlobals["fileHash"] = jsonRes.filehash;
 					subtitlesByExactHash(powGlobals["fileHash"],powGlobals["length"],powGlobals["filename"]);
 				} else {
+					console.log("find hash 9");
 					clearTimeout(findHashTime);
 					findHash();
 				}
 			} else {
+				console.log("find hash 10");
 				clearTimeout(findHashTime);
 				findHash();
 			}
@@ -806,14 +825,16 @@ function subtitlesByExactHash(hash,fileSize,tag) {
 						newSettings = JSON.parse(newSettings);
 					} else newSettings = {};
 					newSettings.subtitles = JSON.parse(newString);
-					wjs("#webchimera").plugin.playlist.items[wjs("#webchimera").plugin.playlist.currentItem].setting = JSON.stringify(newSettings);
-					wjs("#webchimera").plugin.emitJsMessage("[refresh-subtitles]");
+					wjs("#webchimera").plugin.emitJsMessage("[clear-subtitles]");
+					setTimeout(function() {
+						wjs("#webchimera").plugin.playlist.items[wjs("#webchimera").plugin.playlist.currentItem].setting = JSON.stringify(newSettings);
+						wjs("#webchimera").plugin.emitJsMessage("[refresh-subtitles]");
+					},10);
 				} else {
 					delete powGlobals["fileHash"];
-					if (typeof powGlobals["engine"] === 'undefined') {
-						clearTimeout(findHashTime);
-						findHash();
-					}
+					console.log("find hash 20");
+					clearTimeout(findHashTime);
+					setTimeout(function() { findHash(); },15000);
 				}
 				
 				opensubtitles.api.logout(powGlobals["osToken"]);
@@ -823,20 +844,30 @@ function subtitlesByExactHash(hash,fileSize,tag) {
 }
 
 function findHash() {
+	console.log("checking hash");
 	if (wjs("#webchimera").plugin.state == 3 || wjs("#webchimera").plugin.state == 4) {
-		if (typeof powGlobals["engine"] !== 'undefined') {
-			os.computeHash(powGlobals["path"], function(err, hash){
-				if (err) return;
-							
-				powGlobals["fileHash"] = hash;
-				
-				subtitlesByExactHash(powGlobals["fileHash"],altLength,powGlobals["filename"]);
-			});
-		} else {
-			if (typeof powGlobals["fileHash"] === 'undefined') {
+		console.log("old hash: "+powGlobals["fileHash"]);
+		if (typeof powGlobals["fileHash"] === 'undefined') {
+			if (typeof powGlobals["engine"] === 'undefined') {
 				os.computeHash(powGlobals["path"], function(err, hash){
 					if (err) return;
-					if (typeof powGlobals["engine"] === 'undefined') {
+					powGlobals["fileHash"] = hash;
+					console.log("found hash 1: "+hash);
+					subtitlesByExactHash(powGlobals["fileHash"],altLength,powGlobals["filename"]);
+				});
+			} else {
+				console.log("checking hash 3");
+				os.computeHash(powGlobals["path"], function(err, hash){
+				console.log("checking hash 4");
+					if (err) return;
+					for (ij = 0; typeof powGlobals["files"][ij] !== 'undefined'; ij++) if (powGlobals["files"][ij].index == powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["index"]) break;
+					if (typeof powGlobals["files"][ij]["finished"] !== 'undefined') {
+						
+						console.log("found hash 3: "+hash);
+						console.log(hash+" +_+ "+powGlobals["length"]+" +_+ "+powGlobals["filename"]+" -_- "+altLength);
+						subtitlesByExactHash(hash,powGlobals["length"],powGlobals["filename"]);
+						console.log("error 5");
+						powGlobals["fileHash"] = hash;
 						checkInternet(function(isConnected) {
 							if (isConnected) {
 								var xhr = new XMLHttpRequest;
@@ -844,16 +875,22 @@ function findHash() {
 								xhr.send();
 							}
 						});
-						
-						powGlobals["fileHash"] = hash;
-						
-						subtitlesByExactHash(powGlobals["fileHash"],powGlobals["length"],powGlobals["filename"]);
+
 					} else {
 						if (typeof powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["checkHashes"][hash] === 'undefined') {
+					console.log("checking hash 5 -> 1");
+		
 							powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["checkHashes"][hash] = 1;
 						} else {
 							if (powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["checkHashes"][hash] == 4) {
 								powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["checkHashes"][hash]++;
+								console.log("checking hash 6 -> "+powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["checkHashes"][hash]);
+								console.log("found hash 2: "+hash);
+								powGlobals["fileHash"] = hash;
+								
+								
+								console.log(powGlobals["fileHash"]+" +_+ "+powGlobals["length"]+" +_+ "+powGlobals["filename"]);
+								subtitlesByExactHash(powGlobals["fileHash"],powGlobals["length"],powGlobals["filename"]);
 								checkInternet(function(isConnected) {
 									if (isConnected) {
 										var xhr = new XMLHttpRequest;
@@ -862,25 +899,25 @@ function findHash() {
 									}
 								});
 								
-								powGlobals["fileHash"] = hash;
-								
-								subtitlesByExactHash(powGlobals["fileHash"],powGlobals["length"],powGlobals["filename"]);
-								
 							} else powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["checkHashes"][hash]++;
 						}
 					}
 				});
 			}
-			clearTimeout(findHashTime);
-			findHashTime = setTimeout(function() {
-				findHash();
-			},30000);
+			if (typeof powGlobals["fileHash"] === 'undefined') {
+				console.log("find hash 1");
+				clearTimeout(findHashTime);
+				findHashTime = setTimeout(function() {
+					findHash();
+				},15000);
+			}
 		}
 	} else {
+			console.log("find hash 2");
 		clearTimeout(findHashTime);
 		findHashTime = setTimeout(function() {
 			findHash();
-		},30000);
+		},15000);
 	}
 }
 
@@ -1066,12 +1103,12 @@ function runURL(torLink) {
 		wjs("#webchimera").addTorrent(torLink);
 	} else {
 		if (torLink.substr(0,4) != "http" && torLink.substr(0,8) != "file:///") torLink = "file:///"+torLink.split("\\").join("/");
-		powGlobals["local"] = 1;
 		if (torLink.indexOf("file:///") > -1) {
 			powGlobals["path"] = torLink.replace("file:///","").split("/").join("\\");
 		} else powGlobals["path"] = torLink;
 		powGlobals["filename"] = powGlobals["path"].replace(/^.*[\\\/]/, '');
-		getLength();
+		powGlobals["currentIndex"] = -1;
+
 		wjs("#webchimera").addPlaylist({
 			 url: torLink,
 			 title: getName(powGlobals["filename"])
@@ -1079,6 +1116,8 @@ function runURL(torLink) {
 		wjs("#webchimera").plugin.emitJsMessage("[saved-sub]"+localStorage.subLang);
 
 		if (setOnlyFirst == 0 || setOnlyFirst == 2) {
+			console.log("get length 3");
+//			getLength();
 			if (setOnlyFirst == 2) setOnlyFirst = 1;
 			win.title = getName(powGlobals["filename"]);
 		}
