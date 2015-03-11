@@ -10,7 +10,7 @@ Rectangle {
 
 	id: root
 	anchors.fill: parent
-	visible: vlcPlayer.state < 3 ? true : goneBack == 1 ? true : false
+	visible: vlcPlayer.state < 3 || vlcPlayer.state == 5 ? true : goneBack == 1 ? true : false
 	// If Playlist is Open Show Top Text
 	Text {
 		id: openingtext
