@@ -310,6 +310,7 @@ var prebuf = 0;
 var focused = true;
 var findHashTime;
 var doSubsLocal = 0;
+var peerInterval;
 
 win.on('focus', function() { focused = true; }); 
 win.on('blur', function() { focused = false; }); 
@@ -408,6 +409,7 @@ function getName(filename) {
 }
 
 function playEl(kj) {
+	if (powGlobals["engine"].swarm.wires.length < 5) powGlobals["engine"].discover();
 	if ($("#action"+kj).hasClass("play")) $("#action"+kj).removeClass("play").addClass("pause").css("background-color","#F6BC24").attr("onClick","pauseEl("+kj+")");
 	powGlobals["engine"].files[powGlobals["files"][kj].index].select();
 }
@@ -535,7 +537,7 @@ function checkDownloaded(piece) {
 	}
 }
 
-var onmagnet = function () {
+function peerCheck() {
 	if (powGlobals["engine"].swarm.wires.length > 0) {
 		if (isReady == 0) {
 			powGlobals["seeds"] = powGlobals["engine"].swarm.wires.length;
@@ -543,6 +545,10 @@ var onmagnet = function () {
 		}
 	}
 	$("#nrPeers").text(powGlobals["engine"].swarm.wires.length);
+}
+
+var onmagnet = function () {
+	peerCheck();
 }
 
 win.on('close', function() {
@@ -571,6 +577,7 @@ win.on('close', function() {
 });
 
 function goBack() {
+	if (typeof peerInterval !== 'undefined') clearInterval(peerInterval);
 	wjs("#webchimera").setOpeningText("Stopping");
 	wjs("#webchimera").plugin.emitJsMessage("[tor-data-but]0");
 	$("#header_container").css("display","none");
@@ -942,7 +949,8 @@ wjs.init.prototype.addTorrent = function(torLink) {
 			});
 		}
 						
-		powGlobals["engine"].swarm.on('wire', onmagnet)
+		powGlobals["engine"].swarm.on('wire', onmagnet);
+		peerInterval = setInterval(function(){ peerCheck() }, 2000);
 		
 		powGlobals["engine"].server.on('listening', function () {
 			
