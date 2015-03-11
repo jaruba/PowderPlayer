@@ -367,10 +367,12 @@ function isOpening() {
 			});
 		} else {
 			wjs("#webchimera").setOpeningText("Prebuffering");
-			win.title = getName(powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["filename"]);
-			powGlobals["filename"] = powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["filename"];
-			powGlobals["path"] = powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["path"];
-			doSubsLocal = 1;
+			if (wjs("#webchimera").plugin.playlist.currentItem > -1) {
+				win.title = getName(powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["filename"]);
+				powGlobals["filename"] = powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["filename"];
+				powGlobals["path"] = powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["path"];
+				doSubsLocal = 1;
+			}
 		}
 	}
 }
