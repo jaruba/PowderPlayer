@@ -139,90 +139,7 @@ Rectangle {
 	function onState() {
 		if (vlcPlayer.state == 1) {
 			buftext.changeText = "Opening";
-			
-			goneBack = 0;
-			
-			// Reset properties related to .setTotalLength()
-			var changedSettings = false;
-			if (settings.customLength > 0) {
-				settings.customLength = 0;
-				changedSettings = true;
-			}
-			if (settings.newProgress > 0) {
-				settings.newProgress = 0;
-				changedSettings = true;
-			}
-			settings.oldLength = 0;
-			settings.errorLength = 0;
-			
-			if (changedSettings) settings = settings;
-			delete changedSettings;	
-					
-			// end Reset properties related to .setTotalLength()
-	
-			if (lastItem != vlcPlayer.playlist.currentItem) {
-				if (lastItem == -1) lastItem = 0;
-		
-				// remove previous subtitles
-				subMenublock.visible = false;
-				settings.subtitlemenu = false;
-				subMenu.clearAll();
-				subButton.visible = false;
-				// end remove previous subtitles
-						
-				var itemSettings = {};
-		
-				if (vlcPlayer.playlist.items[vlcPlayer.playlist.currentItem].setting) itemSettings = JSON.parse(vlcPlayer.playlist.items[vlcPlayer.playlist.currentItem].setting);
-	
-				if (typeof itemSettings !== 'undefined') {
-					if (typeof itemSettings.art !== 'undefined' && typeof itemSettings.art === 'string') {
-						videoSource.visible = false;
-						artwork.source = itemSettings.art;
-						artwork.visible = true;
-					} else {
-						artwork.source = "";
-						artwork.visible = false;
-						videoSource.visible = true;			
-					}
-					if (typeof itemSettings.aspectRatio !== 'undefined' && typeof itemSettings.aspectRatio === 'string') {
-						var kl = 0;
-						for (kl = 0; typeof settings.aspectRatios[kl] !== 'undefined'; kl++) if (settings.aspectRatios[kl] == itemSettings.aspectRatio) {
-							settings.curAspect = settings.aspectRatios[kl];
-							if (settings.curAspect == "Default") {
-								videoSource.fillMode = VlcVideoSurface.PreserveAspectFit;
-								videoSource.width = videoSource.parent.width;
-								videoSource.height = videoSource.parent.height;
-							} else changeAspect(settings.curAspect,"ratio");
-							break;
-						}
-					} else if (vlcPlayer.playlist.currentItem > 0) {
-						videoSource.fillMode = VlcVideoSurface.PreserveAspectFit;
-						videoSource.width = videoSource.parent.width;
-						videoSource.height = videoSource.parent.height;
-						settings.curAspect = settings.aspectRatios[0];
-					}
-					if (typeof itemSettings.crop !== 'undefined' && typeof itemSettings.crop === 'string') {
-						var kl = 0;
-						for (kl = 0; typeof settings.crops[kl] !== 'undefined'; kl++) if (settings.crops[kl] == itemSettings.crop) {
-							settings.curCrop = settings.crops[kl];
-							if (settings.curCrop == "Default") {
-								videoSource.fillMode = VlcVideoSurface.PreserveAspectFit;
-								videoSource.width = videoSource.parent.width;
-								videoSource.height = videoSource.parent.height;
-								settings.curCrop = settings.crops[0];
-							} else {
-								changeAspect(settings.curCrop,"crop");
-							}
-							break;
-						}
-					} else if (vlcPlayer.playlist.currentItem > 0) {
-						videoSource.fillMode = VlcVideoSurface.PreserveAspectFit;
-						videoSource.width = videoSource.parent.width;
-						videoSource.height = videoSource.parent.height;
-						settings.curCrop = settings.crops[0];
-					}
-				}
-			}
+			if (lastItem != vlcPlayer.playlist.currentItem) onVideoChanged();
 		}
 		
 		// Load Internal and External Subtitles (when playback starts)
@@ -268,7 +185,7 @@ Rectangle {
 		if (typeof settings !== 'undefined' && typeof vlcPlayer.playlist.items[vlcPlayer.playlist.currentItem] !== 'undefined' && settings.title != vlcPlayer.playlist.items[vlcPlayer.playlist.currentItem].title.replace("[custom]","")) settings.title = vlcPlayer.playlist.items[vlcPlayer.playlist.currentItem].title.replace("[custom]","");
 	}
 	// End on State Changed
-	
+		
 	// Start on QML Loaded
 	function onQmlLoaded() {
 		settings.curAspect = settings.aspectRatios[0];
@@ -276,6 +193,7 @@ Rectangle {
 	
 		vlcPlayer.onMediaPlayerBuffering.connect( onBuffering ); // Set Buffering Event Handler
 		vlcPlayer.onMediaPlayerTimeChanged.connect( onTime ); // Set Time Changed Event Handler
+		vlcPlayer.onMediaPlayerMediaChanged.connect( onVideoChanged ); // Set Video Changed Event Handler
 		vlcPlayer.onStateChanged.connect( onState ); // Set State Changed Event Handler
 		
 		plugin.jsMessage.connect( onMessage ); // Catch On Page JS Messages
@@ -442,6 +360,92 @@ Rectangle {
 		
 	}
 	// End Check On Page JS Message
+	
+	function onVideoChanged() {			
+		goneBack = 0;
+		
+		// Reset properties related to .setTotalLength()
+		var changedSettings = false;
+		if (settings.customLength > 0) {
+			settings.customLength = 0;
+			changedSettings = true;
+		}
+		if (settings.newProgress > 0) {
+			settings.newProgress = 0;
+			changedSettings = true;
+		}
+		settings.oldLength = 0;
+		settings.errorLength = 0;
+		
+		if (changedSettings) settings = settings;
+		delete changedSettings;	
+				
+		// end Reset properties related to .setTotalLength()
+
+		if (lastItem != vlcPlayer.playlist.currentItem) {
+			if (lastItem == -1) lastItem = 0;
+	
+			// remove previous subtitles
+			subMenublock.visible = false;
+			settings.subtitlemenu = false;
+			subMenu.clearAll();
+			subButton.visible = false;
+			// end remove previous subtitles
+					
+			var itemSettings = {};
+	
+			if (vlcPlayer.playlist.items[vlcPlayer.playlist.currentItem].setting) itemSettings = JSON.parse(vlcPlayer.playlist.items[vlcPlayer.playlist.currentItem].setting);
+
+			if (typeof itemSettings !== 'undefined') {
+				if (typeof itemSettings.art !== 'undefined' && typeof itemSettings.art === 'string') {
+					videoSource.visible = false;
+					artwork.source = itemSettings.art;
+					artwork.visible = true;
+				} else {
+					artwork.source = "";
+					artwork.visible = false;
+					videoSource.visible = true;			
+				}
+				if (typeof itemSettings.aspectRatio !== 'undefined' && typeof itemSettings.aspectRatio === 'string') {
+					var kl = 0;
+					for (kl = 0; typeof settings.aspectRatios[kl] !== 'undefined'; kl++) if (settings.aspectRatios[kl] == itemSettings.aspectRatio) {
+						settings.curAspect = settings.aspectRatios[kl];
+						if (settings.curAspect == "Default") {
+							videoSource.fillMode = VlcVideoSurface.PreserveAspectFit;
+							videoSource.width = videoSource.parent.width;
+							videoSource.height = videoSource.parent.height;
+						} else changeAspect(settings.curAspect,"ratio");
+						break;
+					}
+				} else if (vlcPlayer.playlist.currentItem > 0) {
+					videoSource.fillMode = VlcVideoSurface.PreserveAspectFit;
+					videoSource.width = videoSource.parent.width;
+					videoSource.height = videoSource.parent.height;
+					settings.curAspect = settings.aspectRatios[0];
+				}
+				if (typeof itemSettings.crop !== 'undefined' && typeof itemSettings.crop === 'string') {
+					var kl = 0;
+					for (kl = 0; typeof settings.crops[kl] !== 'undefined'; kl++) if (settings.crops[kl] == itemSettings.crop) {
+						settings.curCrop = settings.crops[kl];
+						if (settings.curCrop == "Default") {
+							videoSource.fillMode = VlcVideoSurface.PreserveAspectFit;
+							videoSource.width = videoSource.parent.width;
+							videoSource.height = videoSource.parent.height;
+							settings.curCrop = settings.crops[0];
+						} else {
+							changeAspect(settings.curCrop,"crop");
+						}
+						break;
+					}
+				} else if (vlcPlayer.playlist.currentItem > 0) {
+					videoSource.fillMode = VlcVideoSurface.PreserveAspectFit;
+					videoSource.width = videoSource.parent.width;
+					videoSource.height = videoSource.parent.height;
+					settings.curCrop = settings.crops[0];
+				}
+			}
+		}
+	}
 	
 	// END EVENT FUNCTIONS
 	
