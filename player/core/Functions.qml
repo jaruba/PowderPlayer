@@ -473,7 +473,7 @@ Rectangle {
 	
 	// Refresh Mute Icon
 	function refreshMuteIcon() {
-		volheat.volume = (vlcPlayer.volume /200) * (volheat.width -4);
+		volheat.volume = vlcPlayer.audio.mute ? 0 : (vlcPlayer.volume /200) * (volheat.width -4);
 		mutebut.icon = vlcPlayer.state == 0 ? ui.icon.volume.medium : vlcPlayer.position == 0 && vlcPlayer.playlist.currentItem == 0 ? settings.automute == 0 ? ui.icon.volume.medium : ui.icon.mute : vlcPlayer.audio.mute ? ui.icon.mute : vlcPlayer.volume == 0 ? ui.icon.mute : vlcPlayer.volume <= 30 ? ui.icon.volume.low : vlcPlayer.volume > 30 && vlcPlayer.volume <= 134 ? ui.icon.volume.medium : ui.icon.volume.high
 	}
 	// End Refresh Mute Icon
@@ -604,6 +604,7 @@ Rectangle {
 			vlcPlayer.volume = 200;
 			volheat.volume = 116;
 		}
+		if (vlcPlayer.audio.mute) vlcPlayer.audio.mute = false;
 		refreshMuteIcon();
 	}
 	function hoverVolume(mouseX,mouseY) {
