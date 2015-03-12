@@ -90,7 +90,7 @@ $.fn.scrollEnd = function(callback, timeout) {
 };
 
 $(window).scrollEnd(function(){
-    if ($(document).scrollTop() == 0) {
+    if ($(document).scrollTop() == 0) if (typeof powGlobals["engine"] !== 'undefined') if (powGlobals["hasVideo"] > 0) {
 		if ($("body").css("overflow-y") == "visible" || $("body").css("overflow-y") == "auto") $("body").css("overflow-y","hidden");
 		if (wjs("#webchimera").plugin.playing === false) wjs("#webchimera").plugin.togglePause();
 	}
@@ -584,7 +584,7 @@ function goBack() {
 	pitem["#webchimera"] = 0;
 	wjs("#webchimera").setDownloaded(0);
 	if (parseInt($("#main").css("opacity")) == 0) $("#main").css("opacity","1");
-	$('#main').css("display","table");
+	$('#main').css("display","table");	
 	if (typeof powGlobals["engine"] !== 'undefined') {
 		isReady = 0;
 		clearTimeout(downSpeed);
@@ -899,8 +899,16 @@ function findHash() {
 wjs.init.prototype.addTorrent = function(torLink) {
 	powGlobals["allPieces"] = 0;
 	powGlobals["lastDownload"] = 0;
-	$('.progress .progress-bar').removeClass("progress-bar-danger").addClass("progress-bar-warning").attr('data-transitiongoal', 0).progressbar({display_text: 'center'});
 	prebuf = 0;
+	
+	// reset values in Torrent Data mode
+	$('.progress .progress-bar').removeClass("progress-bar-danger").addClass("progress-bar-warning").attr('data-transitiongoal', 0).progressbar({display_text: 'center'});
+	$('#downPart').text("0 kB");
+	$('#downAll').text("0 kB");
+	$('#speed').text("0.0 kB/s");
+	$('#nrPeers').text("0");
+	// end reset values in Torrent Data mode
+
 	if (typeof torLink !== 'undefined' && (typeof torLink === 'object' || Buffer.isBuffer(torLink) || torLink.toLowerCase().match(/magnet:\?xt=urn:sha1:[a-z0-9]{20,50}/i) != null || torLink.toLowerCase().match(/magnet:\?xt=urn:btih:[a-z0-9]{20,50}/i) != null || torLink.split('.').pop().toLowerCase() == "torrent")) {
 
 		if (typeof torLink !== 'object' && Buffer.isBuffer(torLink) === false && torLink.split('.').pop().toLowerCase() == "torrent") torLink = fs.readFileSync(torLink);
@@ -1034,6 +1042,7 @@ wjs.init.prototype.addTorrent = function(torLink) {
 				wjs("#webchimera").plugin.playlist.clear();
 				wjs("#webchimera").stopPlayer();
 				$('#player_wrapper').css("min-height","1px").css("height","1px").css("width","1px");
+				$('body').css("overflow-y","visible");
 			}
 						
 			$("#filesList").append($('<div style="width: 100%; height: 79px; background-color: #f6f6f5; text-align: center; line-height: 79px; font-family: \'Droid Sans Bold\'; font-size: 19px; border-bottom: 1px solid #b5b5b5">Scroll up to Start Video Mode</div>'));
