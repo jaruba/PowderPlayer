@@ -267,7 +267,12 @@ Rectangle {
 					contextblock.close();
 				} else {
 					if (settings.multiscreen == 0) {
-						if (vlcPlayer.state != 1) wjs.isbig(); // Toggle Pause if clicked on Surface
+						// Toggle Pause if clicked on Surface
+						if (vlcPlayer.state != 1) {
+							if (fullscreen) {
+								wjs.isbig();
+							} else if (ui.settings.pausePolicy == "both") wjs.isbig();
+						}
 						if (settings.mouseevents == 1) {
 							// JavaScript Mouse Events Demo
 							sendjsdata["type"] = "mouseLeftClick";
@@ -302,7 +307,12 @@ Rectangle {
 					contextblock.open();
 				} else {
 					if (settings.multiscreen == 0) {
-						if (vlcPlayer.state != 1) wjs.isbig(); // Toggle Pause if clicked on Surface
+						// Toggle Pause if clicked on Surface
+						if (vlcPlayer.state != 1) {
+							if (fullscreen) {
+								wjs.isbig();
+							} else if (ui.settings.pausePolicy == "both") wjs.isbig();
+						}
 						if (settings.mouseevents == 1) {
 							// JavaScript Mouse Events Demo
 							sendjsdata["type"] = "mouseLeftClick";

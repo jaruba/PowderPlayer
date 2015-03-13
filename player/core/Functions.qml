@@ -60,7 +60,7 @@ Rectangle {
 	
 	// Start on Current Time Changed
 	function onTime( seconds ) {
-	
+
 		if (vlcPlayer.length == 0 && (vlcPlayer.time * (1 / vlcPlayer.position)) != settings.oldLength) {
 			if (settings.errorLength < 5) {
 				settings.oldLength = (vlcPlayer.time * (1 / vlcPlayer.position));
@@ -228,6 +228,7 @@ Rectangle {
 					settings.automute = 1;
 				}
 				if (jsonMessage["titleBar"] == "both" || jsonMessage["titleBar"] == "fullscreen" || jsonMessage["titleBar"] == "minimized" || jsonMessage["titleBar"] == "none") ui.settings.titleBar = jsonMessage["titleBar"];
+				if (jsonMessage["pausePolicy"] == "both" || jsonMessage["pausePolicy"] == "fullscreen") ui.settings.pausePolicy = jsonMessage["pausePolicy"];
 				if (jsonMessage["progressCache"] == 1 || jsonMessage["progressCache"] === true) ui.settings.caching = true;
 			}
 			if (jsonMessage["skinning"] === true) {
@@ -311,6 +312,7 @@ Rectangle {
 				// end Reset properties related to .setTotalLength()
 			}
 			if (startsWith(message,"[gobackvar]0")) goneBack = 0;
+			if (startsWith(message,"[pause-policy]")) ui.settings.pausePolicy = message.replace("[pause-policy]","");
 			if (startsWith(message,"[refresh-playlist]")) {
 				playlist.addPlaylistItems(); // Refresh Playlist GUI
 				if (vlcPlayer.playlist.itemCount > 1) {

@@ -1,8 +1,16 @@
 if (typeof localStorage.maxPeers === 'undefined') localStorage.maxPeers = 100;
 if (typeof localStorage.tmpDir === 'undefined') localStorage.tmpDir = 'Temp';
+if (typeof localStorage.libDir === 'undefined') localStorage.libDir = 'Temp';
+if (typeof localStorage.clickPause === 'undefined') localStorage.clickPause = 'fullscreen';
 $("#max-peers").text(localStorage.maxPeers);
 $("#spinner").val(localStorage.maxPeers);
 $("#def-folder").text(localStorage.tmpDir);
+if (localStorage.libDir == "Temp") {
+	$("#lib-folder").text("same as Download Folder");
+} else $("#lib-folder").text(localStorage.libDir);
+if (localStorage.clickPause == 'fullscreen') {
+	$("#click-pause").text("only in Fullscreen");
+} else $("#click-pause").text("Fullscreen + Windowed");
 
 // natural sort order function for playlist
 function alphanumCase(a, b) {
@@ -56,6 +64,18 @@ function regMagnet() {
         if (err) throw err;
         gui.Shell.openExternal(require('path').dirname(process.execPath)+'\\register-magnet.reg'); 
     });
+}
+
+function changeClickPause() {
+	if (localStorage.clickPause == 'fullscreen') {
+		$("#click-pause").text("Fullscreen + Windowed");
+		localStorage.clickPause = "both";
+		wjs("#webchimera").plugin.emitJsMessage("[pause-policy]both");
+	} else {
+		$("#click-pause").text("only in Fullscreen");
+		localStorage.clickPause = "fullscreen";
+		wjs("#webchimera").plugin.emitJsMessage("[pause-policy]fullscreen");
+	}
 }
 
 function openPeerSelector() {
@@ -193,6 +213,13 @@ function chooseFile(name) {
 			localStorage.tmpDir = $(this).val();
 		});
 		chooser.trigger('click');		
+	} else if (name == '#libraryDialog') {
+		var chooser = $(name);
+		chooser.change(function(evt) {
+			$("#lib-folder").text($(this).val());
+			localStorage.libDir = $(this).val();
+		});
+		chooser.trigger('click');		
 	} else {
 		var chooser = $(name);
 		chooser.change(function(evt) {
@@ -284,7 +311,7 @@ function runMultiple(fileArray) {
   return false;
 }
 
-wjs("#player_wrapper").addPlayer({ id: "webchimera", theme: "sleek", autoplay: 1, progressCache: 1 });
+wjs("#player_wrapper").addPlayer({ id: "webchimera", theme: "sleek", autoplay: 1, progressCache: 1, pausePolicy: localStorage.clickPause });
 
 wjs("#webchimera").catchEvent('QmlMessage', handle);
 

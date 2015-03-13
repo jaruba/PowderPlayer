@@ -341,9 +341,11 @@ You require an internet connection to use this feature.<br><br>
 <div class="third-easy-modal-animated" id="player-settings">
 <center>
 <h2 style="margin-bottom: 10px; width: 45.5%; float: left; background-color: #145D5D">Player Settings</h2><h2 class="change-set" style="margin-bottom: 10px; width: 45.5%; float: right; background-color: #458A8A; cursor: pointer" onClick="$('.third-animated-close').trigger('click'); setTimeout(function() { $('#tr-settings').trigger('click'); },1000); return false">Torrent Settings</h2><div style="clear:both"></div>
-<div onClick="regMagnet(); return false" class="actionButton">Associate with Magnet Links</div>
-<div onClick="regTorrent(); return false" class="actionButton">Associate with Torrent Files</div>
-<div onClick="regVideos(); return false" class="actionButton">Associate with Video Files</div>
+<div onClick="regMagnet(); return false" class="actionButton" style="font-family: 'Droid Sans Bold'">Associate with Magnet Links</div>
+<div onClick="regTorrent(); return false" class="actionButton" style="font-family: 'Droid Sans Bold'">Associate with Torrent Files</div>
+<div onClick="regVideos(); return false" class="actionButton" style="font-family: 'Droid Sans Bold'">Associate with Video Files</div>
+<div onClick="changeClickPause(); return false" class="actionButton" style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden"><span style="font-family: 'Droid Sans Bold'">Click to Pause:</span> <span id="click-pause">only in Fullscreen</span></div>
+<div onClick="chooseFile('#libraryDialog'); return false" class="actionButton" style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden"><span style="font-family: 'Droid Sans Bold'">Library Folder:</span> <span id="lib-folder">Temp</span></div>
 <div id="closeAction"class="third-animated-close actionButton">Close</div>
 </center>
 </div>
@@ -368,6 +370,7 @@ You require an internet connection to use this feature.<br><br>
 <input style="display:none;" id="fileDialog" type="file" accept=".m3u,video/*,audio/*" multiple />
 <input style="display:none;" id="torrentDialog" type="file" accept=".torrent" />
 <input style="display:none;" id="folderDialog" type="file" nwdirectory />
+<input style="display:none;" id="libraryDialog" type="file" nwdirectory />
 <a id="tr-settings" class="easy-modal-open" href="#torrent-settings" style="display: none">Torrent Settings</a>
 <a id="open-file-settings" class="easy-modal-open" href="#file-settings" style="display: none">File Settings</a>
 <div id="dropdown-1" class="dropdown dropdown-tip" style="font-size: 13px">
