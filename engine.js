@@ -327,6 +327,7 @@ function isPlaying() {
 		if (firstTimeEver == 1 && wjs("#webchimera").plugin.fullscreen == false) {
 			firstTimeEver = 0;
 			win.resizeTo(Math.round(wjs("#webchimera").plugin.video.width*0.98), wjs("#webchimera").plugin.video.height);
+			wjs("#webchimera").plugin.emitJsMessage("[refresh-aspect]");
 		}
 		firstTime = 1;
 		wjs("#webchimera").plugin.subtitle.track = 0;

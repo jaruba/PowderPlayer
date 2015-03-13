@@ -355,14 +355,19 @@ Rectangle {
 			if (startsWith(message,"[stop-clicked]")) settings.preventClicked[message.replace("[stop-clicked]","")] = true;
 			if (startsWith(message,"[start-clicked]")) delete settings.preventClicked[message.replace("[start-clicked]","")];
 			// end implementation for .preventDefault()
+			if (startsWith(message,"[refresh-aspect]")) resetAspect();
 		}
 		
 		
 	}
 	// End Check On Page JS Message
 	
-	function onVideoChanged() {			
+	function onVideoChanged() {
 		goneBack = 0;
+		
+		settings.curAspect = "Default";
+		settings.curCrop = "Default";
+		settings.curZoom = 0;
 		
 		// Reset properties related to .setTotalLength()
 		var changedSettings = false;
@@ -445,6 +450,12 @@ Rectangle {
 				}
 			}
 		}
+		
+		settings.curAspect = "Default";
+		settings.curCrop = "Default";
+		settings.curZoom = 0;
+		
+		resetAspect();
 	}
 	
 	// END EVENT FUNCTIONS
@@ -518,10 +529,10 @@ Rectangle {
 	
 	// Start Reset Video Layer Size When Plugin Area Changed Size ( required by togFullscreen() )
 	function onSizeChanged() {
-		if (oldRatioWidth > 0 && oldRatioHeight > 0) {
+		if ((oldRatioWidth > 0 && oldRatioHeight > 0) || (oldRatioWidth > 0 || oldRatioHeight > 0)) {
 			videoSource.width = videoSource.parent.width * oldRatioWidth;
 			videoSource.height = videoSource.parent.height * oldRatioHeight;
-		}
+		} else resetAspect();
 	}
 	// End Reset Video Layer Size When Plugin Area Changed Size ( required by togFullscreen() )
 	
@@ -853,6 +864,8 @@ Rectangle {
 	function changeZoom(newzoom) {
 		videoSource.width = videoSource.parent.width * newzoom;
 		videoSource.height = videoSource.parent.height * newzoom;
+		oldRatioWidth = videoSource.width / videoSource.parent.width;
+		oldRatioHeight = videoSource.height / videoSource.parent.height;
 	}
 	// End Change Zoom Mode
 	
@@ -893,6 +906,8 @@ Rectangle {
 			videoSource.width = width;
 			videoSource.height = height;
 		}
+		oldRatioWidth = videoSource.width / videoSource.parent.width;
+		oldRatioHeight = videoSource.height / videoSource.parent.height;
 		// End Set New Video Layer Size
 	}
 	
@@ -900,6 +915,8 @@ Rectangle {
 		videoSource.fillMode = VlcVideoSurface.PreserveAspectFit;
 		videoSource.width = videoSource.parent.width;
 		videoSource.height = videoSource.parent.height;
+		oldRatioWidth = 0;
+		oldRatioHeight = 0;
 	}
 	// End Change Aspect Ratio
 	
