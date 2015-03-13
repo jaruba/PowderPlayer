@@ -638,7 +638,36 @@ function handle(event) {
 		$("#filesList").css("min-height",$("#player_wrapper").height());
 		$("html, body").animate({ scrollTop: $("#player_wrapper").height() }, "slow");
 		$("body").css("overflow-y","visible");
-    } else if (event == "[fix-length]") {
+    } else if (event.substr(0,15) == '[playlist-swap]') {
+		var swapItems = event.replace('[playlist-swap]','').split(':');
+		if (parseInt(swapItems[1]) < 0) {
+			var tmpVideos = [];
+			for (ik = 0; typeof powGlobals["videos"][ik] !== 'undefined'; ik++) {
+				if (ik == (parseInt(swapItems[0]) + parseInt(swapItems[1]))) {
+					tmpVideos[ik] = powGlobals["videos"][parseInt(swapItems[0])];
+				} else if (ik > (parseInt(swapItems[0]) + parseInt(swapItems[1])) && ik <= parseInt(swapItems[0])) {
+					tmpVideos[ik] = powGlobals["videos"][ik-1];
+				} else {
+					tmpVideos[ik] = powGlobals["videos"][ik];
+				}
+			}
+			setTimeout(function() { powGlobals["currentIndex"] = wjs("#webchimera").plugin.playlist.currentItem; },10);
+			powGlobals["videos"] = tmpVideos;
+		} else if (parseInt(swapItems[1]) > 1) {
+			var tmpVideos = [];
+			for (ik = 0; typeof powGlobals["videos"][ik] !== 'undefined'; ik++) {
+				if (ik == parseInt(swapItems[0]) + parseInt(swapItems[1])) {
+					tmpVideos[ik] = powGlobals["videos"][parseInt(swapItems[0])];
+				} else if (ik >= parseInt(swapItems[0]) && ik < (parseInt(swapItems[0]) + parseInt(swapItems[1]))) {
+					tmpVideos[ik] = powGlobals["videos"][ik+1];
+				} else {
+					tmpVideos[ik] = powGlobals["videos"][ik];
+				}
+			}
+			setTimeout(function() { powGlobals["currentIndex"] = wjs("#webchimera").plugin.playlist.currentItem; },10);
+			powGlobals["videos"] = tmpVideos;
+		}
+	} else if (event == "[fix-length]") {
 		if (typeof powGlobals["duration"] !== 'undefined') {
 			wjs("#webchimera").setTotalLength(powGlobals["duration"]);
 		} else {
