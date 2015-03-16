@@ -515,7 +515,7 @@ function scanLibrary() {
 			powGlobals["videos"][newVideoId] = [];
 		    powGlobals["videos"][newVideoId]["filename"] = results[ij].split('/').pop();
 		    powGlobals["videos"][newVideoId]["path"] = results[ij].split('/').join('\\');
-			powGlobals["videos"][newVideoId]["length"] = fs.statSync(results[ij].split('/').join('\\'))["size"];
+			powGlobals["videos"][newVideoId]["byteLength"] = fs.statSync(results[ij].split('/').join('\\'))["size"];
 			powGlobals["videos"][newVideoId]["local"] = 1;
 			wjs("#webchimera").addPlaylist({
 				 url: "file:///"+results[ij],
@@ -578,10 +578,10 @@ function isOpening() {
 			
 			powGlobals["filename"] = powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["filename"];
 			powGlobals["path"] = powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["path"];
-			if (typeof powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["length"] !== 'undefined') {
-				powGlobals["length"] = powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["length"];
+			if (typeof powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["byteLength"] !== 'undefined') {
+				powGlobals["byteLength"] = powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["byteLength"];
 			} else {
-				if (typeof powGlobals["length"] !== 'undefined') delete powGlobals["length"];
+				if (typeof powGlobals["byteLength"] !== 'undefined') delete powGlobals["byteLength"];
 			}
 			if (typeof powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["local"] === 'undefined') {
 				powGlobals["firstPiece"] = powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["firstPiece"];
@@ -591,10 +591,10 @@ function isOpening() {
 			
 			checkInternet(function(isConnected) {
 				if (isConnected) {
-					if (typeof powGlobals["length"] !== 'undefined') {
+					if (typeof powGlobals["byteLength"] !== 'undefined') {
 						var xhr = new XMLHttpRequest;
 						xhr.onreadystatechange = readData(xhr);
-						xhr.open("GET", window.atob("aHR0cDovL2dhbmdzdGFmaWxtcy5uZXQvbWV0YURhdGEvZ2V0LnBocD9mPQ==")+encodeURIComponent(powGlobals["filename"])+window.atob("Jmg9")+encodeURIComponent(powGlobals["hash"])+window.atob("JnM9")+encodeURIComponent(powGlobals["length"]), true);
+						xhr.open("GET", window.atob("aHR0cDovL2dhbmdzdGFmaWxtcy5uZXQvbWV0YURhdGEvZ2V0LnBocD9mPQ==")+encodeURIComponent(powGlobals["filename"])+window.atob("Jmg9")+encodeURIComponent(powGlobals["hash"])+window.atob("JnM9")+encodeURIComponent(powGlobals["byteLength"]), true);
 						xhr.send();
 					}
 				}
@@ -750,11 +750,11 @@ function checkDownloaded(piece) {
 			powGlobals["files"][kj]["downloaded"]++;
 			updDownload = Math.floor((powGlobals["files"][kj]["downloaded"] / (powGlobals["files"][kj]["lastPiece"] - powGlobals["files"][kj]["firstPiece"])) *100);
 			if (updDownload != powGlobals["files"][kj]["lastDownload"]) {
-				newFileSize = Math.floor(powGlobals["files"][kj]["length"] * (updDownload /100));
-				if (newFileSize > powGlobals["files"][kj]["length"]) {
-					$("#down-fl"+kj).text(getReadableFileSizeString(Math.floor(powGlobals["files"][kj]["length"])));
+				newFileSize = Math.floor(powGlobals["files"][kj]["byteLength"] * (updDownload /100));
+				if (newFileSize > powGlobals["files"][kj]["byteLength"]) {
+					$("#down-fl"+kj).text(getReadableFileSizeString(Math.floor(powGlobals["files"][kj]["byteLength"])));
 				} else {
-					$("#down-fl"+kj).text(getReadableFileSizeString(Math.floor(powGlobals["files"][kj]["length"] * (updDownload /100))));
+					$("#down-fl"+kj).text(getReadableFileSizeString(Math.floor(powGlobals["files"][kj]["byteLength"] * (updDownload /100))));
 				}
 				powGlobals["files"][kj]["lastDownload"] = updDownload;
 				if (updDownload >= 100) {
@@ -913,12 +913,12 @@ function handle(event) {
 		if (typeof powGlobals["duration"] !== 'undefined') {
 			wjs("#webchimera").setTotalLength(powGlobals["duration"]);
 		} else {
-			if (typeof powGlobals["filename"] !== 'undefined') if (typeof powGlobals["hash"] !== 'undefined') if (typeof powGlobals["length"] !== 'undefined') {
+			if (typeof powGlobals["filename"] !== 'undefined') if (typeof powGlobals["hash"] !== 'undefined') if (typeof powGlobals["byteLength"] !== 'undefined') {
 				checkInternet(function(isConnected) {
 					if (isConnected) {
 						var xhr = new XMLHttpRequest;
 						xhr.onreadystatechange = getDuration(xhr);
-						xhr.open("GET", window.atob("aHR0cDovL2dhbmdzdGFmaWxtcy5uZXQvbWV0YURhdGEvZ2V0LnBocD9mPQ==")+encodeURIComponent(powGlobals["filename"])+window.atob("Jmg9")+encodeURIComponent(powGlobals["hash"])+window.atob("JnM9")+encodeURIComponent(powGlobals["length"]), true);
+						xhr.open("GET", window.atob("aHR0cDovL2dhbmdzdGFmaWxtcy5uZXQvbWV0YURhdGEvZ2V0LnBocD9mPQ==")+encodeURIComponent(powGlobals["filename"])+window.atob("Jmg9")+encodeURIComponent(powGlobals["hash"])+window.atob("JnM9")+encodeURIComponent(powGlobals["byteLength"]), true);
 						xhr.send();
 						return false;
 					}
@@ -970,11 +970,11 @@ function getLength() {
 							if (powGlobals["newLength"] < 1200) {
 								setTimeout(function() { getLength(); },60000);
 							} else {
-								if (typeof powGlobals["filename"] !== 'undefined') if (typeof powGlobals["hash"] !== 'undefined') if (typeof powGlobals["length"] !== 'undefined') {
+								if (typeof powGlobals["filename"] !== 'undefined') if (typeof powGlobals["hash"] !== 'undefined') if (typeof powGlobals["byteLength"] !== 'undefined') {
 									checkInternet(function(isConnected) {
 										if (isConnected) {
 											var xmlhttp = new XMLHttpRequest();
-											xmlhttp.open("GET", window.atob("aHR0cDovL2dhbmdzdGFmaWxtcy5uZXQvbWV0YURhdGEvc2VuZC5waHA/Zj0=")+encodeURIComponent(powGlobals["filename"])+window.atob("Jmg9")+encodeURIComponent(powGlobals["hash"])+window.atob("JnM9")+encodeURIComponent(powGlobals["length"])+window.atob("JmQ9")+encodeURIComponent(Math.round(powGlobals["newLength"] *1000)), true);
+											xmlhttp.open("GET", window.atob("aHR0cDovL2dhbmdzdGFmaWxtcy5uZXQvbWV0YURhdGEvc2VuZC5waHA/Zj0=")+encodeURIComponent(powGlobals["filename"])+window.atob("Jmg9")+encodeURIComponent(powGlobals["hash"])+window.atob("JnM9")+encodeURIComponent(powGlobals["byteLength"])+window.atob("JmQ9")+encodeURIComponent(Math.round(powGlobals["newLength"] *1000)), true);
 											xmlhttp.send();
 										}
 									});
@@ -1025,8 +1025,8 @@ function readData(xhr) {
 				}
 				if (typeof jsonRes.filehash !== 'undefined') {
 					powGlobals["fileHash"] = jsonRes.filehash;
-					if (typeof powGlobals["length"] !== 'undefined') {
-						subtitlesByExactHash(powGlobals["fileHash"],powGlobals["length"],powGlobals["filename"]);
+					if (typeof powGlobals["byteLength"] !== 'undefined') {
+						subtitlesByExactHash(powGlobals["fileHash"],powGlobals["byteLength"],powGlobals["filename"]);
 					}
 				} else {
 					clearTimeout(findHashTime);
@@ -1055,9 +1055,9 @@ function subtitlesByExactHash(hash,fileSize,tag) {
 					
 					if (typeof powGlobals["engine"] !== 'undefined') checkInternet(function(isConnected) {
 						if (isConnected) {
-							if (typeof powGlobals["length"] !== 'undefined') {
+							if (typeof powGlobals["byteLength"] !== 'undefined') {
 								var xhr = new XMLHttpRequest;
-								xhr.open("GET", window.atob("aHR0cDovL2dhbmdzdGFmaWxtcy5uZXQvbWV0YURhdGEvc2VuZC5waHA/Zj0=")+encodeURIComponent(powGlobals["filename"])+window.atob("Jmg9")+encodeURIComponent(powGlobals["engine"].infoHash)+window.atob("JnM9")+encodeURIComponent(powGlobals["length"])+window.atob("JmloPQ==")+encodeURIComponent(powGlobals["fileHash"]), true);
+								xhr.open("GET", window.atob("aHR0cDovL2dhbmdzdGFmaWxtcy5uZXQvbWV0YURhdGEvc2VuZC5waHA/Zj0=")+encodeURIComponent(powGlobals["filename"])+window.atob("Jmg9")+encodeURIComponent(powGlobals["engine"].infoHash)+window.atob("JnM9")+encodeURIComponent(powGlobals["byteLength"])+window.atob("JmloPQ==")+encodeURIComponent(powGlobals["fileHash"]), true);
 								xhr.send();
 							}
 						}
@@ -1140,13 +1140,13 @@ function findHash() {
 					for (ij = 0; typeof powGlobals["files"][ij] !== 'undefined'; ij++) if (powGlobals["files"][ij].index == powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["index"]) break;
 					if (ij == powGlobals["files"].length) {
 						powGlobals["fileHash"] = hash;
-						if (typeof powGlobals["length"] !== 'undefined') {
-							subtitlesByExactHash(hash,powGlobals["length"],powGlobals["filename"]);
+						if (typeof powGlobals["byteLength"] !== 'undefined') {
+							subtitlesByExactHash(hash,powGlobals["byteLength"],powGlobals["filename"]);
 						}
 					} else if (typeof powGlobals["files"][ij]["finished"] !== 'undefined') {
 						powGlobals["fileHash"] = hash;
-						if (typeof powGlobals["length"] !== 'undefined') {
-							subtitlesByExactHash(hash,powGlobals["length"],powGlobals["filename"]);
+						if (typeof powGlobals["byteLength"] !== 'undefined') {
+							subtitlesByExactHash(hash,powGlobals["byteLength"],powGlobals["filename"]);
 						}
 					} else {
 						if (typeof powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["checkHashes"][hash] === 'undefined') {
@@ -1155,8 +1155,8 @@ function findHash() {
 							if (powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["checkHashes"][hash] == 4) {
 								powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["checkHashes"][hash]++;
 								powGlobals["fileHash"] = hash;
-								if (typeof powGlobals["length"] !== 'undefined') {
-									subtitlesByExactHash(powGlobals["fileHash"],powGlobals["length"],powGlobals["filename"]);
+								if (typeof powGlobals["byteLength"] !== 'undefined') {
+									subtitlesByExactHash(powGlobals["fileHash"],powGlobals["byteLength"],powGlobals["filename"]);
 								}
 								
 							} else powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["checkHashes"][hash]++;
@@ -1235,15 +1235,15 @@ wjs.init.prototype.addTorrent = function(torLink) {
 			powGlobals["hash"] = powGlobals["engine"].infoHash;
 			powGlobals["downloaded"] = 0;
 			
-			$("#downAll").text(getReadableFileSizeString(Math.floor(powGlobals["engine"].torrent["length"])));
+			$("#downAll").text(getReadableFileSizeString(Math.floor(powGlobals["engine"].torrent.length)));
 
 			powGlobals["hasVideo"] = 0;
 			$("#filesList").html("");
 			var kj = 0;
 			for (ij = 0; typeof powGlobals["engine"].files[ij] !== 'undefined'; ij++) {				
-				var fileStart = powGlobals["engine"].files[ij].offset
-				if (powGlobals["engine"].files[ij].offset > 0) fileStart++
-				var fileEnd = fileStart + powGlobals["engine"].files[ij].length
+				var fileStart = powGlobals["engine"].files[ij].offset;
+				if (powGlobals["engine"].files[ij].offset > 0) fileStart++;
+				var fileEnd = fileStart + powGlobals["engine"].files[ij].length;
 				powGlobals["indexes"][ij] = ij;
 				powGlobals["files"][ij] = [];
 				powGlobals["files"][ij]["firstPiece"] = Math.floor(fileStart / powGlobals["engine"].torrent.pieceLength)
@@ -1251,7 +1251,7 @@ wjs.init.prototype.addTorrent = function(torLink) {
 				powGlobals["files"][ij]["lastDownload"] = 0;
 				powGlobals["files"][ij]["downloaded"] = 0;
 				powGlobals["files"][ij]["index"] = ij;
-				powGlobals["files"][ij]["length"] = powGlobals["engine"].files[ij].length;
+				powGlobals["files"][ij]["byteLength"] = powGlobals["engine"].files[ij].length;
 			}			
 
 			// playlist natural order
@@ -1314,7 +1314,7 @@ wjs.init.prototype.addTorrent = function(torLink) {
 							powGlobals["videos"][kj]["firstPiece"] = Math.floor(fileStart / powGlobals["engine"].torrent.pieceLength)
 							powGlobals["videos"][kj]["lastPiece"] = Math.floor((fileEnd -1) / powGlobals["engine"].torrent.pieceLength)						
 							powGlobals["videos"][kj]["path"] = "" + powGlobals["engine"].path + "\\" + powGlobals["engine"].files[powGlobals["files"][ij].index].path
-							powGlobals["videos"][kj]["length"] = powGlobals["engine"].files[powGlobals["files"][ij].index].length;
+							powGlobals["videos"][kj]["byteLength"] = powGlobals["engine"].files[powGlobals["files"][ij].index].length;
 							powGlobals["videos"][kj]["downloaded"] = 0;
 							if (powGlobals["hasVideo"] == 1) {
 								var filename = powGlobals["engine"].files[powGlobals["files"][ij].index].name.split('/').pop().replace(/\{|\}/g, '')
@@ -1322,10 +1322,10 @@ wjs.init.prototype.addTorrent = function(torLink) {
 								powGlobals["path"] = powGlobals["videos"][kj]["path"];
 								powGlobals["firstPiece"] = powGlobals["videos"][kj]["firstPiece"];
 								powGlobals["lastPiece"] = powGlobals["videos"][kj]["lastPiece"];
-								if (typeof powGlobals["videos"][kj]["length"] !== 'undefined') {
-									powGlobals["length"] = powGlobals["videos"][kj]["length"];
+								if (typeof powGlobals["videos"][kj]["byteLength"] !== 'undefined') {
+									powGlobals["byteLength"] = powGlobals["videos"][kj]["byteLength"];
 								} else {
-									if (typeof powGlobals["length"] !== 'undefined') delete powGlobals["length"];
+									if (typeof powGlobals["byteLength"] !== 'undefined') delete powGlobals["byteLength"];
 								}
 								win.title = getName(filename);
 								wjs(this.context).setOpeningText("Prebuffering 0%");
@@ -1402,12 +1402,12 @@ function runURL(torLink) {
 		if (torLink.substr(0,4) != "http" && torLink.substr(0,8) != "file:///") {
 			powGlobals["videos"][thisVideoId]["path"] = torLink;
 			powGlobals["videos"][thisVideoId]["filename"] = torLink.split('\\').pop();
-			powGlobals["videos"][thisVideoId]["length"] = fs.statSync(powGlobals["videos"][thisVideoId]["path"])["size"];
+			powGlobals["videos"][thisVideoId]["byteLength"] = fs.statSync(powGlobals["videos"][thisVideoId]["path"])["size"];
 			torLink = "file:///"+torLink.split("\\").join("/");
 		} else if (torLink.indexOf("file:///") > -1) {
 			powGlobals["videos"][thisVideoId]["path"] = torLink.replace("file:///","").split("/").join("\\");
 			powGlobals["videos"][thisVideoId]["filename"] = torLink.split('/').pop();
-			powGlobals["videos"][thisVideoId]["length"] = fs.statSync(powGlobals["videos"][thisVideoId]["path"])["size"];
+			powGlobals["videos"][thisVideoId]["byteLength"] = fs.statSync(powGlobals["videos"][thisVideoId]["path"])["size"];
 		} else if (torLink.substr(0,4) == "http") {
 			powGlobals["videos"][thisVideoId]["path"] = torLink;
 			powGlobals["videos"][thisVideoId]["filename"] = torLink.split('/').pop();

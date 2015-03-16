@@ -309,7 +309,7 @@ $(document).ready(function() {
 <div id="internet-ok">
 <div id="holdCenter">
         <div id="formHolder">
-            <form class="pure-form pure-form-aligned" onsubmit="runURL(document.getElementById('magnetLink').value); $('.easy-modal-animated').trigger('closeModal'); return false;" id="magnetForm">
+            <form class="pure-form pure-form-aligned" onsubmit="resetPowGlobals(); runURL(document.getElementById('magnetLink').value); $('.easy-modal-animated').trigger('closeModal'); return false;" id="magnetForm">
                 <fieldset>
                     <div class="pure-control-group">
                         <input id="magnetLink" type="text" name="magnet" placeholder="Magnet URI or Video URL" onFocus="this.select();" onMouseUp="return false;">
