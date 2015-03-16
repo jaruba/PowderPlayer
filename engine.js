@@ -635,6 +635,7 @@ function checkSpeed() {
 }
 
 function checkDownloaded(piece) {
+	powGlobals["lastDownloadTime"] = Math.floor(Date.now() / 1000);
 	if (firstTime == 0) {
 		if (prebuf == 0) {
 			prebuf = 20;
@@ -729,6 +730,15 @@ function peerCheck() {
 		}
 	}
 	$("#nrPeers").text(powGlobals["engine"].swarm.wires.length);
+	
+	// if more then 1 minute has past since last downloaded piece, restart peer discovery
+	if (Math.floor(Date.now() / 1000) - powGlobals["lastDownloadTime"] > 60) {
+		if ($(".pause:visible").length > 0) {
+			if (typeof powGlobals["engine"] !== 'undefined') {
+				powGlobals["engine"].discover();
+			}
+		}
+	}
 }
 
 var onmagnet = function () {
@@ -1141,6 +1151,8 @@ function resetPowGlobals() {
 wjs.init.prototype.addTorrent = function(torLink) {
 	powGlobals["allPieces"] = 0;
 	powGlobals["lastDownload"] = 0;
+	powGlobals["lastDownloadTime"] = Math.floor(Date.now() / 1000);
+	
 	prebuf = 0;
 	
 	// reset values in Torrent Data mode
