@@ -1008,8 +1008,10 @@ function subtitlesByExactHash(hash,fileSize,tag) {
 					results = utils.parseXmlSearchResult(response);
 				}catch(e){
 					results = [];
-				}								
+				}				
 				if (results.length > 0) {
+					
+					console.log(results);
 					
 					if (typeof powGlobals["engine"] !== 'undefined') checkInternet(function(isConnected) {
 						if (isConnected) {
@@ -1492,3 +1494,7 @@ $('#fileDialog').change(function(evt) {
 function chooseFile(name) {
 	$(name).trigger('click');
 }
+
+// download dummy subtitle to fix OpenSubtitles
+wjs("#webchimera").plugin.emitJsMessage("[load-sub]http://dl.opensubtitles.org/en/download/subencoding-utf8/file/1954100982.srt");
+// end download dummy subtitle to fix OpenSubtitles

@@ -196,6 +196,8 @@ Rectangle {
 		vlcPlayer.onMediaPlayerMediaChanged.connect( onVideoChanged ); // Set Video Changed Event Handler
 		vlcPlayer.onStateChanged.connect( onState ); // Set State Changed Event Handler
 		
+		vlcPlayer.subtitle.onLoadError.connect( subMenu.subtitleError );
+		
 		plugin.jsMessage.connect( onMessage ); // Catch On Page JS Messages
 		
 		fireQmlMessage("[qml-loaded]"); // Send message to JS that QML has Loaded
@@ -295,6 +297,7 @@ Rectangle {
 			if (startsWith(message,"[start-subtitle]")) subMenu.playSubtitles(message.replace("[start-subtitle]","")); // Get Subtitle URL and Play Subtitle
 			if (startsWith(message,"[clear-subtitle]")) subMenu.clearSubtitles(); // Clear Loaded External Subtitle
 			if (startsWith(message,"[load-m3u]")) playM3U(message.replace("[load-m3u]","")); // Load M3U Playlist URL
+			if (startsWith(message,"[load-sub]")) vlcPlayer.subtitle.load(message.replace("[load-sub]","")); // Load External Subtitle
 			if (startsWith(message,"[set-total-length]")) settings.customLength = message.replace("[set-total-length]",""); // Set custom total length
 			if (startsWith(message,"[reset-progress]")) {
 				// Reset properties related to .setTotalLength()
