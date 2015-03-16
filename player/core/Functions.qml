@@ -313,15 +313,21 @@ Rectangle {
 			}
 			if (startsWith(message,"[gobackvar]0")) goneBack = 0;
 			if (startsWith(message,"[pause-policy]")) ui.settings.pausePolicy = message.replace("[pause-policy]","");
+			if (startsWith(message,"[refresh-disabled]")) playlist.refreshDisabled();
 			if (startsWith(message,"[refresh-playlist]")) {
 				playlist.addPlaylistItems(); // Refresh Playlist GUI
+				if (vlcPlayer.playlist.itemCount > 0) {
+					playlistButton.visible = true;
+				} else {
+					playlistButton.visible = false;
+				}
 				if (vlcPlayer.playlist.itemCount > 1) {
-					playlistButton.visible = 1;
 					prevBut.visible = true;
 					nextBut.visible = true;
 				}
 				if (settings.autoplay == 1 && vlcPlayer.state == 0 && vlcPlayer.playlist.itemCount > 0) vlcPlayer.playlist.playItem(0); 
 			}
+			if (startsWith(message,"[disable]")) playlist.disableItem(message.replace("[disable]",""));
 			if (startsWith(message,"[clear-subtitles]")) subMenu.clearAll();
 			if (startsWith(message,"[refresh-subtitles]")) {
 				var itemSettings = {};
@@ -661,14 +667,14 @@ Rectangle {
 		if (mousehint <= (playlistScroll.dragger.height / 2)) {
 			playlistScroll.dragger.anchors.topMargin = 0;
 			playlist.anchors.topMargin = 0;
-		} else if (mousehint >= (240 - (playlistScroll.dragger.height / 2))) {
-			playlistScroll.dragger.anchors.topMargin = 240 - playlistScroll.dragger.height;
-			if ((vlcPlayer.playlist.itemCount *40) > 240) {
-				playlist.anchors.topMargin = 240 - (vlcPlayer.playlist.itemCount *40);
+		} else if (mousehint >= (playlistScroll.height - (playlistScroll.dragger.height / 2))) {
+			playlistScroll.dragger.anchors.topMargin = playlistScroll.height - playlistScroll.dragger.height;
+			if ((vlcPlayer.playlist.itemCount *40) > playlistScroll.height) {
+				playlist.anchors.topMargin = playlistScroll.height - (vlcPlayer.playlist.itemCount *40);
 			}
 		} else {
 			playlistScroll.dragger.anchors.topMargin = mousehint - (playlistScroll.dragger.height / 2);
-			playlist.anchors.topMargin = -(((vlcPlayer.playlist.itemCount * 40) - 240) / ((240 - playlistScroll.dragger.height) / (mousehint - (playlistScroll.dragger.height /2))));
+			playlist.anchors.topMargin = -(((vlcPlayer.playlist.itemCount * 40) - playlistScroll.height) / ((playlistScroll.height - playlistScroll.dragger.height) / (mousehint - (playlistScroll.dragger.height /2))));
 		}
 	}
 	// End Scroll Playlist Menu
@@ -972,7 +978,6 @@ Rectangle {
 					}
 					if (vlcPlayer.playlist.itemCount > 1) {
 						playlist.addPlaylistItems(); // Refresh Playlist Menu GUI
-						playlistButton.visible = 1;
 						prevBut.visible = true;
 						nextBut.visible = true;
 					}

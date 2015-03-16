@@ -13,14 +13,14 @@ Rectangle {
 	anchors.right: parent.right
 	anchors.rightMargin: 6
 	width: 35
-	height: 240
+	height: 200
 	color: "transparent"
 	Rectangle {
 		id: scrollerBack
 		anchors.horizontalCenter: parent.horizontalCenter
 		width: 10
-		height: 240
-		opacity: playmdrag.height == 240 ? 0.5 : 1
+		height: root.height
+		opacity: playmdrag.height == root.height ? 0.5 : 1
 	}
 	Rectangle {
 		id: playmdrag
@@ -29,7 +29,7 @@ Rectangle {
 		anchors.left: parent.left
 		anchors.leftMargin: 13
 		width: 10
-		opacity: playmdrag.height == 240 ? 0 : 1
+		opacity: playmdrag.height == root.height ? 0 : 1
 	}
 	MouseArea {
 		id: playmdragger

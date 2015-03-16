@@ -34,6 +34,7 @@ Rectangle {
 	property var torDataBut: 0;
 	property var onTop: false;
 	property var savedSub: "-";
+	property variant disables: [];
 	JsLogic.Settings { id: settings }
 	JsLogic.Functions { id: wjs }
 	JsLogic.Hotkeys { id: hotkeys }
@@ -282,7 +283,7 @@ Rectangle {
 					id: playlistButton
 					icon: settings.glyphsLoaded ? ui.icon.playlist : ""
 					iconSize: fullscreen ? 18 : 17
-					visible: vlcPlayer.playlist.itemCount > 1 ? true : false
+					visible: false
 					anchors.right: fullscreenButton.left
 					anchors.rightMargin: 1
 					glow: ui.settings.buttonGlow
@@ -344,6 +345,7 @@ Rectangle {
 		Loader.Menu {
 			id: playlistblock
 			background.color: ui.colors.playlistMenu.background
+			height: 273
 			
 			// Start Playlist Menu Scroll
 			Loader.MenuScroll {
@@ -351,12 +353,17 @@ Rectangle {
 				draggerColor: ui.colors.playlistMenu.drag
 				backgroundColor: ui.colors.playlistMenu.scroller
 				onDrag: wjs.movePlaylist(mouseY)
-				dragger.height: (playlist.totalPlay * 40) < 240 ? 240 : (240 / (playlist.totalPlay * 40)) * 240
+				dragger.height: (playlist.totalPlay * 40) < playlistScroll.height ? playlistScroll.height : (playlistScroll.height / (playlist.totalPlay * 40)) * playlistScroll.height
 			}
 			// End Playlist Menu Scroll
 		
 			Loader.MenuContent {
 				width: playlistblock.width < 694 ? (playlistblock.width -12) : 682
+				anchors.top: parent.top
+				anchors.topMargin: 6
+				anchors.left: parent.left
+				anchors.leftMargin: 6
+				height: 260
 				
 				Loader.PlaylistMenuItems { id: playlist } // Playlist Items Holder (This is where the Playlist Items will be loaded)
 		
@@ -382,6 +389,40 @@ Rectangle {
 				}
 				// End Top Holder (Title + Close Button)
 				
+				// Start Playlist Menu Footer
+				Rectangle {
+					color: ui.colors.playlistMenu.background
+					height: 28
+					anchors.bottom: parent.bottom
+					anchors.bottomMargin: 0
+					width: parent.width
+					MouseArea { hoverEnabled: true; anchors.fill: parent; }
+					Rectangle {
+						anchors.top: parent.top
+						anchors.topMargin: 6
+						height: 22
+						width: 90
+						color: scanLibHover.containsMouse ? "#e5e5e5" : "#3D3D3D"
+						Text {
+							anchors.centerIn: parent
+							text: "Scan Library"
+							color: scanLibHover.containsMouse ? ui.colors.playlistMenu.background : "#e5e5e5"
+							font.pointSize: 9;
+						}
+						MouseArea {
+							id: scanLibHover
+							anchors.fill: parent;
+							hoverEnabled: true;
+							cursorShape: Qt.PointingHandCursor;
+							onClicked: {
+								fireQmlMessage("[scan-library]");
+							}
+						}
+					}
+				}
+				// End Playlist Menu Footer
+				
+						
 			}
 		}
 		// End Playlist Menu
@@ -398,11 +439,13 @@ Rectangle {
 				backgroundColor: ui.colors.playlistMenu.scroller
 				onDrag: wjs.moveSubMenu(mouseY)
 				dragger.height: (settings.totalSubs * 40) < 240 ? 240 : (240 / (settings.totalSubs * 40)) * 240
+				height: 240
 			}
 			// End Subtitle Menu Scroll
 		
 			Loader.MenuContent {
 				width: subMenublock.width < 694 ? (subMenublock.width -12) : 682
+				anchors.centerIn: parent
 				
 				Loader.SubtitleMenuItems { id: subMenu } // Subtitle Items Holder (This is where the Playlist Items will be loaded)
 		
