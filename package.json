@@ -1,8 +1,27 @@
 {
   "name": "Powder",
+  "description": "Hybrid between a Torrent Client and a Player",
   "main": "app://powder/index.html",
-  "single-instance": false,
+  "version": "0.13",
+  "author": "Branza Alexandru (@jaruba)",
+  "homepage": "https://github.com/jaruba/PowderPlayer",
+  "contributors": [{
+    "name": "Branza Alexandru",
+    "email": "branza.alex@gmail.com"
+  }],
+  "licenses": [{
+    "type": "GPLv2",
+    "url": "http://www.example.com/licenses/gpl.html"
+  }],
+  "bugs": {
+    "url": "https://github.com/jaruba/PowderPlayer/issues"
+  },
+  "repositories": [{
+    "type": "git", 
+    "url": "git://github.com/jaruba/PowderPlayer.git"
+  }],
   "chromium-args": "--load-plugin=plugins\\npWebChimera.dll",
+  "single-instance": false,
   "window": {
     "icon": "icon.png",
     "toolbar": false,
