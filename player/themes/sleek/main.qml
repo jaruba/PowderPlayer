@@ -400,8 +400,10 @@ Rectangle {
 					Rectangle {
 						anchors.top: parent.top
 						anchors.topMargin: 6
+						anchors.left: parent.left
+						anchors.leftMargin: 76
 						height: 22
-						width: 90
+						width: 80
 						color: scanLibHover.containsMouse ? "#e5e5e5" : "#3D3D3D"
 						Text {
 							anchors.centerIn: parent
@@ -419,10 +421,33 @@ Rectangle {
 							}
 						}
 					}
+					Rectangle {
+						anchors.top: parent.top
+						anchors.topMargin: 6
+						anchors.left: parent.left
+						anchors.leftMargin: 0
+						height: 22
+						width: 70
+						color: addVideoHover.containsMouse ? "#e5e5e5" : "#3D3D3D"
+						Text {
+							anchors.centerIn: parent
+							text: "Add Video"
+							color: addVideoHover.containsMouse ? ui.colors.playlistMenu.background : "#e5e5e5"
+							font.pointSize: 9;
+						}
+						MouseArea {
+							id: addVideoHover
+							anchors.fill: parent;
+							hoverEnabled: true;
+							cursorShape: Qt.PointingHandCursor;
+							onClicked: {
+								fireQmlMessage("[add-video]");
+							}
+						}
+					}
 				}
 				// End Playlist Menu Footer
 				
-						
 			}
 		}
 		// End Playlist Menu

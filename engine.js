@@ -193,56 +193,6 @@ function checkInternet(cb) {
 	})
 }
 
-
-function chooseFile(name) {
-	if (name == '#torrentDialog') {
-		checkInternet(function(isConnected) {
-			if (isConnected) {
-				resetPowGlobals();
-				var chooser = $('#torrentDialog');
-				chooser.change(function(evt) {
-					runURL($(this).val());
-					wjs("#webchimera").plugin.emitJsMessage("[refresh-playlist]");
-				});
-				chooser.trigger('click');
-			} else {
-				$('.easy-modal-animated').trigger('openModal');
-			}
-		});
-	} else if (name == '#folderDialog') {
-		var chooser = $(name);
-		chooser.change(function(evt) {
-			$("#def-folder").text($(this).val());
-			localStorage.tmpDir = $(this).val();
-		});
-		chooser.trigger('click');		
-	} else if (name == '#libraryDialog') {
-		var chooser = $(name);
-		chooser.change(function(evt) {
-			$("#lib-folder").text($(this).val());
-			localStorage.libDir = $(this).val();
-		});
-		chooser.trigger('click');		
-	} else {
-		resetPowGlobals();
-		var chooser = $(name);
-		chooser.change(function(evt) {
-			if ($(this).val().indexOf(";") > -1) {
-				runMultiple($(this).val().split(";"));
-			} else {
-				runURL($(this).val());
-				powGlobals["videos"] = [];
-				powGlobals["videos"][0] = [];
-				powGlobals["videos"][0]["filename"] = $(this).val().split('\\').pop();
-				powGlobals["videos"][0]["path"] = $(this).val();
-			}
-			wjs("#webchimera").plugin.emitJsMessage("[refresh-playlist]");
-		});
-	
-		chooser.trigger('click');
-	}
-}
-
 // prevent default behavior from changing page on ped file
 window.ondragover = function(e) { e.preventDefault(); return false };
 window.ondrop = function(e) { e.preventDefault(); return false };
@@ -878,6 +828,8 @@ function handle(event) {
 		$("#filesList").css("min-height",$("#player_wrapper").height());
 		$("html, body").animate({ scrollTop: $("#player_wrapper").height() }, "slow");
 		$("body").css("overflow-y","visible");
+	} else if (event == '[add-video]') {
+		chooseFile('#addPlaylistDialog');
     } else if (event.substr(0,15) == '[playlist-swap]') {
 		var swapItems = event.replace('[playlist-swap]','').split(':');
 		if (parseInt(swapItems[1]) < 0) {
@@ -1386,6 +1338,23 @@ wjs.init.prototype.addTorrent = function(torLink) {
 	return wjs(this.context);
 }
 
+function playlistAddVideo(torLink) {
+	var thisVideoId = powGlobals["videos"].length;
+	powGlobals["videos"][thisVideoId] = [];
+	powGlobals["videos"][thisVideoId]["local"] = 1;
+	powGlobals["videos"][thisVideoId]["path"] = torLink;
+	powGlobals["videos"][thisVideoId]["filename"] = torLink.split('\\').pop();
+	powGlobals["videos"][thisVideoId]["byteLength"] = fs.statSync(powGlobals["videos"][thisVideoId]["path"])["size"];
+	if (typeof powGlobals["videos"][thisVideoId]["filename"] !== 'undefined') {
+		torLink = "file:///"+torLink.split("\\").join("/");
+		wjs("#webchimera").addPlaylist({
+			 url: torLink,
+			 title: getName(powGlobals["videos"][thisVideoId]["filename"])
+		});
+		wjs("#webchimera").plugin.emitJsMessage("[saved-sub]"+localStorage.subLang);
+	}
+}
+
 function runURL(torLink) {
 			
 	if (torLink.replace(".torrent","") != torLink) {
@@ -1463,4 +1432,55 @@ if (gui.App.argv.length > 0) {
 		}
 	});
 	});
+}
+
+
+$('#torrentDialog').change(function(evt) {
+	checkInternet(function(isConnected) {
+		if (isConnected) {
+			resetPowGlobals();
+			runURL($(this).val());
+			wjs("#webchimera").plugin.emitJsMessage("[refresh-playlist]");
+		} else {
+			$('.easy-modal-animated').trigger('openModal');
+		}
+	});
+});
+
+$('#libraryDialog').change(function(evt) {
+	$("#lib-folder").text($(this).val());
+	localStorage.libDir = $(this).val();
+});
+
+
+$('#folderDialog').change(function(evt) {
+	$("#def-folder").text($(this).val());
+	localStorage.tmpDir = $(this).val();
+});
+
+$('#addPlaylistDialog').change(function(evt) {
+	if ($(this).val().indexOf(";") > -1) {
+		newFileArray = $(this).val().split(";");
+		for (ksl = 0; typeof newFileArray[ksl] !== 'undefined'; ksl++) {
+			playlistAddVideo(newFileArray[ksl]);
+		}
+	} else {
+		playlistAddVideo($(this).val());
+	}
+	wjs("#webchimera").plugin.emitJsMessage("[refresh-playlist]");
+});
+
+$('#fileDialog').change(function(evt) {
+	resetPowGlobals();
+	if ($(this).val().indexOf(";") > -1) {
+		runMultiple($(this).val().split(";"));
+	} else {
+		runURL($(this).val());
+	}
+	wjs("#webchimera").plugin.emitJsMessage("[refresh-playlist]");
+});
+
+
+function chooseFile(name) {
+	$(name).trigger('click');
 }
