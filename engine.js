@@ -737,8 +737,8 @@ var onmagnet = function () {
 
 win.on('close', function() {
 	setTimeout(function() { win.close(true); },180000); // fallback, if any error appears and the process didn't finish, the app should still close (3 mins)
-	if ($('#main').css("display") != "table") wjs("#webchimera").stopPlayer();
 	win.hide();
+	if ($('#main').css("display") != "table") wjs("#webchimera").stopPlayer();
 	if (typeof powGlobals["engine"] !== 'undefined') {
 		isReady = 0;
 		clearTimeout(downSpeed);
