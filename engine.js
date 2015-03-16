@@ -736,7 +736,9 @@ var onmagnet = function () {
 }
 
 win.on('close', function() {
-	setTimeout(function() { win.close(true); },5000);
+	setTimeout(function() { win.close(true); },180000); // fallback, if any error appears and the process didn't finish, the app should still close (3 mins)
+	if ($('#main').css("display") != "table") wjs("#webchimera").stopPlayer();
+	win.hide();
 	if (typeof powGlobals["engine"] !== 'undefined') {
 		isReady = 0;
 		clearTimeout(downSpeed);
@@ -744,17 +746,11 @@ win.on('close', function() {
 		powGlobals["engine"].server.close(function() {
 			powGlobals["engine"].remove(function() {
 				powGlobals["engine"].destroy(function() {
-					wjs("#webchimera").setOpeningText("Stopping");
-					wjs("#webchimera").plugin.playlist.clear();
-					wjs("#webchimera").stopPlayer();
 					win.close(true);
 				});
 			});
 		});
 	} else {
-		wjs("#webchimera").setOpeningText("Stopping");
-		wjs("#webchimera").plugin.playlist.clear();
-		wjs("#webchimera").stopPlayer();
 		win.close(true);
 	}
 	
