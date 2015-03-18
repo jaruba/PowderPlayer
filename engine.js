@@ -1496,5 +1496,6 @@ function chooseFile(name) {
 }
 
 // download dummy subtitle to fix OpenSubtitles
+wjs("#webchimera").plugin.emitJsMessage("[supress-error]");
 wjs("#webchimera").plugin.emitJsMessage("[load-sub]http://dl.opensubtitles.org/en/download/subencoding-utf8/file/1954100982.srt");
 // end download dummy subtitle to fix OpenSubtitles

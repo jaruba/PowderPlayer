@@ -59,7 +59,11 @@ Rectangle {
 				vlcPlayer.subtitle.load(lastSub);
 //				wjs.setText(lastSub);
 			} else {
-				wjs.setText("Subtitle Error");
+				if (supressSubError == 1) {
+					supressSubError = 0;
+				} else {
+					wjs.setText("Subtitle Error");
+				}
 			}
 		} else {
 			lastSub = alternative;

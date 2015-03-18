@@ -32,6 +32,7 @@ Rectangle {
 	property var timeMargin: skinData.variables.settings.toolbar.timeMargin;
 	property var goneBack: 0;
 	property var torDataBut: 0;
+	property var supressSubError: 0;
 	property var onTop: false;
 	property var savedSub: "-";
 	property variant disables: [];
@@ -404,11 +405,11 @@ Rectangle {
 						anchors.leftMargin: 76
 						height: 22
 						width: 80
-						color: scanLibHover.containsMouse ? "#e5e5e5" : "#3D3D3D"
+						color: scanLibHover.containsMouse ? ui.colors.playlistMenu.closeBackgroundHover : ui.colors.playlistMenu.closeBackground
 						Text {
 							anchors.centerIn: parent
 							text: "Scan Library"
-							color: scanLibHover.containsMouse ? ui.colors.playlistMenu.background : "#e5e5e5"
+							color: scanLibHover.containsMouse ? ui.colors.playlistMenu.closeHover : ui.colors.playlistMenu.close
 							font.pointSize: 9;
 						}
 						MouseArea {
@@ -428,11 +429,11 @@ Rectangle {
 						anchors.leftMargin: 0
 						height: 22
 						width: 70
-						color: addVideoHover.containsMouse ? "#e5e5e5" : "#3D3D3D"
+						color: addVideoHover.containsMouse ? ui.colors.playlistMenu.closeBackgroundHover : ui.colors.playlistMenu.closeBackground
 						Text {
 							anchors.centerIn: parent
 							text: "Add Video"
-							color: addVideoHover.containsMouse ? ui.colors.playlistMenu.background : "#e5e5e5"
+							color: addVideoHover.containsMouse ? ui.colors.playlistMenu.closeHover : ui.colors.playlistMenu.close
 							font.pointSize: 9;
 						}
 						MouseArea {
@@ -515,9 +516,9 @@ Rectangle {
 			border.color: "#979595"
 		}
 		// End Context Menu
-		
+	
     }
 	// End Mouse Area over entire Surface (check mouse movement, toggle pause when clicked) [includes Toolbar]
-	
+		
 	Component.onCompleted: wjs.onQmlLoaded()
 }

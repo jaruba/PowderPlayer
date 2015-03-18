@@ -316,6 +316,7 @@ Rectangle {
 			}
 			if (startsWith(message,"[gobackvar]0")) goneBack = 0;
 			if (startsWith(message,"[pause-policy]")) ui.settings.pausePolicy = message.replace("[pause-policy]","");
+			if (startsWith(message,"[supress-error]")) supressSubError = 1;
 			if (startsWith(message,"[refresh-disabled]")) playlist.refreshDisabled();
 			if (startsWith(message,"[refresh-playlist]")) {
 				playlist.addPlaylistItems(); // Refresh Playlist GUI
