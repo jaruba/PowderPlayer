@@ -674,7 +674,7 @@ function settingsEl(kj) {
 	}
 	for (ij = 0; typeof powGlobals["videos"][ij] !== 'undefined'; ij++) if (powGlobals["videos"][ij]["index"] == powGlobals["files"][kj].index) break;
 	$("#playAction").attr("onClick","wjs('#webchimera').plugin.playlist.playItem("+ij+"); $('#closeAction').trigger('click'); $('html, body').animate({ scrollTop: 0 }, 'slow'); playEl("+kj+"); $('body').css('overflow-y','hidden')");
-	$("#copyStream").attr("onClick","gui.Clipboard.get().set('http://localhost:'+powGlobals['engine'].server.address().port+'/"+ij+"','text'); $('#closeAction').trigger('click')");
+	$("#copyStream").attr("onClick","gui.Clipboard.get().set('http://localhost:'+powGlobals['engine'].server.address().port+'/"+powGlobals["files"][kj].index+"','text'); $('#closeAction').trigger('click')");
 	$("#open-file-settings").trigger("click");
 }
 
