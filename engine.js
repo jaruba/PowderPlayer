@@ -291,6 +291,7 @@ var focused = true;
 var findHashTime;
 var doSubsLocal = 0;
 var peerInterval;
+var onTopInterval;
 
 // parse all files in the library folder
 var walk = function(dir, done) {
@@ -941,13 +942,14 @@ function handle(event) {
 			onTop = false;
 			win.setAlwaysOnTop(false);
 		} else {
-			win.minimize();
-			setTimeout(function() {
+			win.blur();
+			onTopInterval = setInterval(function() {
 				win.setAlwaysOnTop(true);
 			},40);
 			setTimeout(function() {
-				win.restore();
-			},60);
+				clearInterval(onTopInterval);
+				win.focus();
+			},120);
 			onTop = true;
 		}
 		wjs("#webchimera").plugin.emitJsMessage("[on-top]"+onTop);
