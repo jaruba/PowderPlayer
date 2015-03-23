@@ -632,13 +632,15 @@ function checkDownloaded(piece) {
 	if (firstTime == 0) {
 		if (prebuf == 0) {
 			prebuf = 20;
-		} else if (prebuf = 20) {
+		} else if (prebuf == 20) {
 			prebuf = 50;
-		} else if (prebuf = 50) {
+		} else if (prebuf == 50) {
 			prebuf = 70;
-		} else if (prebuf = 80) {
+		} else if (prebuf == 70) {
+			prebuf = 80;
+		} else if (prebuf == 80) {
 			prebuf = 90;
-		} else if (prebuf = 90) {
+		} else if (prebuf == 90) {
 			prebuf = Math.floor(((100 - prebuf) /2) +prebuf);
 		}
 		wjs("#webchimera").setOpeningText("Prebuffering "+prebuf+"%");
