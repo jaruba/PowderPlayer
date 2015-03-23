@@ -263,6 +263,14 @@ Rectangle {
 				
 				if (subtitle > 0) {
 					if(subtitle != currentSubtitle) {
+						if ((subtitles[subtitle].t.match(new RegExp("<", "g")) || []).length == 2) {
+							if (subtitles[subtitle].t.substr(0,1) == "<" && subtitles[subtitle].t.slice(-1) == ">") {
+							} else {
+								subtitles[subtitle].t = subtitles[subtitle].t.replace(/<\/?[^>]+(>|$)/g, "");
+							}
+						} else if ((subtitles[subtitle].t.match(new RegExp("<", "g")) || []).length > 2) {
+							subtitles[subtitle].t = subtitles[subtitle].t.replace(/<\/?[^>]+(>|$)/g, "");
+						}
 						subtitlebox.changeText = subtitles[subtitle].t;
 						currentSubtitle = subtitle;
 					} else if (subtitles[subtitle].o < nowSecond) {
