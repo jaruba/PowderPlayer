@@ -583,7 +583,10 @@ function isOpening() {
 		powGlobals["currentIndex"] = wjs("#webchimera").plugin.playlist.currentItem;
 		if (typeof powGlobals["engine"] !== 'undefined') {
 			wjs("#webchimera").setOpeningText("Prebuffering 0%");
-			if (typeof powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem] !== 'undefined' && typeof powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["local"] === 'undefined') playEl(powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["index"]);
+			if (typeof powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem] !== 'undefined' && typeof powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["local"] === 'undefined') {
+				for (gh = 0; typeof powGlobals["files"][gh] !== 'undefined'; gh++) if (powGlobals["files"][gh].index == powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["index"]) break;
+				playEl(gh);				
+			}
 			win.title = getName(powGlobals["videos"][wjs("#webchimera").plugin.playlist.currentItem]["filename"]);
 			wjs("#webchimera").setDownloaded(0);
 			
@@ -652,6 +655,7 @@ function playEl(kj) {
 	if (powGlobals["engine"].swarm.wires.length < 5) powGlobals["engine"].discover();
 	if ($("#action"+kj).hasClass("play")) $("#action"+kj).removeClass("play").addClass("pause").css("background-color","#F6BC24").attr("onClick","pauseEl("+kj+")");
 	powGlobals["engine"].files[powGlobals["files"][kj].index].select();
+	console.log("play2: "+kj+" - "+powGlobals["files"][kj].index);
 }
 
 function pauseEl(kj) {
