@@ -188,6 +188,13 @@ Rectangle {
 		
 	// Start on QML Loaded
 	function onQmlLoaded() {
+	
+		// trigger dummy - hack for OpenSubtitles
+		var xhr = new XMLHttpRequest;
+		xhr.open("get", "http://dl.opensubtitles.org/en/download/subencoding-utf8/file/1954100982.srt");
+		xhr.send();
+		// end trigger dummy - hack for OpenSubtitles
+	
 		settings.curAspect = settings.aspectRatios[0];
 		settings.curCrop = settings.crops[0];
 	
