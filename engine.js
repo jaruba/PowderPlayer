@@ -655,7 +655,6 @@ function playEl(kj) {
 	if (powGlobals["engine"].swarm.wires.length < 5) powGlobals["engine"].discover();
 	if ($("#action"+kj).hasClass("play")) $("#action"+kj).removeClass("play").addClass("pause").css("background-color","#F6BC24").attr("onClick","pauseEl("+kj+")");
 	powGlobals["engine"].files[powGlobals["files"][kj].index].select();
-	console.log("play2: "+kj+" - "+powGlobals["files"][kj].index);
 }
 
 function pauseEl(kj) {
