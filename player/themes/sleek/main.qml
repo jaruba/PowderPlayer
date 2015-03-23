@@ -32,7 +32,6 @@ Rectangle {
 	property var timeMargin: skinData.variables.settings.toolbar.timeMargin;
 	property var goneBack: 0;
 	property var torDataBut: 0;
-	property var supressSubError: 0;
 	property var onTop: false;
 	property var savedSub: "-";
 	property variant disables: [];

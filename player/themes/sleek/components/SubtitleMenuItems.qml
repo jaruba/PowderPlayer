@@ -15,9 +15,6 @@ Rectangle {
 	
 	property variant subItems: [];
 	
-	property var alternative: "none";
-	property var lastSub: "none";
-	
 	// Start Toggle Subtitle Menu (open/close)
 	function toggleSubtitles() {
 		if (settings.subtitlemenu === false) {
@@ -35,45 +32,152 @@ Rectangle {
 	// End Toggle Subtitle Menu (open/close)
 
 	// Start External Subtitles (SRT, SUB)
-					
-	// Load External Subtitles
-	function playSubtitles(subtitleElement) {
-		if (subtitleElement.indexOf("[-alt-]") > -1) {
-			alternative = "http://dl.opensubtitles.org/en/download/subencoding-"+subtitleElement.split('[-alt-]')[1]+"/file/"+subtitleElement.split('[-alt-]')[0].split('/').pop();
-			lastSub = subtitleElement.split('[-alt-]')[0];
-			vlcPlayer.subtitle.load(lastSub);
-		} else {
-			alternative = "none";
-			lastSub = subtitleElement;
-			vlcPlayer.subtitle.load(lastSub);
-		}
-//		wjs.setText(lastSub);
-	}
-	// End Load External Subtitles
 	
-	// External Subtitle Error Handler
-	function subtitleError() {
-		if (alternative == "none") {
-			if (lastSub.indexOf("http://dl.opensubtitles.org/en/download/subencoding-") > -1) {
-				lastSub = "http://dl.opensubtitles.org/en/download/file/"+lastSub.split('/').pop();
-				vlcPlayer.subtitle.load(lastSub);
-//				wjs.setText(lastSub);
-			} else {
-				if (supressSubError == 1) {
-					supressSubError = 0;
-				} else {
-					wjs.setText("Subtitle Error");
-				}
-			}
-		} else {
-			lastSub = alternative;
-			alternative = "none";
-			vlcPlayer.subtitle.load(lastSub);
-//			wjs.setText(lastSub);
+	// Start Convert Time to Seconds (needed for External Subtitles)
+	function toSeconds(t) {
+		var s = 0.0
+		if (t) {
+			var p = t.split(':');
+			var i = 0;
+			for (i=0;i<p.length;i++) s = s * 60 + parseFloat(p[i].replace(',', '.'))
 		}
+		return s;
 	}
-	// End External Subtitle Error Handler
+	// End Convert Time to Seconds (needed for External Subtitles)
+				
+	function playSubtitles(subtitleElement) {
+		if (typeof(currentSubtitle) !== "undefined") currentSubtitle = -1;
+		if (typeof(subtitles) !== "undefined") if (subtitles.length) subtitles = {};
+		var xhr = new XMLHttpRequest;
+		xhr.onreadystatechange = function() {
+			if (xhr.readyState == 4) {
+	
+				var srt = xhr.responseText;
+				if (srt.indexOf("[CRITICAL ERROR]") > -1) {
+					if (subtitleElement.indexOf("http://dl.opensubtitles.org/en/download/subencoding-") > -1) {
+						if (subtitleElement.indexOf("[-alt-]") > -1) {
+							 playSubtitles("http://dl.opensubtitles.org/en/download/subencoding-"+subtitleElement.split('[-alt-]')[1]+"/file/"+subtitleElement.split('[-alt-]')[0].split('/').pop());
+						} else {
+							playSubtitles("http://dl.opensubtitles.org/en/download/file/"+subtitleElement.split('/').pop());
+						}
+					} else {
+						wjs.setText("Subtitle Error");
+					}
+					return;
+				}
+				subtitles = {};
+				
+				if (subtitleElement.indexOf("[-alt-]") > -1) {
+					var extension = subtitleElement.split("[-alt-]")[0].split('.').pop();
+				} else {
+					var extension = subtitleElement.split('.').pop();
+				}
+				if (extension.toLowerCase() == "srt") {
+					
+					srt = srt.replace(/\r\n|\r|\n/g, '\n');
+					
+					if (typeof srt === 'undefined') {
+						if (subtitleElement.indexOf("http://dl.opensubtitles.org/en/download/subencoding-") > -1) {
+							if (subtitleElement.indexOf("[-alt-]") > -1) {
+								playSubtitles("http://dl.opensubtitles.org/en/download/subencoding-"+subtitleElement.split('[-alt-]')[1]+"/file/"+subtitleElement.split('[-alt-]')[0].split('/').pop());
+							} else {
+								playSubtitles("http://dl.opensubtitles.org/en/download/file/"+subtitleElement.split('/').pop());
+							}
+						} else {
+							wjs.setText("Subtitle Error");
+						}
+						return;
+					}
+					srt = wjs.strip(srt);
+					var srty = srt.split('\n\n');
+	
+					var s = 0;
+					for (s = 0; s < srty.length; s++) {
+						var st = srty[s].split('\n');
+						if (st.length >=2) {
+					
+						  var n = st[0];
+						  if (typeof st[1].split(' --> ')[0] === 'undefined') {
 
+							if (subtitleElement.indexOf("http://dl.opensubtitles.org/en/download/subencoding-") > -1) {
+
+								if (subtitleElement.indexOf("[-alt-]") > -1) {
+								playSubtitles("http://dl.opensubtitles.org/en/download/subencoding-"+subtitleElement.split('[-alt-]')[1]+"/file/"+subtitleElement.split('[-alt-]')[0].split('/').pop());
+								} else {
+									playSubtitles("http://dl.opensubtitles.org/en/download/file/"+subtitleElement.split('/').pop());
+								}
+							} else {
+								wjs.setText("Subtitle Error");
+							}
+							  return;
+						  }
+						  if (typeof st[1].split(' --> ')[1] === 'undefined') {
+							if (subtitleElement.indexOf("http://dl.opensubtitles.org/en/download/subencoding-") > -1) {
+								if (subtitleElement.indexOf("[-alt-]") > -1) {
+									playSubtitles("http://dl.opensubtitles.org/en/download/subencoding-"+subtitleElement.split('[-alt-]')[1]+"/file/"+subtitleElement.split('[-alt-]')[0].split('/').pop());
+								} else {
+									playSubtitles("http://dl.opensubtitles.org/en/download/file/"+subtitleElement.split('/').pop());
+								}
+							} else {
+								wjs.setText("Subtitle Error");
+							}
+							  return;
+						  }
+						  var is = Math.round(toSeconds(wjs.strip(st[1].split(' --> ')[0])));
+						  var os = Math.round(toSeconds(wjs.strip(st[1].split(' --> ')[1])));
+						  var t = st[2];
+						  
+						  if( st.length > 2) {
+							var j = 3;
+							for (j=3; j<st.length; j++) {
+								t = t + '\n'+st[j];
+							}
+	
+						  }
+						  subtitles[is] = {i:is, o: os, t: t};
+						}
+					}
+				} else if (extension.toLowerCase() == "sub") {
+					srt = srt.replace(/\r\n|\r|\n/g, '\n');
+					
+					if (typeof srt === 'undefined') {
+						if (subtitleElement.indexOf("http://dl.opensubtitles.org/en/download/subencoding-") > -1) {
+							if (subtitleElement.indexOf("[-alt-]") > -1) {
+								playSubtitles("http://dl.opensubtitles.org/en/download/subencoding-"+subtitleElement.split('[-alt-]')[1]+"/file/"+subtitleElement.split('[-alt-]')[0].split('/').pop());
+							} else {
+								playSubtitles("http://dl.opensubtitles.org/en/download/file/"+subtitleElement.split('/').pop());
+							}
+						} else {
+							wjs.setText("Subtitle Error");
+						}
+						return;
+					}
+					srt = wjs.strip(srt);
+					var srty = srt.split('\n');
+	
+					var s = 0;
+					for (s = 0; s < srty.length; s++) {
+						var st = srty[s].split('}{');
+						if (st.length >=2) {
+						  var is = Math.round(st[0].substr(1) /10);
+						  var os = Math.round(st[1].split('}')[0] /10);
+						  var t = st[1].split('}')[1].replace('|', '\n');
+						  if (is != 1 && os != 1) subtitles[is] = {i:is, o: os, t: t};
+						}
+					}
+				}
+				currentSubtitle = -1;
+			}
+		}
+//		if (subtitleElement.indexOf("http://dl.opensubtitles.org/en/download/filead/") == 0) subtitleElement = "http://dl.opensubtitles.org/en/download/subencoding-utf8/file/"+subtitleElement.split('/').pop();
+		if (subtitleElement.indexOf("[-alt-]") > -1) {
+			xhr.open("get", subtitleElement.split('[-alt-]')[0]);
+		} else {
+			xhr.open("get", subtitleElement);
+		}
+		xhr.send();
+	}
+	// End External Subtitles (SRT, SUB)
 	
 	// Start Remove all Subtitles
 	function clearAll() {
@@ -110,22 +214,10 @@ Rectangle {
 		subItems[pli] = Qt.createQmlObject('import QtQuick 2.1; import QtQuick.Layouts 1.0; import QmlVlc 0.1; Rectangle { id: dstitem'+ pli +'; anchors.left: parent.left; anchors.top: parent.top; anchors.topMargin: 32 + ('+ pli +' *40); color: "transparent"; width: subMenublock.width < 694 ? (subMenublock.width -56) : 638; height: 40; MouseArea { id: sitem'+ pli +'; cursorShape: Qt.PointingHandCursor; hoverEnabled: true; anchors.fill: parent; onClicked: { toggleSubtitles(); clearSubtitles(); subPlaying = '+ pli +'; wjs.setText("Subtitle Unloaded"); vlcPlayer.subtitle.track = 0; fireQmlMessage("[save-sub]'+plstring+'"); savedSub = "'+plstring+'"; } } Rectangle { width: subMenublock.width < 694 ? (subMenublock.width -56) : 638; clip: true; height: 40; color: vlcPlayer.state == 1 ? subPlaying == '+ pli +' ? sitem'+ pli +'.containsMouse ? "#3D3D3D" : "#e5e5e5" : sitem'+ pli +'.containsMouse ? "#3D3D3D" : "transparent" : subPlaying == '+ pli +' ? sitem'+ pli +'.containsMouse ? "#3D3D3D" : "#e5e5e5" : sitem'+ pli +'.containsMouse ? "#3D3D3D" : "transparent"; Text { anchors.left: parent.left; anchors.leftMargin: 12; anchors.verticalCenter: parent.verticalCenter; text: "'+ plstring +'"; font.pointSize: 10; color: vlcPlayer.state == 1 ? subPlaying == '+ pli +' ? sitem'+ pli +'.containsMouse ? "#e5e5e5" : "#2f2f2f" : sitem'+ pli +'.containsMouse ? "#e5e5e5" : "#e5e5e5" : subPlaying == '+ pli +' ? sitem'+ pli +'.containsMouse ? "#e5e5e5" : "#2f2f2f" : sitem'+ pli +'.containsMouse ? "#e5e5e5" : "#e5e5e5"; } } }', root, 'smenustr' +pli);
 		pli++;
 		
-		var jli = 1;
-		if (vlcPlayer.subtitle.count > 1) while (jli < vlcPlayer.subtitle.count) {
+		if (vlcPlayer.subtitle.count > 1) while (pli < vlcPlayer.subtitle.count) {
 //			if (vlcPlayer.subtitle.track == pli) subPlaying = pli;
-			var showThisSub = true;
-			if (vlcPlayer.subtitle.description(jli).indexOf("Track ") > -1) {
-				if (vlcPlayer.subtitle.description(jli).replace("Track ","").indexOf(" ") == -1) {
-					if (isNaN(parseInt(vlcPlayer.subtitle.description(jli).replace("Track ",""))) === false) {
-						showThisSub = false;
-					}
-				}
-			}
-			if (showThisSub === true) {
-				subItems[pli] = Qt.createQmlObject('import QtQuick 2.1; import QtQuick.Layouts 1.0; import QmlVlc 0.1; Rectangle { id: dstitem'+ pli +'; anchors.left: parent.left; anchors.top: parent.top; anchors.topMargin: 32 + ('+ pli +' *40); color: "transparent"; width: subMenublock.width < 694 ? (subMenublock.width -56) : 638; height: 40; MouseArea { id: sitem'+ pli +'; cursorShape: Qt.PointingHandCursor; hoverEnabled: true; anchors.fill: parent; onClicked: { toggleSubtitles(); clearSubtitles(); subPlaying = '+ pli +'; wjs.setText("Subtitle: '+ vlcPlayer.subtitle.description(jli) +'"); vlcPlayer.subtitle.track = '+ jli +'; } } Rectangle { width: subMenublock.width < 694 ? (subMenublock.width -56) : 638; clip: true; height: 40; color: vlcPlayer.state == 1 ? subPlaying == '+ pli +' ? sitem'+ pli +'.containsMouse ? "#3D3D3D" : "#e5e5e5" : sitem'+ pli +'.containsMouse ? "#3D3D3D" : "transparent" : subPlaying == '+ pli +' ? sitem'+ pli +'.containsMouse ? "#3D3D3D" : "#e5e5e5" : sitem'+ pli +'.containsMouse ? "#3D3D3D" : "transparent"; Text { anchors.left: parent.left; anchors.leftMargin: 12; anchors.verticalCenter: parent.verticalCenter; text: "'+ vlcPlayer.subtitle.description(jli) +'"; font.pointSize: 10; color: vlcPlayer.state == 1 ? subPlaying == '+ pli +' ? sitem'+ pli +'.containsMouse ? "#e5e5e5" : "#2f2f2f" : sitem'+ pli +'.containsMouse ? "#e5e5e5" : "#e5e5e5" : subPlaying == '+ pli +' ? sitem'+ pli +'.containsMouse ? "#e5e5e5" : "#2f2f2f" : sitem'+ pli +'.containsMouse ? "#e5e5e5" : "#e5e5e5"; } } }', root, 'smenustr' +pli);
-				pli++;
-			}
-			jli++;
+			subItems[pli] = Qt.createQmlObject('import QtQuick 2.1; import QtQuick.Layouts 1.0; import QmlVlc 0.1; Rectangle { id: dstitem'+ pli +'; anchors.left: parent.left; anchors.top: parent.top; anchors.topMargin: 32 + ('+ pli +' *40); color: "transparent"; width: subMenublock.width < 694 ? (subMenublock.width -56) : 638; height: 40; MouseArea { id: sitem'+ pli +'; cursorShape: Qt.PointingHandCursor; hoverEnabled: true; anchors.fill: parent; onClicked: { toggleSubtitles(); clearSubtitles(); subPlaying = '+ pli +'; wjs.setText("Subtitle: '+ vlcPlayer.subtitle.description(pli) +'"); vlcPlayer.subtitle.track = '+ pli +'; } } Rectangle { width: subMenublock.width < 694 ? (subMenublock.width -56) : 638; clip: true; height: 40; color: vlcPlayer.state == 1 ? subPlaying == '+ pli +' ? sitem'+ pli +'.containsMouse ? "#3D3D3D" : "#e5e5e5" : sitem'+ pli +'.containsMouse ? "#3D3D3D" : "transparent" : subPlaying == '+ pli +' ? sitem'+ pli +'.containsMouse ? "#3D3D3D" : "#e5e5e5" : sitem'+ pli +'.containsMouse ? "#3D3D3D" : "transparent"; Text { anchors.left: parent.left; anchors.leftMargin: 12; anchors.verticalCenter: parent.verticalCenter; text: "'+ vlcPlayer.subtitle.description(pli) +'"; font.pointSize: 10; color: vlcPlayer.state == 1 ? subPlaying == '+ pli +' ? sitem'+ pli +'.containsMouse ? "#e5e5e5" : "#2f2f2f" : sitem'+ pli +'.containsMouse ? "#e5e5e5" : "#e5e5e5" : subPlaying == '+ pli +' ? sitem'+ pli +'.containsMouse ? "#e5e5e5" : "#2f2f2f" : sitem'+ pli +'.containsMouse ? "#e5e5e5" : "#e5e5e5"; } } }', root, 'smenustr' +pli);
+			pli++;
 		}
 		
 		var subsArray = [];
@@ -154,6 +246,33 @@ Rectangle {
 		settings.totalSubs = pli;
 		// End Adding Subtitle Menu Items
 	}
-		
+	
+	 Connections {
+		 target: vlcPlayer
+		 onMediaPlayerTimeChanged: {
+			// Start show subtitle text (external subtitles)
+			var nowSecond = vlcPlayer.time /1000;
+			if (currentSubtitle > -2) {
+				var subtitle = -1;
+				
+				var os = 0;
+				for (os in subtitles) {
+					if (os > nowSecond) break;
+					subtitle = os;
+				}
+				
+				if (subtitle > 0) {
+					if(subtitle != currentSubtitle) {
+						subtitlebox.changeText = subtitles[subtitle].t;
+						currentSubtitle = subtitle;
+					} else if (subtitles[subtitle].o < nowSecond) {
+						subtitlebox.changeText = "";
+					}
+				}
+			}
+			// End show subtitle text (external subtitles)
+		 }
+	}
+	
 	// This is where the Subtitle Items will be loaded
 }
