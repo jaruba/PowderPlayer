@@ -671,9 +671,17 @@ function settingsEl(kj) {
 		$("#openAction").hide(0);
 		$("#openFolderAction").hide(0);
 	}
-	for (ij = 0; typeof powGlobals["videos"][ij] !== 'undefined'; ij++) if (powGlobals["videos"][ij]["index"] == powGlobals["files"][kj].index) break;
-	$("#playAction").attr("onClick","wjs('#webchimera').plugin.playlist.playItem("+ij+"); $('#closeAction').trigger('click'); $('html, body').animate({ scrollTop: 0 }, 'slow'); playEl("+kj+"); $('body').css('overflow-y','hidden')");
-	$("#copyStream").attr("onClick","gui.Clipboard.get().set('http://localhost:'+powGlobals['engine'].server.address().port+'/"+powGlobals["files"][kj].index+"','text'); $('#closeAction').trigger('click')");
+	if (supportedVideo.indexOf($("#file0").find(".filenames").text().split(".").pop()) > -1) {
+		// if the item is a video
+		for (ij = 0; typeof powGlobals["videos"][ij] !== 'undefined'; ij++) if (powGlobals["videos"][ij]["index"] == powGlobals["files"][kj].index) break;
+		$("#playAction").attr("onClick","wjs('#webchimera').plugin.playlist.playItem("+ij+"); $('#closeAction').trigger('click'); $('html, body').animate({ scrollTop: 0 }, 'slow'); playEl("+kj+"); $('body').css('overflow-y','hidden')");
+		$("#copyStream").attr("onClick","gui.Clipboard.get().set('http://localhost:'+powGlobals['engine'].server.address().port+'/"+powGlobals["files"][kj].index+"','text'); $('#closeAction').trigger('click')");
+		$("#playAction").show(0);
+		$("#copyStream").show(0);
+	} else {
+		$("#playAction").hide(0);
+		$("#copyStream").hide(0);
+	}
 	$("#open-file-settings").trigger("click");
 }
 
@@ -944,13 +952,7 @@ function handle(event) {
 			onTop = false;
 			win.setAlwaysOnTop(false);
 		} else {
-			win.minimize();
-			setTimeout(function() {
-				win.setAlwaysOnTop(true);
-			},40);
-			setTimeout(function() {
-				win.restore();
-			},60);
+			setTimeout(win.setAlwaysOnTop(true),1);
 			onTop = true;
 		}
 		wjs("#webchimera").plugin.emitJsMessage("[on-top]"+onTop);
