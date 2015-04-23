@@ -216,9 +216,6 @@ Rectangle {
 	// save current subtitle to item settings to expose it to JS
 	function saveSub(newSaved) {
 		var itemSettings = {};
-		wjs.setText(vlcPlayer.playlist.currentItem);
-		wjs.setText(vlcPlayer.playlist.items[0].setting);
-		wjs.setText(vlcPlayer.playlist.items[vlcPlayer.playlist.currentItem].setting);
 		if (wjs.isJson(vlcPlayer.playlist.items[vlcPlayer.playlist.currentItem].setting)) itemSettings = JSON.parse(vlcPlayer.playlist.items[vlcPlayer.playlist.currentItem].setting);
 		itemSettings.subPlaying = newSaved;
 		vlcPlayer.playlist.items[vlcPlayer.playlist.currentItem].setting = JSON.stringify(itemSettings);
