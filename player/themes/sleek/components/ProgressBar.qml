@@ -52,13 +52,23 @@ Rectangle {
 				if (vlcPlayer.playing) vlcPlayer.togglePause();
 				lastTimestamp = Date.now();
 				checkWheel = true;
-				if (wheel.angleDelta.y > 0) lastCalc = lastCalc +30000;
-				if (wheel.angleDelta.y < 0) lastCalc = lastCalc -30000;
+				if (wjs.getLength() > 0) var newDif = Math.floor(wjs.getLength() /100);
+				else var newDif = 30000;
+
+				if (wheel.angleDelta.y > 0) lastCalc = lastCalc +newDif;
+				if (wheel.angleDelta.y < 0) lastCalc = lastCalc + (newDif * (-1));
 			}
 		}
 		Timer {
 			interval: 1010; running: checkWheel ? true : false; repeat: true
-			onTriggered: { if (lastTimestamp + 1000 < Date.now()) { checkWheel = false; if (!vlcPlayer.playing) vlcPlayer.togglePause(); if (lastCalc < 0) wjs.jumpTo(lastCalc * (-1),"backward"); if (lastCalc > 0) wjs.jumpTo(lastCalc,"forward"); lastCalc = 0; } }
+			onTriggered: {
+				if (lastTimestamp + 1000 < Date.now()) {
+					checkWheel = false;
+					if (!vlcPlayer.playing) vlcPlayer.togglePause();
+					vlcPlayer.time = wjs.getLength() * settings.newProgress;
+					lastCalc = 0;
+				}
+			}
 		}
 		Rectangle {
 			id: progressBackground
