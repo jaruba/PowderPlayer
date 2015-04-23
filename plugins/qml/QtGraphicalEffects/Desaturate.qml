@@ -43,7 +43,7 @@ import "private"
 
 /*!
     \qmltype Desaturate
-    \inqmlmodule QtGraphicalEffects 1.0
+    \inqmlmodule QtGraphicalEffects
     \since QtGraphicalEffects 1.0
     \inherits QtQuick2::Item
     \ingroup qtgraphicaleffects-color
@@ -83,7 +83,7 @@ Item {
         This property defines how much the source colors are desaturated.
 
         The value ranges from 0.0 (no change) to 1.0 (desaturated). By default,
-        the property is set to \c 0.0 (no chnage).
+        the property is set to \c 0.0 (no change).
 
         \table
         \header

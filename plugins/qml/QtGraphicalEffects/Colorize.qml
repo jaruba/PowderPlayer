@@ -43,7 +43,7 @@ import "private"
 
 /*!
     \qmltype Colorize
-    \inqmlmodule QtGraphicalEffects 1.0
+    \inqmlmodule QtGraphicalEffects
     \since QtGraphicalEffects 1.0
     \inherits QtQuick2::Item
     \ingroup qtgraphicaleffects-color

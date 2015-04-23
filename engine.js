@@ -471,7 +471,8 @@ function scanLibrary() {
 			powGlobals["videos"][newVideoId]["local"] = 1;
 			wjs("#webchimera").addPlaylist({
 				 url: "file:///"+results[ij],
-				 title: getName(results[ij].split('/').pop())
+				 title: getName(results[ij].split('/').pop()),
+				 vlcArgs: "--avi-index=3"
 			});
 			if (ij == 0) {
 				if (typeof allGood === 'undefined') wjs("#webchimera").plugin.emitJsMessage("[disable]"+newVideoId);
@@ -1340,7 +1341,8 @@ wjs.init.prototype.addTorrent = function(torLink) {
 							}
 							wjs(this.context).addPlaylist({
 								 url: localHref+powGlobals["files"][ij].index,
-								 title: getName(powGlobals["videos"][kj]["filename"])
+								 title: getName(powGlobals["videos"][kj]["filename"]),
+				 				 vlcArgs: "--avi-index=3"
 							});
 							wjs(this.context).plugin.emitJsMessage("[saved-sub]"+localStorage.subLang);
 							kj++;
@@ -1396,7 +1398,8 @@ function playlistAddVideo(torLink) {
 		torLink = "file:///"+torLink.split("\\").join("/");
 		wjs("#webchimera").addPlaylist({
 			 url: torLink,
-			 title: getName(powGlobals["videos"][thisVideoId]["filename"])
+			 title: getName(powGlobals["videos"][thisVideoId]["filename"]),
+			 vlcArgs: "--avi-index=3"
 		});
 		wjs("#webchimera").plugin.emitJsMessage("[saved-sub]"+localStorage.subLang);
 	}
@@ -1439,7 +1442,8 @@ function runURL(torLink) {
 		if (typeof powGlobals["videos"][thisVideoId]["filename"] !== 'undefined') {
 			wjs("#webchimera").addPlaylist({
 				 url: torLink,
-				 title: getName(powGlobals["videos"][thisVideoId]["filename"])
+				 title: getName(powGlobals["videos"][thisVideoId]["filename"]),
+				 vlcArgs: "--avi-index=3"
 			});
 			wjs("#webchimera").plugin.emitJsMessage("[saved-sub]"+localStorage.subLang);
 		}
