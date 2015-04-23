@@ -17,6 +17,7 @@ Rectangle {
 	id: root
 	anchors.fill: parent
 	color: "transparent"
+	visible: settings.uiVisible == 0 ? false : settings.toolbar == 0 ? false : true
 	
 	property var checkWheel: false;
 	property var lastTimestamp: 0;
@@ -57,6 +58,7 @@ Rectangle {
 
 				if (wheel.angleDelta.y > 0) lastCalc = lastCalc +newDif;
 				if (wheel.angleDelta.y < 0) lastCalc = lastCalc + (newDif * (-1));
+				
 			}
 		}
 		Timer {
@@ -72,7 +74,8 @@ Rectangle {
 		}
 		Rectangle {
 			id: progressBackground
-			Layout.fillWidth: true
+			anchors.left: parent.left
+			anchors.right: parent.right
 			height: 8
 			anchors.verticalCenter: parent.verticalCenter
 			Rectangle {

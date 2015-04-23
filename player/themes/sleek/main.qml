@@ -1,5 +1,5 @@
 /*****************************************************************************
-* Copyright (c) 2014 Branza Victor-Alexandru <branza.alex[at]gmail.com>
+* Copyright (c) 2014-2015 Branza Victor-Alexandru <branza.alex[at]gmail.com>
 *
 * This program is free software; you can redistribute it and/or modify it
 * under the terms of the GNU Lesser General Public License as published by
@@ -124,7 +124,7 @@ Rectangle {
 			id: topText
 			fontColor: ui.colors.titleBar.font
 			backgroundColor: ui.colors.titleBar.background
-			isVisible: (vlcPlayer.state == 3 || vlcPlayer.state == 4 || vlcPlayer.state == 6) ? ui.settings.titleBar == "fullscreen" ? fullscreen ? true : false : ui.settings.titleBar == "minimized" ? fullscreen === false ? true : false : ui.settings.titleBar == "both" ? true : ui.settings.titleBar == "none" ? false : false : false
+			isVisible: settings.uiVisible == 0 ? false : (vlcPlayer.state == 3 || vlcPlayer.state == 4 || vlcPlayer.state == 6) ? ui.settings.titleBar == "fullscreen" ? fullscreen ? true : false : ui.settings.titleBar == "minimized" ? fullscreen === false ? true : false : ui.settings.titleBar == "both" ? true : ui.settings.titleBar == "none" ? false : false : false
 			icon: settings.glyphsLoaded ? ui.icon.back : ""
 			iconSize: fullscreen ? 16 : 15
 		}
@@ -283,7 +283,7 @@ Rectangle {
 					id: playlistButton
 					icon: settings.glyphsLoaded ? ui.icon.playlist : ""
 					iconSize: fullscreen ? 18 : 17
-					visible: false
+					visible: true
 					anchors.right: fullscreenButton.left
 					anchors.rightMargin: 1
 					glow: ui.settings.buttonGlow
@@ -451,6 +451,20 @@ Rectangle {
 			}
 		}
 		// End Playlist Menu
+		
+		// Start Replace MRL Text Box (for debug playlist feature)
+		Loader.ReplaceMRL {
+			color: "#111111"
+			id: inputBox
+		}
+		// End Replace MRL Text Box (for debug playlist feature)
+
+		// Start Add MRL Text Box (for debug playlist feature)
+		Loader.AddMRL {
+			color: "#111111"
+			id: inputAddBox
+		}
+		// End Add MRL Text Box (for debug playlist feature)
 
 		// Start Subtitle Menu
 		Loader.Menu {

@@ -237,6 +237,7 @@ Rectangle {
 				if (jsonMessage["titleBar"] == "both" || jsonMessage["titleBar"] == "fullscreen" || jsonMessage["titleBar"] == "minimized" || jsonMessage["titleBar"] == "none") ui.settings.titleBar = jsonMessage["titleBar"];
 				if (jsonMessage["pausePolicy"] == "both" || jsonMessage["pausePolicy"] == "fullscreen") ui.settings.pausePolicy = jsonMessage["pausePolicy"];
 				if (jsonMessage["progressCache"] == 1 || jsonMessage["progressCache"] === true) ui.settings.caching = true;
+				if (jsonMessage["debugPlaylist"] == 1 || jsonMessage["debugPlaylist"] === true) { settings.debugPlaylist = true; settings = settings; }
 			}
 			if (jsonMessage["skinning"] === true) {
 				if (jsonMessage["fonts"]) {
@@ -299,9 +300,15 @@ Rectangle {
 				ui = ui;
 			}		
 		} else {
+			if (startsWith(message,"[toggle-ui]")) { toggleUI(); } // Toggle UI Visibility
+			if (startsWith(message,"[hide-ui]")) { hideUI(); } // Hide UI
+			if (startsWith(message,"[show-ui]")) { showUI(); } // Show UI
+			if (startsWith(message,"[toggle-playlist]")) { togglePlaylist(); } // Toggle Playlist
 			if (startsWith(message,"[start-subtitle]")) subMenu.playSubtitles(message.replace("[start-subtitle]","")); // Get Subtitle URL and Play Subtitle
 			if (startsWith(message,"[clear-subtitle]")) subMenu.clearSubtitles(); // Clear Loaded External Subtitle
 			if (startsWith(message,"[load-m3u]")) playM3U(message.replace("[load-m3u]","")); // Load M3U Playlist URL
+			if (startsWith(message,"[start-subtitle]")) playSubtitles(message.replace("[start-subtitle]","")); // Get Subtitle URL and Play Subtitle
+			if (startsWith(message,"[clear-subtitle]")) clearSubtitles(); // Clear Loaded External Subtitle
 			if (startsWith(message,"[set-total-length]")) settings.customLength = message.replace("[set-total-length]",""); // Set custom total length
 			if (startsWith(message,"[reset-progress]")) {
 				// Reset properties related to .setTotalLength()
@@ -321,6 +328,33 @@ Rectangle {
 			if (startsWith(message,"[gobackvar]0")) goneBack = 0;
 			if (startsWith(message,"[pause-policy]")) ui.settings.pausePolicy = message.replace("[pause-policy]","");
 			if (startsWith(message,"[refresh-disabled]")) playlist.refreshDisabled();
+			if (startsWith(message,"[swap-items]")) {
+				vlcPlayer.playlist.advanceItem(message.replace("[swap-items]","").split("|")[0],message.replace("[swap-items]","").split("|")[1]);
+				playlist.addPlaylistItems(); // Refresh Playlist GUI
+			}
+			if (startsWith(message,"[sub-size]")) {
+				settings.subSize = parseInt(message.replace("[sub-size]",""));
+				settings = settings;
+			}
+			if (startsWith(message,"[sub-delay]")) {
+				settings.subDelay = parseInt(message.replace("[sub-delay]",""));
+				vlcPlayer.subtitle.delay = settings.subDelay;
+			}
+			if (startsWith(message,"[audio-delay]")) {
+				settings.audioDelay = parseInt(message.replace("[audio-delay]",""));
+				vlcPlayer.audio.delay = settings.audioDelay;
+			}
+			if (startsWith(message,"[notify]")) setText(message.replace("[notify]",""));
+			if (startsWith(message,"[set-mute]")) { setMute(message.replace("[set-mute]","")); }
+			if (startsWith(message,"[toggle-mute]")) toggleMute();
+			if (startsWith(message,"[set-volume]")) { vlcPlayer.volume = parseInt(message.replace("[set-volume]","")); volheat.volume = (parseInt(message.replace("[set-volume]","")) /200) * volheat.width; }
+			if (startsWith(message,"[toggle-subtitles]")) toggleSubtitles();
+			if (startsWith(message,"[aspect-ratio]")) changeAspect(message.replace("[aspect-ratio]",""),"ratio");
+			if (startsWith(message,"[crop]")) changeAspect(message.replace("[crop]",""),"crop");
+			if (startsWith(message,"[zoom]")) changeZoom(parseFloat(message.replace("[zoom]","")));
+			if (startsWith(message,"[next-frame]")) nextFrame(parseInt(message.replace("[next-frame]","")));
+			if (startsWith(message,"[reset-size]")) resetAspect();
+			if (startsWith(message,"[select-subtitle]")) selectSubtitle(parseInt(message.replace("[select-subtitle]","")));
 			if (startsWith(message,"[refresh-playlist]")) {
 				playlist.addPlaylistItems(); // Refresh Playlist GUI
 				if (vlcPlayer.playlist.itemCount > 0) {
@@ -379,6 +413,9 @@ Rectangle {
 	
 	function onVideoChanged() {
 		goneBack = 0;
+		
+		settings.subDelay = 0;
+		vlcPlayer.subtitle.delay = 0;
 		
 		settings.curAspect = "Default";
 		settings.curCrop = "Default";
@@ -557,7 +594,7 @@ Rectangle {
 		if (settings.multiscreen == 1) {
 			if (vlcPlayer.volume == 0) vlcPlayer.volume = 90;
 			volheat.volume = (vlcPlayer.volume /200) * volheat.width;
-			if (vlcPlayer.audio.mute) wjs.toggleMute();
+			if (vlcPlayer.audio.mute) vlcPlayer.audio.mute = false;
 			refreshMuteIcon();
 		}
 	}
@@ -601,6 +638,32 @@ Rectangle {
 	
 	// TOGGLE SUBTITLE MENU FUNCTION MOVED TO "/themes/sleek/components/SubtitleMenuItems.qml" (can be called with "subMenu." prefix)
 	
+	// Toggle UI Visibility
+	function hideUI() {
+		if (settings.uiVisible) {
+			settings.uiVisible = 0;
+			if (settings.playlistmenu) {
+				playlistblock.visible = false;
+				settings.playlistmenu = false;
+			}
+			if (settings.subtitlemenu) {
+				subMenublock.visible = false;
+				settings.subtitlemenu = false;
+			}
+		}
+		settings = settings;
+	}
+	function showUI() {
+		if (!settings.uiVisible) settings.uiVisible = 1;
+		settings = settings;
+	}
+	function toggleUI() {
+		if (settings.uiVisible) {
+			hideUI();
+		} else showUI();
+	}
+	// End Toggle UI Visibility
+	
 	// Start Toggle Mute
 	function toggleMute() {
 	
@@ -609,6 +672,18 @@ Rectangle {
 		} else {
 			vlcPlayer.toggleMute();
 		}
+		refreshMuteIcon();
+		if (vlcPlayer.audio.mute) {
+			volheat.volume = 0;
+		} else {
+			volheat.volume = (vlcPlayer.volume /200) * volheat.width;
+		}
+	}
+	// End Toggle Mute
+	
+	// Start Toggle Mute
+	function setMute(newMute) {
+		vlcPlayer.audio.mute = newMute;
 		refreshMuteIcon();
 		if (vlcPlayer.audio.mute) {
 			volheat.volume = 0;
@@ -705,13 +780,13 @@ Rectangle {
 	
 	
 	// Start Change Volume to New Volume (difference from current volume)
-	function volumeTo(newvolume,direction) {
-		if (direction == "increase" && vlcPlayer.volume < 200) {
+	function volumeTo(newvolume) {
+		if (newvolume >= 0 && vlcPlayer.volume < 200) {
 			var curvolume = vlcPlayer.volume +newvolume;
 			if (curvolume > 200) curvolume = 200;
 		}
-		if (direction == "decrease" && vlcPlayer.volume > 0) {
-			var curvolume = vlcPlayer.volume -newvolume;
+		if (newvolume < 0 && vlcPlayer.volume > 0) {
+			var curvolume = vlcPlayer.volume +newvolume;
 			if (curvolume < 0) curvolume = 0;
 		}
 		if (vlcPlayer.audio.mute) wjs.toggleMute();
@@ -852,7 +927,7 @@ Rectangle {
 	
 	
 	// Start Jump to Seconds (difference from current position)
-	function jumpTo(newtime,direction) {
+	function jumpTo(newtime) {
 		if (vlcPlayer.state == 3 || vlcPlayer.state == 4) {
 			if (notmuted == 0) if (vlcPlayer.audio.mute === false) {
 				wjs.toggleMute();
@@ -862,8 +937,7 @@ Rectangle {
 				vlcPlayer.togglePause();
 				pauseAfterBuffer = 1;
 			}
-			if (direction == "forward") prevtime = vlcPlayer.time +newtime;
-			if (direction == "backward") prevtime = vlcPlayer.time -newtime;
+			prevtime = vlcPlayer.time +newtime;
 			vlcPlayer.time = prevtime;
 		}		
 	}
@@ -941,7 +1015,20 @@ Rectangle {
 	
 	// START FUNCTIONS FOR EXTERNAL FILE SUPPORT (SRT, SUB, M3U)
 	
-	// EXTERNAL SUBTITLE FUNCTIONS MOVED TO "themes/sleek/components/SubtitleMenuItems.qml" (can be called with "subMenu." prefix)
+	// Proxy functions to expose the subtitle functions from "subMenu." prefix
+	function toggleSubtitles() {
+		subMenu.toggleSubtitles();
+	}
+	function selectSubtitle(selSub) {
+		subMenu.selectSubtitle(selSub);
+	}
+	function playSubtitles(subtitleElement) {
+		subMenu.playSubtitles(subtitleElement);
+	}
+	function clearSubtitles() {
+		subMenu.clearSubtitles();
+	}
+	// End proxy functions to expose the subtitle functions from "subMenu." prefix
 	
 	function strip(s) {
 		return s.replace(/^\s+|\s+$/g,"");

@@ -22,7 +22,7 @@ Rectangle {
 			anchors.horizontalCenter: parent.horizontalCenter
 			horizontalAlignment: Text.AlignHCenter
 			text: subtitlebox.text
-			font.pointSize: fullscreen ? mousesurface.height * 0.033 : mousesurface.height * 0.037
+			font.pointSize: fullscreen ? mousesurface.height * (parseFloat(settings.subPresets[settings.subSize]) -0.005) : mousesurface.height * parseFloat(settings.subPresets[settings.subSize])
 			style: Text.Outline
 			styleColor: subtitleboxShadow.color
 			font.family: fonts.secondaryFont.name
@@ -42,7 +42,7 @@ Rectangle {
 			anchors.horizontalCenter: parent.horizontalCenter
 			horizontalAlignment: Text.AlignHCenter
 			text: ""
-			font.pointSize: fullscreen ? mousesurface.height * 0.033 : mousesurface.height * 0.037
+			font.pointSize: fullscreen ? mousesurface.height * (parseFloat(settings.subPresets[settings.subSize]) -0.005) : mousesurface.height * parseFloat(settings.subPresets[settings.subSize])
 			style: Text.Outline
 			styleColor: subtitleboxShadow.color
 			font.weight: Font.DemiBold

@@ -33,7 +33,12 @@ Rectangle {
 		}
 		if (event.key == Qt.Key_Escape) {
 			if (typeof settings.preventKey[Qt.Key_Escape] === "undefined") {
-				if (fullscreen) {
+				if (subMenublock.visible === true || playlistblock.visible === true) {
+					subMenublock.visible = false;
+					settings.subtitlemenu = false;
+					playlistblock.visible = false;
+					settings.playlistmenu = false;
+				} else if (fullscreen) {
 					fullscreen = false;
 					if (settings.multiscreen == 1) if (vlcPlayer.audio.mute === false) vlcPlayer.toggleMute(); // Multiscreen - Mute on Playback Start
 				}
@@ -57,47 +62,103 @@ Rectangle {
 		if(event.modifiers == Qt.ControlModifier) {
 			if (event.key == Qt.Key_Right) {
 				if (typeof settings.preventKey[Qt.ControlModifier+"+"+Qt.Key_Right] === "undefined") {
-					wjs.jumpTo(60000,"forward");
+					wjs.jumpTo(60000);
+					return;
 				}
 			} else if (event.key == Qt.Key_Left) {
 				if (typeof settings.preventKey[Qt.ControlModifier+"+"+Qt.Key_Left] === "undefined") {
-					wjs.jumpTo(60000,"backward");
+					wjs.jumpTo(-60000);
+					return;
 				}
 			} else if (event.key == Qt.Key_Up) {
 				if (typeof settings.preventKey[Qt.ControlModifier+"+"+Qt.Key_Up] === "undefined") {
-					wjs.volumeTo(8,"increase");
+					wjs.volumeTo(8);
+					return;
 				}
 			} else if (event.key == Qt.Key_Down) {
 				if (typeof settings.preventKey[Qt.ControlModifier+"+"+Qt.Key_Down] === "undefined") {
-					wjs.volumeTo(8,"decrease");
+					wjs.volumeTo(-8);
+					return;
 				}
 			} else if (event.key == Qt.Key_L) {
 				if (typeof settings.preventKey[Qt.ControlModifier+"+"+Qt.Key_L] === "undefined") {
 					wjs.togglePlaylist();
+					return;
 				}
-			}
+			} else if (event.key == Qt.Key_D) {
+				if (typeof settings.preventKey[Qt.ControlModifier+"+"+Qt.Key_D] === "undefined") {
+					if (settings.debugPlaylist) {
+						if (inputAddBox.visible) inputAddBox.visible = false;
+						settings.selectedItem = vlcPlayer.playlist.currentItem;
+						inputBox.textBox.text = vlcPlayer.playlist.items[vlcPlayer.playlist.currentItem].mrl;
+						inputBox.textBox.selectAll();
+						inputBox.visible = true;
+						inputBox.textBox.forceActiveFocus();
+						return;
+					}
+				}
+			} else if (event.key == Qt.Key_A) {
+				if (typeof settings.preventKey[Qt.ControlModifier+"+"+Qt.Key_A] === "undefined") {
+					if (settings.debugPlaylist) {
+						if (inputBox.visible) inputBox.visible = false
+						inputAddBox.textBox.text = "";
+						inputAddBox.visible = true;
+						inputAddBox.textBox.forceActiveFocus();
+						return;
+					}
+				}
+			} else if (event.key == Qt.Key_H) {
+				if (typeof settings.preventKey[Qt.ControlModifier+"+"+Qt.Key_H] === "undefined") {
+					wjs.toggleUI();
+ 					if (settings.uiVisible) {
+ 						wjs.setText("UI Visible");
+					} else wjs.setText("UI Hidden");
+ 					return;
+				}
+ 			}
+			return;
 		}
 		if(event.modifiers == Qt.AltModifier) {
 			if (event.key == Qt.Key_Right) {
 				if (typeof settings.preventKey[Qt.AltModifier+"+"+Qt.Key_Right] === "undefined") {
-					wjs.jumpTo(10000,"forward");
+					wjs.jumpTo(10000);
+					return;
 				}
 			} else if (event.key == Qt.Key_Left) {
 				if (typeof settings.preventKey[Qt.AltModifier+"+"+Qt.Key_Left] === "undefined") {
-					wjs.jumpTo(10000,"backward");
+					wjs.jumpTo(-10000);
+					return;
+				}
+			} else if (event.key == Qt.Key_Up) {
+				if (typeof settings.preventKey[Qt.AltModifier+"+"+Qt.Key_Plus] === "undefined") {
+					if (settings.subSize < 4) settings.subSize++;
+					wjs.setText("Subtitle Size: "+(settings.subSize+1));
+					settings = settings;
+					return;
+				}
+			} else if (event.key == Qt.Key_Down) {
+				if (typeof settings.preventKey[Qt.AltModifier+"+"+Qt.Key_Minus] === "undefined") {
+					if (settings.subSize > 0) settings.subSize--;
+					wjs.setText("Subtitle Size: "+(settings.subSize+1));
+					settings = settings;
+					return;
 				}
 			}
+			return;
 		}
 		if(event.modifiers == Qt.ShiftModifier) {
 			if (event.key == Qt.Key_Right) {
 				if (typeof settings.preventKey[Qt.ShiftModifier+"+"+Qt.Key_Right] === "undefined") {
-					wjs.jumpTo(3000,"forward");
+					wjs.jumpTo(3000);
+					return;
 				}
 			} else if (event.key == Qt.Key_Left) {
 				if (typeof settings.preventKey[Qt.ShiftModifier+"+"+Qt.Key_Left] === "undefined") {
-					wjs.jumpTo(3000,"backward");
+					wjs.jumpTo(-3000);
+					return;
 				}
 			}
+			return;
 		}
 		if (event.key == Qt.Key_M) {
 			if (typeof settings.preventKey[Qt.Key_M] === "undefined") {
@@ -187,6 +248,34 @@ Rectangle {
 				wjs.setText(showtime.text.trim());
 			}
 		}
+		if (event.key == Qt.Key_G) {
+			if (typeof settings.preventKey[Qt.Key_G] === "undefined") {
+				settings.subDelay = settings.subDelay -50;
+				wjs.setText("Subtitle Delay: "+settings.subDelay+" ms");
+				vlcPlayer.subtitle.delay = settings.subDelay;
+			}
+		}
+		if (event.key == Qt.Key_H) {
+			if (typeof settings.preventKey[Qt.Key_H] === "undefined") {
+				settings.subDelay = settings.subDelay +50;
+				wjs.setText("Subtitle Delay: "+settings.subDelay+" ms");
+				vlcPlayer.subtitle.delay = settings.subDelay;
+			}
+		}
+		if (event.key == Qt.Key_J) {
+			if (typeof settings.preventKey[Qt.Key_J] === "undefined") {
+				settings.audioDelay = settings.audioDelay -50;
+				wjs.setText("Audio Delay: "+settings.audioDelay+" ms");
+				vlcPlayer.audio.delay = settings.audioDelay;
+			}
+		}
+		if (event.key == Qt.Key_K) {
+			if (typeof settings.preventKey[Qt.Key_K] === "undefined") {
+				settings.audioDelay = settings.audioDelay +50;
+				wjs.setText("Audio Delay: "+settings.audioDelay+" ms");
+				vlcPlayer.audio.delay = settings.audioDelay;
+			}
+		}
 	}
 	// END HOTKEYS
 	
@@ -194,8 +283,8 @@ Rectangle {
 	// MOUSE ACTIONS
 	function mouseScroll(mouseX,mouseY) {
 		// Change Volume on Mouse Scroll
-		if (mouseY > 0) wjs.volumeTo(8,"increase");
-		if (mouseY < 0) wjs.volumeTo(8,"decrease");
+		if (mouseY > 0) wjs.volumeTo(8);
+		if (mouseY < 0) wjs.volumeTo(-8);
 		// End Change Volume on Mouse Scroll
 	}
 	function mouseMoved(mouseX,mouseY) {
