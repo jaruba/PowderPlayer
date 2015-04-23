@@ -139,6 +139,7 @@ Rectangle {
 	// hack for wrong open hand cursor (qt 5.4 bug)
 	Image {
 		id: openHand
+		visible: platform == "OSX" ? false : true
 		source: "../../../images/cursor-openhand.png"
 		z: 101
 		opacity: 0
