@@ -1,14 +1,14 @@
+var dezalgo = require('dezalgo')
+
 module.exports = function (tasks, cb) {
   var current = 0
   var results = []
-  cb = cb || function () {}
+  if (cb) cb = dezalgo(cb)
 
   function done (err, result) {
-    if (err) return cb(err, results)
     results.push(result)
-
-    if (++current >= tasks.length) {
-      cb(null, results)
+    if (++current >= tasks.length || err) {
+      if (cb) cb(err, results)
     } else {
       tasks[current](done)
     }
@@ -17,6 +17,6 @@ module.exports = function (tasks, cb) {
   if (tasks.length) {
     tasks[0](done)
   } else {
-    cb(null, [])
+    if (cb) cb(null, results)
   }
 }

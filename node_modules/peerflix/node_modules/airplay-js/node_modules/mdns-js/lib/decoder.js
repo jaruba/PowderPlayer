@@ -72,15 +72,35 @@ function (packet, sectionName, obj) {
 };
 
 module.exports.decodeMessage = function (message) {
-  var data = {
-    addresses: []
-  };
+
   var packets = dns.DNSPacket.parse(message);
   if (!(packets instanceof Array)) {
     packets = [packets];
   }
+  return decodePackets(packets);
+};
+
+var decodePackets = module.exports.decodePackets = function (packets) {
+  var queryOnly = false;
+  var data = {
+    addresses: []
+  };
   var query = [];
+  data.query = query;
+
+  debug('decodeMessage');
   packets.forEach(function (packet) {
+    //skip query only
+    debug(packet.answer.length, packet.authority.length,
+      packet.additional.length);
+    if (queryOnly || (packet.answer.length === 0 &&
+      packet.authority.length === 0 &&
+      packet.additional.length === 0)) {
+      data = null;
+      queryOnly = true;
+      debug('skip', data);
+      return;
+    }
     decodeSection(packet, 'answer', data);
     decodeSection(packet, 'authority', data);
     decodeSection(packet, 'additional', data);
@@ -92,6 +112,6 @@ module.exports.decodeMessage = function (message) {
     });
   });
 
-  data.query = query;
+
   return data;
 };

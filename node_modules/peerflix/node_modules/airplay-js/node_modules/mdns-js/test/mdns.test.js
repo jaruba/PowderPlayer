@@ -14,11 +14,11 @@ var mdns = require('../');
 describe('mDNS', function () {
   var browser;
   before(function (done) {
+    mdns.excludeInterface('0.0.0.0');
     expect(mdns,  'library does not exist!?').to.exist(mdns);
     browser = mdns.createBrowser();
 
-    browser.on('ready', function onReady(socketcount) {
-      expect(socketcount).to.be.above(0);
+    browser.on('ready', function onReady() {
       done();
     });
   });
@@ -29,24 +29,15 @@ describe('mDNS', function () {
   });
 
 
-  it('should .discover()', function (done) {
+  it('should .discover()', {skip: process.env.MDNS_NO_RESPONSE},
+    function (done) {
     browser.once('update', function onUpdate(data) {
-      //mdns._byService.should.have.property('_workstation._tcp');
       expect(data).to.include(['interfaceIndex', 'networkInterface',
         'addresses', 'query']);
-
-      // if (data.query !== '_services._dns-sd._udp.local') {
-      //   console.log(data);
-      //   data.should.have.property('type');
-      // }
       done();
     });
+
     setTimeout(browser.discover.bind(browser), 500);
   });
 
-
-  it('should close unused', function (done) {
-    browser.closeUnused();
-    setTimeout(done, 500);
-  });
 });

@@ -1,22 +1,25 @@
-### Qap, a Quick Parser
-
-[![CODECLIMATE](http://img.shields.io/codeclimate/github/rootslab/qap.svg?style=flat)](https://codeclimate.com/github/rootslab/qap)
-[![CODECLIMATE-TEST-COVERAGE](http://img.shields.io/codeclimate/coverage/github/rootslab/qap.svg?style=flat)](https://codeclimate.com/github/rootslab/qap)
-
-[![LICENSE](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/rootslab/qap#mit-license)
-[![GITTIP](http://img.shields.io/gittip/rootslab.svg?style=flat)](https://www.gittip.com/rootslab/)
-[![NPM DOWNLOADS](http://img.shields.io/npm/dm/qap.svg?style=flat)](http://npm-stat.com/charts.html?package=qap)
+### Qap
 
 [![NPM VERSION](http://img.shields.io/npm/v/qap.svg?style=flat)](https://www.npmjs.org/package/qap)
+[![CODACY BADGE](https://img.shields.io/codacy/b18ed7d95b0a4707a0ff7b88b30d3def.svg?style=flat)](https://www.codacy.com/public/44gatti/qap)
+[![CODECLIMATE](http://img.shields.io/codeclimate/github/rootslab/qap.svg?style=flat)](https://codeclimate.com/github/rootslab/qap)
+[![CODECLIMATE-TEST-COVERAGE](https://img.shields.io/codeclimate/coverage/github/rootslab/qap.svg?style=flat)](https://codeclimate.com/github/rootslab/qap)
+[![LICENSE](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/rootslab/qap#mit-license)
+
 [![TRAVIS CI BUILD](http://img.shields.io/travis/rootslab/qap.svg?style=flat)](http://travis-ci.org/rootslab/qap)
 [![BUILD STATUS](http://img.shields.io/david/rootslab/qap.svg?style=flat)](https://david-dm.org/rootslab/qap)
 [![DEVDEPENDENCY STATUS](http://img.shields.io/david/dev/rootslab/qap.svg?style=flat)](https://david-dm.org/rootslab/qap#info=devDependencies)
+[![NPM DOWNLOADS](http://img.shields.io/npm/dm/qap.svg?style=flat)](http://npm-stat.com/charts.html?package=qap)
 
 [![NPM GRAPH1](https://nodei.co/npm-dl/qap.png)](https://nodei.co/npm/qap/)
 
-[![NPM GRAPH2](https://nodei.co/npm/qap.png?downloads=true&stars=true)](https://nodei.co/npm/qap/)
+[![NPM GRAPH2](https://nodei.co/npm/qap.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/qap/)
 
- * Qap is a quick parser for string or buffer patterns. 
+[![status](https://sourcegraph.com/api/repos/github.com/rootslab/qap/.badges/status.png)](https://sourcegraph.com/github.com/rootslab/qap)
+[![views](https://sourcegraph.com/api/repos/github.com/rootslab/qap/.counters/views.png)](https://sourcegraph.com/github.com/rootslab/qap)
+[![views 24h](https://sourcegraph.com/api/repos/github.com/rootslab/qap/.counters/views-24h.png)](https://sourcegraph.com/github.com/rootslab/qap)
+
+ * __Qap__ is a quick parser for string or buffer patterns. 
  * It is optimized for using with pattern strings <= 255 bytes.
  * Better results are achieved with long and sparse patterns.
  * It is an implementation of QuickSearch algorithm.
@@ -164,7 +167,7 @@ See __[bench](./bench)__ dir.
 
 ### MIT License
 
-> Copyright (c) 2012 &lt; Guglielmo Ferri : 44gatti@gmail.com &gt;
+> Copyright (c) 2015 &lt; Guglielmo Ferri : 44gatti@gmail.com &gt;
 
 > Permission is hereby granted, free of charge, to any person obtaining
 > a copy of this software and associated documentation files (the

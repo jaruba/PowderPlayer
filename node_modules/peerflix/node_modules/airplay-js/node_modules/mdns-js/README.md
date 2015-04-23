@@ -13,6 +13,7 @@ Install by
 
     npm install mdns-js
 
+[![Build Status](https://travis-ci.org/kmpm/node-mdns-js.svg?branch=master)](https://travis-ci.org/kmpm/node-mdns-js)
 
 Future
 ------
@@ -28,6 +29,8 @@ example
 
 ```javascript
 var mdns = require('mdns-js');
+//if you have another mdns daemon running, like avahi or bonjour, uncomment following line
+//mdns.excludeInterface('0.0.0.0');
 
 var browser = mdns.createBrowser();
 
@@ -98,7 +101,7 @@ References
 * http://en.wikipedia.org/wiki/Multicast_DNS
 * http://en.wikipedia.org/wiki/Zero_configuration_networking#Service_discovery
 * RFC 6762 - mDNS - http://tools.ietf.org/html/rfc6762
-* RFC 6763 - DNS Based Service Discovery - http://tools.ietf.org/html/rfc6763
+* RFC 6763 - DNS Based Service Discovery (DNS-SD) - http://tools.ietf.org/html/rfc6763
 * http://www.tcpipguide.com/free/t_DNSMessageHeaderandQuestionSectionFormat.htm
 
 

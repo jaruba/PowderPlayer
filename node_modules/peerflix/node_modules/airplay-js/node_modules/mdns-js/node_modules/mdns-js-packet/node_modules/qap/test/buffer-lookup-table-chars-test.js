@@ -4,10 +4,11 @@ var log = console.log
     , Qap = require( '../' )
     , bpattern = new Buffer( 255 )
     , qap = Qap( bpattern )
+    , i = 0
     ;
 
 log( '. create %d pattern long, with all bytes equal to 0xff', bpattern.length );
-for ( var i = 0; i < 255; ++i ) {
+for ( ; i < 255; ++i ) {
     bpattern[ i ] = 0xff;
 }
 
@@ -27,7 +28,7 @@ bpattern = new Buffer( 257 );
 qap = Qap( bpattern );
 
 log( '. create %d pattern long, with all bytes equal to 0xff', bpattern.length );
-for ( var i = 0; i < 257; ++i ) {
+for ( i = 0; i < 257; ++i ) {
     bpattern[ i ] = 0xff;
 };
 

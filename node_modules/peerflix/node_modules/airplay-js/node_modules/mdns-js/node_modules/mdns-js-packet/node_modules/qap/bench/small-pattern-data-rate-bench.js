@@ -31,7 +31,7 @@ var log = console.log
         log( '- current gap factor is', ( gapFactor ) ? gapFactor : 3 ); 
         log( '- patterns gap (distance) is %d KBytes', ( gap / 1024 ).toFixed( 2 ) );
         // log( ' - plength / pgap:', len / gap );
-        log( ' - buffer creation time:', mtime / 1000, 'secs' ); 
+        log( '- buffer creation time:', mtime / 1000, 'secs' ); 
         return t;
     }
     , bsize

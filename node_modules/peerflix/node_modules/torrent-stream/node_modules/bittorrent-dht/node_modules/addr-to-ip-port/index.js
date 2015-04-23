@@ -10,7 +10,7 @@ module.exports = function addrToIPPort (addr) {
   if (size === 100000) cache = {}
   if (!cache[addr]) {
     var m = ADDR_RE.exec(addr)
-    if (!m) throw new Error('invalid addr')
+    if (!m) throw new Error('invalid addr: ' + addr)
     cache[addr] = [ m[1], Number(m[2]) ]
     size += 1
   }

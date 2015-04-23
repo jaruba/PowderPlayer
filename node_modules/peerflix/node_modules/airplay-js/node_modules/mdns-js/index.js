@@ -2,8 +2,9 @@
 
 var config = require('./package.json');
 var st = require('./lib/service_type');
+var Networking = require('./lib/networking');
 
-
+var networking = new Networking();
 
 /** @member {string} */
 module.exports.version = config.version;
@@ -22,9 +23,22 @@ module.exports.createBrowser = function browserCreated(serviceType) {
   if (typeof serviceType === 'undefined') {
     serviceType = st.ServiceType.wildcard;
   }
-  return new module.exports.Browser(serviceType);
+  return new module.exports.Browser(networking, serviceType);
 };
 
+
+module.exports.excludeInterface = function (iface) {
+  if (networking.started) {
+    throw new Error('can not exclude interfaces after start');
+  }
+  if (iface === '0.0.0.0') {
+    networking.INADDR_ANY = false;
+  }
+  else {
+    var err = new Error('Not a supported interface');
+    err.interface = iface;
+  }
+};
 
 
 /* @borrows Advertisement as Advertisement */
@@ -40,7 +54,8 @@ module.exports.Advertisement = require('./lib/advertisement'); //just for conven
  */
 module.exports.createAdvertisement =
   function advertisementCreated(serviceType, port, options) {
-    return new module.exports.Advertisement(serviceType, port, options);
+    return new module.exports.Advertisement(
+      networking, serviceType, port, options);
   };
 
 

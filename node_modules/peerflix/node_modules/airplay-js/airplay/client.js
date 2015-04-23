@@ -1,6 +1,6 @@
 /**
  * node-airplay
- * 
+ *
  * @file airplay protocol client
  * @author zfkun(zfkun@msn.com)
  * @thanks https://github.com/benvanik/node-airplay/blob/master/lib/airplay/client.js
@@ -180,7 +180,7 @@ Client.prototype.post = function( path, body, callback ) {
 Client.prototype.serverInfo = function ( callback ) {
     this.get( '/server-info', function ( res ) {
         var info = {};
-        
+
         var obj = plist.parseStringSync( res.body );
         if ( obj ) {
             info = {

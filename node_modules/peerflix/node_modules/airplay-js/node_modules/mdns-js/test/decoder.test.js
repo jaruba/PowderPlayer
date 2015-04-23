@@ -36,8 +36,6 @@ function testDecodeMessage (binFolder, jsFolder) {
       var binFile = path.join(binFolder, file);
 
       var b = helper.readBin(binFile);
-
-
       var obj = decoder.decodeMessage(b);
 
       if (!fs.existsSync(djsFile)) {
@@ -81,7 +79,7 @@ describe('decoder', function () {
   //   testDecodeMessage(fixturesPacket, fixturesFolderMessages);
   // });
 
-  describe('decodeMessage - workstation', function () {
+  describe('decodeMessage - fixture', function () {
     testDecodeMessage(fixtureFolder, fixtureFolder);
   });
 

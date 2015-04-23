@@ -1,1 +1,1 @@
-{ addresses: [], query: [ '_workstation._tcp.local' ] }
+null
