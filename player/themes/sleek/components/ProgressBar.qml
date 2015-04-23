@@ -18,6 +18,10 @@ Rectangle {
 	anchors.fill: parent
 	color: "transparent"
 	
+	property var checkWheel: false;
+	property var lastTimestamp: 0;
+	property var lastCalc: 0;
+	
 	RowLayout {
 		id: rowLayer
 		anchors.left: parent.left
@@ -42,6 +46,19 @@ Rectangle {
 			onPressed: root.pressed(mouse.x,mouse.y);
 			onPositionChanged: root.changed(mouse.x,mouse.y);
 			onReleased: root.released(mouse.x,mouse.y);
+			onWheel: {
+				settings.newProgress = (vlcPlayer.time + lastCalc) / wjs.getLength();
+				settings = settings;
+				if (vlcPlayer.playing) vlcPlayer.togglePause();
+				lastTimestamp = Date.now();
+				checkWheel = true;
+				if (wheel.angleDelta.y > 0) lastCalc = lastCalc +30000;
+				if (wheel.angleDelta.y < 0) lastCalc = lastCalc -30000;
+			}
+		}
+		Timer {
+			interval: 1010; running: checkWheel ? true : false; repeat: true
+			onTriggered: { if (lastTimestamp + 1000 < Date.now()) { checkWheel = false; if (!vlcPlayer.playing) vlcPlayer.togglePause(); if (lastCalc < 0) wjs.jumpTo(lastCalc * (-1),"backward"); if (lastCalc > 0) wjs.jumpTo(lastCalc,"forward"); lastCalc = 0; } }
 		}
 		Rectangle {
 			id: progressBackground
