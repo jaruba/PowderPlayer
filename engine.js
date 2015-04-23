@@ -1541,3 +1541,10 @@ $('#fileDialog').change(function(evt) {
 function chooseFile(name) {
 	$(name).trigger('click');
 }
+
+$('#magnetLink').mousedown(function(event) {
+    if (event.which == 3) {
+		var clipboard = gui.Clipboard.get();
+		$('#magnetLink').val(clipboard.get('text'));
+    }
+});
