@@ -813,24 +813,30 @@ var onmagnet = function () {
 }
 
 win.on('close', function() {
-	setTimeout(function() { win.close(true); },180000); // fallback, if any error appears and the process didn't finish, the app should still close (3 mins)
-	win.hide();
-	if ($('#main').css("display") != "table") wjs("#webchimera").stopPlayer();
-	if (typeof powGlobals["engine"] !== 'undefined') {
-		isReady = 0;
-		clearTimeout(downSpeed);
-		powGlobals["engine"].swarm.removeListener('wire', onmagnet);
-		powGlobals["engine"].server.close(function() {
-			powGlobals["engine"].remove(function() {
-				powGlobals["engine"].destroy(function() {
-					win.close(true);
-				});
-			});
-		});
-	} else {
-		win.close(true);
-	}
 	
+	if ($('#main').css("display") != "table") {
+		if (typeof powGlobals["engine"] !== 'undefined' && powGlobals["hasVideo"] == 0) var r = confirm("Are you sure? This action will delete all downloaded files.");
+		else r = true;
+		if (r) {
+			setTimeout(function() { win.close(true); },180000); // fallback, if any error appears and the process didn't finish, the app should still close (3 mins)
+			win.hide();
+			if ($('#main').css("display") != "table") wjs("#webchimera").stopPlayer();
+			if (typeof powGlobals["engine"] !== 'undefined') {
+				isReady = 0;
+				clearTimeout(downSpeed);
+				powGlobals["engine"].swarm.removeListener('wire', onmagnet);
+				powGlobals["engine"].server.close(function() {
+					powGlobals["engine"].remove(function() {
+						powGlobals["engine"].destroy(function() {
+							win.close(true);
+						});
+					});
+				});
+			} else {
+				win.close(true);
+			}
+		}
+	} else win.close(true);
 });
 
 function goBack() {
