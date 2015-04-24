@@ -502,6 +502,10 @@ function isPlaying() {
 	if (firstTime == 0 && focused === false) if (wjs().plugin.fullscreen === false) win.requestAttention(true);
 	if (firstTime == 0) {
 		if (typeof powGlobals["duration"] !== 'undefined') wjs().setTotalLength(powGlobals["duration"]);
+		if (firstTimeEver == 1) {
+			if (typeof localStorage.savedVolume !== 'undefined') setTimeout(function() { wjs().volume(localStorage.savedVolume); },100);
+			setTimeout(function() { wjs().onVolume(function() { if (this.volume() > 0) localStorage.savedVolume = this.volume(); }); },101);
+		}
 		if (firstTimeEver == 1 && wjs().plugin.fullscreen == false) {
 			firstTimeEver = 0;
 			var newWidth = Math.round(wjs().plugin.video.width*0.98);
@@ -1478,9 +1482,9 @@ function runURL(torLink) {
 }
 setTimeout(function() { 
 	wjs("#player_wrapper").addPlayer({ id: "webchimera", theme: "sleek", autoplay: 1, progressCache: 1, pausePolicy: localStorage.clickPause });
-	wjs().catchEvent('QmlMessage', handle);
-	wjs().catchEvent('MediaPlayerPlaying', isPlaying);
-	wjs().catchEvent('MediaPlayerOpening', isOpening);
+	wjs().onMessage(handle);
+	wjs().onPlaying(isPlaying);
+	wjs().onOpening(isOpening);
 	if (gui.App.argv.length > 0) {
 		resetPowGlobals();
 		runURL(gui.App.argv[0]);

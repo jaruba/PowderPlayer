@@ -227,6 +227,61 @@ wjs.init.prototype.onMessage = function(wjs_function) {
 	return this;
 };
 
+wjs.init.prototype.onState = function(wjs_function) {
+	if (this.allElements.length == 1) {
+		this.catchEvent("MediaPlayerStateChanged",wjs_function);
+	} else for (z = 0; z < this.allElements.length; z++) wjs("#"+this.allElements[z].id).onMessage(wjs_function);
+	return this;
+};
+
+wjs.init.prototype.onVolume = function(wjs_function) {
+	if (this.allElements.length == 1) {
+		var saveContext = wjs(this.context);
+		var wjs_event = "VolumeChanged";
+		if (this.plugin.audio.attachEvent) {
+			// Microsoft
+			this.plugin.audio.attachEvent("on"+wjs_event, function(event) {
+				return wjs_function.call(saveContext,event);
+			});
+		} else if (this.plugin.audio.addEventListener) {
+			// Mozilla: DOM level 2
+			this.plugin.audio.addEventListener(wjs_event, function(event) {
+				return wjs_function.call(saveContext,event);
+			}, false);
+		} else {
+			// DOM level 0
+			this.plugin.audio["on"+wjs_event] = function(event) {
+				return wjs_function.call(saveContext,event);
+			};
+		}
+	} else for (z = 0; z < this.allElements.length; z++) wjs("#"+this.allElements[z].id).onMessage(wjs_function);
+	return this;
+};
+
+wjs.init.prototype.onMute = function(wjs_function) {
+	if (this.allElements.length == 1) {
+		var saveContext = wjs(this.context);
+		var wjs_event = "MuteChanged";
+		if (this.plugin.audio.attachEvent) {
+			// Microsoft
+			this.plugin.audio.attachEvent("on"+wjs_event, function(event) {
+				return wjs_function.call(saveContext,event);
+			});
+		} else if (this.plugin.audio.addEventListener) {
+			// Mozilla: DOM level 2
+			this.plugin.audio.addEventListener(wjs_event, function(event) {
+				return wjs_function.call(saveContext,event);
+			}, false);
+		} else {
+			// DOM level 0
+			this.plugin.audio["on"+wjs_event] = function(event) {
+				return wjs_function.call(saveContext,event);
+			};
+		}
+	} else for (z = 0; z < this.allElements.length; z++) wjs("#"+this.allElements[z].id).onMessage(wjs_function);
+	return this;
+};
+
 // catch event function
 wjs.init.prototype.catchEvent = function(wjs_event,wjs_function) {
 	if (this.allElements.length == 1) {
