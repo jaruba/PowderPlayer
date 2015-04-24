@@ -495,8 +495,11 @@ function delayDisable(newVideoId) {
     }
 }
 
-win.on('focus', function() { focused = true; }); 
-win.on('blur', function() { focused = false; }); 
+win.on('focus', function() { focused = true; win.setProgressBar(-0.1); }); 
+win.on('blur', function() {
+	focused = false;
+	if ($('#main').css("display") != "table" && typeof powGlobals["engine"] !== 'undefined' && powGlobals["hasVideo"] == 0 && parseInt($('#all-download .progress-bar').attr('data-transitiongoal')) < 100) win.setProgressBar(parseInt($('#all-download .progress-bar').attr('data-transitiongoal'))/100);
+}); 
 
 function isPlaying() {
 	if (doSubsLocal == 1 && typeof powGlobals["engine"] === 'undefined') {
@@ -758,8 +761,13 @@ function checkDownloaded(piece) {
 		powGlobals["lastDownload"] = updDownload;
 		if (updDownload >= 100) {
 			$('#all-download .progress-bar').removeClass("progress-bar-warning").addClass("progress-bar-danger").attr('data-transitiongoal', 100).progressbar({display_text: 'center'});
+			if (focused == false) {
+				win.setProgressBar(-0.1);
+				win.requestAttention(true);
+			}
 		} else {
 			$('#all-download .progress-bar').attr('data-transitiongoal', updDownload).progressbar({display_text: 'center'});
+			if (focused == false && $('#main').css("display") != "table" && typeof powGlobals["engine"] !== 'undefined' && powGlobals["hasVideo"] == 0) win.setProgressBar(parseInt(updDownload)/100);
 		}
 	}
 
