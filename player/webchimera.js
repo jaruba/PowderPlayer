@@ -82,6 +82,11 @@ function IsJsonString(str) {
 // end function to check if a string is json
 
 // hacks to remember variables in setTimeout()
+function delayNode(action,saveContext) {
+	return function() {
+		action.call(saveContext);
+	}
+}
 function delayLoadM3U(context,tempV) {
     return function(){
 		wjs(context).qmlLoaded(function() {
@@ -417,7 +422,7 @@ wjs.init.prototype.qmlLoaded = function(action) {
 	if (this.allElements.length == 1) {
 		var saveContext = wjs(this.context);
 		if (isNodeWebkit) {
-			action.call(saveContext);
+			setTimeout(delayNode(action,saveContext),100);
 		} else {
 			function wjs_function(event) {
 				if (event == "[qml-loaded]") {
