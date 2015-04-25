@@ -1633,6 +1633,6 @@ function chooseFile(name) {
 $('#magnetLink').mousedown(function(event) {
     if (event.which == 3) {
 		var clipboard = gui.Clipboard.get();
-		$('#magnetLink').val(clipboard.get('text'));
+		$('#magnetLink').val(clipboard.get('text')).select();
     }
 });
