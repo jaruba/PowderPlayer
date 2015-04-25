@@ -34,6 +34,7 @@ Rectangle {
 	property var torDataBut: 0;
 	property var onTop: false;
 	property var savedSub: "-";
+	property var instantButEffect: 0; // for settings button
 	property variant disables: [];
 	JsLogic.Settings { id: settings }
 	JsLogic.Functions { id: wjs }
@@ -125,7 +126,7 @@ Rectangle {
 			fontColor: ui.colors.titleBar.font
 			backgroundColor: ui.colors.titleBar.background
 			isVisible: settings.uiVisible == 0 ? false : (vlcPlayer.state == 3 || vlcPlayer.state == 4 || vlcPlayer.state == 6) ? ui.settings.titleBar == "fullscreen" ? fullscreen ? true : false : ui.settings.titleBar == "minimized" ? fullscreen === false ? true : false : ui.settings.titleBar == "both" ? true : ui.settings.titleBar == "none" ? false : false : false
-			icon: settings.glyphsLoaded ? ui.icon.back : ""
+			icon: settings.glyphsLoaded ? ui.icon.settings : ""
 			iconSize: fullscreen ? 16 : 15
 		}
 		// End Title Bar (top bar)
@@ -382,7 +383,6 @@ Rectangle {
 						color: playlistClose.hover.containsMouse ? ui.colors.playlistMenu.closeBackgroundHover : ui.colors.playlistMenu.closeBackground
 						hover.onClicked: {
 							playlistblock.visible = false;
-							settings.playlistmenu = false
 						}
 					}
 					// End Close Playlist Button
@@ -503,7 +503,6 @@ Rectangle {
 						color: subMenuClose.hover.containsMouse ? ui.colors.playlistMenu.closeBackgroundHover : ui.colors.playlistMenu.closeBackground
 						hover.onClicked: {
 							subMenublock.visible = false;
-							settings.subtitlemenu = false;
 						}
 					}
 					// End Close Subtitle Menu Button
@@ -521,6 +520,141 @@ Rectangle {
 			fontShadow: ui.colors.fontShadow
 		}
 		// End Subtitle Notification
+		
+		// Start Settings Menu
+		Loader.Menu {
+			id: settingsblock
+			background.color: ui.colors.playlistMenu.background
+			width: (parent.width * 0.9) < 400 ? (parent.width * 0.9) : 400
+			
+			// Start Settings Menu Scroll
+			Loader.MenuScroll {
+				id: settingsScroll
+				draggerColor: ui.colors.playlistMenu.drag
+				backgroundColor: ui.colors.playlistMenu.scroller
+				onDrag: wjs.moveSettingsMenu(mouseY)
+				dragger.height: (settings.totalSettings * 40) < 240 ? 240 : (240 / (settings.totalSettings * 40)) * 240
+				height: 240
+			}
+			// End Subtitle Menu Scroll
+		
+			Loader.MenuContent {
+				width: settingsblock.width < 400 ? (settingsblock.width -12) : 388
+				anchors.centerIn: parent
+				
+				Loader.SettingsMenuItems { id: settingsMenu } // Settings Items Holder (This is where the Setting Items will be loaded)
+		
+				// Top Holder (Title + Close Button)
+				Loader.MenuHeader {
+					text: "Player Settings"
+					textColor: ui.colors.playlistMenu.headerFont
+					backgroundColor: ui.colors.playlistMenu.header
+										
+					// Start Close Subtitle Menu Button
+					Loader.MenuClose {
+						id: settingsMenuClose
+						icon: settings.glyphsLoaded ? ui.icon.closePlaylist : ""
+						iconSize: 9
+						iconColor: settingsMenuClose.hover.containsMouse ? ui.colors.playlistMenu.closeHover : ui.colors.playlistMenu.close
+						color: settingsMenuClose.hover.containsMouse ? ui.colors.playlistMenu.closeBackgroundHover : ui.colors.playlistMenu.closeBackground
+						hover.onClicked: {
+							settingsblock.visible = false;
+						}
+					}
+					// End Close Subtitle Menu Button
+				}
+				// End Top Holder (Title + Close Button)
+				
+			}
+		}
+		// End Settings Menu
+
+		// Start Sleep Timer Menu
+		Loader.Menu {
+			id: sleeptimerblock
+			background.color: ui.colors.playlistMenu.background
+			width: (parent.width * 0.9) < 400 ? (parent.width * 0.9) : 400
+			
+			// Start Sleep Timer Menu Scroll
+			Loader.MenuScroll {
+				id: sleepTimerScroll
+				draggerColor: ui.colors.playlistMenu.drag
+				backgroundColor: ui.colors.playlistMenu.scroller
+				onDrag: wjs.moveSleepTimerMenu(mouseY)
+				dragger.height: (settings.totalSleepOpts * 40) < 240 ? 240 : (240 / (settings.totalSleepOpts * 40)) * 240
+				height: 240
+			}
+			// End Sleep Timer Menu Scroll
+		
+			Loader.MenuContent {
+				width: sleeptimerblock.width < 400 ? (sleeptimerblock.width -12) : 388
+				anchors.centerIn: parent
+				
+				Loader.SleepTimerMenuItems { id: sleepTimerMenu } // Sleep Timer Items Holder (This is where the Sleep Timer Options will be loaded)
+		
+				// Top Holder (Title + Close Button)
+				Loader.MenuHeader {
+					text: "Sleep Timer Settings"
+					textColor: ui.colors.playlistMenu.headerFont
+					backgroundColor: ui.colors.playlistMenu.header
+										
+					// Start Close Sleep Timer Menu Button
+					Loader.MenuClose {
+						id: sleepTimerMenuClose
+						icon: settings.glyphsLoaded ? ui.icon.closePlaylist : ""
+						iconSize: 9
+						iconColor: sleepTimerMenuClose.hover.containsMouse ? ui.colors.playlistMenu.closeHover : ui.colors.playlistMenu.close
+						color: sleepTimerMenuClose.hover.containsMouse ? ui.colors.playlistMenu.closeBackgroundHover : ui.colors.playlistMenu.closeBackground
+						hover.onClicked: {
+							sleeptimerblock.visible = false;
+						}
+					}
+					// End Close Sleep Timer Menu Button
+				}
+				// End Top Holder (Title + Close Button)
+				
+			}
+		}
+		// End Sleep Timer Menu
+		
+		Rectangle {
+			visible: fullscreen ? false : mousesurface.containsMouse ? true : settingsBut.containsMouse ? true : false
+			
+			opacity: fullscreen ? 0 : mousesurface.containsMouse ? settingsBut.containsMouse ? 1 : 0.6 : settingsBut.containsMouse ? 1 : 0
+			
+			anchors.top: parent.top
+			anchors.right: parent.right
+			anchors.topMargin: 10
+			anchors.rightMargin: 10
+			color: "transparent"
+			width: 30
+			height: 30
+			
+			Behavior on visible { PropertyAnimation { duration: instantButEffect == 1 ? 0 : fullscreen ? 0: mousesurface.containsMouse ? 250 : 0 } }
+			Behavior on opacity { PropertyAnimation { duration: instantButEffect == 1 ? 0 : fullscreen ? 0: 250 } }
+			
+			Text {
+				anchors.centerIn: parent
+				color: "#ffffff"
+				text: settings.glyphsLoaded ? ui.icon.settings : ""
+				font.family: fonts.icons.name
+				font.pointSize: 20
+				style: Text.Outline
+				styleColor: "#000000"
+			}
+			MouseArea {
+				id: settingsBut
+				cursorShape: Qt.PointingHandCursor
+				hoverEnabled: true
+				anchors.fill: parent
+				onClicked: wjs.toggleSettings();
+			}
+
+			Timer {
+				interval: 100; running: instantButEffect == 1 ? true : false; repeat: false
+				onTriggered: { instantButEffect = 0; }
+			}
+		}
 		
 		// Start Context Menu
 		Loader.ContextMenu {
