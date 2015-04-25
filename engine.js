@@ -509,8 +509,8 @@ function isPlaying() {
 		}
 		if (firstTimeEver == 1 && wjs().plugin.fullscreen == false) {
 			firstTimeEver = 0;
-			var newWidth = Math.round(wjs().plugin.video.width*0.98);
-			var newHeight = wjs().plugin.video.height;
+			var newWidth = wjs().width() + (win.width - window.innerWidth);
+			var newHeight = wjs().height() + (win.height - window.innerHeight);
 			// find the screen where the window is
 			for(var i = 0; i < gui.Screen.screens.length; i++) {
 				var screen = gui.Screen.screens[i];
