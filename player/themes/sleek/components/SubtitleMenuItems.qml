@@ -211,9 +211,11 @@ Rectangle {
 	// save current subtitle to item settings to expose it to JS
 	function saveSub(newSaved) {
 		var itemSettings = {};
-		if (wjs.isJson(vlcPlayer.playlist.items[vlcPlayer.playlist.currentItem].setting)) itemSettings = JSON.parse(vlcPlayer.playlist.items[vlcPlayer.playlist.currentItem].setting);
-		itemSettings.subPlaying = newSaved;
-		vlcPlayer.playlist.items[vlcPlayer.playlist.currentItem].setting = JSON.stringify(itemSettings);
+		if (vlcPlayer.playlist.currentItem > -1) {
+			if (wjs.isJson(vlcPlayer.playlist.items[vlcPlayer.playlist.currentItem].setting)) itemSettings = JSON.parse(vlcPlayer.playlist.items[vlcPlayer.playlist.currentItem].setting);
+			itemSettings.subPlaying = newSaved;
+			vlcPlayer.playlist.items[vlcPlayer.playlist.currentItem].setting = JSON.stringify(itemSettings);
+		}
 	}
 	// end save current subtitle to item settings to expose it to JS
 	
