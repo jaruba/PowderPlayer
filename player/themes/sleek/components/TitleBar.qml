@@ -44,14 +44,13 @@ Rectangle {
 			anchors.rightMargin: 14
 			text: ""
 			font.family: fonts.icons.name
-			font.bold: true
 		}
 		MouseArea {
 			id: mouseAreaButton
 			cursorShape: mouseAreaButton.containsMouse ? Qt.PointingHandCursor : mousesurface.cursorShape
 			anchors.fill: icon
 			hoverEnabled: true
-			onClicked: wjs.goBack();
+			onClicked: wjs.toggleSettings();
 		}
 		
 	}

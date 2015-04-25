@@ -33,12 +33,13 @@ Rectangle {
 		}
 		if (event.key == Qt.Key_Escape) {
 			if (typeof settings.preventKey[Qt.Key_Escape] === "undefined") {
-				if (subMenublock.visible === true || playlistblock.visible === true) {
+				if (subMenublock.visible === true || playlistblock.visible === true || settingsblock.visible === true || sleeptimerblock.visible === true) {
 					subMenublock.visible = false;
-					settings.subtitlemenu = false;
 					playlistblock.visible = false;
-					settings.playlistmenu = false;
+					settingsblock.visible = false;
+					sleeptimerblock.visible = false;
 				} else if (fullscreen) {
+					instantButEffect = 1; // for settings button
 					fullscreen = false;
 					if (settings.multiscreen == 1) if (vlcPlayer.audio.mute === false) vlcPlayer.toggleMute(); // Multiscreen - Mute on Playback Start
 				}

@@ -393,6 +393,7 @@ Rectangle {
 			if (startsWith(message,"[downloaded]")) { settings.downloaded = parseFloat(message.replace("[downloaded]","")); settings = settings; } // Get Downloaded Percent
 			if (startsWith(message,"[opening-text]")) { settings.openingText = message.replace("[opening-text]",""); settings = settings; } // Get New Opening Text
 			if (startsWith(message,"[go-fullscreen]")) { togFullscreen(); }
+			if (startsWith(message,"[reset-sleep-timer]")) { sleepTimerMenu.sleepSelected = 0; }
 			if (startsWith(message,"[on-top]")) { if (message.replace("[on-top]","") == "true") { onTop = true; } else { onTop = false; } }
 			if (startsWith(message,"[tor-data-but]1")) { torDataBut = 1; }
 			if (startsWith(message,"[tor-data-but]0")) { torDataBut = 0; }
@@ -444,7 +445,6 @@ Rectangle {
 	
 			// remove previous subtitles
 			subMenublock.visible = false;
-			settings.subtitlemenu = false;
 			subMenu.clearAll();
 			subButton.visible = false;
 			// end remove previous subtitles
@@ -566,6 +566,9 @@ Rectangle {
 	// Start Fullscreen Toggle
 	function togFullscreen() {
 		if (settings.allowfullscreen == 1) {
+		
+			instantButEffect = 1; // for settings button
+		
 			settings.ismoving = 1;
 		
 			oldRatioWidth = videoSource.width / videoSource.parent.width;
@@ -609,19 +612,44 @@ Rectangle {
 	
 	// START UI INTERACTION FUNCTIONS
 	
+	// Start Toggle Settings Menu (open/close)
+	function toggleSettings() {
+		if (!settingsblock.visible) {
+			settingsMenu.addSettingsItems();
+			if (subMenublock.visible) subMenublock.visible = false;
+			if (playlistblock.visible) playlistblock.visible = false;
+			if (sleeptimerblock.visible) sleeptimerblock.visible = false;
+			settingsblock.visible = true;
+		} else {
+			settingsMenu.clearAll();
+			settingsblock.visible = false;
+		}
+	}
+	// End Toggle Settings Menu (open/close)
+	
+	// Start Toggle Sleep Timer Menu (open/close)
+	function toggleSleepTimer() {
+		if (!sleeptimerblock.visible) {
+			sleepTimerMenu.addSleepTimerItems();
+			if (subMenublock.visible) subMenublock.visible = false;
+			if (playlistblock.visible) playlistblock.visible = false;
+			if (settingsblock.visible) settingsblock.visible = false;
+			sleeptimerblock.visible = true;
+		} else {
+			sleepTimerMenu.clearAll();
+			sleeptimerblock.visible = false;
+		}
+	}
+	// End Toggle Sleep Timer Menu (open/close)
+	
 	// Start Toggle Playlist Menu (open/close)
 	function togglePlaylist() {
-		if (settings.playlistmenu === false) {
-			if (settings.subtitlemenu === true) {
-				subMenublock.visible = false;
-				settings.subtitlemenu = false;
-			}
+		if (!playlistblock.visible) {
+			if (subMenublock.visible) subMenublock.visible = false;
+			if (settingsblock.visible) settingsblock.visible = false;
+			if (sleeptimerblock.visible) sleeptimerblock.visible = false;
 			playlistblock.visible = true;
-			settings.playlistmenu = true;
-		} else {
-			playlistblock.visible = false;
-			settings.playlistmenu = false;
-		}
+		} else playlistblock.visible = false;
 	}
 	// End Toggle Playlist Menu (open/close)
 	
@@ -642,14 +670,10 @@ Rectangle {
 	function hideUI() {
 		if (settings.uiVisible) {
 			settings.uiVisible = 0;
-			if (settings.playlistmenu) {
-				playlistblock.visible = false;
-				settings.playlistmenu = false;
-			}
-			if (settings.subtitlemenu) {
-				subMenublock.visible = false;
-				settings.subtitlemenu = false;
-			}
+			if (playlistblock.visible) playlistblock.visible = false;
+			if (subMenublock.visible) subMenublock.visible = false;
+			if (settingsblock.visible) settingsblock.visible = false;
+			if (sleeptimerblock.visible) sleeptimerblock.visible = false;
 		}
 		settings = settings;
 	}
@@ -778,6 +802,39 @@ Rectangle {
 	}
 	// End Scroll Subtitle Menu
 	
+	// Start Scroll Settings Menu
+	function moveSettingsMenu(mousehint) {
+		if (mousehint <= (settingsScroll.dragger.height / 2)) {
+			settingsScroll.dragger.anchors.topMargin = 0;
+			settingsMenu.anchors.topMargin = 0;
+		} else if (mousehint >= (240 - (settingsScroll.dragger.height / 2))) {
+			settingsScroll.dragger.anchors.topMargin = 240 - settingsScroll.dragger.height;
+			if ((settings.totalSettings *40) > 240) {
+				settingsMenu.anchors.topMargin = 240 - (settings.totalSettings *40);
+			}
+		} else {
+			settingsScroll.dragger.anchors.topMargin = mousehint - (settingsScroll.dragger.height / 2);
+			settingsMenu.anchors.topMargin = -(((settings.totalSettings * 40) - 240) / ((240 - settingsScroll.dragger.height) / (mousehint - (settingsScroll.dragger.height /2))));
+		}
+	}
+	// End Scroll Settings Menu
+	
+	// Start Scroll Sleep Timer Menu
+	function moveSleepTimerMenu(mousehint) {
+		if (mousehint <= (sleepTimerScroll.dragger.height / 2)) {
+			sleepTimerScroll.dragger.anchors.topMargin = 0;
+			sleepTimerMenu.anchors.topMargin = 0;
+		} else if (mousehint >= (240 - (sleepTimerScroll.dragger.height / 2))) {
+			sleepTimerScroll.dragger.anchors.topMargin = 240 - sleepTimerScroll.dragger.height;
+			if ((settings.totalSleepOpts *40) > 240) {
+				sleepTimerMenu.anchors.topMargin = 240 - (settings.totalSleepOpts *40);
+			}
+		} else {
+			sleepTimerScroll.dragger.anchors.topMargin = mousehint - (sleepTimerScroll.dragger.height / 2);
+			sleepTimerMenu.anchors.topMargin = -(((settings.totalSleepOpts * 40) - 240) / ((240 - sleepTimerScroll.dragger.height) / (mousehint - (sleepTimerScroll.dragger.height /2))));
+		}
+	}
+	// End Scroll Sleep Timer Menu
 	
 	// Start Change Volume to New Volume (difference from current volume)
 	function volumeTo(newvolume) {

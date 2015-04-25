@@ -14,9 +14,9 @@ QtObject {
 	property var automute: 0;
 	property var autoplay: 0;
 	property var allowfullscreen: 1;
-	property var playlistmenu: false;
-	property var subtitlemenu: false;
 	property var totalSubs: 0;
+	property var totalSettings: 0;
+	property var totalSleepOpts: 0;
 	property var title: "";
     property var multiscreen: 0;
 	property var timervolume: 0;

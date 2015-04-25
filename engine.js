@@ -90,6 +90,7 @@ $('#max-peers-hov').hover(function() { }, function() {
 
 var isReady = 0;
 var downSpeed;
+var sleepTimer;
 
 var gui = require('nw.gui');
 
@@ -899,6 +900,28 @@ function goBack() {
 function handle(event) {
     if (event == "[go-back]") {
 		goBack();
+	} else if (event == "[quit]") {
+		win.close();
+	} else if (event == "[select-library]") {
+		if (wjs().fullscreen()) wjs().toggleFullscreen();
+		chooseFile('#libraryDialog');
+	} else if (event == "[select-download-folder]") {
+		if (wjs().fullscreen()) wjs().toggleFullscreen();
+		chooseFile('#folderDialog');
+	} else if (event.substr(0,13) == "[sleep-timer]") {
+		clearTimeout(sleepTimer);
+		if (parseInt(event.replace("[sleep-timer]","")) > 0) {
+			sleepTimer = setTimeout(function() {
+				if (wjs().isPlaying()) wjs().togglePause();
+				if (typeof powGlobals["engine"] !== 'undefined') {
+					if (wjs().plugin.fullscreen) wjs().plugin.fullscreen = false;
+					$("#filesList").css("min-height",$("#player_wrapper").height());
+					$("html, body").animate({ scrollTop: $("#player_wrapper").height() }, "slow");
+					$("body").css("overflow-y","visible");
+				}
+				wjs().plugin.emitJsMessage("[reset-sleep-timer]");
+			},parseInt(event.replace("[sleep-timer]","")));
+		}
 	} else if (event.substr(0,10) == "[save-sub]") {
 		saveSub = event.substr(10);
 		if (saveSub.indexOf(" ") > -1) {
