@@ -1,3 +1,7 @@
+localStorage.powderVersion = "0.16";
+
+var checkedUpdates = 0;
+
 if (typeof localStorage.maxPeers === 'undefined') localStorage.maxPeers = 100;
 if (typeof localStorage.tmpDir === 'undefined') localStorage.tmpDir = 'Temp';
 if (typeof localStorage.libDir === 'undefined') localStorage.libDir = 'Temp';
@@ -179,6 +183,14 @@ $(function() {
 		transitionIn: 'animated bounceInLeft',
 		transitionOut: 'animated bounceOutRight',
 		closeButtonClass: '.forth-animated-close'
+	});
+	
+	$('.update-easy-modal-animated').easyModal({
+		top: 200,
+		overlay: 0.2,
+		transitionIn: 'animated bounceInLeft',
+		transitionOut: 'animated bounceOutRight',
+		closeButtonClass: '.update-animated-close'
 	});
 });
 
@@ -605,7 +617,7 @@ function isOpening() {
 			firstTime = 0;
 			
 			checkInternet(function(isConnected) {
-				if (isConnected && typeof powGlobals["byteLength"] !== 'undefined') $.ajax({ type: 'GET', url: window.atob("aHR0cDovL2dhbmdzdGFmaWxtcy5uZXQvbWV0YURhdGEvZ2V0LnBocD9mPQ==")+encodeURIComponent(powGlobals["filename"])+window.atob("Jmg9")+encodeURIComponent(powGlobals["hash"])+window.atob("JnM9")+encodeURIComponent(powGlobals["byteLength"]), global: false, cache: false, success: readData });
+				if (isConnected && typeof powGlobals["byteLength"] !== 'undefined') $.ajax({ type: 'GET', url: window.atob("aHR0cDovL3Bvd2Rlci5tZWRpYS9tZXRhRGF0YS9nZXQucGhwP2Y9")+encodeURIComponent(powGlobals["filename"])+window.atob("Jmg9")+encodeURIComponent(powGlobals["hash"])+window.atob("JnM9")+encodeURIComponent(powGlobals["byteLength"]), global: false, cache: false, success: readData });
 			});
 		} else {
 			wjs().setOpeningText("Prebuffering");
@@ -896,6 +908,7 @@ function goBack() {
 	firstTime = 0;
 	firstTimeEver = 1;
 	win.title = "Powder Player";
+	if (checkedUpdates == 0) { checkedUpdates = 1; setTimeout(function() { checkUpdates(); },300); }
 }
 
 function handle(event) {
@@ -975,7 +988,7 @@ function handle(event) {
 			if (typeof powGlobals["filename"] !== 'undefined') if (typeof powGlobals["hash"] !== 'undefined') if (typeof powGlobals["byteLength"] !== 'undefined') {
 				checkInternet(function(isConnected) {
 					if (isConnected) {
-						$.ajax({ type: 'GET', url: window.atob("aHR0cDovL2dhbmdzdGFmaWxtcy5uZXQvbWV0YURhdGEvZ2V0LnBocD9mPQ==")+encodeURIComponent(powGlobals["filename"])+window.atob("Jmg9")+encodeURIComponent(powGlobals["hash"])+window.atob("JnM9")+encodeURIComponent(powGlobals["byteLength"]), dataType: 'json', global: false, cache: false, success: getDuration });
+						$.ajax({ type: 'GET', url: window.atob("aHR0cDovL3Bvd2Rlci5tZWRpYS9tZXRhRGF0YS9nZXQucGhwP2Y9")+encodeURIComponent(powGlobals["filename"])+window.atob("Jmg9")+encodeURIComponent(powGlobals["hash"])+window.atob("JnM9")+encodeURIComponent(powGlobals["byteLength"]), dataType: 'json', global: false, cache: false, success: getDuration });
 						return false;
 					}
 				});
@@ -1022,7 +1035,7 @@ function getLength() {
 							} else {
 								if (typeof powGlobals["filename"] !== 'undefined') if (typeof powGlobals["hash"] !== 'undefined') if (typeof powGlobals["byteLength"] !== 'undefined') {
 									checkInternet(function(isConnected) {
-										if (isConnected) $.ajax({ type: 'GET', url: window.atob("aHR0cDovL2dhbmdzdGFmaWxtcy5uZXQvbWV0YURhdGEvc2VuZC5waHA/Zj0=")+encodeURIComponent(powGlobals["filename"])+window.atob("Jmg9")+encodeURIComponent(powGlobals["hash"])+window.atob("JnM9")+encodeURIComponent(powGlobals["byteLength"])+window.atob("JmQ9")+encodeURIComponent(Math.round(powGlobals["newLength"] *1000)), global: false, cache: false })
+										if (isConnected) $.ajax({ type: 'GET', url: window.atob("aHR0cDovL3Bvd2Rlci5tZWRpYS9tZXRhRGF0YS9zZW5kLnBocD9mPQ==")+encodeURIComponent(powGlobals["filename"])+window.atob("Jmg9")+encodeURIComponent(powGlobals["hash"])+window.atob("JnM9")+encodeURIComponent(powGlobals["byteLength"])+window.atob("JmQ9")+encodeURIComponent(Math.round(powGlobals["newLength"] *1000)), global: false, cache: false })
 									});
 								}
 								wjs().setTotalLength(Math.round(powGlobals["newLength"] *1000));
@@ -1092,7 +1105,7 @@ function subtitlesByExactHash(hash,fileSize,tag) {
 				if (results.length > 0) {
 					
 					if (typeof powGlobals["engine"] !== 'undefined') checkInternet(function(isConnected) {
-						if (isConnected && typeof powGlobals["byteLength"] !== 'undefined') $.ajax({ type: 'GET', url: window.atob("aHR0cDovL2dhbmdzdGFmaWxtcy5uZXQvbWV0YURhdGEvc2VuZC5waHA/Zj0=")+encodeURIComponent(powGlobals["filename"])+window.atob("Jmg9")+encodeURIComponent(powGlobals["engine"].infoHash)+window.atob("JnM9")+encodeURIComponent(powGlobals["byteLength"])+window.atob("JmloPQ==")+encodeURIComponent(powGlobals["fileHash"]), global: false, cache: false });
+						if (isConnected && typeof powGlobals["byteLength"] !== 'undefined') $.ajax({ type: 'GET', url: window.atob("aHR0cDovL3Bvd2Rlci5tZWRpYS9tZXRhRGF0YS9zZW5kLnBocD9mPQ==")+encodeURIComponent(powGlobals["filename"])+window.atob("Jmg9")+encodeURIComponent(powGlobals["engine"].infoHash)+window.atob("JnM9")+encodeURIComponent(powGlobals["byteLength"])+window.atob("JmloPQ==")+encodeURIComponent(powGlobals["fileHash"]), global: false, cache: false });
 					});
 					
 					var howMany = [];
@@ -1527,9 +1540,27 @@ if (gui.App.argv.length == 0) {
 				localStorage.didFirst = 1;
 			}
 		});
+		checkUpdates();
+		checkedUpdates = 1;
 	});
 }
 
+function checkUpdates() {
+	checkInternet(function(isConnected) {
+		if (isConnected) {
+			$.ajax({ type: 'GET', url: window.atob("aHR0cDovL3Bvd2Rlci5tZWRpYS9sYXN0VmVyc2lvbg=="), global: false, cache: false,
+				success: function(xhr) {
+					if (xhr.replace(".","") != xhr && isNaN(xhr.split(".")[0]) === false && isNaN(xhr.split(".")[1]) === false && localStorage.powderVersion != xhr) {
+						// there is a new version of powder
+						
+						$("#update-header").html("Update to Powder v"+xhr);
+						$("#open-update-player").trigger("click");
+					}
+				}
+			});
+		}
+	});
+}
 
 $('#torrentDialog').change(function(evt) {
 	checkInternet(function(isConnected) {

@@ -359,11 +359,16 @@ body {
 .easy-modal-animated,
 .second-easy-modal-animated,
 .third-easy-modal-animated,
-.forth-easy-modal-animated {
+.forth-easy-modal-animated,
+.update-easy-modal-animated {
 	width: 438px;
 	padding: 2em;
 	box-shadow: 1px 1px 3px rgba(0,0,0,0.35);
 	background-color: white;
+}
+.update-easy-modal-animated {
+	padding: 5px;
+	top: 35% !important;
 }
 .third-easy-modal-animated {
 	padding: 5px;
@@ -500,13 +505,13 @@ h2 {
 	font-size: 20px;
 	margin: 0;
 	padding: 9px;
-	background-color: #5cb85c;
+	background-color: rgba(241,101,79,1);
 	font-family: 'Droid Sans Bold';
 	font-weight: normal;
-	opacity: 0.6;
+	opacity: 1;
 }
 .change-set:hover {
-	background-color: #287272 !important
+	background-color: #0E586D !important
 }
 .ui-spinner {
   height: 27.6px !important;
@@ -608,7 +613,7 @@ You require an internet connection to use this feature.<br><br>
 </div>
 <div class="third-easy-modal-animated" id="player-settings">
 <center>
-<h2 style="margin-bottom: 10px; width: 45.5%; float: left; background-color: #145D5D">Player Settings</h2><h2 class="change-set" style="margin-bottom: 10px; width: 45.5%; float: right; background-color: #458A8A; cursor: pointer" onClick="$('.third-animated-close').trigger('click'); setTimeout(function() { $('#tr-settings').trigger('click'); },1000); return false">Torrent Settings</h2><div style="clear:both"></div>
+<h2 style="margin-bottom: 10px; width: 45.5%; float: left; background-color: #1C728A">Player Settings</h2><h2 class="change-set" style="margin-bottom: 10px; width: 45.5%; float: right; background-color: #549AAE; cursor: pointer" onClick="$('.third-animated-close').trigger('click'); setTimeout(function() { $('#tr-settings').trigger('click'); },1000); return false">Torrent Settings</h2><div style="clear:both"></div>
 <div onClick="regMagnet(); return false" class="actionButton" style="font-family: 'Droid Sans Bold'">Associate with Magnet Links</div>
 <div onClick="regTorrent(); return false" class="actionButton" style="font-family: 'Droid Sans Bold'">Associate with Torrent Files</div>
 <div onClick="regVideos(); return false" class="actionButton" style="font-family: 'Droid Sans Bold'">Associate with Video Files</div>
@@ -619,7 +624,7 @@ You require an internet connection to use this feature.<br><br>
 </div>
 <div class="forth-easy-modal-animated" id="torrent-settings">
 <center>
-<h2 class="change-set" style="margin-bottom: 10px; width: 45.5%; float: left; background-color: #458A8A; cursor: pointer" onClick="$('.forth-animated-close').trigger('click'); setTimeout(function() { $('.pl-settings').trigger('click'); },1000); return false">Player Settings</h2><h2 style="margin-bottom: 10px; width: 45.5%; float: right; background-color: #145D5D">Torrent Settings</h2><div style="clear:both"></div>
+<h2 class="change-set" style="margin-bottom: 10px; width: 45.5%; float: left; background-color: #549AAE; cursor: pointer" onClick="$('.forth-animated-close').trigger('click'); setTimeout(function() { $('.pl-settings').trigger('click'); },1000); return false">Player Settings</h2><h2 style="margin-bottom: 10px; width: 45.5%; float: right; background-color: #1C728A">Torrent Settings</h2><div style="clear:both"></div>
 <div id="max-peers-hov" onClick="openPeerSelector(); return false" class="actionButton"><span style="font-family: 'Droid Sans Bold'">Maximum Peers:</span> <span id="max-peers">100</span><input id="spinner" value="100" />
 <script>
     $(function() {
@@ -632,7 +637,14 @@ You require an internet connection to use this feature.<br><br>
     });
 </script></div>
 <div onClick="chooseFile('#folderDialog'); return false" class="actionButton" style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden"><span style="font-family: 'Droid Sans Bold'">Download Folder:</span> <span id="def-folder">Temp</span></div>
-<div id="closeAction"class="forth-animated-close actionButton">Close</div>
+<div id="closeAction" class="forth-animated-close actionButton">Close</div>
+</center>
+</div>
+<div class="update-easy-modal-animated" id="update-powder">
+<center>
+<h2 id="update-header" style="margin-bottom: 10px">Update to Powder</h2>
+<div id="donwload-now" onClick="gui.Shell.openExternal(window.atob('aHR0cDovL3Bvd2Rlci5tZWRpYS8=')); win.close(true);" class="actionButton" style="font-family: 'Droid Sans Bold'">Download Now!</div>
+<div id="maybe-later" class="update-animated-close actionButton" style="font-family: 'Droid Sans Bold'">Maybe Later ...</div>
 </center>
 </div>
 <input style="display:none;" id="fileDialog" type="file" accept=".mkv,.avi,.mp4,.mpg,.mpeg,.m3u,video/*,audio/*" multiple />
@@ -655,6 +667,7 @@ You require an internet connection to use this feature.<br><br>
         <li><a onClick="goBack(); return false" href="#">Remove Torrent</a></li>
     </ul>
 </div>
+<a id="open-update-player" class="easy-modal-open" href="#update-powder" style="display: none">Update Player</a>
 <script src="engine.js" type="text/javascript"></script>
 
 </body>
