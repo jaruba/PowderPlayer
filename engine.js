@@ -136,7 +136,7 @@ $.fn.scrollEnd = function(callback, timeout) {
 $(window).scrollEnd(function(){
     if ($(document).scrollTop() == 0) if (typeof powGlobals["engine"] !== 'undefined') if (powGlobals["hasVideo"] > 0) {
 		if ($("body").css("overflow-y") == "visible" || $("body").css("overflow-y") == "auto") $("body").css("overflow-y","hidden");
-		if (wjs().plugin.playing === false) wjs().plugin.togglePause();
+		if (!wjs().isPlaying()) wjs().togglePause();
 	}
 }, 1000);
 
@@ -531,14 +531,14 @@ function isPlaying() {
 		doSubsLocal = 0;
 		getLength();
 	}
-	if (firstTime == 0 && focused === false) if (wjs().plugin.fullscreen === false) win.requestAttention(true);
+	if (firstTime == 0 && focused === false) if (!wjs().fullscreen()) win.requestAttention(true);
 	if (firstTime == 0) {
 		if (typeof powGlobals["duration"] !== 'undefined') wjs().setTotalLength(powGlobals["duration"]);
 		if (firstTimeEver == 1) {
 			if (typeof localStorage.savedVolume !== 'undefined') setTimeout(function() { wjs().volume(localStorage.savedVolume); },100);
 			setTimeout(function() { wjs().onVolume(function() { if (this.volume() > 0) localStorage.savedVolume = this.volume(); }); },101);
 		}
-		if (firstTimeEver == 1 && wjs().plugin.fullscreen == false) {
+		if (firstTimeEver == 1 && wjs().fullscreen() === false) {
 			firstTimeEver = 0;
 			var newWidth = wjs().width() + (win.width - window.innerWidth);
 			var newHeight = wjs().height() + (win.height - window.innerHeight);
@@ -608,29 +608,29 @@ function isPlaying() {
 }
 
 function isOpening() {
-	if (powGlobals["currentIndex"] != wjs().plugin.playlist.currentItem) {
+	if (powGlobals["currentIndex"] != wjs().currentItem()) {
 		delete powGlobals["duration"];
 		delete powGlobals["fileHash"];
-		powGlobals["currentIndex"] = wjs().plugin.playlist.currentItem;
+		powGlobals["currentIndex"] = wjs().currentItem();
 		if (typeof powGlobals["engine"] !== 'undefined') {
 			wjs().setOpeningText("Prebuffering 0%");
-			if (typeof powGlobals["videos"][wjs().plugin.playlist.currentItem] !== 'undefined' && typeof powGlobals["videos"][wjs().plugin.playlist.currentItem]["local"] === 'undefined') {
-				for (gh = 0; typeof powGlobals["files"][gh] !== 'undefined'; gh++) if (powGlobals["files"][gh].index == powGlobals["videos"][wjs().plugin.playlist.currentItem]["index"]) break;
+			if (typeof powGlobals["videos"][wjs().currentItem()] !== 'undefined' && typeof powGlobals["videos"][wjs().currentItem()]["local"] === 'undefined') {
+				for (gh = 0; typeof powGlobals["files"][gh] !== 'undefined'; gh++) if (powGlobals["files"][gh].index == powGlobals["videos"][wjs().currentItem()]["index"]) break;
 				playEl(gh);				
 			}
-			win.title = getName(powGlobals["videos"][wjs().plugin.playlist.currentItem]["filename"]);
+			win.title = getName(powGlobals["videos"][wjs().currentItem()]["filename"]);
 			wjs().setDownloaded(0);
 			
-			powGlobals["filename"] = powGlobals["videos"][wjs().plugin.playlist.currentItem]["filename"];
-			powGlobals["path"] = powGlobals["videos"][wjs().plugin.playlist.currentItem]["path"];
-			if (typeof powGlobals["videos"][wjs().plugin.playlist.currentItem]["byteLength"] !== 'undefined') {
-				powGlobals["byteLength"] = powGlobals["videos"][wjs().plugin.playlist.currentItem]["byteLength"];
+			powGlobals["filename"] = powGlobals["videos"][wjs().currentItem()]["filename"];
+			powGlobals["path"] = powGlobals["videos"][wjs().currentItem()]["path"];
+			if (typeof powGlobals["videos"][wjs().currentItem()]["byteLength"] !== 'undefined') {
+				powGlobals["byteLength"] = powGlobals["videos"][wjs().currentItem()]["byteLength"];
 			} else {
 				if (typeof powGlobals["byteLength"] !== 'undefined') delete powGlobals["byteLength"];
 			}
-			if (typeof powGlobals["videos"][wjs().plugin.playlist.currentItem]["local"] === 'undefined') {
-				powGlobals["firstPiece"] = powGlobals["videos"][wjs().plugin.playlist.currentItem]["firstPiece"];
-				powGlobals["lastPiece"] = powGlobals["videos"][wjs().plugin.playlist.currentItem]["lastPiece"];
+			if (typeof powGlobals["videos"][wjs().currentItem()]["local"] === 'undefined') {
+				powGlobals["firstPiece"] = powGlobals["videos"][wjs().currentItem()]["firstPiece"];
+				powGlobals["lastPiece"] = powGlobals["videos"][wjs().currentItem()]["lastPiece"];
 			}
 			firstTime = 0;
 			
@@ -639,10 +639,10 @@ function isOpening() {
 			});
 		} else {
 			wjs().setOpeningText("Prebuffering");
-			if (wjs().plugin.playlist.currentItem > -1) {
-				win.title = getName(powGlobals["videos"][wjs().plugin.playlist.currentItem]["filename"]);
-				powGlobals["filename"] = powGlobals["videos"][wjs().plugin.playlist.currentItem]["filename"];
-				powGlobals["path"] = powGlobals["videos"][wjs().plugin.playlist.currentItem]["path"];
+			if (wjs().currentItem() > -1) {
+				win.title = getName(powGlobals["videos"][wjs().currentItem()]["filename"]);
+				powGlobals["filename"] = powGlobals["videos"][wjs().currentItem()]["filename"];
+				powGlobals["path"] = powGlobals["videos"][wjs().currentItem()]["path"];
 				doSubsLocal = 1;
 			}
 		}
@@ -706,7 +706,7 @@ function settingsEl(kj) {
 	if (supportedVideo.indexOf($("#file0").find(".filenames").text().split(".").pop()) > -1) {
 		// if the item is a video
 		for (ij = 0; typeof powGlobals["videos"][ij] !== 'undefined'; ij++) if (powGlobals["videos"][ij]["index"] == powGlobals["files"][kj].index) break;
-		$("#playAction").attr("onClick","wjs('#webchimera').plugin.playlist.playItem("+ij+"); $('#closeAction').trigger('click'); $('html, body').animate({ scrollTop: 0 }, 'slow'); playEl("+kj+"); $('body').css('overflow-y','hidden')");
+		$("#playAction").attr("onClick","wjs().playItem("+ij+"); $('#closeAction').trigger('click'); $('html, body').animate({ scrollTop: 0 }, 'slow'); playEl("+kj+"); $('body').css('overflow-y','hidden')");
 		$("#copyStream").attr("onClick","gui.Clipboard.get().set('http://localhost:'+powGlobals['engine'].server.address().port+'/"+powGlobals["files"][kj].index+"','text'); $('#closeAction').trigger('click')");
 		$("#playAction").show(0);
 		$("#copyStream").show(0);
@@ -763,7 +763,7 @@ function checkDownloaded(piece) {
 					torPieces.splice(torIndex, 1)
 				}
 			}
-			if (kj == wjs().plugin.playlist.currentItem) {
+			if (kj == wjs().currentItem()) {
 				if ((powGlobals["videos"][kj]["downloaded"] / (powGlobals["videos"][kj]["lastPiece"] - powGlobals["videos"][kj]["firstPiece"])) > powGlobals["videos"][kj]["lastSent"]) {
 					powGlobals["videos"][kj]["lastSent"] = (powGlobals["videos"][kj]["downloaded"] / (powGlobals["videos"][kj]["lastPiece"] - powGlobals["videos"][kj]["firstPiece"]));
 					if (typeof wjs("#webchimera") !== 'undefined' && typeof wjs().setDownloaded !== 'undefined') {
@@ -883,9 +883,8 @@ function goBack() {
 	$("#header_container").css("display","none");
 	window.scrollTo(0, 0);
 	$("body").css("overflow-y","hidden");
-	wjs().plugin.fullscreen = false;
-	wjs().plugin.playlist.clear();
-	wjs().stopPlayer();
+	wjs().fullscreen(false);
+	wjs().clearPlaylist();
 	pitem["#webchimera"] = 0;
 	wjs().setDownloaded(0);
 	if (parseInt($("#main").css("opacity")) == 0) $("#main").css("opacity","1");
@@ -946,7 +945,7 @@ function handle(event) {
 			sleepTimer = setTimeout(function() {
 				if (wjs().isPlaying()) wjs().togglePause();
 				if (typeof powGlobals["engine"] !== 'undefined') {
-					if (wjs().plugin.fullscreen) wjs().plugin.fullscreen = false;
+					if (wjs().fullscreen()) wjs().fullscreen(false);
 					$("#filesList").css("min-height",$("#player_wrapper").height());
 					$("html, body").animate({ scrollTop: $("#player_wrapper").height() }, "slow");
 					$("body").css("overflow-y","visible");
@@ -962,7 +961,7 @@ function handle(event) {
 			localStorage.subLang = saveSub;
 		}
 	} else if (event == "[torrent-data]") {
-		if (wjs().plugin.fullscreen) wjs().plugin.fullscreen = false;
+		if (wjs().fullscreen()) wjs().fullscreen(false);
 		$("#filesList").css("min-height",$("#player_wrapper").height());
 		$("html, body").animate({ scrollTop: $("#player_wrapper").height() }, "slow");
 		$("body").css("overflow-y","visible");
@@ -981,7 +980,7 @@ function handle(event) {
 					tmpVideos[ik] = powGlobals["videos"][ik];
 				}
 			}
-			setTimeout(function() { powGlobals["currentIndex"] = wjs().plugin.playlist.currentItem; },10);
+			setTimeout(function() { powGlobals["currentIndex"] = wjs().currentItem(); },10);
 			powGlobals["videos"] = tmpVideos;
 		} else if (parseInt(swapItems[1]) > 1) {
 			var tmpVideos = [];
@@ -994,7 +993,7 @@ function handle(event) {
 					tmpVideos[ik] = powGlobals["videos"][ik];
 				}
 			}
-			setTimeout(function() { powGlobals["currentIndex"] = wjs().plugin.playlist.currentItem; },10);
+			setTimeout(function() { powGlobals["currentIndex"] = wjs().currentItem(); },10);
 			powGlobals["videos"] = tmpVideos;
 		}
 	} else if (event == "[scan-library]") {
@@ -1070,7 +1069,7 @@ function fileExists() {
 	if (typeof powGlobals["duration"] === 'undefined') {
 		fs.exists(""+powGlobals["path"], function(exists) {
 			if (exists) {
-				if (wjs().plugin.time > 60000) {
+				if (wjs().time() > 60000) {
 					getLength();
 				} else setTimeout(function() { fileExists(); },30000);
 			} else setTimeout(function() { fileExists(); },30000);
@@ -1158,14 +1157,14 @@ function subtitlesByExactHash(hash,fileSize,tag) {
 					var newString = "{ ";									
 					for (k = 0; typeof theSubs[k] !== 'undefined'; k++) newString += theSubs[k]["string"];
 					newString = newString.substr(0,newString.length -2)+" }";
-					newSettings = wjs().plugin.playlist.items[wjs().plugin.playlist.currentItem].setting;
+					newSettings = wjs().plugin.playlist.items[wjs().currentItem()].setting;
 					if (IsJsonString(newSettings)) {
 						newSettings = JSON.parse(newSettings);
 					} else newSettings = {};
 					newSettings.subtitles = JSON.parse(newString);
 					wjs().plugin.emitJsMessage("[clear-subtitles]");
 					setTimeout(function() {
-						wjs().plugin.playlist.items[wjs().plugin.playlist.currentItem].setting = JSON.stringify(newSettings);
+						wjs().plugin.playlist.items[wjs().currentItem()].setting = JSON.stringify(newSettings);
 						wjs().plugin.emitJsMessage("[refresh-subtitles]");
 					},10);
 				} else {
@@ -1189,7 +1188,7 @@ function delayFinished(kj) {
 }
 
 function findHash() {
-	if (wjs().plugin.state == 3 || wjs().plugin.state == 4) {
+	if (wjs().state() == 3 || wjs().state() == 4) {
 		if (typeof powGlobals["fileHash"] === 'undefined') {
 			if (typeof powGlobals["engine"] === 'undefined') {
 				os.computeHash(powGlobals["path"], function(err, hash){
@@ -1200,7 +1199,7 @@ function findHash() {
 			} else {
 				os.computeHash(powGlobals["path"], function(err, hash){
 					if (err) return;
-					for (ij = 0; typeof powGlobals["files"][ij] !== 'undefined'; ij++) if (powGlobals["files"][ij].index == powGlobals["videos"][wjs().plugin.playlist.currentItem]["index"]) break;
+					for (ij = 0; typeof powGlobals["files"][ij] !== 'undefined'; ij++) if (powGlobals["files"][ij].index == powGlobals["videos"][wjs().currentItem()]["index"]) break;
 					if (ij == powGlobals["files"].length) {
 						powGlobals["fileHash"] = hash;
 						if (typeof powGlobals["byteLength"] !== 'undefined') {
@@ -1212,17 +1211,17 @@ function findHash() {
 							subtitlesByExactHash(hash,powGlobals["byteLength"],powGlobals["filename"]);
 						}
 					} else {
-						if (typeof powGlobals["videos"][wjs().plugin.playlist.currentItem]["checkHashes"][hash] === 'undefined') {
-							powGlobals["videos"][wjs().plugin.playlist.currentItem]["checkHashes"][hash] = 1;
+						if (typeof powGlobals["videos"][wjs().currentItem()]["checkHashes"][hash] === 'undefined') {
+							powGlobals["videos"][wjs().currentItem()]["checkHashes"][hash] = 1;
 						} else {
-							if (powGlobals["videos"][wjs().plugin.playlist.currentItem]["checkHashes"][hash] == 4) {
-								powGlobals["videos"][wjs().plugin.playlist.currentItem]["checkHashes"][hash]++;
+							if (powGlobals["videos"][wjs().currentItem()]["checkHashes"][hash] == 4) {
+								powGlobals["videos"][wjs().currentItem()]["checkHashes"][hash]++;
 								powGlobals["fileHash"] = hash;
 								if (typeof powGlobals["byteLength"] !== 'undefined') {
 									subtitlesByExactHash(powGlobals["fileHash"],powGlobals["byteLength"],powGlobals["filename"]);
 								}
 								
-							} else powGlobals["videos"][wjs().plugin.playlist.currentItem]["checkHashes"][hash]++;
+							} else powGlobals["videos"][wjs().currentItem()]["checkHashes"][hash]++;
 						}
 					}
 				});
@@ -1417,9 +1416,8 @@ wjs.init.prototype.addTorrent = function(torLink) {
 			}
 
 			if (powGlobals["hasVideo"] == 0) {
-				wjs().plugin.fullscreen = false;
-				wjs().plugin.playlist.clear();
-				wjs().stopPlayer();
+				wjs().fullscreen(false);
+				wjs().clearPlaylist();
 				$('#player_wrapper').css("min-height","1px").css("height","1px").css("width","1px");
 				$('body').css("overflow-y","visible");
 			}
