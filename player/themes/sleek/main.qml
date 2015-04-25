@@ -367,6 +367,8 @@ Rectangle {
 				height: 260
 				
 				Loader.PlaylistMenuItems { id: playlist } // Playlist Items Holder (This is where the Playlist Items will be loaded)
+				
+				Loader.PlaylistBlocker { id: blockPlaylist } // Blocker for Playlist Menu when some actions are used (like Scan Library)
 		
 				// Top Holder (Title + Close Button)
 				Loader.MenuHeader {
@@ -418,6 +420,7 @@ Rectangle {
 							cursorShape: Qt.PointingHandCursor;
 							onClicked: {
 								fireQmlMessage("[scan-library]");
+								blockPlaylist.visible = true;
 							}
 						}
 					}

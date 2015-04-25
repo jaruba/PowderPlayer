@@ -479,6 +479,7 @@ function scanLibrary() {
 			}
 	  }
 	  wjs().plugin.emitJsMessage("[refresh-disabled]");
+	  wjs().plugin.emitJsMessage("[end-scan-library]"+ij);
 	});
 }
 

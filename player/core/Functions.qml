@@ -328,6 +328,11 @@ Rectangle {
 			if (startsWith(message,"[gobackvar]0")) goneBack = 0;
 			if (startsWith(message,"[pause-policy]")) ui.settings.pausePolicy = message.replace("[pause-policy]","");
 			if (startsWith(message,"[refresh-disabled]")) playlist.refreshDisabled();
+			if (startsWith(message,"[end-scan-library]")) {
+				if (parseInt(message.replace("[end-scan-library]","")) == 0) setText("No Episodes Found");
+				else setText("Found "+parseInt(message.replace("[end-scan-library]",""))+" Episodes");
+				blockPlaylist.visible = false;
+			}
 			if (startsWith(message,"[swap-items]")) {
 				vlcPlayer.playlist.advanceItem(message.replace("[swap-items]","").split("|")[0],message.replace("[swap-items]","").split("|")[1]);
 				playlist.addPlaylistItems(); // Refresh Playlist GUI
