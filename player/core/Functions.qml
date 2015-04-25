@@ -359,6 +359,9 @@ Rectangle {
 				if (vlcPlayer.playlist.itemCount > 1) {
 					prevBut.visible = true;
 					nextBut.visible = true;
+				} else {
+					prevBut.visible = false;
+					nextBut.visible = false;
 				}
 				if (settings.autoplay == 1 && vlcPlayer.state == 0 && vlcPlayer.playlist.itemCount > 0) vlcPlayer.playlist.playItem(0); 
 			}

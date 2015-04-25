@@ -1535,11 +1535,34 @@ function runURL(torLink) {
 	wjs().plugin.emitJsMessage("[refresh-disabled]");
 	
 }
+
+var lastItem = 0;
+var lastState = "";
+var lastTitle = "";
+
 setTimeout(function() { 
 	wjs("#player_wrapper").addPlayer({ id: "webchimera", theme: "sleek", autoplay: 1, progressCache: 1, pausePolicy: localStorage.clickPause });
 	wjs().onMessage(handle);
 	wjs().onPlaying(isPlaying);
 	wjs().onOpening(isOpening);
+	wjs().onState(function() {
+		if (typeof powGlobals["engine"] !== 'undefined') {
+			if (this.state() == "opening") {
+				lastItem = this.currentItem();
+				lastState = this.state();
+			} else if (this.state() == "ended" && lastState == "opening") {
+				lastState = this.state();
+				lastTitle = this.plugin.playlist.items[lastItem].title.replace("[custom]","");
+				if (this.plugin.playlist.items[lastItem].mrl.substr(0,17) == "http://localhost:") {
+					this.replaceMRL(lastItem,{
+						url: "file:///"+powGlobals["videos"][lastItem]["path"].replace("\\","/"),
+						title: lastTitle
+					});
+					setTimeout(function() { wjs().playItem(lastItem); },1000);
+				}
+			}
+		}
+	});
 	if (gui.App.argv.length > 0) {
 		resetPowGlobals();
 		runURL(gui.App.argv[0]);
