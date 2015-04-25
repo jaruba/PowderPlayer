@@ -1535,7 +1535,7 @@ $('#torrentDialog').change(function(evt) {
 	checkInternet(function(isConnected) {
 		if (isConnected) {
 			resetPowGlobals();
-			runURL($(this).val());
+			runURL(document.getElementById('torrentDialog').value);
 			wjs().plugin.emitJsMessage("[refresh-playlist]");
 		} else {
 			$('.easy-modal-animated').trigger('openModal');
