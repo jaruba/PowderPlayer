@@ -21,4 +21,6 @@ Current Features
 
 - Always on Top Feature
 
+- An Incredible [List of HotKeys](http://wiki.webchimera.org/Player_Hotkeys)
+
 - Can be opened multiple times (for torrents, if you close a window, it removes everything that it downloaded in that instance)
