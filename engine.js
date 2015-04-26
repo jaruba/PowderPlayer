@@ -766,7 +766,7 @@ function checkDownloaded(piece) {
 			if (kj == wjs().currentItem()) {
 				if ((powGlobals.videos[kj].downloaded / (powGlobals.videos[kj].lastPiece - powGlobals.videos[kj].firstPiece)) > powGlobals.videos[kj].lastSent) {
 					powGlobals.videos[kj].lastSent = (powGlobals.videos[kj].downloaded / (powGlobals.videos[kj].lastPiece - powGlobals.videos[kj].firstPiece));
-					if (typeof wjs("#webchimera") !== 'undefined' && typeof wjs().setDownloaded !== 'undefined') {
+					if (typeof wjs() !== 'undefined' && typeof wjs().setDownloaded !== 'undefined') {
 						wjs().setDownloaded(powGlobals.videos[kj].lastSent);
 					}
 				}
@@ -1403,12 +1403,12 @@ wjs.init.prototype.addTorrent = function(torLink) {
 								}
 
 							}
-							wjs(this.context).addPlaylist({
+							wjs().addPlaylist({
 								 url: localHref+powGlobals.files[ij].index,
 								 title: getName(powGlobals.videos[kj].filename),
 				 				 vlcArgs: "--avi-index=3"
 							});
-							wjs(this.context).plugin.emitJsMessage("[saved-sub]"+localStorage.subLang);
+							wjs().plugin.emitJsMessage("[saved-sub]"+localStorage.subLang);
 							kj++;
 						}
 					}
@@ -1447,7 +1447,7 @@ wjs.init.prototype.addTorrent = function(torLink) {
 		
 		onmagnet();
 	}
-	return wjs(this.context);
+	return this;
 }
 
 function playlistAddVideo(torLink) {
@@ -1554,7 +1554,8 @@ setTimeout(function() {
 				if (this.plugin.playlist.items[lastItem].mrl.substr(0,17) == "http://localhost:") {
 					this.replaceMRL(lastItem,{
 						url: "file:///"+powGlobals.videos[lastItem].path.replace("\\","/"),
-						title: lastTitle
+						title: lastTitle,
+		 				vlcArgs: "--avi-index=3"
 					});
 					setTimeout(function() { wjs().playItem(lastItem); },1000);
 				}
