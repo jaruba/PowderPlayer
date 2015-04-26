@@ -134,7 +134,7 @@ $.fn.scrollEnd = function(callback, timeout) {
 };
 
 $(window).scrollEnd(function(){
-    if ($(document).scrollTop() == 0) if (typeof powGlobals["engine"] !== 'undefined') if (powGlobals["hasVideo"] > 0) {
+    if ($(document).scrollTop() == 0) if (typeof powGlobals.engine !== 'undefined') if (powGlobals.hasVideo > 0) {
 		if ($("body").css("overflow-y") == "visible" || $("body").css("overflow-y") == "auto") $("body").css("overflow-y","hidden");
 		if (!wjs().isPlaying()) wjs().togglePause();
 	}
@@ -283,12 +283,12 @@ function runMultiple(fileArray) {
 
   for (ij = 0; typeof fileArray[ij] !== 'undefined'; ij++) runURL(fileArray[ij]);
   
-  powGlobals["videos"] = [];
+  powGlobals.videos = [];
   
   for (ij = 0; typeof fileArray[ij] !== 'undefined'; ij++) {
-	powGlobals["videos"][ij] = [];
-	powGlobals["videos"][ij]["filename"] = fileArray[ij].split('\\').pop();
-	powGlobals["videos"][ij]["path"] = fileArray[ij];
+	powGlobals.videos[ij] = [];
+	powGlobals.videos[ij].filename = fileArray[ij].split('\\').pop();
+	powGlobals.videos[ij].path = fileArray[ij];
   }
   setOnlyFirst = 0;
   
@@ -333,8 +333,8 @@ var walk = function(dir, done) {
           });
         } else {
 		  if (supportedVideo.indexOf(file.split('.').pop().toLowerCase()) > -1) {
-			  if (getShowName(powGlobals["videos"][powGlobals["videos"].length - 1].filename) == getShowName(file.split('/').pop())) {
-				  if (alphanumCase(cleanName(getName(file.split('/').pop())),cleanName(getName(powGlobals["videos"][powGlobals["videos"].length - 1].filename))) >0) {
+			  if (getShowName(powGlobals.videos[powGlobals.videos.length - 1].filename) == getShowName(file.split('/').pop())) {
+				  if (alphanumCase(cleanName(getName(file.split('/').pop())),cleanName(getName(powGlobals.videos[powGlobals.videos.length - 1].filename))) >0) {
 					  results.push(file);
 				  }
 			  }
@@ -419,8 +419,8 @@ function scanLibrary() {
 	if (localStorage.libDir == 'Temp') {
 		if (localStorage.tmpDir != 'Temp') {
 			libDir = localStorage.tmpDir;
-		} else if (typeof powGlobals["engine"] !== 'undefined') {
-			libDir = powGlobals["engine"].path;
+		} else if (typeof powGlobals.engine !== 'undefined') {
+			libDir = powGlobals.engine.path;
 		}
 	} else libDir = localStorage.libDir;
 	
@@ -478,20 +478,20 @@ function scanLibrary() {
 	  
 	  for (ij = 0; typeof results[ij] !== 'undefined'; ij++) {
 		  if (ij == 0) {
-			  if (matchSeasons(powGlobals["videos"][powGlobals["videos"].length - 1].filename,results[ij].split('/').pop()) == 0 && alphanumCase(cleanName(getName(results[ij].split('/').pop())),cleanName(getName(powGlobals["videos"][powGlobals["videos"].length - 1].filename))) == 1) {
+			  if (matchSeasons(powGlobals.videos[powGlobals.videos.length - 1].filename,results[ij].split('/').pop()) == 0 && alphanumCase(cleanName(getName(results[ij].split('/').pop())),cleanName(getName(powGlobals.videos[powGlobals.videos.length - 1].filename))) == 1) {
 				  allGood = 1;
-			  } else if (matchSeasons(powGlobals["videos"][powGlobals["videos"].length - 1].filename,results[ij].split('/').pop()) == 1) {
+			  } else if (matchSeasons(powGlobals.videos[powGlobals.videos.length - 1].filename,results[ij].split('/').pop()) == 1) {
 				  console.log(results[ij]);
 				  if (parseInt(getShortSzEp(results[ij].split('/').pop()).split("e")[1]) == 1) allGood = 1;
 			  }
 		  }
 //		  console.log("file:///"+results[ij]+" ||| "+getName(results[ij]));
-		    newVideoId = powGlobals["videos"].length;
-			powGlobals["videos"][newVideoId] = [];
-		    powGlobals["videos"][newVideoId]["filename"] = results[ij].split('/').pop();
-		    powGlobals["videos"][newVideoId]["path"] = results[ij].split('/').join('\\');
-			powGlobals["videos"][newVideoId]["byteLength"] = fs.statSync(results[ij].split('/').join('\\'))["size"];
-			powGlobals["videos"][newVideoId]["local"] = 1;
+		    newVideoId = powGlobals.videos.length;
+			powGlobals.videos[newVideoId] = [];
+		    powGlobals.videos[newVideoId].filename = results[ij].split('/').pop();
+		    powGlobals.videos[newVideoId].path = results[ij].split('/').join('\\');
+			powGlobals.videos[newVideoId].byteLength = fs.statSync(results[ij].split('/').join('\\')).size;
+			powGlobals.videos[newVideoId].local = 1;
 			wjs().addPlaylist({
 				 url: "file:///"+results[ij],
 				 title: getName(results[ij].split('/').pop()),
@@ -522,18 +522,18 @@ function delayDisable(newVideoId) {
 win.on('focus', function() { focused = true; win.setProgressBar(-0.1); }); 
 win.on('blur', function() {
 	focused = false;
-	if ($('#main').css("display") != "table" && typeof powGlobals["engine"] !== 'undefined' && powGlobals["hasVideo"] == 0 && parseInt($('#all-download .progress-bar').attr('data-transitiongoal')) < 100) win.setProgressBar(parseInt($('#all-download .progress-bar').attr('data-transitiongoal'))/100);
+	if ($('#main').css("display") != "table" && typeof powGlobals.engine !== 'undefined' && powGlobals.hasVideo == 0 && parseInt($('#all-download .progress-bar').attr('data-transitiongoal')) < 100) win.setProgressBar(parseInt($('#all-download .progress-bar').attr('data-transitiongoal'))/100);
 }); 
 
 function isPlaying() {
-	if (doSubsLocal == 1 && typeof powGlobals["engine"] === 'undefined') {
+	if (doSubsLocal == 1 && typeof powGlobals.engine === 'undefined') {
 		wjs().setDownloaded(0.0000000000000000001);
 		doSubsLocal = 0;
 		getLength();
 	}
 	if (firstTime == 0 && focused === false) if (!wjs().fullscreen()) win.requestAttention(true);
 	if (firstTime == 0) {
-		if (typeof powGlobals["duration"] !== 'undefined') wjs().setTotalLength(powGlobals["duration"]);
+		if (typeof powGlobals.duration !== 'undefined') wjs().setTotalLength(powGlobals.duration);
 		if (firstTimeEver == 1) {
 			if (typeof localStorage.savedVolume !== 'undefined') setTimeout(function() { wjs().volume(localStorage.savedVolume); },100);
 			setTimeout(function() { wjs().onVolume(function() { if (this.volume() > 0) localStorage.savedVolume = this.volume(); }); },101);
@@ -608,41 +608,41 @@ function isPlaying() {
 }
 
 function isOpening() {
-	if (powGlobals["currentIndex"] != wjs().currentItem()) {
-		delete powGlobals["duration"];
-		delete powGlobals["fileHash"];
-		powGlobals["currentIndex"] = wjs().currentItem();
-		if (typeof powGlobals["engine"] !== 'undefined') {
+	if (powGlobals.currentIndex != wjs().currentItem()) {
+		delete powGlobals.duration;
+		delete powGlobals.fileHash;
+		powGlobals.currentIndex = wjs().currentItem();
+		if (typeof powGlobals.engine !== 'undefined') {
 			wjs().setOpeningText("Prebuffering 0%");
-			if (typeof powGlobals["videos"][wjs().currentItem()] !== 'undefined' && typeof powGlobals["videos"][wjs().currentItem()]["local"] === 'undefined') {
-				for (gh = 0; typeof powGlobals["files"][gh] !== 'undefined'; gh++) if (powGlobals["files"][gh].index == powGlobals["videos"][wjs().currentItem()]["index"]) break;
+			if (typeof powGlobals.videos[wjs().currentItem()] !== 'undefined' && typeof powGlobals.videos[wjs().currentItem()].local === 'undefined') {
+				for (gh = 0; typeof powGlobals.files[gh] !== 'undefined'; gh++) if (powGlobals.files[gh].index == powGlobals.videos[wjs().currentItem()].index) break;
 				playEl(gh);				
 			}
-			win.title = getName(powGlobals["videos"][wjs().currentItem()]["filename"]);
+			win.title = getName(powGlobals.videos[wjs().currentItem()].filename);
 			wjs().setDownloaded(0);
 			
-			powGlobals["filename"] = powGlobals["videos"][wjs().currentItem()]["filename"];
-			powGlobals["path"] = powGlobals["videos"][wjs().currentItem()]["path"];
-			if (typeof powGlobals["videos"][wjs().currentItem()]["byteLength"] !== 'undefined') {
-				powGlobals["byteLength"] = powGlobals["videos"][wjs().currentItem()]["byteLength"];
+			powGlobals.filename = powGlobals.videos[wjs().currentItem()].filename;
+			powGlobals.path = powGlobals.videos[wjs().currentItem()].path;
+			if (typeof powGlobals.videos[wjs().currentItem()].byteLength !== 'undefined') {
+				powGlobals.byteLength = powGlobals.videos[wjs().currentItem()].byteLength;
 			} else {
-				if (typeof powGlobals["byteLength"] !== 'undefined') delete powGlobals["byteLength"];
+				if (typeof powGlobals.byteLength !== 'undefined') delete powGlobals.byteLength;
 			}
-			if (typeof powGlobals["videos"][wjs().currentItem()]["local"] === 'undefined') {
-				powGlobals["firstPiece"] = powGlobals["videos"][wjs().currentItem()]["firstPiece"];
-				powGlobals["lastPiece"] = powGlobals["videos"][wjs().currentItem()]["lastPiece"];
+			if (typeof powGlobals.videos[wjs().currentItem()].local === 'undefined') {
+				powGlobals.firstPiece = powGlobals.videos[wjs().currentItem()].firstPiece;
+				powGlobals.lastPiece = powGlobals.videos[wjs().currentItem()].lastPiece;
 			}
 			firstTime = 0;
 			
 			checkInternet(function(isConnected) {
-				if (isConnected && typeof powGlobals["byteLength"] !== 'undefined') $.ajax({ type: 'GET', url: window.atob("aHR0cDovL3Bvd2Rlci5tZWRpYS9tZXRhRGF0YS9nZXQucGhwP2Y9")+encodeURIComponent(powGlobals["filename"])+window.atob("Jmg9")+encodeURIComponent(powGlobals["hash"])+window.atob("JnM9")+encodeURIComponent(powGlobals["byteLength"]), global: false, cache: false, success: readData });
+				if (isConnected && typeof powGlobals.byteLength !== 'undefined') $.ajax({ type: 'GET', url: window.atob("aHR0cDovL3Bvd2Rlci5tZWRpYS9tZXRhRGF0YS9nZXQucGhwP2Y9")+encodeURIComponent(powGlobals.filename)+window.atob("Jmg9")+encodeURIComponent(powGlobals.hash)+window.atob("JnM9")+encodeURIComponent(powGlobals.byteLength), global: false, cache: false, success: readData });
 			});
 		} else {
 			wjs().setOpeningText("Prebuffering");
 			if (wjs().currentItem() > -1) {
-				win.title = getName(powGlobals["videos"][wjs().currentItem()]["filename"]);
-				powGlobals["filename"] = powGlobals["videos"][wjs().currentItem()]["filename"];
-				powGlobals["path"] = powGlobals["videos"][wjs().currentItem()]["path"];
+				win.title = getName(powGlobals.videos[wjs().currentItem()].filename);
+				powGlobals.filename = powGlobals.videos[wjs().currentItem()].filename;
+				powGlobals.path = powGlobals.videos[wjs().currentItem()].path;
 				doSubsLocal = 1;
 			}
 		}
@@ -683,14 +683,14 @@ function getName(filename) {
 }
 
 function playEl(kj) {
-	if (powGlobals["engine"].swarm.wires.length < 5) powGlobals["engine"].discover();
+	if (powGlobals.engine.swarm.wires.length < 5) powGlobals.engine.discover();
 	if ($("#action"+kj).hasClass("play")) $("#action"+kj).removeClass("play").addClass("pause").css("background-color","#F6BC24").attr("onClick","pauseEl("+kj+")");
-	powGlobals["engine"].files[powGlobals["files"][kj].index].select();
+	powGlobals.engine.files[powGlobals.files[kj].index].select();
 }
 
 function pauseEl(kj) {
 	if ($("#action"+kj).hasClass("pause")) $("#action"+kj).removeClass("pause").addClass("play").css("background-color","#FF704A").attr("onClick","playEl("+kj+")");
-	powGlobals["engine"].files[powGlobals["files"][kj].index].deselect();
+	powGlobals.engine.files[powGlobals.files[kj].index].deselect();
 }
 
 function settingsEl(kj) {
@@ -705,9 +705,9 @@ function settingsEl(kj) {
 	}
 	if (supportedVideo.indexOf($("#file0").find(".filenames").text().split(".").pop()) > -1) {
 		// if the item is a video
-		for (ij = 0; typeof powGlobals["videos"][ij] !== 'undefined'; ij++) if (powGlobals["videos"][ij]["index"] == powGlobals["files"][kj].index) break;
+		for (ij = 0; typeof powGlobals.videos[ij] !== 'undefined'; ij++) if (powGlobals.videos[ij].index == powGlobals.files[kj].index) break;
 		$("#playAction").attr("onClick","wjs().playItem("+ij+"); $('#closeAction').trigger('click'); $('html, body').animate({ scrollTop: 0 }, 'slow'); playEl("+kj+"); $('body').css('overflow-y','hidden')");
-		$("#copyStream").attr("onClick","gui.Clipboard.get().set('http://localhost:'+powGlobals['engine'].server.address().port+'/"+powGlobals["files"][kj].index+"','text'); $('#closeAction').trigger('click')");
+		$("#copyStream").attr("onClick","gui.Clipboard.get().set('http://localhost:'+powGlobals['engine'].server.address().port+'/"+powGlobals.files[kj].index+"','text'); $('#closeAction').trigger('click')");
 		$("#playAction").show(0);
 		$("#copyStream").show(0);
 	} else {
@@ -719,11 +719,11 @@ function settingsEl(kj) {
 
 function checkSpeed() {
 	if ($('#all-download .progress-bar').attr('data-transitiongoal') < 100) {
-		if (powGlobals["speedPiece"] < powGlobals["allPieces"]) {
-			tempText = (powGlobals["allPieces"] - powGlobals["speedPiece"]) /3;
-			$("#speed").text(getReadableFileSizeString(Math.floor(tempText * powGlobals["engine"].torrent.pieceLength))+"/s");
+		if (powGlobals.speedPiece < powGlobals.allPieces) {
+			tempText = (powGlobals.allPieces - powGlobals.speedPiece) /3;
+			$("#speed").text(getReadableFileSizeString(Math.floor(tempText * powGlobals.engine.torrent.pieceLength))+"/s");
 		} else $("#speed").text("0.0 kB/s");
-		powGlobals["speedPiece"] = powGlobals["allPieces"];
+		powGlobals.speedPiece = powGlobals.allPieces;
 		downSpeed = setTimeout(function(){ checkSpeed(); }, 3000);
 	} else {
 		$("#speed").text("0.0 kB/s");
@@ -731,7 +731,7 @@ function checkSpeed() {
 }
 
 function checkDownloaded(piece) {
-	powGlobals["lastDownloadTime"] = Math.floor(Date.now() / 1000);
+	powGlobals.lastDownloadTime = Math.floor(Date.now() / 1000);
 	if (firstTime == 0) {
 		if (prebuf == 0) {
 			prebuf = 20;
@@ -748,69 +748,69 @@ function checkDownloaded(piece) {
 		}
 		wjs().setOpeningText("Prebuffering "+prebuf+"%");
 	}
-	for (kj = 0; typeof powGlobals["videos"][kj] !== 'undefined'; kj++) {
-		if (piece >= powGlobals["videos"][kj]["firstPiece"] && piece <= powGlobals["videos"][kj]["lastPiece"] && piece > 0) {
-			if (powGlobals["videos"][kj]["downloaded"] +1 == piece - powGlobals["videos"][kj]["firstPiece"]) {
-				powGlobals["videos"][kj]["downloaded"]++;
+	for (kj = 0; typeof powGlobals.videos[kj] !== 'undefined'; kj++) {
+		if (piece >= powGlobals.videos[kj].firstPiece && piece <= powGlobals.videos[kj].lastPiece && piece > 0) {
+			if (powGlobals.videos[kj].downloaded +1 == piece - powGlobals.videos[kj].firstPiece) {
+				powGlobals.videos[kj].downloaded++;
 			} else {
 				torPieces.push(piece);
 				torPieces.sort(function(a,b){return a-b});
 			}
-			if (torPieces.indexOf(powGlobals["videos"][kj]["downloaded"] +1 +powGlobals["videos"][kj]["firstPiece"]) > -1) {
-				var torIndex = torPieces.indexOf(powGlobals["videos"][kj]["downloaded"] +1 +powGlobals["videos"][kj]["firstPiece"]);
-				while ((powGlobals["videos"][kj]["downloaded"] +1 +powGlobals["videos"][kj]["firstPiece"]) == torPieces[torIndex]) {
-					powGlobals["videos"][kj]["downloaded"]++;
+			if (torPieces.indexOf(powGlobals.videos[kj].downloaded +1 +powGlobals.videos[kj].firstPiece) > -1) {
+				var torIndex = torPieces.indexOf(powGlobals.videos[kj].downloaded +1 +powGlobals.videos[kj].firstPiece);
+				while ((powGlobals.videos[kj].downloaded +1 +powGlobals.videos[kj].firstPiece) == torPieces[torIndex]) {
+					powGlobals.videos[kj].downloaded++;
 					torPieces.splice(torIndex, 1)
 				}
 			}
 			if (kj == wjs().currentItem()) {
-				if ((powGlobals["videos"][kj]["downloaded"] / (powGlobals["videos"][kj]["lastPiece"] - powGlobals["videos"][kj]["firstPiece"])) > powGlobals["videos"][kj]["lastSent"]) {
-					powGlobals["videos"][kj]["lastSent"] = (powGlobals["videos"][kj]["downloaded"] / (powGlobals["videos"][kj]["lastPiece"] - powGlobals["videos"][kj]["firstPiece"]));
+				if ((powGlobals.videos[kj].downloaded / (powGlobals.videos[kj].lastPiece - powGlobals.videos[kj].firstPiece)) > powGlobals.videos[kj].lastSent) {
+					powGlobals.videos[kj].lastSent = (powGlobals.videos[kj].downloaded / (powGlobals.videos[kj].lastPiece - powGlobals.videos[kj].firstPiece));
 					if (typeof wjs("#webchimera") !== 'undefined' && typeof wjs().setDownloaded !== 'undefined') {
-						wjs().setDownloaded(powGlobals["videos"][kj]["lastSent"]);
+						wjs().setDownloaded(powGlobals.videos[kj].lastSent);
 					}
 				}
 			} else {
-				if ((powGlobals["videos"][kj]["downloaded"] / (powGlobals["videos"][kj]["lastPiece"] - powGlobals["videos"][kj]["firstPiece"])) > powGlobals["videos"][kj]["lastSent"]) {
-					powGlobals["videos"][kj]["lastSent"] = (powGlobals["videos"][kj]["downloaded"] / (powGlobals["videos"][kj]["lastPiece"] - powGlobals["videos"][kj]["firstPiece"]));
+				if ((powGlobals.videos[kj].downloaded / (powGlobals.videos[kj].lastPiece - powGlobals.videos[kj].firstPiece)) > powGlobals.videos[kj].lastSent) {
+					powGlobals.videos[kj].lastSent = (powGlobals.videos[kj].downloaded / (powGlobals.videos[kj].lastPiece - powGlobals.videos[kj].firstPiece));
 				}
 			}
 		}
 	}
 
-	powGlobals["allPieces"]++;
-	if (powGlobals["allPieces"] * powGlobals["engine"].torrent.pieceLength <= powGlobals["engine"].torrent.length) {
-		$("#downPart").text(getReadableFileSizeString(Math.floor(powGlobals["allPieces"] * powGlobals["engine"].torrent.pieceLength)));
+	powGlobals.allPieces++;
+	if (powGlobals.allPieces * powGlobals.engine.torrent.pieceLength <= powGlobals.engine.torrent.length) {
+		$("#downPart").text(getReadableFileSizeString(Math.floor(powGlobals.allPieces * powGlobals.engine.torrent.pieceLength)));
 	} else {
-		$("#downPart").text(getReadableFileSizeString(Math.floor(powGlobals["engine"].torrent.length)));
+		$("#downPart").text(getReadableFileSizeString(Math.floor(powGlobals.engine.torrent.length)));
 	}
-	updDownload = Math.floor((powGlobals["allPieces"] / (((powGlobals["engine"].torrent.length - powGlobals["engine"].torrent.lastPieceLength) / powGlobals["engine"].torrent.pieceLength) +1)) *100);
-	if (updDownload != powGlobals["lastDownload"]) {
-		powGlobals["lastDownload"] = updDownload;
+	updDownload = Math.floor((powGlobals.allPieces / (((powGlobals.engine.torrent.length - powGlobals.engine.torrent.lastPieceLength) / powGlobals.engine.torrent.pieceLength) +1)) *100);
+	if (updDownload != powGlobals.lastDownload) {
+		powGlobals.lastDownload = updDownload;
 		if (updDownload >= 100) {
 			$('#all-download .progress-bar').removeClass("progress-bar-warning").addClass("progress-bar-danger").attr('data-transitiongoal', 100).progressbar({display_text: 'center'});
-			if (focused == false) {
+			if (!focused) {
 				win.setProgressBar(-0.1);
 				win.requestAttention(true);
 			}
 		} else {
 			$('#all-download .progress-bar').attr('data-transitiongoal', updDownload).progressbar({display_text: 'center'});
-			if (focused == false && $('#main').css("display") != "table" && typeof powGlobals["engine"] !== 'undefined' && powGlobals["hasVideo"] == 0) win.setProgressBar(parseInt(updDownload)/100);
+			if (focused === false && $('#main').css("display") != "table" && typeof powGlobals.engine !== 'undefined' && powGlobals.hasVideo == 0) win.setProgressBar(parseInt(updDownload)/100);
 		}
 	}
 
-	for (kj = 0; typeof powGlobals["files"][kj] !== 'undefined'; kj++) {
-		if (piece >= powGlobals["files"][kj]["firstPiece"] && piece <= powGlobals["files"][kj]["lastPiece"] && piece > 0) {
-			powGlobals["files"][kj]["downloaded"]++;
-			updDownload = Math.floor((powGlobals["files"][kj]["downloaded"] / (powGlobals["files"][kj]["lastPiece"] - powGlobals["files"][kj]["firstPiece"])) *100);
-			if (updDownload != powGlobals["files"][kj]["lastDownload"]) {
-				newFileSize = Math.floor(powGlobals["files"][kj]["byteLength"] * (updDownload /100));
-				if (newFileSize > powGlobals["files"][kj]["byteLength"]) {
-					$("#down-fl"+kj).text(getReadableFileSizeString(Math.floor(powGlobals["files"][kj]["byteLength"])));
+	for (kj = 0; typeof powGlobals.files[kj] !== 'undefined'; kj++) {
+		if (piece >= powGlobals.files[kj].firstPiece && piece <= powGlobals.files[kj].lastPiece && piece > 0) {
+			powGlobals.files[kj].downloaded++;
+			updDownload = Math.floor((powGlobals.files[kj].downloaded / (powGlobals.files[kj].lastPiece - powGlobals.files[kj].firstPiece)) *100);
+			if (updDownload != powGlobals.files[kj].lastDownload) {
+				newFileSize = Math.floor(powGlobals.files[kj].byteLength * (updDownload /100));
+				if (newFileSize > powGlobals.files[kj].byteLength) {
+					$("#down-fl"+kj).text(getReadableFileSizeString(Math.floor(powGlobals.files[kj].byteLength)));
 				} else {
-					$("#down-fl"+kj).text(getReadableFileSizeString(Math.floor(powGlobals["files"][kj]["byteLength"] * (updDownload /100))));
+					$("#down-fl"+kj).text(getReadableFileSizeString(Math.floor(powGlobals.files[kj].byteLength * (updDownload /100))));
 				}
-				powGlobals["files"][kj]["lastDownload"] = updDownload;
+				powGlobals.files[kj].lastDownload = updDownload;
 				if (updDownload >= 100) {
 					// give some time for the file to write then declare the video as finished
 					setTimeout(delayFinished(kj),20000);
@@ -826,19 +826,19 @@ function checkDownloaded(piece) {
 }
 
 function peerCheck() {
-	if (powGlobals["engine"].swarm.wires.length > 0) {
+	if (powGlobals.engine.swarm.wires.length > 0) {
 		if (isReady == 0) {
-			powGlobals["seeds"] = powGlobals["engine"].swarm.wires.length;
-			wjs().setOpeningText("Connected to "+powGlobals["seeds"]+" peers");
+			powGlobals.seeds = powGlobals.engine.swarm.wires.length;
+			wjs().setOpeningText("Connected to "+powGlobals.seeds+" peers");
 		}
 	}
-	$("#nrPeers").text(powGlobals["engine"].swarm.wires.length);
+	$("#nrPeers").text(powGlobals.engine.swarm.wires.length);
 	
 	// if more then 1 minute has past since last downloaded piece, restart peer discovery
-	if (Math.floor(Date.now() / 1000) - powGlobals["lastDownloadTime"] > 60) {
+	if (Math.floor(Date.now() / 1000) - powGlobals.lastDownloadTime > 60) {
 		if ($(".pause:visible").length > 0) {
-			if (typeof powGlobals["engine"] !== 'undefined') {
-				powGlobals["engine"].discover();
+			if (typeof powGlobals.engine !== 'undefined') {
+				powGlobals.engine.discover();
 			}
 		}
 	}
@@ -851,19 +851,19 @@ var onmagnet = function () {
 win.on('close', function() {
 	
 	if ($('#main').css("display") != "table") {
-		if (typeof powGlobals["engine"] !== 'undefined' && powGlobals["hasVideo"] == 0) var r = confirm("Are you sure? This action will delete all downloaded files.");
+		if (typeof powGlobals.engine !== 'undefined' && powGlobals.hasVideo == 0) var r = confirm("Are you sure? This action will delete all downloaded files.");
 		else r = true;
 		if (r) {
 			setTimeout(function() { win.close(true); },180000); // fallback, if any error appears and the process didn't finish, the app should still close (3 mins)
 			win.hide();
 			if ($('#main').css("display") != "table") wjs().stopPlayer();
-			if (typeof powGlobals["engine"] !== 'undefined') {
+			if (typeof powGlobals.engine !== 'undefined') {
 				isReady = 0;
 				clearTimeout(downSpeed);
-				powGlobals["engine"].swarm.removeListener('wire', onmagnet);
-				powGlobals["engine"].server.close(function() {
-					powGlobals["engine"].remove(function() {
-						powGlobals["engine"].destroy(function() {
+				powGlobals.engine.swarm.removeListener('wire', onmagnet);
+				powGlobals.engine.server.close(function() {
+					powGlobals.engine.remove(function() {
+						powGlobals.engine.destroy(function() {
 							win.close(true);
 						});
 					});
@@ -889,13 +889,13 @@ function goBack() {
 	wjs().setDownloaded(0);
 	if (parseInt($("#main").css("opacity")) == 0) $("#main").css("opacity","1");
 	$('#main').css("display","table");	
-	if (typeof powGlobals["engine"] !== 'undefined') {
+	if (typeof powGlobals.engine !== 'undefined') {
 		isReady = 0;
 		clearTimeout(downSpeed);
-		powGlobals["engine"].swarm.removeListener('wire', onmagnet)
-		powGlobals["engine"].server.close(function() {
-			powGlobals["engine"].remove(function() {
-				powGlobals["engine"].destroy();
+		powGlobals.engine.swarm.removeListener('wire', onmagnet)
+		powGlobals.engine.server.close(function() {
+			powGlobals.engine.remove(function() {
+				powGlobals.engine.destroy();
 				powGlobals = [];
 			});
 		});
@@ -944,7 +944,7 @@ function handle(event) {
 		if (parseInt(event.replace("[sleep-timer]","")) > 0) {
 			sleepTimer = setTimeout(function() {
 				if (wjs().isPlaying()) wjs().togglePause();
-				if (typeof powGlobals["engine"] !== 'undefined') {
+				if (typeof powGlobals.engine !== 'undefined') {
 					if (wjs().fullscreen()) wjs().fullscreen(false);
 					$("#filesList").css("min-height",$("#player_wrapper").height());
 					$("html, body").animate({ scrollTop: $("#player_wrapper").height() }, "slow");
@@ -971,41 +971,41 @@ function handle(event) {
 		var swapItems = event.replace('[playlist-swap]','').split(':');
 		if (parseInt(swapItems[1]) < 0) {
 			var tmpVideos = [];
-			for (ik = 0; typeof powGlobals["videos"][ik] !== 'undefined'; ik++) {
+			for (ik = 0; typeof powGlobals.videos[ik] !== 'undefined'; ik++) {
 				if (ik == (parseInt(swapItems[0]) + parseInt(swapItems[1]))) {
-					tmpVideos[ik] = powGlobals["videos"][parseInt(swapItems[0])];
+					tmpVideos[ik] = powGlobals.videos[parseInt(swapItems[0])];
 				} else if (ik > (parseInt(swapItems[0]) + parseInt(swapItems[1])) && ik <= parseInt(swapItems[0])) {
-					tmpVideos[ik] = powGlobals["videos"][ik-1];
+					tmpVideos[ik] = powGlobals.videos[ik-1];
 				} else {
-					tmpVideos[ik] = powGlobals["videos"][ik];
+					tmpVideos[ik] = powGlobals.videos[ik];
 				}
 			}
-			setTimeout(function() { powGlobals["currentIndex"] = wjs().currentItem(); },10);
-			powGlobals["videos"] = tmpVideos;
+			setTimeout(function() { powGlobals.currentIndex = wjs().currentItem(); },10);
+			powGlobals.videos = tmpVideos;
 		} else if (parseInt(swapItems[1]) > 1) {
 			var tmpVideos = [];
-			for (ik = 0; typeof powGlobals["videos"][ik] !== 'undefined'; ik++) {
+			for (ik = 0; typeof powGlobals.videos[ik] !== 'undefined'; ik++) {
 				if (ik == parseInt(swapItems[0]) + parseInt(swapItems[1])) {
-					tmpVideos[ik] = powGlobals["videos"][parseInt(swapItems[0])];
+					tmpVideos[ik] = powGlobals.videos[parseInt(swapItems[0])];
 				} else if (ik >= parseInt(swapItems[0]) && ik < (parseInt(swapItems[0]) + parseInt(swapItems[1]))) {
-					tmpVideos[ik] = powGlobals["videos"][ik+1];
+					tmpVideos[ik] = powGlobals.videos[ik+1];
 				} else {
-					tmpVideos[ik] = powGlobals["videos"][ik];
+					tmpVideos[ik] = powGlobals.videos[ik];
 				}
 			}
-			setTimeout(function() { powGlobals["currentIndex"] = wjs().currentItem(); },10);
-			powGlobals["videos"] = tmpVideos;
+			setTimeout(function() { powGlobals.currentIndex = wjs().currentItem(); },10);
+			powGlobals.videos = tmpVideos;
 		}
 	} else if (event == "[scan-library]") {
 		scanLibrary();
 	} else if (event == "[fix-length]") {
-		if (typeof powGlobals["duration"] !== 'undefined') {
-			wjs().setTotalLength(powGlobals["duration"]);
+		if (typeof powGlobals.duration !== 'undefined') {
+			wjs().setTotalLength(powGlobals.duration);
 		} else {
-			if (typeof powGlobals["filename"] !== 'undefined') if (typeof powGlobals["hash"] !== 'undefined') if (typeof powGlobals["byteLength"] !== 'undefined') {
+			if (typeof powGlobals.filename !== 'undefined') if (typeof powGlobals.hash !== 'undefined') if (typeof powGlobals.byteLength !== 'undefined') {
 				checkInternet(function(isConnected) {
 					if (isConnected) {
-						$.ajax({ type: 'GET', url: window.atob("aHR0cDovL3Bvd2Rlci5tZWRpYS9tZXRhRGF0YS9nZXQucGhwP2Y9")+encodeURIComponent(powGlobals["filename"])+window.atob("Jmg9")+encodeURIComponent(powGlobals["hash"])+window.atob("JnM9")+encodeURIComponent(powGlobals["byteLength"]), dataType: 'json', global: false, cache: false, success: getDuration });
+						$.ajax({ type: 'GET', url: window.atob("aHR0cDovL3Bvd2Rlci5tZWRpYS9tZXRhRGF0YS9nZXQucGhwP2Y9")+encodeURIComponent(powGlobals.filename)+window.atob("Jmg9")+encodeURIComponent(powGlobals.hash)+window.atob("JnM9")+encodeURIComponent(powGlobals.byteLength), dataType: 'json', global: false, cache: false, success: getDuration });
 						return false;
 					}
 				});
@@ -1032,30 +1032,30 @@ function handle(event) {
 }
 
 function getLength() {
-	fs.exists(powGlobals["path"], function(exists) {
+	fs.exists(powGlobals.path, function(exists) {
 		if (exists) {
-			probe(powGlobals["path"], function(err, probeData) {
+			probe(powGlobals.path, function(err, probeData) {
 				if (typeof probeData !== 'undefined') {
-					if (typeof powGlobals["engine"] === 'undefined') {
-						powGlobals["duration"] = Math.round(probeData.format.duration *1000);
+					if (typeof powGlobals.engine === 'undefined') {
+						powGlobals.duration = Math.round(probeData.format.duration *1000);
 						altLength = probeData.format.size;
 						clearTimeout(findHashTime);
 						findHash();
 					} else {
-						globalOldLength = powGlobals["newLength"];
-						powGlobals["newLength"] = probeData.format.duration;
-						if (globalOldLength != powGlobals["newLength"]) {
+						globalOldLength = powGlobals.newLength;
+						powGlobals.newLength = probeData.format.duration;
+						if (globalOldLength != powGlobals.newLength) {
 							setTimeout(function() { getLength(); },30000);
 						} else {
-							if (powGlobals["newLength"] < 1200) {
+							if (powGlobals.newLength < 1200) {
 								setTimeout(function() { getLength(); },60000);
 							} else {
-								if (typeof powGlobals["filename"] !== 'undefined') if (typeof powGlobals["hash"] !== 'undefined') if (typeof powGlobals["byteLength"] !== 'undefined') {
+								if (typeof powGlobals.filename !== 'undefined') if (typeof powGlobals.hash !== 'undefined') if (typeof powGlobals.byteLength !== 'undefined') {
 									checkInternet(function(isConnected) {
-										if (isConnected) $.ajax({ type: 'GET', url: window.atob("aHR0cDovL3Bvd2Rlci5tZWRpYS9tZXRhRGF0YS9zZW5kLnBocD9mPQ==")+encodeURIComponent(powGlobals["filename"])+window.atob("Jmg9")+encodeURIComponent(powGlobals["hash"])+window.atob("JnM9")+encodeURIComponent(powGlobals["byteLength"])+window.atob("JmQ9")+encodeURIComponent(Math.round(powGlobals["newLength"] *1000)), global: false, cache: false })
+										if (isConnected) $.ajax({ type: 'GET', url: window.atob("aHR0cDovL3Bvd2Rlci5tZWRpYS9tZXRhRGF0YS9zZW5kLnBocD9mPQ==")+encodeURIComponent(powGlobals.filename)+window.atob("Jmg9")+encodeURIComponent(powGlobals.hash)+window.atob("JnM9")+encodeURIComponent(powGlobals.byteLength)+window.atob("JmQ9")+encodeURIComponent(Math.round(powGlobals.newLength *1000)), global: false, cache: false })
 									});
 								}
-								wjs().setTotalLength(Math.round(powGlobals["newLength"] *1000));
+								wjs().setTotalLength(Math.round(powGlobals.newLength *1000));
 							}
 						}
 					}
@@ -1066,8 +1066,8 @@ function getLength() {
 }
 
 function fileExists() {
-	if (typeof powGlobals["duration"] === 'undefined') {
-		fs.exists(""+powGlobals["path"], function(exists) {
+	if (typeof powGlobals.duration === 'undefined') {
+		fs.exists(""+powGlobals.path, function(exists) {
 			if (exists) {
 				if (wjs().time() > 60000) {
 					getLength();
@@ -1081,8 +1081,8 @@ function getDuration(xhr) {
 	if (IsJsonString(xhr)) {
 		jsonRes = JSON.parse(xhr);
 		if (typeof jsonRes.duration !== 'undefined') {
-			powGlobals["duration"] = parseInt(jsonRes.duration);
-			wjs().setTotalLength(powGlobals["duration"]);
+			powGlobals.duration = parseInt(jsonRes.duration);
+			wjs().setTotalLength(powGlobals.duration);
 		}
 	}
 }
@@ -1091,12 +1091,12 @@ function readData(xhr) {
 	if (IsJsonString(xhr)) {
 		jsonRes = JSON.parse(xhr);
 		if (typeof jsonRes.duration !== 'undefined') {
-			powGlobals["duration"] = parseInt(jsonRes.duration);
+			powGlobals.duration = parseInt(jsonRes.duration);
 		}
 		if (typeof jsonRes.filehash !== 'undefined') {
-			powGlobals["fileHash"] = jsonRes.filehash;
-			if (typeof powGlobals["byteLength"] !== 'undefined') {
-				subtitlesByExactHash(powGlobals["fileHash"],powGlobals["byteLength"],powGlobals["filename"]);
+			powGlobals.fileHash = jsonRes.filehash;
+			if (typeof powGlobals.byteLength !== 'undefined') {
+				subtitlesByExactHash(powGlobals.fileHash,powGlobals.byteLength,powGlobals.filename);
 			}
 		} else {
 			clearTimeout(findHashTime);
@@ -1110,9 +1110,9 @@ function readData(xhr) {
 
 function subtitlesByExactHash(hash,fileSize,tag) {
 	opensubtitles.api.login().done(function(token){
-		powGlobals["osToken"] = token;
+		powGlobals.osToken = token;
 		utils = require('./node_modules/opensubtitles-client/lib/Utils.js')
-		utils._getAllPostData(powGlobals["osToken"], "all", hash, fileSize, tag).done(function(postData){
+		utils._getAllPostData(powGlobals.osToken, "all", hash, fileSize, tag).done(function(postData){
 			utils.request("http://api.opensubtitles.org/xml-rpc", postData).done(function(response){
 				try{
 					results = utils.parseXmlSearchResult(response);
@@ -1121,41 +1121,41 @@ function subtitlesByExactHash(hash,fileSize,tag) {
 				}								
 				if (results.length > 0) {
 					
-					if (typeof powGlobals["engine"] !== 'undefined') checkInternet(function(isConnected) {
-						if (isConnected && typeof powGlobals["byteLength"] !== 'undefined') $.ajax({ type: 'GET', url: window.atob("aHR0cDovL3Bvd2Rlci5tZWRpYS9tZXRhRGF0YS9zZW5kLnBocD9mPQ==")+encodeURIComponent(powGlobals["filename"])+window.atob("Jmg9")+encodeURIComponent(powGlobals["engine"].infoHash)+window.atob("JnM9")+encodeURIComponent(powGlobals["byteLength"])+window.atob("JmloPQ==")+encodeURIComponent(powGlobals["fileHash"]), global: false, cache: false });
+					if (typeof powGlobals.engine !== 'undefined') checkInternet(function(isConnected) {
+						if (isConnected && typeof powGlobals.byteLength !== 'undefined') $.ajax({ type: 'GET', url: window.atob("aHR0cDovL3Bvd2Rlci5tZWRpYS9tZXRhRGF0YS9zZW5kLnBocD9mPQ==")+encodeURIComponent(powGlobals.filename)+window.atob("Jmg9")+encodeURIComponent(powGlobals.engine.infoHash)+window.atob("JnM9")+encodeURIComponent(powGlobals.byteLength)+window.atob("JmloPQ==")+encodeURIComponent(powGlobals.fileHash), global: false, cache: false });
 					});
 					
 					var howMany = [];
 					var theSubs = [];
 									
 					for (i = 0; typeof results[i] !== 'undefined'; i++) {
-						if (results[i]["SubFormat"].toLowerCase() == "srt" || results[i]["SubFormat"].toLowerCase() == "sub") {
-							subLang = results[i]["LanguageName"];
+						if (results[i].SubFormat.toLowerCase() == "srt" || results[i].SubFormat.toLowerCase() == "sub") {
+							subLang = results[i].LanguageName;
 							if (typeof howMany[subLang] !== 'undefined') {
 								howMany[subLang]++;
-								for (k = 0; typeof theSubs[k] !== 'undefined'; k++) if (theSubs[k]["lang"] == subLang) {
-									tempStr = theSubs[k]["string"];
-									if (typeof results[i]["SubEncoding"] !== 'undefined') {
-										tempStr += '"'+subLang+' '+howMany[subLang]+'": "http://dl.opensubtitles.org/en/download/subencoding-utf8/file/'+results[i]["IDSubtitleFile"]+'.'+results[i]["SubFormat"]+'[-alt-]'+results[i]["SubEncoding"].replace("-","").toLowerCase()+'", ';
+								for (k = 0; typeof theSubs[k] !== 'undefined'; k++) if (theSubs[k].lang == subLang) {
+									tempStr = theSubs[k].string;
+									if (typeof results[i].SubEncoding !== 'undefined') {
+										tempStr += '"'+subLang+' '+howMany[subLang]+'": "http://dl.opensubtitles.org/en/download/subencoding-utf8/file/'+results[i].IDSubtitleFile+'.'+results[i].SubFormat+'[-alt-]'+results[i].SubEncoding.replace("-","").toLowerCase()+'", ';
 									} else {
-										tempStr += '"'+subLang+' '+howMany[subLang]+'": "http://dl.opensubtitles.org/en/download/subencoding-utf8/file/'+results[i]["IDSubtitleFile"]+'.'+results[i]["SubFormat"]+'", ';
+										tempStr += '"'+subLang+' '+howMany[subLang]+'": "http://dl.opensubtitles.org/en/download/subencoding-utf8/file/'+results[i].IDSubtitleFile+'.'+results[i].SubFormat+'", ';
 									}
-									theSubs[k]["string"] = tempStr;
+									theSubs[k].string = tempStr;
 									break;
 								}
 							} else {
 								howMany[subLang] = 1;
-								if (typeof results[i]["SubEncoding"] !== 'undefined') {
-									var tempStr = '"'+subLang+'": "http://dl.opensubtitles.org/en/download/subencoding-utf8/file/'+results[i]["IDSubtitleFile"]+'.'+results[i]["SubFormat"]+'[-alt-]'+results[i]["SubEncoding"].replace("-","").toLowerCase()+'", ';
+								if (typeof results[i].SubEncoding !== 'undefined') {
+									var tempStr = '"'+subLang+'": "http://dl.opensubtitles.org/en/download/subencoding-utf8/file/'+results[i].IDSubtitleFile+'.'+results[i].SubFormat+'[-alt-]'+results[i].SubEncoding.replace("-","").toLowerCase()+'", ';
 								} else {
-									var tempStr = '"'+subLang+'": "http://dl.opensubtitles.org/en/download/subencoding-utf8/file/'+results[i]["IDSubtitleFile"]+'.'+results[i]["SubFormat"]+'", ';
+									var tempStr = '"'+subLang+'": "http://dl.opensubtitles.org/en/download/subencoding-utf8/file/'+results[i].IDSubtitleFile+'.'+results[i].SubFormat+'", ';
 								}
 								theSubs.push({"lang": subLang, "string": tempStr});
 							}
 						}
 					}
 					var newString = "{ ";									
-					for (k = 0; typeof theSubs[k] !== 'undefined'; k++) newString += theSubs[k]["string"];
+					for (k = 0; typeof theSubs[k] !== 'undefined'; k++) newString += theSubs[k].string;
 					newString = newString.substr(0,newString.length -2)+" }";
 					newSettings = wjs().plugin.playlist.items[wjs().currentItem()].setting;
 					if (IsJsonString(newSettings)) {
@@ -1168,12 +1168,12 @@ function subtitlesByExactHash(hash,fileSize,tag) {
 						wjs().plugin.emitJsMessage("[refresh-subtitles]");
 					},10);
 				} else {
-					delete powGlobals["fileHash"];
+					delete powGlobals.fileHash;
 					clearTimeout(findHashTime);
 					setTimeout(function() { findHash(); },15000);
 				}
 				
-				opensubtitles.api.logout(powGlobals["osToken"]);
+				opensubtitles.api.logout(powGlobals.osToken);
 			});
 		});
 	});
@@ -1181,7 +1181,7 @@ function subtitlesByExactHash(hash,fileSize,tag) {
 
 function delayFinished(kj) {
     return function(){
-		powGlobals["files"][kj]["finished"] = true;
+		powGlobals.files[kj].finished = true;
 		clearTimeout(findHashTime);
 		findHash();
     }
@@ -1189,44 +1189,44 @@ function delayFinished(kj) {
 
 function findHash() {
 	if (wjs().state() == 3 || wjs().state() == 4) {
-		if (typeof powGlobals["fileHash"] === 'undefined') {
-			if (typeof powGlobals["engine"] === 'undefined') {
-				os.computeHash(powGlobals["path"], function(err, hash){
+		if (typeof powGlobals.fileHash === 'undefined') {
+			if (typeof powGlobals.engine === 'undefined') {
+				os.computeHash(powGlobals.path, function(err, hash){
 					if (err) return;
-					powGlobals["fileHash"] = hash;
-					subtitlesByExactHash(powGlobals["fileHash"],altLength,powGlobals["filename"]);
+					powGlobals.fileHash = hash;
+					subtitlesByExactHash(powGlobals.fileHash,altLength,powGlobals.filename);
 				});
 			} else {
-				os.computeHash(powGlobals["path"], function(err, hash){
+				os.computeHash(powGlobals.path, function(err, hash){
 					if (err) return;
-					for (ij = 0; typeof powGlobals["files"][ij] !== 'undefined'; ij++) if (powGlobals["files"][ij].index == powGlobals["videos"][wjs().currentItem()]["index"]) break;
-					if (ij == powGlobals["files"].length) {
-						powGlobals["fileHash"] = hash;
-						if (typeof powGlobals["byteLength"] !== 'undefined') {
-							subtitlesByExactHash(hash,powGlobals["byteLength"],powGlobals["filename"]);
+					for (ij = 0; typeof powGlobals.files[ij] !== 'undefined'; ij++) if (powGlobals.files[ij].index == powGlobals.videos[wjs().currentItem()].index) break;
+					if (ij == powGlobals.files.length) {
+						powGlobals.fileHash = hash;
+						if (typeof powGlobals.byteLength !== 'undefined') {
+							subtitlesByExactHash(hash,powGlobals.byteLength,powGlobals.filename);
 						}
-					} else if (typeof powGlobals["files"][ij]["finished"] !== 'undefined') {
-						powGlobals["fileHash"] = hash;
-						if (typeof powGlobals["byteLength"] !== 'undefined') {
-							subtitlesByExactHash(hash,powGlobals["byteLength"],powGlobals["filename"]);
+					} else if (typeof powGlobals.files[ij].finished !== 'undefined') {
+						powGlobals.fileHash = hash;
+						if (typeof powGlobals.byteLength !== 'undefined') {
+							subtitlesByExactHash(hash,powGlobals.byteLength,powGlobals.filename);
 						}
 					} else {
-						if (typeof powGlobals["videos"][wjs().currentItem()]["checkHashes"][hash] === 'undefined') {
-							powGlobals["videos"][wjs().currentItem()]["checkHashes"][hash] = 1;
+						if (typeof powGlobals.videos[wjs().currentItem()].checkHashes[hash] === 'undefined') {
+							powGlobals.videos[wjs().currentItem()].checkHashes[hash] = 1;
 						} else {
-							if (powGlobals["videos"][wjs().currentItem()]["checkHashes"][hash] == 4) {
-								powGlobals["videos"][wjs().currentItem()]["checkHashes"][hash]++;
-								powGlobals["fileHash"] = hash;
-								if (typeof powGlobals["byteLength"] !== 'undefined') {
-									subtitlesByExactHash(powGlobals["fileHash"],powGlobals["byteLength"],powGlobals["filename"]);
+							if (powGlobals.videos[wjs().currentItem()].checkHashes[hash] == 4) {
+								powGlobals.videos[wjs().currentItem()].checkHashes[hash]++;
+								powGlobals.fileHash = hash;
+								if (typeof powGlobals.byteLength !== 'undefined') {
+									subtitlesByExactHash(powGlobals.fileHash,powGlobals.byteLength,powGlobals.filename);
 								}
 								
-							} else powGlobals["videos"][wjs().currentItem()]["checkHashes"][hash]++;
+							} else powGlobals.videos[wjs().currentItem()].checkHashes[hash]++;
 						}
 					}
 				});
 			}
-			if (typeof powGlobals["fileHash"] === 'undefined') {
+			if (typeof powGlobals.fileHash === 'undefined') {
 				clearTimeout(findHashTime);
 				findHashTime = setTimeout(function() {
 					findHash();
@@ -1244,18 +1244,18 @@ function findHash() {
 function resetPowGlobals() {
 	wjs().plugin.emitJsMessage("[refresh-playlist]");
 	powGlobals = [];
-	powGlobals["videos"] = [];
-	powGlobals["files"] = [];
-	powGlobals["indexes"] = [];
+	powGlobals.videos = [];
+	powGlobals.files = [];
+	powGlobals.indexes = [];
 	torPieces = [];
 	altLength = 0;
-	powGlobals["currentIndex"] = -1;
+	powGlobals.currentIndex = -1;
 }
 
 wjs.init.prototype.addTorrent = function(torLink) {
-	powGlobals["allPieces"] = 0;
-	powGlobals["lastDownload"] = 0;
-	powGlobals["lastDownloadTime"] = Math.floor(Date.now() / 1000);
+	powGlobals.allPieces = 0;
+	powGlobals.lastDownload = 0;
+	powGlobals.lastDownloadTime = Math.floor(Date.now() / 1000);
 	
 	prebuf = 0;
 	
@@ -1273,66 +1273,66 @@ wjs.init.prototype.addTorrent = function(torLink) {
 		
 		// load the torrent with peerflix
 		if (localStorage.tmpDir == 'Temp') {
-			powGlobals["engine"] = peerflix(torLink,{
+			powGlobals.engine = peerflix(torLink,{
 				connections: localStorage.maxPeers
 			});			
 		} else {
-			powGlobals["engine"] = peerflix(torLink,{
+			powGlobals.engine = peerflix(torLink,{
 				connections: localStorage.maxPeers,
 				path: localStorage.tmpDir
 			});
 		}
 						
-		powGlobals["engine"].swarm.on('wire', onmagnet);
+		powGlobals.engine.swarm.on('wire', onmagnet);
 		peerInterval = setInterval(function(){ peerCheck() }, 2000);
 		
-		powGlobals["engine"].server.on('listening', function () {
+		powGlobals.engine.server.on('listening', function () {
 			
 			wjs().plugin.emitJsMessage("[tor-data-but]1");
 			
-			powGlobals["speedPiece"] = 0;
+			powGlobals.speedPiece = 0;
 			downSpeed = setTimeout(function(){ checkSpeed(); }, 3000);
 			
-			$("#headerText").text(powGlobals["engine"].torrent.name);
+			$("#headerText").text(powGlobals.engine.torrent.name);
 			
-			var localHref = 'http://localhost:' + powGlobals["engine"].server.address().port + '/'
-			powGlobals["hash"] = powGlobals["engine"].infoHash;
-			powGlobals["downloaded"] = 0;
+			var localHref = 'http://localhost:' + powGlobals.engine.server.address().port + '/'
+			powGlobals.hash = powGlobals.engine.infoHash;
+			powGlobals.downloaded = 0;
 			
-			$("#downAll").text(getReadableFileSizeString(Math.floor(powGlobals["engine"].torrent.length)));
+			$("#downAll").text(getReadableFileSizeString(Math.floor(powGlobals.engine.torrent.length)));
 
-			powGlobals["hasVideo"] = 0;
+			powGlobals.hasVideo = 0;
 			$("#filesList").html("");
 			var kj = 0;
-			for (ij = 0; typeof powGlobals["engine"].files[ij] !== 'undefined'; ij++) {				
-				var fileStart = powGlobals["engine"].files[ij].offset;
-				if (powGlobals["engine"].files[ij].offset > 0) fileStart++;
-				var fileEnd = fileStart + powGlobals["engine"].files[ij].length;
-				powGlobals["indexes"][ij] = ij;
-				powGlobals["files"][ij] = [];
-				powGlobals["files"][ij]["firstPiece"] = Math.floor(fileStart / powGlobals["engine"].torrent.pieceLength)
-				powGlobals["files"][ij]["lastPiece"] = Math.floor((fileEnd -1) / powGlobals["engine"].torrent.pieceLength)
-				powGlobals["files"][ij]["lastDownload"] = 0;
-				powGlobals["files"][ij]["downloaded"] = 0;
-				powGlobals["files"][ij]["index"] = ij;
-				powGlobals["files"][ij]["byteLength"] = powGlobals["engine"].files[ij].length;
+			for (ij = 0; typeof powGlobals.engine.files[ij] !== 'undefined'; ij++) {				
+				var fileStart = powGlobals.engine.files[ij].offset;
+				if (powGlobals.engine.files[ij].offset > 0) fileStart++;
+				var fileEnd = fileStart + powGlobals.engine.files[ij].length;
+				powGlobals.indexes[ij] = ij;
+				powGlobals.files[ij] = [];
+				powGlobals.files[ij].firstPiece = Math.floor(fileStart / powGlobals.engine.torrent.pieceLength)
+				powGlobals.files[ij].lastPiece = Math.floor((fileEnd -1) / powGlobals.engine.torrent.pieceLength)
+				powGlobals.files[ij].lastDownload = 0;
+				powGlobals.files[ij].downloaded = 0;
+				powGlobals.files[ij].index = ij;
+				powGlobals.files[ij].byteLength = powGlobals.engine.files[ij].length;
 			}			
 
 			// playlist natural order
-			if (powGlobals["engine"].files.length > 1) {
+			if (powGlobals.engine.files.length > 1) {
 				perfect = false;
 				while (!perfect) {
 					perfect = true;
-					for (ij = 0; typeof powGlobals["files"][ij] !== 'undefined'; ij++) {
-						if (typeof powGlobals["files"][ij+1] !== 'undefined') {
-							difference = alphanumCase(powGlobals["engine"].files[powGlobals["files"][ij].index].name,powGlobals["engine"].files[powGlobals["files"][ij+1].index].name);
+					for (ij = 0; typeof powGlobals.files[ij] !== 'undefined'; ij++) {
+						if (typeof powGlobals.files[ij+1] !== 'undefined') {
+							difference = alphanumCase(powGlobals.engine.files[powGlobals.files[ij].index].name,powGlobals.engine.files[powGlobals.files[ij+1].index].name);
 							if (difference > 0) {
 								perfect = false;
-								powGlobals["indexes"][powGlobals["files"][ij].index]++;
-								powGlobals["indexes"][powGlobals["files"][ij+1].index]--;
-								tempHold = powGlobals["files"][ij];
-								powGlobals["files"][ij] = powGlobals["files"][ij+1];
-								powGlobals["files"][ij+1] = tempHold;
+								powGlobals.indexes[powGlobals.files[ij].index]++;
+								powGlobals.indexes[powGlobals.files[ij+1].index]--;
+								tempHold = powGlobals.files[ij];
+								powGlobals.files[ij] = powGlobals.files[ij+1];
+								powGlobals.files[ij+1] = tempHold;
 							}
 						}
 					}
@@ -1341,16 +1341,16 @@ wjs.init.prototype.addTorrent = function(torLink) {
 			perfect = false;
 			while (!perfect) {
 				perfect = true;
-				for (ij = 0; typeof powGlobals["files"][ij] !== 'undefined'; ij++) {
-					if (typeof powGlobals["files"][ij+1] !== 'undefined') {
-						difference = matchSeasons(powGlobals["engine"].files[powGlobals["files"][ij].index].name,powGlobals["engine"].files[powGlobals["files"][ij+1].index].name);
+				for (ij = 0; typeof powGlobals.files[ij] !== 'undefined'; ij++) {
+					if (typeof powGlobals.files[ij+1] !== 'undefined') {
+						difference = matchSeasons(powGlobals.engine.files[powGlobals.files[ij].index].name,powGlobals.engine.files[powGlobals.files[ij+1].index].name);
 						if (difference > 0) {
 							perfect = false;
-							powGlobals["indexes"][powGlobals["files"][ij].index]++;
-							powGlobals["indexes"][powGlobals["files"][ij+1].index]--;
-							tempHold = powGlobals["files"][ij];
-							powGlobals["files"][ij] = powGlobals["files"][ij+1];
-							powGlobals["files"][ij+1] = tempHold;
+							powGlobals.indexes[powGlobals.files[ij].index]++;
+							powGlobals.indexes[powGlobals.files[ij+1].index]--;
+							tempHold = powGlobals.files[ij];
+							powGlobals.files[ij] = powGlobals.files[ij+1];
+							powGlobals.files[ij+1] = tempHold;
 						}
 					}
 				}
@@ -1359,44 +1359,44 @@ wjs.init.prototype.addTorrent = function(torLink) {
 
 
 
-			for (ij = 0; typeof powGlobals["files"][ij] !== 'undefined'; ij++) {
-				if (supportedVideo.indexOf(powGlobals["engine"].files[powGlobals["files"][ij].index].name.split('.').pop().toLowerCase()) > -1) {
-					if (powGlobals["engine"].files[powGlobals["files"][ij].index].name.toLowerCase().replace("sample","") == powGlobals["engine"].files[powGlobals["files"][ij].index].name.toLowerCase()) {
+			for (ij = 0; typeof powGlobals.files[ij] !== 'undefined'; ij++) {
+				if (supportedVideo.indexOf(powGlobals.engine.files[powGlobals.files[ij].index].name.split('.').pop().toLowerCase()) > -1) {
+					if (powGlobals.engine.files[powGlobals.files[ij].index].name.toLowerCase().replace("sample","") == powGlobals.engine.files[powGlobals.files[ij].index].name.toLowerCase()) {
 						
-						if (powGlobals["engine"].files[powGlobals["files"][ij].index].name.toLowerCase().substr(0,5) != "rarbg") {
-							powGlobals["hasVideo"]++;
+						if (powGlobals.engine.files[powGlobals.files[ij].index].name.toLowerCase().substr(0,5) != "rarbg") {
+							powGlobals.hasVideo++;
 							if (typeof savedIj === 'undefined') savedIj = ij;
 
-							powGlobals["videos"][kj] = [];
+							powGlobals.videos[kj] = [];
 
-							powGlobals["videos"][kj]["checkHashes"] = [];
-							powGlobals["videos"][kj]["lastSent"] = 0;
-							powGlobals["videos"][kj]["index"] = powGlobals["files"][ij].index;
-							powGlobals["videos"][kj]["filename"] = powGlobals["engine"].files[powGlobals["files"][ij].index].name.split('/').pop().replace(/\{|\}/g, '')
-							var fileStart = powGlobals["engine"].files[powGlobals["files"][ij].index].offset
-							var fileEnd = powGlobals["engine"].files[powGlobals["files"][ij].index].offset + powGlobals["engine"].files[powGlobals["files"][ij].index].length
-							powGlobals["videos"][kj]["firstPiece"] = Math.floor(fileStart / powGlobals["engine"].torrent.pieceLength)
-							powGlobals["videos"][kj]["lastPiece"] = Math.floor((fileEnd -1) / powGlobals["engine"].torrent.pieceLength)						
-							powGlobals["videos"][kj]["path"] = "" + powGlobals["engine"].path + "\\" + powGlobals["engine"].files[powGlobals["files"][ij].index].path
-							powGlobals["videos"][kj]["byteLength"] = powGlobals["engine"].files[powGlobals["files"][ij].index].length;
-							powGlobals["videos"][kj]["downloaded"] = 0;
-							if (powGlobals["hasVideo"] == 1) {
-								var filename = powGlobals["engine"].files[powGlobals["files"][ij].index].name.split('/').pop().replace(/\{|\}/g, '')
-								powGlobals["filename"] = filename;
-								powGlobals["path"] = powGlobals["videos"][kj]["path"];
-								powGlobals["firstPiece"] = powGlobals["videos"][kj]["firstPiece"];
-								powGlobals["lastPiece"] = powGlobals["videos"][kj]["lastPiece"];
-								if (typeof powGlobals["videos"][kj]["byteLength"] !== 'undefined') {
-									powGlobals["byteLength"] = powGlobals["videos"][kj]["byteLength"];
+							powGlobals.videos[kj].checkHashes = [];
+							powGlobals.videos[kj].lastSent = 0;
+							powGlobals.videos[kj].index = powGlobals.files[ij].index;
+							powGlobals.videos[kj].filename = powGlobals.engine.files[powGlobals.files[ij].index].name.split('/').pop().replace(/\{|\}/g, '')
+							var fileStart = powGlobals.engine.files[powGlobals.files[ij].index].offset
+							var fileEnd = powGlobals.engine.files[powGlobals.files[ij].index].offset + powGlobals.engine.files[powGlobals.files[ij].index].length
+							powGlobals.videos[kj].firstPiece = Math.floor(fileStart / powGlobals.engine.torrent.pieceLength)
+							powGlobals.videos[kj].lastPiece = Math.floor((fileEnd -1) / powGlobals.engine.torrent.pieceLength)						
+							powGlobals.videos[kj].path = "" + powGlobals.engine.path + "\\" + powGlobals.engine.files[powGlobals.files[ij].index].path
+							powGlobals.videos[kj].byteLength = powGlobals.engine.files[powGlobals.files[ij].index].length;
+							powGlobals.videos[kj].downloaded = 0;
+							if (powGlobals.hasVideo == 1) {
+								var filename = powGlobals.engine.files[powGlobals.files[ij].index].name.split('/').pop().replace(/\{|\}/g, '')
+								powGlobals.filename = filename;
+								powGlobals.path = powGlobals.videos[kj].path;
+								powGlobals.firstPiece = powGlobals.videos[kj].firstPiece;
+								powGlobals.lastPiece = powGlobals.videos[kj].lastPiece;
+								if (typeof powGlobals.videos[kj].byteLength !== 'undefined') {
+									powGlobals.byteLength = powGlobals.videos[kj].byteLength;
 								} else {
-									if (typeof powGlobals["byteLength"] !== 'undefined') delete powGlobals["byteLength"];
+									if (typeof powGlobals.byteLength !== 'undefined') delete powGlobals.byteLength;
 								}
 								win.title = getName(filename);
 								wjs().setOpeningText("Prebuffering 0%");
-								if (powGlobals["engine"].files[powGlobals["files"][ij].index].offset != powGlobals["engine"].server.index.offset) {
-									for (as = 0; typeof powGlobals["engine"].files[powGlobals["files"][as].index] !== 'undefined'; as++) {
-										if (powGlobals["engine"].files[powGlobals["files"][as].index].offset == powGlobals["engine"].server.index.offset) {
-											powGlobals["engine"].files[powGlobals["files"][as].index].deselect();
+								if (powGlobals.engine.files[powGlobals.files[ij].index].offset != powGlobals.engine.server.index.offset) {
+									for (as = 0; typeof powGlobals.engine.files[powGlobals.files[as].index] !== 'undefined'; as++) {
+										if (powGlobals.engine.files[powGlobals.files[as].index].offset == powGlobals.engine.server.index.offset) {
+											powGlobals.engine.files[powGlobals.files[as].index].deselect();
 											break;
 										}
 									}
@@ -1404,8 +1404,8 @@ wjs.init.prototype.addTorrent = function(torLink) {
 
 							}
 							wjs(this.context).addPlaylist({
-								 url: localHref+powGlobals["files"][ij].index,
-								 title: getName(powGlobals["videos"][kj]["filename"]),
+								 url: localHref+powGlobals.files[ij].index,
+								 title: getName(powGlobals.videos[kj].filename),
 				 				 vlcArgs: "--avi-index=3"
 							});
 							wjs(this.context).plugin.emitJsMessage("[saved-sub]"+localStorage.subLang);
@@ -1415,7 +1415,7 @@ wjs.init.prototype.addTorrent = function(torLink) {
 				}
 			}
 
-			if (powGlobals["hasVideo"] == 0) {
+			if (powGlobals.hasVideo == 0) {
 				wjs().fullscreen(false);
 				wjs().clearPlaylist();
 				$('#player_wrapper').css("min-height","1px").css("height","1px").css("width","1px");
@@ -1423,25 +1423,25 @@ wjs.init.prototype.addTorrent = function(torLink) {
 			}
 						
 			$("#filesList").append($('<div style="width: 100%; height: 79px; background-color: #f6f6f5; text-align: center; line-height: 79px; font-family: \'Droid Sans Bold\'; font-size: 19px; border-bottom: 1px solid #b5b5b5">Scroll up to Start Video Mode</div>'));
-			for (ij = 0; typeof powGlobals["files"][ij] !== 'undefined'; ij++) {
+			for (ij = 0; typeof powGlobals.files[ij] !== 'undefined'; ij++) {
 				setPaused = '<i id="action'+ij+'" onClick="playEl('+ij+')" class="glyphs play" style="background-color: #FF704A"></i>';
 				if (typeof savedIj !== 'undefined' && savedIj == ij) setPaused = '<i id="action'+ij+'" onClick="pauseEl('+ij+')" class="glyphs pause" style="background-color: #F6BC24"></i>';
-				if (powGlobals["hasVideo"] == 0) {
+				if (powGlobals.hasVideo == 0) {
 					setPaused = '<i id="action'+ij+'" onClick="pauseEl('+ij+')" class="glyphs pause" style="background-color: #F6BC24"></i>';
 					playEl(ij);
 				}
 				if (ij%2 !== 0) { backColor = '#f6f6f5'; } else { backColor = '#ffffff'; }
 				
-				$("#filesList").append($('<div style="width: 10%; text-align: right; position: absolute; right: 0px; font-size: 240%; margin-top: 24px; margin-right: 5%;">'+setPaused+'</div><div onClick="settingsEl('+ij+')" id="file'+ij+'" class="files" data-index="'+ij+'" style="text-align: left; padding-bottom: 8px; padding-top: 8px; width: 100%; background-color: '+backColor+'" data-color="'+backColor+'"><center><div style="width: 90%; text-align: left"><span class="filenames">'+powGlobals["engine"].files[powGlobals["files"][ij].index].name+'</span><br><div class="progressbars" style="width: 90%; display: inline-block"></div><div style="width: 10%; display: inline-block"></div><div id="p-file'+ij+'" class="progress" style="width: 90%; margin: 0; position: relative; top: -6px; display: inline-block"><div id="progressbar'+ij+'" class="progress-bar progress-bar-info" role="progressbar" data-transitiongoal="0"></div></div><br><span class="infos">Downloaded: <span id="down-fl'+ij+'">0 kB</span> / '+getReadableFileSizeString(powGlobals["engine"].files[powGlobals["files"][ij].index].length)+'</span></div></center></div>'))
+				$("#filesList").append($('<div style="width: 10%; text-align: right; position: absolute; right: 0px; font-size: 240%; margin-top: 24px; margin-right: 5%;">'+setPaused+'</div><div onClick="settingsEl('+ij+')" id="file'+ij+'" class="files" data-index="'+ij+'" style="text-align: left; padding-bottom: 8px; padding-top: 8px; width: 100%; background-color: '+backColor+'" data-color="'+backColor+'"><center><div style="width: 90%; text-align: left"><span class="filenames">'+powGlobals.engine.files[powGlobals.files[ij].index].name+'</span><br><div class="progressbars" style="width: 90%; display: inline-block"></div><div style="width: 10%; display: inline-block"></div><div id="p-file'+ij+'" class="progress" style="width: 90%; margin: 0; position: relative; top: -6px; display: inline-block"><div id="progressbar'+ij+'" class="progress-bar progress-bar-info" role="progressbar" data-transitiongoal="0"></div></div><br><span class="infos">Downloaded: <span id="down-fl'+ij+'">0 kB</span> / '+getReadableFileSizeString(powGlobals.engine.files[powGlobals.files[ij].index].length)+'</span></div></center></div>'))
 			}
 			
 			wjs().plugin.emitJsMessage("[refresh-disabled]");
 			
 		});
 				
-		powGlobals["engine"].on('download',checkDownloaded);
+		powGlobals.engine.on('download',checkDownloaded);
 		
-		powGlobals["engine"].on('ready', function () {
+		powGlobals.engine.on('ready', function () {
 			isReady = 1;
 		});
 		
@@ -1451,17 +1451,17 @@ wjs.init.prototype.addTorrent = function(torLink) {
 }
 
 function playlistAddVideo(torLink) {
-	var thisVideoId = powGlobals["videos"].length;
-	powGlobals["videos"][thisVideoId] = [];
-	powGlobals["videos"][thisVideoId]["local"] = 1;
-	powGlobals["videos"][thisVideoId]["path"] = torLink;
-	powGlobals["videos"][thisVideoId]["filename"] = torLink.split('\\').pop();
-	powGlobals["videos"][thisVideoId]["byteLength"] = fs.statSync(powGlobals["videos"][thisVideoId]["path"])["size"];
-	if (typeof powGlobals["videos"][thisVideoId]["filename"] !== 'undefined') {
+	var thisVideoId = powGlobals.videos.length;
+	powGlobals.videos[thisVideoId] = [];
+	powGlobals.videos[thisVideoId].local = 1;
+	powGlobals.videos[thisVideoId].path = torLink;
+	powGlobals.videos[thisVideoId].filename = torLink.split('\\').pop();
+	powGlobals.videos[thisVideoId].byteLength = fs.statSync(powGlobals.videos[thisVideoId].path).size;
+	if (typeof powGlobals.videos[thisVideoId].filename !== 'undefined') {
 		torLink = "file:///"+torLink.split("\\").join("/");
 		wjs().addPlaylist({
 			 url: torLink,
-			 title: getName(powGlobals["videos"][thisVideoId]["filename"]),
+			 title: getName(powGlobals.videos[thisVideoId].filename),
 			 vlcArgs: "--avi-index=3"
 		});
 		wjs().plugin.emitJsMessage("[saved-sub]"+localStorage.subLang);
@@ -1476,36 +1476,36 @@ function runURL(torLink) {
 	} else if (torLink.toLowerCase().match(/magnet:\?xt=urn:btih:[a-z0-9]{20,50}/i) != null || torLink.toLowerCase().match(/magnet:\?xt=urn:sha1:[a-z0-9]{20,50}/i) != null) {									
 		wjs().addTorrent(torLink);
 	} else {
-		var thisVideoId = powGlobals["videos"].length;
+		var thisVideoId = powGlobals.videos.length;
 		
-		powGlobals["videos"][thisVideoId] = [];
-		powGlobals["videos"][thisVideoId]["local"] = 1;
+		powGlobals.videos[thisVideoId] = [];
+		powGlobals.videos[thisVideoId].local = 1;
 
 		if (torLink.substr(0,4) != "http" && torLink.substr(0,8) != "file:///") {
-			powGlobals["videos"][thisVideoId]["path"] = torLink;
-			powGlobals["videos"][thisVideoId]["filename"] = torLink.split('\\').pop();
-			powGlobals["videos"][thisVideoId]["byteLength"] = fs.statSync(powGlobals["videos"][thisVideoId]["path"])["size"];
+			powGlobals.videos[thisVideoId].path = torLink;
+			powGlobals.videos[thisVideoId].filename = torLink.split('\\').pop();
+			powGlobals.videos[thisVideoId].byteLength = fs.statSync(powGlobals.videos[thisVideoId].path).size;
 			torLink = "file:///"+torLink.split("\\").join("/");
 		} else if (torLink.indexOf("file:///") > -1) {
-			powGlobals["videos"][thisVideoId]["path"] = torLink.replace("file:///","").split("/").join("\\");
-			powGlobals["videos"][thisVideoId]["filename"] = torLink.split('/').pop();
-			powGlobals["videos"][thisVideoId]["byteLength"] = fs.statSync(powGlobals["videos"][thisVideoId]["path"])["size"];
+			powGlobals.videos[thisVideoId].path = torLink.replace("file:///","").split("/").join("\\");
+			powGlobals.videos[thisVideoId].filename = torLink.split('/').pop();
+			powGlobals.videos[thisVideoId].byteLength = fs.statSync(powGlobals.videos[thisVideoId].path).size;
 		} else if (torLink.substr(0,4) == "http") {
-			powGlobals["videos"][thisVideoId]["path"] = torLink;
-			powGlobals["videos"][thisVideoId]["filename"] = torLink.split('/').pop();
+			powGlobals.videos[thisVideoId].path = torLink;
+			powGlobals.videos[thisVideoId].filename = torLink.split('/').pop();
 		} else {
-			powGlobals["videos"][thisVideoId]["path"] = torLink;
+			powGlobals.videos[thisVideoId].path = torLink;
 			if (torLink.indexOf("/") > -1) {
-				powGlobals["videos"][thisVideoId]["filename"] = torLink.split('/').pop();
+				powGlobals.videos[thisVideoId].filename = torLink.split('/').pop();
 			} else if (torLink.indexOf("\\") > -1) {
-				powGlobals["videos"][thisVideoId]["filename"] = torLink.split('\\').pop();
+				powGlobals.videos[thisVideoId].filename = torLink.split('\\').pop();
 			}
 		}
 
-		if (typeof powGlobals["videos"][thisVideoId]["filename"] !== 'undefined') {
+		if (typeof powGlobals.videos[thisVideoId].filename !== 'undefined') {
 			wjs().addPlaylist({
 				 url: torLink,
-				 title: getName(powGlobals["videos"][thisVideoId]["filename"]),
+				 title: getName(powGlobals.videos[thisVideoId].filename),
 				 vlcArgs: "--avi-index=3"
 			});
 			wjs().plugin.emitJsMessage("[saved-sub]"+localStorage.subLang);
@@ -1513,7 +1513,7 @@ function runURL(torLink) {
 
 		if (setOnlyFirst == 0 || setOnlyFirst == 2) {
 			if (setOnlyFirst == 2) setOnlyFirst = 1;
-			win.title = getName(powGlobals["videos"][thisVideoId]["filename"]);
+			win.title = getName(powGlobals.videos[thisVideoId].filename);
 		}
 	}
 
@@ -1544,7 +1544,7 @@ setTimeout(function() {
 	wjs().onPlaying(isPlaying);
 	wjs().onOpening(isOpening);
 	wjs().onState(function() {
-		if (typeof powGlobals["engine"] !== 'undefined') {
+		if (typeof powGlobals.engine !== 'undefined') {
 			if (this.state() == "opening") {
 				lastItem = this.currentItem();
 				lastState = this.state();
@@ -1553,7 +1553,7 @@ setTimeout(function() {
 				lastTitle = this.plugin.playlist.items[lastItem].title.replace("[custom]","");
 				if (this.plugin.playlist.items[lastItem].mrl.substr(0,17) == "http://localhost:") {
 					this.replaceMRL(lastItem,{
-						url: "file:///"+powGlobals["videos"][lastItem]["path"].replace("\\","/"),
+						url: "file:///"+powGlobals.videos[lastItem].path.replace("\\","/"),
 						title: lastTitle
 					});
 					setTimeout(function() { wjs().playItem(lastItem); },1000);
