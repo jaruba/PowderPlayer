@@ -1560,7 +1560,7 @@ setTimeout(function() {
 					setTimeout(function() { wjs().playItem(lastItem); },1000);
 				}
 			}
-		}
+		} else lastState = this.state();
 	});
 	if (gui.App.argv.length > 0) {
 		resetPowGlobals();

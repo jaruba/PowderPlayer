@@ -2,7 +2,7 @@
   "name": "Powder",
   "description": "Hybrid between a Torrent Client and a Player",
   "main": "app://powder/index.html",
-  "version": "0.16",
+  "version": "0.17",
   "author": "Branza Alexandru (@jaruba)",
   "homepage": "http://powder.media/",
   "contributors": [{
