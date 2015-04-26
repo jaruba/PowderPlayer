@@ -110,6 +110,9 @@ Rectangle {
 			if (vlcPlayer.playlist.itemCount > 1) {
 				prevBut.visible = true;
 				nextBut.visible = true;
+			} else {
+				prevBut.visible = false;
+				nextBut.visible = false;
 			}
 			// End Show Previous/Next Buttons if Playlist available
 			
@@ -351,11 +354,8 @@ Rectangle {
 			if (startsWith(message,"[select-subtitle]")) selectSubtitle(parseInt(message.replace("[select-subtitle]","")));
 			if (startsWith(message,"[refresh-playlist]")) {
 				playlist.addPlaylistItems(); // Refresh Playlist GUI
-				if (vlcPlayer.playlist.itemCount > 0) {
-					playlistButton.visible = true;
-				} else {
-					playlistButton.visible = false;
-				}
+				if (vlcPlayer.playlist.itemCount > 0) playlistButton.visible = true;
+				else playlistButton.visible = false;
 				if (vlcPlayer.playlist.itemCount > 1) {
 					prevBut.visible = true;
 					nextBut.visible = true;
@@ -1127,6 +1127,9 @@ Rectangle {
 						playlist.addPlaylistItems(); // Refresh Playlist Menu GUI
 						prevBut.visible = true;
 						nextBut.visible = true;
+					} else {
+						prevBut.visible = false;
+						nextBut.visible = false;
 					}
 					if (vlcPlayer.state == 0) vlcPlayer.play();
 				}
