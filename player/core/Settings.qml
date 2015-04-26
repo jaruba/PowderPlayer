@@ -10,6 +10,7 @@ QtObject {
 	property var dragging: false;
 	property var ismoving: 1;
 	property var buffering: 0;
+	property var toolbar: 1;
 	property var autoloop: 0;
 	property var automute: 0;
 	property var autoplay: 0;

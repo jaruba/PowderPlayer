@@ -91,11 +91,11 @@ function changeClickPause() {
 	if (localStorage.clickPause == 'fullscreen') {
 		$("#click-pause").text("Fullscreen + Windowed");
 		localStorage.clickPause = "both";
-		wjs().plugin.emitJsMessage("[pause-policy]both");
+		wjs().emitJsMessage("[pause-policy]both");
 	} else {
 		$("#click-pause").text("only in Fullscreen");
 		localStorage.clickPause = "fullscreen";
-		wjs().plugin.emitJsMessage("[pause-policy]fullscreen");
+		wjs().emitJsMessage("[pause-policy]fullscreen");
 	}
 }
 
@@ -247,7 +247,7 @@ holder.ondrop = function (e) {
   }
   this.className = '';
   return false;
-  wjs().plugin.emitJsMessage("[refresh-playlist]");
+  wjs().emitJsMessage("[refresh-playlist]");
 };
 
 function runMultiple(fileArray) {
@@ -498,24 +498,24 @@ function scanLibrary() {
 				 vlcArgs: "--avi-index=3"
 			});
 			if (ij == 0) {
-				if (typeof allGood === 'undefined') wjs().plugin.emitJsMessage("[disable]"+newVideoId);
+				if (typeof allGood === 'undefined') wjs().emitJsMessage("[disable]"+newVideoId);
 			} else {
 				if (typeof allGood !== 'undefined') {
 					if (alphanumCase(cleanName(getName(results[ij].split('/').pop())),cleanName(getName(results[ij-1].split('/').pop()))) != 1) {
-						wjs().plugin.emitJsMessage("[disable]"+newVideoId);
+						wjs().emitJsMessage("[disable]"+newVideoId);
 						delete allGood;
 					}
-				} else wjs().plugin.emitJsMessage("[disable]"+newVideoId);
+				} else wjs().emitJsMessage("[disable]"+newVideoId);
 			}
 	  }
-	  wjs().plugin.emitJsMessage("[refresh-disabled]");
-	  wjs().plugin.emitJsMessage("[end-scan-library]"+ij);
+	  wjs().emitJsMessage("[refresh-disabled]");
+	  wjs().emitJsMessage("[end-scan-library]"+ij);
 	});
 }
 
 function delayDisable(newVideoId) {
     return function(){
-		wjs().plugin.emitJsMessage("[disable]"+newVideoId);
+		wjs().emitJsMessage("[disable]"+newVideoId);
     }
 }
 
@@ -599,7 +599,7 @@ function isPlaying() {
 				}
 			}
 			// end find the screen where the window is
-			wjs().plugin.emitJsMessage("[refresh-aspect]");
+			wjs().emitJsMessage("[refresh-aspect]");
 		}
 		firstTime = 1;
 		wjs().plugin.subtitle.track = 0;
@@ -878,8 +878,8 @@ win.on('close', function() {
 function goBack() {
 	if (typeof peerInterval !== 'undefined') clearInterval(peerInterval);
 	wjs().setOpeningText("Stopping");
-	wjs().plugin.emitJsMessage("[tor-data-but]0");
-	wjs().plugin.emitJsMessage("[refresh-disabled]");
+	wjs().emitJsMessage("[tor-data-but]0");
+	wjs().emitJsMessage("[refresh-disabled]");
 	$("#header_container").css("display","none");
 	window.scrollTo(0, 0);
 	$("body").css("overflow-y","hidden");
@@ -920,7 +920,7 @@ function goBack() {
 	if (onTop) {
 		onTop = false;
 		win.setAlwaysOnTop(false);
-		wjs().plugin.emitJsMessage("[on-top]"+onTop);
+		wjs().emitJsMessage("[on-top]"+onTop);
 	}
 	firstTime = 0;
 	firstTimeEver = 1;
@@ -950,7 +950,7 @@ function handle(event) {
 					$("html, body").animate({ scrollTop: $("#player_wrapper").height() }, "slow");
 					$("body").css("overflow-y","visible");
 				}
-				wjs().plugin.emitJsMessage("[reset-sleep-timer]");
+				wjs().emitJsMessage("[reset-sleep-timer]");
 			},parseInt(event.replace("[sleep-timer]","")));
 		}
 	} else if (event.substr(0,10) == "[save-sub]") {
@@ -1020,14 +1020,14 @@ function handle(event) {
 			setTimeout(win.setAlwaysOnTop(true),1);
 			onTop = true;
 		}
-		wjs().plugin.emitJsMessage("[on-top]"+onTop);
+		wjs().emitJsMessage("[on-top]"+onTop);
 	} else if (event == "[check-fullscreen]") {
 		if (onTop) {
 			onTop = false;
 			win.setAlwaysOnTop(onTop);
-			wjs().plugin.emitJsMessage("[on-top]"+onTop);
-			setTimeout(function() { wjs().plugin.emitJsMessage("[go-fullscreen]"); },1);
-		} else wjs().plugin.emitJsMessage("[go-fullscreen]");
+			wjs().emitJsMessage("[on-top]"+onTop);
+			setTimeout(function() { wjs().emitJsMessage("[go-fullscreen]"); },1);
+		} else wjs().emitJsMessage("[go-fullscreen]");
 	}
 }
 
@@ -1162,10 +1162,10 @@ function subtitlesByExactHash(hash,fileSize,tag) {
 						newSettings = JSON.parse(newSettings);
 					} else newSettings = {};
 					newSettings.subtitles = JSON.parse(newString);
-					wjs().plugin.emitJsMessage("[clear-subtitles]");
+					wjs().emitJsMessage("[clear-subtitles]");
 					setTimeout(function() {
 						wjs().plugin.playlist.items[wjs().currentItem()].setting = JSON.stringify(newSettings);
-						wjs().plugin.emitJsMessage("[refresh-subtitles]");
+						wjs().emitJsMessage("[refresh-subtitles]");
 					},10);
 				} else {
 					delete powGlobals.fileHash;
@@ -1242,7 +1242,7 @@ function findHash() {
 }
 
 function resetPowGlobals() {
-	wjs().plugin.emitJsMessage("[refresh-playlist]");
+	wjs().emitJsMessage("[refresh-playlist]");
 	powGlobals = [];
 	powGlobals.videos = [];
 	powGlobals.files = [];
@@ -1288,7 +1288,7 @@ wjs.init.prototype.addTorrent = function(torLink) {
 		
 		powGlobals.engine.server.on('listening', function () {
 			
-			wjs().plugin.emitJsMessage("[tor-data-but]1");
+			wjs().emitJsMessage("[tor-data-but]1");
 			
 			powGlobals.speedPiece = 0;
 			downSpeed = setTimeout(function(){ checkSpeed(); }, 3000);
@@ -1408,7 +1408,7 @@ wjs.init.prototype.addTorrent = function(torLink) {
 								 title: getName(powGlobals.videos[kj].filename),
 				 				 vlcArgs: "--avi-index=3"
 							});
-							wjs().plugin.emitJsMessage("[saved-sub]"+localStorage.subLang);
+							wjs().emitJsMessage("[saved-sub]"+localStorage.subLang);
 							kj++;
 						}
 					}
@@ -1435,7 +1435,7 @@ wjs.init.prototype.addTorrent = function(torLink) {
 				$("#filesList").append($('<div style="width: 10%; text-align: right; position: absolute; right: 0px; font-size: 240%; margin-top: 24px; margin-right: 5%;">'+setPaused+'</div><div onClick="settingsEl('+ij+')" id="file'+ij+'" class="files" data-index="'+ij+'" style="text-align: left; padding-bottom: 8px; padding-top: 8px; width: 100%; background-color: '+backColor+'" data-color="'+backColor+'"><center><div style="width: 90%; text-align: left"><span class="filenames">'+powGlobals.engine.files[powGlobals.files[ij].index].name+'</span><br><div class="progressbars" style="width: 90%; display: inline-block"></div><div style="width: 10%; display: inline-block"></div><div id="p-file'+ij+'" class="progress" style="width: 90%; margin: 0; position: relative; top: -6px; display: inline-block"><div id="progressbar'+ij+'" class="progress-bar progress-bar-info" role="progressbar" data-transitiongoal="0"></div></div><br><span class="infos">Downloaded: <span id="down-fl'+ij+'">0 kB</span> / '+getReadableFileSizeString(powGlobals.engine.files[powGlobals.files[ij].index].length)+'</span></div></center></div>'))
 			}
 			
-			wjs().plugin.emitJsMessage("[refresh-disabled]");
+			wjs().emitJsMessage("[refresh-disabled]");
 			
 		});
 				
@@ -1464,7 +1464,7 @@ function playlistAddVideo(torLink) {
 			 title: getName(powGlobals.videos[thisVideoId].filename),
 			 vlcArgs: "--avi-index=3"
 		});
-		wjs().plugin.emitJsMessage("[saved-sub]"+localStorage.subLang);
+		wjs().emitJsMessage("[saved-sub]"+localStorage.subLang);
 	}
 }
 
@@ -1508,7 +1508,7 @@ function runURL(torLink) {
 				 title: getName(powGlobals.videos[thisVideoId].filename),
 				 vlcArgs: "--avi-index=3"
 			});
-			wjs().plugin.emitJsMessage("[saved-sub]"+localStorage.subLang);
+			wjs().emitJsMessage("[saved-sub]"+localStorage.subLang);
 		}
 
 		if (setOnlyFirst == 0 || setOnlyFirst == 2) {
@@ -1524,13 +1524,13 @@ function runURL(torLink) {
 
 	$('#main').css("display","none");
 	$('#player_wrapper').css("min-height","100%").css("height","100%").css("width","auto");
-	wjs().plugin.emitJsMessage("[gobackvar]0");
+	wjs().emitJsMessage("[gobackvar]0");
 	
 	win.zoomLevel = 0;
 	
 	$("#header_container").show();
 	
-	wjs().plugin.emitJsMessage("[refresh-disabled]");
+	wjs().emitJsMessage("[refresh-disabled]");
 	
 }
 
@@ -1565,7 +1565,7 @@ setTimeout(function() {
 	if (gui.App.argv.length > 0) {
 		resetPowGlobals();
 		runURL(gui.App.argv[0]);
-		wjs().plugin.emitJsMessage("[refresh-playlist]");
+		wjs().emitJsMessage("[refresh-playlist]");
 		$("#loading").fadeOut(200);
 	}
 },1);
@@ -1607,7 +1607,7 @@ $('#torrentDialog').change(function(evt) {
 		if (isConnected) {
 			resetPowGlobals();
 			runURL(document.getElementById('torrentDialog').value);
-			wjs().plugin.emitJsMessage("[refresh-playlist]");
+			wjs().emitJsMessage("[refresh-playlist]");
 		} else {
 			$('.easy-modal-animated').trigger('openModal');
 		}
@@ -1634,7 +1634,7 @@ $('#addPlaylistDialog').change(function(evt) {
 	} else {
 		playlistAddVideo($(this).val());
 	}
-	wjs().plugin.emitJsMessage("[refresh-playlist]");
+	wjs().emitJsMessage("[refresh-playlist]");
 });
 
 $('#fileDialog').change(function(evt) {
@@ -1644,7 +1644,7 @@ $('#fileDialog').change(function(evt) {
 	} else {
 		runURL($(this).val());
 	}
-	wjs().plugin.emitJsMessage("[refresh-playlist]");
+	wjs().emitJsMessage("[refresh-playlist]");
 });
 
 

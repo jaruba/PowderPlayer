@@ -16,7 +16,7 @@
 * Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
 *****************************************************************************/
 
-// WebChimera Player v1.17
+// WebChimera Player v1.18
 
 
 // if page on local machine, add warning
@@ -123,13 +123,13 @@ var wjs = function(context) {
 // Static methods
 wjs.init = function(context) {
 	
-	this.version = "v1.17";
+	this.version = "v1.18";
 
     // Save the context
     this.context = (typeof context === "undefined") ? "#webchimera" : context;  // if no playerid set, default to "webchimera"
 
 	// Save player parameters
-	this.basicParams = ["allowfullscreen","multiscreen","mouseevents","autoplay","autostart","autoloop","loop","mute","titleBar","progressCache","pausePolicy","debugPlaylist"];
+	this.basicParams = ["allowfullscreen","multiscreen","mouseevents","autoplay","autostart","autoloop","loop","mute","titleBar","progressCache","toolbar","debugPlaylist","pausePolicy"];
 	
 	if (this.context.substring(0,1) == "#") {
 		this.plugin = document.getElementById(this.context.substring(1));
@@ -224,6 +224,12 @@ wjs.init.prototype.onMessage = function(wjs_function) {
 	if (this.allElements.length == 1) {
 		this.catchEvent("QmlMessage",wjs_function);
 	} else for (z = 0; z < this.allElements.length; z++) wjs("#"+this.allElements[z].id).onMessage(wjs_function);
+	return this;
+};
+
+wjs.init.prototype.emitJsMessage = function(wjs_message) {
+	if (this.allElements.length == 1) this.plugin.emitJsMessage(wjs_message);
+	else for (z = 0; z < this.allElements.length; z++) wjs("#"+this.allElements[z].id).emitJsMessage(wjs_message);
 	return this;
 };
 
@@ -454,6 +460,24 @@ wjs.init.prototype.nextFrame = function(newFrame) {
 	} else for (z = 0; z < this.allElements.length; z++) wjs("#"+this.allElements[z].id).nextFrame(newFrame);
 	return this;
 }
+
+// functions to hide/show toolbar
+wjs.init.prototype.hideToolbar = function() {
+	if (this.allElements.length == 1) this.plugin.emitJsMessage("[hide-toolbar]");
+	else for (z = 0; z < this.allElements.length; z++) wjs("#"+this.allElements[z].id).hideToolbar();
+	return this;
+};
+wjs.init.prototype.showToolbar = function() {
+	if (this.allElements.length == 1) this.plugin.emitJsMessage("[show-toolbar]");
+	else for (z = 0; z < this.allElements.length; z++) wjs("#"+this.allElements[z].id).showToolbar();
+	return this;
+};
+wjs.init.prototype.toggleToolbar = function() {
+	if (this.allElements.length == 1) this.plugin.emitJsMessage("[toggle-toolbar]");
+	else for (z = 0; z < this.allElements.length; z++) wjs("#"+this.allElements[z].id).toggleToolbar();
+	return this;
+};
+// end functions to hide/show toolbar
 
 // functions to hide/show user interface
 wjs.init.prototype.hideUI = function() {
