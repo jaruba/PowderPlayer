@@ -20,10 +20,10 @@ localStorage.powderVersion = "0.17";
 
 var checkedUpdates = 0;
 
-if (typeof localStorage.maxPeers === 'undefined') localStorage.maxPeers = 100;
+if (typeof localStorage.maxPeers === 'undefined') localStorage.maxPeers = 200;
 if (typeof localStorage.tmpDir === 'undefined') localStorage.tmpDir = 'Temp';
 if (typeof localStorage.libDir === 'undefined') localStorage.libDir = 'Temp';
-if (typeof localStorage.clickPause === 'undefined') localStorage.clickPause = 'fullscreen';
+if (typeof localStorage.clickPause === 'undefined') localStorage.clickPause = 'both';
 $("#max-peers").text(localStorage.maxPeers);
 $("#spinner").val(localStorage.maxPeers);
 $("#def-folder").text(localStorage.tmpDir);
