@@ -136,6 +136,7 @@ $.fn.scrollEnd = function(callback, timeout) {
 $(window).scrollEnd(function(){
     if ($(document).scrollTop() == 0) if (typeof powGlobals.engine !== 'undefined') if (powGlobals.hasVideo > 0) {
 		if ($("body").css("overflow-y") == "visible" || $("body").css("overflow-y") == "auto") $("body").css("overflow-y","hidden");
+		win.setMinimumSize(300, 210);
 		if (!wjs().isPlaying()) wjs().togglePause();
 	}
 }, 1000);
@@ -911,9 +912,10 @@ function goBack() {
 	$('#open-url').css('top', Math.round(($(window).height() - 187) / 2)+'px');
 	
 	win.setMinimumSize(530, 440);
-	if ($("#main").height() > win.height) win.height = 530;
-	if ($("#main").width() > win.width) win.width = 440;
-
+	if ((win.width < 530 && win.height < 440) || (win.width < 530 || win.height < 440)) {
+		win.width = 530;
+		win.height = 440;
+	}
 
 	document.getElementById('magnetLink').value = "";
 	$('#player_wrapper').css("min-height","1px").css("height","1px").css("width","1px");
@@ -962,8 +964,16 @@ function handle(event) {
 		}
 	} else if (event == "[torrent-data]") {
 		if (wjs().fullscreen()) wjs().fullscreen(false);
-		$("#filesList").css("min-height",$("#player_wrapper").height());
-		$("html, body").animate({ scrollTop: $("#player_wrapper").height() }, "slow");
+		win.setMinimumSize(448, 370);
+		if ((win.width < 448 && win.height < 370) || (win.width < 448 || win.height < 370)) {
+			win.width = 448;
+			win.height = 370;
+			$("#filesList").css("min-height",448);
+			$("html, body").animate({ scrollTop: 448 }, "slow");
+		} else {
+			$("#filesList").css("min-height",$("#player_wrapper").height());
+			$("html, body").animate({ scrollTop: $("#player_wrapper").height() }, "slow");
+		}
 		$("body").css("overflow-y","visible");
 	} else if (event == '[add-video]') {
 		chooseFile('#addPlaylistDialog');
@@ -1520,7 +1530,7 @@ function runURL(torLink) {
 	wjs().setOpeningText("Loading resource");
 	wjs().startPlayer();
 
-	win.setMinimumSize(530, 385);
+	win.setMinimumSize(300, 210);
 
 	$('#main').css("display","none");
 	$('#player_wrapper').css("min-height","100%").css("height","100%").css("width","auto");

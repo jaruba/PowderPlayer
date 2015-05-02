@@ -603,6 +603,16 @@ Rectangle {
 			videoSource.width = videoSource.parent.width * oldRatioWidth;
 			videoSource.height = videoSource.parent.height * oldRatioHeight;
 		} else resetAspect();
+		
+		if ((videoSource.width < 400 && videoSource.height < 352) || (videoSource.width < 400 || videoSource.height < 352)) {
+			if (settings.uiVisible) wjs.toggleUI();
+			settings.tooSmall = true;
+		} else {
+			if (settings.tooSmall) {
+				if (!settings.uiVisible) wjs.toggleUI();
+				settings.tooSmall = false;
+			}
+		}
 	}
 	// End Reset Video Layer Size When Plugin Area Changed Size ( required by togFullscreen() )
 	

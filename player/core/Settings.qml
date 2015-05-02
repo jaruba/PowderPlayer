@@ -51,4 +51,5 @@ QtObject {
 	property var subDelay: 0;
 	property var audioDelay: 0;
 	property var uiVisible: 1;
+	property var tooSmall: false;
 }

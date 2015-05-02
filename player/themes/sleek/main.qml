@@ -621,7 +621,7 @@ Rectangle {
 		// End Sleep Timer Menu
 		
 		Rectangle {
-			visible: fullscreen ? false : mousesurface.containsMouse ? true : settingsBut.containsMouse ? true : false
+			visible: settings.uiVisible == 1 ? fullscreen ? false : mousesurface.containsMouse ? true : settingsBut.containsMouse ? true : false : false
 			
 			opacity: fullscreen ? 0 : mousesurface.containsMouse ? settingsBut.containsMouse ? 1 : 0.6 : settingsBut.containsMouse ? 1 : 0
 			
