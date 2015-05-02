@@ -60,6 +60,12 @@ Rectangle {
 				vlcPlayer.playlist.next();
 			}
 		}
+		if (event.key == Qt.Key_Left) {
+			progressBar.seekProgress(-1);
+		}
+		if (event.key == Qt.Key_Right) {
+			progressBar.seekProgress(1);
+		}
 		if(event.modifiers == Qt.ControlModifier) {
 			if (event.key == Qt.Key_Right) {
 				if (typeof settings.preventKey[Qt.ControlModifier+"+"+Qt.Key_Right] === "undefined") {

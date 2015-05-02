@@ -23,6 +23,19 @@ Rectangle {
 	property var lastTimestamp: 0;
 	property var lastCalc: 0;
 	
+	function seekProgress(direction) {
+		settings.newProgress = (vlcPlayer.time + lastCalc) / wjs.getLength();
+		settings = settings;
+		if (vlcPlayer.playing) vlcPlayer.togglePause();
+		lastTimestamp = Date.now();
+		checkWheel = true;
+		if (wjs.getLength() > 0) var newDif = Math.floor(wjs.getLength() /100);
+		else var newDif = 30000;
+		
+		if (direction == 1) lastCalc = lastCalc +newDif;
+		if (direction == -1) lastCalc = lastCalc + (newDif * (-1));
+	}
+	
 	RowLayout {
 		id: rowLayer
 		anchors.left: parent.left
@@ -48,16 +61,9 @@ Rectangle {
 			onPositionChanged: root.changed(mouse.x,mouse.y);
 			onReleased: root.released(mouse.x,mouse.y);
 			onWheel: {
-				settings.newProgress = (vlcPlayer.time + lastCalc) / wjs.getLength();
-				settings = settings;
-				if (vlcPlayer.playing) vlcPlayer.togglePause();
-				lastTimestamp = Date.now();
-				checkWheel = true;
-				if (wjs.getLength() > 0) var newDif = Math.floor(wjs.getLength() /100);
-				else var newDif = 30000;
 
-				if (wheel.angleDelta.y > 0) lastCalc = lastCalc +newDif;
-				if (wheel.angleDelta.y < 0) lastCalc = lastCalc + (newDif * (-1));
+				if (wheel.angleDelta.y > 0) seekProgress(1);
+				if (wheel.angleDelta.y < 0) seekProgress(-1);
 				
 			}
 		}
