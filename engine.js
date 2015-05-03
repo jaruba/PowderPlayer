@@ -1434,6 +1434,7 @@ wjs.init.prototype.addTorrent = function(torLink) {
 			if (powGlobals.hasVideo == 0) {
 				wjs().fullscreen(false);
 				wjs().clearPlaylist();
+				powGlobals.engine.server.close();
 				$('#player_wrapper').css("min-height","1px").css("height","1px").css("width","1px");
 				$('body').css("overflow-y","visible");
 			}
