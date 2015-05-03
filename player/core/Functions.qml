@@ -790,7 +790,7 @@ Rectangle {
 		if (newtime > 0) timeBubble.srctime = getTime(newtime);
 	}
 	function progressReleased(mouseX,mouseY) {
-		lastPos = (mouseX -4) / theview.width;
+		lastPos = (parseInt(mouseX) -4) / theview.width;
 		if (vlcPlayer.state == 6) {
 			vlcPlayer.playlist.currentItem = lastItem;
 			vlcPlayer.playlist.play();
@@ -801,6 +801,20 @@ Rectangle {
 		settings.dragging = false;
 	}
 	// End Progress Bar Seek Functionality
+	
+	// Start Small Progress Bar Seek Functionality
+	function smallProgressReleased(mouseX,mouseY) {
+		lastPos = parseInt(mouseX) / sProgressBar.back.width;
+		if (vlcPlayer.state == 6) {
+			vlcPlayer.playlist.currentItem = lastItem;
+			vlcPlayer.playlist.play();
+		}
+		vlcPlayer.position = lastPos;
+		settings.newProgress = lastPos;
+
+		settings.dragging = false;
+	}
+	// End Small Progress Bar Seek Functionality
 	
 	// Start Scroll Playlist Menu
 	function movePlaylist(mousehint) {

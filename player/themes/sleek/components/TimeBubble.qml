@@ -10,11 +10,11 @@ Rectangle {
 	property alias backgroundOpacity: backgroundIcon.opacity
 	
 
-	visible: settings.glyphsLoaded ? vlcPlayer.position > 0 ? settings.dragging ? true : progressBar.dragpos.containsMouse ? true : false : false : false
+	visible: sProgressBar.dragpos.containsMouse ? true : settings.glyphsLoaded ? vlcPlayer.position > 0 ? settings.dragging ? true : progressBar.dragpos.containsMouse ? true : false : false : false
 	anchors.bottom: parent.bottom
-	anchors.bottomMargin: fullscreen ? 66 : 63
+	anchors.bottomMargin: sProgressBar.dragpos.containsMouse ? 54 : fullscreen ? 66 : 63
 	anchors.left: parent.left
-	anchors.leftMargin: srctime.text.length > 5 ? progressBar.dragpos.mouseX < 33 ? 3 : (progressBar.dragpos.mouseX +36) > theview.width ? (theview.width -65) : (progressBar.dragpos.mouseX -29) : progressBar.dragpos.mouseX < 23 ? -7 : (progressBar.dragpos.mouseX +25) > theview.width ? (theview.width -54) : (progressBar.dragpos.mouseX -30) // Move Time Chat Bubble dependant of Mouse Horizontal Position
+	anchors.leftMargin: sProgressBar.dragpos.containsMouse ? sProgressBar.dragpos.mouseX -20 : srctime.text.length > 5 ? progressBar.dragpos.mouseX < 33 ? 3 : (progressBar.dragpos.mouseX +36) > theview.width ? (theview.width -65) : (progressBar.dragpos.mouseX -29) : progressBar.dragpos.mouseX < 23 ? -7 : (progressBar.dragpos.mouseX +25) > theview.width ? (theview.width -54) : (progressBar.dragpos.mouseX -30) // Move Time Chat Bubble dependant of Mouse Horizontal Position
 	
 	color: 'transparent'
 	

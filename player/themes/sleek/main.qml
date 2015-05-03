@@ -340,7 +340,6 @@ Rectangle {
 			onReleased: wjs.progressReleased(mouseX,mouseY);
 		}
 		// End Draw Progress Bar
-		
 
 		// Start Playlist Menu
 		Loader.Menu {
@@ -666,6 +665,15 @@ Rectangle {
 			border.color: "#979595"
 		}
 		// End Context Menu
+		
+		// Backup Progress Bar (used when the player is very small)
+		Loader.SmallProgressBar {
+			id: sProgressBar;
+			onPressed: wjs.progressDrag(mouseX,mouseY);
+			onChanged: wjs.progressChanged(mouseX,mouseY);
+			onReleased: wjs.smallProgressReleased(mouseX,mouseY);
+		}
+		// End Backup Progress Bar (used when the player is very small)
 	
     }
 	// End Mouse Area over entire Surface (check mouse movement, toggle pause when clicked) [includes Toolbar]

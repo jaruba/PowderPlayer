@@ -10,6 +10,7 @@ Rectangle {
 	property alias dragpos: dragpos
 	property alias effectDuration: effect.duration
 	property alias cache: cache
+	property alias movep: movepos
 	signal pressed(string mouseX, string mouseY)
 	signal changed(string mouseX, string mouseY)
 	signal released(string mouseX, string mouseY)
