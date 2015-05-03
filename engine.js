@@ -1486,7 +1486,7 @@ function playlistAddVideo(torLink) {
 
 function runURL(torLink) {
 			
-	if (torLink.replace(".torrent","") != torLink) {
+	if (torLink.toLowerCase().replace(".torrent","") != torLink.toLowerCase()) {
 		var readTorrent = require('read-torrent');
 		readTorrent(torLink, function(err, torrent) { wjs().addTorrent(torrent); });
 	} else if (torLink.toLowerCase().match(/magnet:\?xt=urn:btih:[a-z0-9]{20,50}/i) != null || torLink.toLowerCase().match(/magnet:\?xt=urn:sha1:[a-z0-9]{20,50}/i) != null) {									
