@@ -706,7 +706,7 @@ function settingsEl(kj) {
 		$("#openAction").hide(0);
 		$("#openFolderAction").hide(0);
 	}
-	if (supportedVideo.indexOf($("#file0").find(".filenames").text().split(".").pop()) > -1) {
+	if (supportedVideo.indexOf($("#file0").find(".filenames").text().split(".").pop().toLowerCase()) > -1) {
 		// if the item is a video
 		for (ij = 0; typeof powGlobals.videos[ij] !== 'undefined'; ij++) if (powGlobals.videos[ij].index == powGlobals.files[kj].index) break;
 		$("#playAction").attr("onClick","wjs().playItem("+ij+"); $('#closeAction').trigger('click'); $('html, body').animate({ scrollTop: 0 }, 'slow'); playEl("+kj+"); $('body').css('overflow-y','hidden')");
