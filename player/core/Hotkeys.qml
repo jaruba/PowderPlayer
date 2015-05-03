@@ -126,7 +126,19 @@ Rectangle {
 					} else wjs.setText("UI Hidden");
  					return;
 				}
- 			}
+ 			} else if (event.key == Qt.Key_Plus) {
+				if (typeof settings.preventKey[Qt.ControlModifier+"+"+Qt.Key_Plus] === "undefined") {
+					fireQmlMessage("[window-bigger]");
+				}
+			} else if (event.key == Qt.Key_Equal) {
+				if (typeof settings.preventKey[Qt.ControlModifier+"+"+Qt.Key_Equal] === "undefined") {
+					fireQmlMessage("[window-bigger]");
+				}
+			} else if (event.key == Qt.Key_Minus) {
+				if (typeof settings.preventKey[Qt.ControlModifier+"+"+Qt.Key_Minus] === "undefined") {
+					fireQmlMessage("[window-smaller]");
+				}
+			}
 			return;
 		}
 		if(event.modifiers == Qt.AltModifier) {

@@ -520,6 +520,67 @@ function delayDisable(newVideoId) {
     }
 }
 
+function resizeInBounds(newWidth,newHeight) {
+	// find the screen where the window is
+	for(var i = 0; i < gui.Screen.screens.length; i++) {
+		var screen = gui.Screen.screens[i];
+		// check if the window is horizontally inside the bounds of this screen
+		var inTheScreen = 0;
+		if (parseInt(win.x) > parseInt(screen.bounds.x) && parseInt(win.x) < (parseInt(screen.bounds.x) + parseInt(screen.work_area.width))) {
+			inTheScreen = 1;
+		} else if (i == 0 && parseInt(win.x) <= parseInt(screen.bounds.x)) inTheScreen = 1;
+		if (inTheScreen) {
+			// resize the window, but keep it in bounds
+			if (parseInt(newWidth) >= parseInt(screen.work_area.width)) {
+				if (parseInt(newHeight) >= parseInt(screen.work_area.height)) {
+					win.resizeTo(screen.work_area.width, screen.work_area.height);
+					win.moveTo(0,0);
+				} else {
+					win.resizeTo(screen.work_area.width, newHeight);
+					win.moveTo(0,Math.floor((screen.work_area.height - newHeight)/2));
+				}
+			} else {
+				if (parseInt(newHeight) >= parseInt(screen.work_area.height)) {
+					win.resizeTo(newWidth, screen.work_area.height);
+					win.moveTo(Math.floor((screen.work_area.width - newWidth)/2),0);
+				} else {
+					win.resizeTo(newWidth, newHeight);
+					if ((parseInt(win.x) + parseInt(newWidth)) > parseInt(screen.work_area.width)) {
+						if ((parseInt(win.y) + parseInt(newHeight)) > parseInt(screen.work_area.height)) {
+							win.moveTo((screen.work_area.width - newWidth),(screen.work_area.height - newHeight));
+						} else if (parseInt(win.y) < 0) {
+							win.moveTo((screen.work_area.width - newWidth),0);
+						} else {
+							win.moveTo((screen.work_area.width - newWidth),win.y);
+						}
+					} else {
+						if ((parseInt(win.y) + parseInt(newHeight)) > parseInt(screen.work_area.height)) {
+							if (parseInt(win.x) < 0) {
+								win.moveTo(0,(screen.work_area.height - newHeight));
+							} else {
+								win.moveTo(win.x,(screen.work_area.height - newHeight));
+							}
+						} else if (parseInt(win.y) < 0) {
+							if (parseInt(win.x) < 0) {
+								win.moveTo(0,0);
+							} else {
+								win.moveTo(win.x,0);
+							}
+						} else {
+							if (parseInt(win.x) < 0) {
+								win.moveTo(0,win.y);
+							}
+						}
+					}
+				}
+			}
+			break;
+		}
+	}
+	// end find the screen where the window is
+	wjs().emitJsMessage("[refresh-aspect]");
+}
+
 win.on('focus', function() { focused = true; win.setProgressBar(-0.1); }); 
 win.on('blur', function() {
 	focused = false;
@@ -541,66 +602,7 @@ function isPlaying() {
 		}
 		if (firstTimeEver == 1 && wjs().fullscreen() === false) {
 			firstTimeEver = 0;
-			var newWidth = wjs().width() + (win.width - window.innerWidth);
-			var newHeight = wjs().height() + (win.height - window.innerHeight);
-			// find the screen where the window is
-			for(var i = 0; i < gui.Screen.screens.length; i++) {
-				var screen = gui.Screen.screens[i];
-				// check if the window is horizontally inside the bounds of this screen
-				var inTheScreen = 0;
-				if (parseInt(win.x) > parseInt(screen.bounds.x) && parseInt(win.x) < (parseInt(screen.bounds.x) + parseInt(screen.work_area.width))) {
-					inTheScreen = 1;
-				} else if (i == 0 && parseInt(win.x) <= parseInt(screen.bounds.x)) inTheScreen = 1;
-				if (inTheScreen) {
-					// resize the window, but keep it in bounds
-					if (parseInt(newWidth) >= parseInt(screen.work_area.width)) {
-						if (parseInt(newHeight) >= parseInt(screen.work_area.height)) {
-							win.resizeTo(screen.work_area.width, screen.work_area.height);
-							win.moveTo(0,0);
-						} else {
-							win.resizeTo(screen.work_area.width, newHeight);
-							win.moveTo(0,Math.floor((screen.work_area.height - newHeight)/2));
-						}
-					} else {
-						if (parseInt(newHeight) >= parseInt(screen.work_area.height)) {
-							win.resizeTo(newWidth, screen.work_area.height);
-							win.moveTo(Math.floor((screen.work_area.width - newWidth)/2),0);
-						} else {
-							win.resizeTo(newWidth, newHeight);
-							if ((parseInt(win.x) + parseInt(newWidth)) > parseInt(screen.work_area.width)) {
-								if ((parseInt(win.y) + parseInt(newHeight)) > parseInt(screen.work_area.height)) {
-									win.moveTo((screen.work_area.width - newWidth),(screen.work_area.height - newHeight));
-								} else if (parseInt(win.y) < 0) {
-									win.moveTo((screen.work_area.width - newWidth),0);
-								} else {
-									win.moveTo((screen.work_area.width - newWidth),win.y);
-								}
-							} else {
-								if ((parseInt(win.y) + parseInt(newHeight)) > parseInt(screen.work_area.height)) {
-									if (parseInt(win.x) < 0) {
-										win.moveTo(0,(screen.work_area.height - newHeight));
-									} else {
-										win.moveTo(win.x,(screen.work_area.height - newHeight));
-									}
-								} else if (parseInt(win.y) < 0) {
-									if (parseInt(win.x) < 0) {
-										win.moveTo(0,0);
-									} else {
-										win.moveTo(win.x,0);
-									}
-								} else {
-									if (parseInt(win.x) < 0) {
-										win.moveTo(0,win.y);
-									}
-								}
-							}
-						}
-					}
-					break;
-				}
-			}
-			// end find the screen where the window is
-			wjs().emitJsMessage("[refresh-aspect]");
+			resizeInBounds((wjs().width() + (win.width - window.innerWidth)),(wjs().height() + (win.height - window.innerHeight)));
 		}
 		firstTime = 1;
 		wjs().plugin.subtitle.track = 0;
@@ -930,9 +932,13 @@ function goBack() {
 	if (checkedUpdates == 0) { checkedUpdates = 1; setTimeout(function() { checkUpdates(); },300); }
 }
 
-function handle(event) {
+function handleMessages(event) {
     if (event == "[go-back]") {
 		goBack();
+	} else if (event == "[window-bigger]") {
+		resizeInBounds(Math.round(win.width*1.1),Math.round(win.height*1.1));
+	} else if (event == "[window-smaller]") {
+		resizeInBounds(Math.round(win.width*0.9),Math.round(win.height*0.9));
 	} else if (event == "[quit]") {
 		win.close();
 	} else if (event == "[select-library]") {
@@ -1549,7 +1555,7 @@ var lastState = "";
 
 setTimeout(function() { 
 	wjs("#player_wrapper").addPlayer({ id: "webchimera", theme: "sleek", autoplay: 1, progressCache: 1, pausePolicy: localStorage.clickPause });
-	wjs().onMessage(handle);
+	wjs().onMessage(handleMessages);
 	wjs().onPlaying(isPlaying);
 	wjs().onOpening(isOpening);
 	wjs().onState(function() {
