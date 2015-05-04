@@ -599,12 +599,13 @@ Rectangle {
 	
 	// Start Reset Video Layer Size When Plugin Area Changed Size ( required by togFullscreen() )
 	function onSizeChanged() {
+		if (contextblock.visible) contextblock.close();
 		if ((oldRatioWidth > 0 && oldRatioHeight > 0) || (oldRatioWidth > 0 || oldRatioHeight > 0)) {
 			videoSource.width = videoSource.parent.width * oldRatioWidth;
 			videoSource.height = videoSource.parent.height * oldRatioHeight;
 		} else resetAspect();
 		
-		if ((videoSource.width < 400 && videoSource.height < 352) || (videoSource.width < 400 || videoSource.height < 352)) {
+		if ((videoSource.width < 400 && videoSource.height < 250) || (videoSource.width < 400 || videoSource.height < 250)) {
 			if (settings.uiVisible) wjs.toggleUI();
 			settings.tooSmall = true;
 		} else {

@@ -368,7 +368,7 @@ Rectangle {
 					sendjsdata["type"] = "mouseRightClick";
 					fireQmlMessage(JSON.stringify(sendjsdata));
 				}
-				if (settings.cursorX == 0 && settings.cursorY == 0) { } else if (!settings.tooSmall) {
+				if (settings.cursorX == 0 && settings.cursorY == 0) { } else {
 					if (settings.multiscreen == 1 && fullscreen === false) { } else {
 						contextblock.addContextItems();
 						contextblock.open();
