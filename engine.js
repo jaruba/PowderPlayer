@@ -16,7 +16,7 @@
 * Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
 *****************************************************************************/
 
-localStorage.powderVersion = "0.18";
+localStorage.powderVersion = "0.19";
 
 var checkedUpdates = 0;
 
