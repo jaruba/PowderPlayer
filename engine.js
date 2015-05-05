@@ -1226,7 +1226,7 @@ function delayFinished(kj) {
 }
 
 function findHash() {
-	if (wjs().state() == 3 || wjs().state() == 4) {
+	if (wjs().state() == "playing" || wjs().state() == "paused") {
 		if (typeof powGlobals.fileHash === 'undefined') {
 			if (typeof powGlobals.engine === 'undefined') {
 				os.computeHash(powGlobals.path, function(err, hash){
