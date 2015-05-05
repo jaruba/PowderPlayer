@@ -24,6 +24,11 @@ if (typeof localStorage.maxPeers === 'undefined') localStorage.maxPeers = 200;
 if (typeof localStorage.tmpDir === 'undefined') localStorage.tmpDir = 'Temp';
 if (typeof localStorage.libDir === 'undefined') localStorage.libDir = 'Temp';
 if (typeof localStorage.clickPause === 'undefined') localStorage.clickPause = 'both';
+if (typeof localStorage.history === 'undefined') {
+	dummyObject = {};
+	localStorage.history = JSON.stringify(dummyObject);
+	delete dummyObject;
+}
 $("#max-peers").text(localStorage.maxPeers);
 $("#spinner").val(localStorage.maxPeers);
 $("#def-folder").text(localStorage.tmpDir);
@@ -202,6 +207,14 @@ $(function() {
 		transitionIn: 'animated bounceInLeft',
 		transitionOut: 'animated bounceOutRight',
 		closeButtonClass: '.forth-animated-close'
+	});
+	
+	$('.history-easy-modal-animated').easyModal({
+		top: 200,
+		overlay: 0.2,
+		transitionIn: 'animated bounceInLeft',
+		transitionOut: 'animated bounceOutRight',
+		closeButtonClass: '.history-animated-close'
 	});
 	
 	$('.update-easy-modal-animated').easyModal({
@@ -520,6 +533,13 @@ function delayDisable(newVideoId) {
     }
 }
 
+function delayLoadHistory(targetHistory) {
+    return function(){
+		wjs().playItem(targetHistory.currentItem);
+		win.title = getName(targetHistory.playlist[wjs().currentItem()].title);
+    }
+}
+
 function resizeInBounds(newWidth,newHeight) {
 	// find the screen where the window is
 	for(var i = 0; i < gui.Screen.screens.length; i++) {
@@ -614,6 +634,7 @@ function isOpening() {
 	if (powGlobals.currentIndex != wjs().currentItem()) {
 		delete powGlobals.duration;
 		delete powGlobals.fileHash;
+		savedHistory = 0;
 		powGlobals.currentIndex = wjs().currentItem();
 		if (typeof powGlobals.engine !== 'undefined') {
 			wjs().setOpeningText("Prebuffering 0%");
@@ -880,6 +901,7 @@ win.on('close', function() {
 
 function goBack() {
 	if (typeof peerInterval !== 'undefined') clearInterval(peerInterval);
+	savedHistory = 0;
 	wjs().setOpeningText("Stopping");
 	wjs().emitJsMessage("[tor-data-but]0");
 	wjs().emitJsMessage("[refresh-disabled]");
@@ -1467,6 +1489,289 @@ wjs.init.prototype.addTorrent = function(torLink) {
 	return this;
 }
 
+wjs.init.prototype.loadHistory = function(targetHistory) {
+	wjs().setOpeningText("Loading resource");
+
+	win.setMinimumSize(300, 210);
+
+	$('#main').css("display","none");
+	$('#player_wrapper').css("min-height","100%").css("height","100%").css("width","auto");
+	wjs().emitJsMessage("[gobackvar]0");
+	
+	win.zoomLevel = 0;
+	
+	$("#header_container").show();
+	
+	wjs().emitJsMessage("[refresh-disabled]");
+	if (targetHistory.infoHash) {
+		torLink = "magnet:?xt=urn:btih:"+targetHistory.infoHash;
+		powGlobals.allPieces = 0;
+		powGlobals.lastDownload = 0;
+		powGlobals.lastDownloadTime = Math.floor(Date.now() / 1000);
+		powGlobals.videos = [];
+		powGlobals.indexes = [];
+		powGlobals.files = [];
+		
+		prebuf = 0;
+		
+		// reset values in Torrent Data mode
+		$('.progress .progress-bar').removeClass("progress-bar-danger").addClass("progress-bar-warning").attr('data-transitiongoal', 0).progressbar({display_text: 'center'});
+		$('#downPart').text("0 kB");
+		$('#downAll').text("0 kB");
+		$('#speed').text("0.0 kB/s");
+		$('#nrPeers').text("0");
+		// end reset values in Torrent Data mode
+	
+		if (typeof torLink !== 'undefined' && (typeof torLink === 'object' || Buffer.isBuffer(torLink) || torLink.toLowerCase().match(/magnet:\?xt=urn:sha1:[a-z0-9]{20,50}/i) != null || torLink.toLowerCase().match(/magnet:\?xt=urn:btih:[a-z0-9]{20,50}/i) != null || torLink.split('.').pop().toLowerCase() == "torrent")) {
+	
+			if (typeof torLink !== 'object' && Buffer.isBuffer(torLink) === false && torLink.split('.').pop().toLowerCase() == "torrent") torLink = fs.readFileSync(torLink);
+			
+			// load the torrent with peerflix
+			if (localStorage.tmpDir == 'Temp') {
+				powGlobals.engine = peerflix(torLink,{
+					connections: localStorage.maxPeers
+				});			
+			} else {
+				powGlobals.engine = peerflix(torLink,{
+					connections: localStorage.maxPeers,
+					path: localStorage.tmpDir
+				});
+			}
+							
+			powGlobals.engine.swarm.on('wire', onmagnet);
+			peerInterval = setInterval(function(){ peerCheck() }, 2000);
+			
+			powGlobals.engine.server.on('listening', function () {
+				
+				wjs().emitJsMessage("[tor-data-but]1");
+				
+				powGlobals.speedPiece = 0;
+				downSpeed = setTimeout(function(){ checkSpeed(); }, 3000);
+				
+				$("#headerText").text(powGlobals.engine.torrent.name);
+				
+				var localHref = 'http://localhost:' + powGlobals.engine.server.address().port + '/'
+				powGlobals.hash = powGlobals.engine.infoHash;
+				powGlobals.downloaded = 0;
+				
+				$("#downAll").text(getReadableFileSizeString(Math.floor(powGlobals.engine.torrent.length)));
+	
+				powGlobals.hasVideo = 0;
+				$("#filesList").html("");
+				var kj = 0;
+				for (ij = 0; typeof powGlobals.engine.files[ij] !== 'undefined'; ij++) {				
+					var fileStart = powGlobals.engine.files[ij].offset;
+					if (powGlobals.engine.files[ij].offset > 0) fileStart++;
+					var fileEnd = fileStart + powGlobals.engine.files[ij].length;
+					powGlobals.indexes[ij] = ij;
+					powGlobals.files[ij] = [];
+					powGlobals.files[ij].firstPiece = Math.floor(fileStart / powGlobals.engine.torrent.pieceLength)
+					powGlobals.files[ij].lastPiece = Math.floor((fileEnd -1) / powGlobals.engine.torrent.pieceLength)
+					powGlobals.files[ij].lastDownload = 0;
+					powGlobals.files[ij].downloaded = 0;
+					powGlobals.files[ij].index = ij;
+					powGlobals.files[ij].byteLength = powGlobals.engine.files[ij].length;
+				}			
+	
+				// playlist natural order
+				if (powGlobals.engine.files.length > 1) {
+					perfect = false;
+					while (!perfect) {
+						perfect = true;
+						for (ij = 0; typeof powGlobals.files[ij] !== 'undefined'; ij++) {
+							if (typeof powGlobals.files[ij+1] !== 'undefined') {
+								difference = alphanumCase(powGlobals.engine.files[powGlobals.files[ij].index].name,powGlobals.engine.files[powGlobals.files[ij+1].index].name);
+								if (difference > 0) {
+									perfect = false;
+									powGlobals.indexes[powGlobals.files[ij].index]++;
+									powGlobals.indexes[powGlobals.files[ij+1].index]--;
+									tempHold = powGlobals.files[ij];
+									powGlobals.files[ij] = powGlobals.files[ij+1];
+									powGlobals.files[ij+1] = tempHold;
+								}
+							}
+						}
+					}
+				}
+				perfect = false;
+				while (!perfect) {
+					perfect = true;
+					for (ij = 0; typeof powGlobals.files[ij] !== 'undefined'; ij++) {
+						if (typeof powGlobals.files[ij+1] !== 'undefined') {
+							difference = matchSeasons(powGlobals.engine.files[powGlobals.files[ij].index].name,powGlobals.engine.files[powGlobals.files[ij+1].index].name);
+							if (difference > 0) {
+								perfect = false;
+								powGlobals.indexes[powGlobals.files[ij].index]++;
+								powGlobals.indexes[powGlobals.files[ij+1].index]--;
+								tempHold = powGlobals.files[ij];
+								powGlobals.files[ij] = powGlobals.files[ij+1];
+								powGlobals.files[ij+1] = tempHold;
+							}
+						}
+					}
+				}
+				// end playlist natural order
+	
+	
+	
+				for (ij = 0; typeof powGlobals.files[ij] !== 'undefined'; ij++) {
+					if (supportedVideo.indexOf(powGlobals.engine.files[powGlobals.files[ij].index].name.split('.').pop().toLowerCase()) > -1) {
+						if (powGlobals.engine.files[powGlobals.files[ij].index].name.toLowerCase().replace("sample","") == powGlobals.engine.files[powGlobals.files[ij].index].name.toLowerCase()) {
+							
+							if (powGlobals.engine.files[powGlobals.files[ij].index].name.toLowerCase().substr(0,5) != "rarbg") {
+								powGlobals.hasVideo++;
+								if (typeof savedIj === 'undefined') savedIj = ij;
+	
+								powGlobals.videos[kj] = [];
+	
+								powGlobals.videos[kj].checkHashes = [];
+								powGlobals.videos[kj].lastSent = 0;
+								powGlobals.videos[kj].index = powGlobals.files[ij].index;
+								powGlobals.videos[kj].filename = powGlobals.engine.files[powGlobals.files[ij].index].name.split('/').pop().replace(/\{|\}/g, '')
+								var fileStart = powGlobals.engine.files[powGlobals.files[ij].index].offset
+								var fileEnd = powGlobals.engine.files[powGlobals.files[ij].index].offset + powGlobals.engine.files[powGlobals.files[ij].index].length
+								powGlobals.videos[kj].firstPiece = Math.floor(fileStart / powGlobals.engine.torrent.pieceLength)
+								powGlobals.videos[kj].lastPiece = Math.floor((fileEnd -1) / powGlobals.engine.torrent.pieceLength)						
+								powGlobals.videos[kj].path = "" + powGlobals.engine.path + "\\" + powGlobals.engine.files[powGlobals.files[ij].index].path
+								powGlobals.videos[kj].byteLength = powGlobals.engine.files[powGlobals.files[ij].index].length;
+								powGlobals.videos[kj].downloaded = 0;
+								if (powGlobals.hasVideo == 1) {
+									var filename = powGlobals.engine.files[powGlobals.files[ij].index].name.split('/').pop().replace(/\{|\}/g, '')
+									powGlobals.filename = filename;
+									powGlobals.path = powGlobals.videos[kj].path;
+									powGlobals.firstPiece = powGlobals.videos[kj].firstPiece;
+									powGlobals.lastPiece = powGlobals.videos[kj].lastPiece;
+									if (typeof powGlobals.videos[kj].byteLength !== 'undefined') {
+										powGlobals.byteLength = powGlobals.videos[kj].byteLength;
+									} else {
+										if (typeof powGlobals.byteLength !== 'undefined') delete powGlobals.byteLength;
+									}
+									wjs().setOpeningText("Prebuffering 0%");
+									if (powGlobals.engine.files[powGlobals.files[ij].index].offset != powGlobals.engine.server.index.offset) {
+										for (as = 0; typeof powGlobals.engine.files[powGlobals.files[as].index] !== 'undefined'; as++) {
+											if (powGlobals.engine.files[powGlobals.files[as].index].offset == powGlobals.engine.server.index.offset) {
+												powGlobals.engine.files[powGlobals.files[as].index].deselect();
+												break;
+											}
+										}
+									}
+	
+								}
+								kj++;
+							}
+						}
+					}
+				}
+				
+				for (oi = 0; targetHistory.playlist[oi.toString()]; oi++) {
+					if (targetHistory.playlist[oi.toString()].mrl || targetHistory.playlist[oi.toString()].mrl == 0) if (targetHistory.playlist[oi.toString()].title) {
+						if (!isNaN(targetHistory.playlist[oi.toString()].mrl)) {
+							wjs().addPlaylist({
+								 url: localHref+targetHistory.playlist[oi.toString()].mrl,
+								 title: targetHistory.playlist[oi.toString()].title,
+								 vlcArgs: "--avi-index=3"
+							});
+						} else {
+							wjs().addPlaylist({
+								 url: targetHistory.playlist[oi.toString()].mrl,
+								 title: targetHistory.playlist[oi.toString()].title,
+								 vlcArgs: "--avi-index=3"
+							});
+						}
+					}
+					setTimeout(delayLoadHistory(targetHistory),200);
+				}
+				wjs().emitJsMessage("[saved-sub]"+localStorage.subLang);
+	
+				if (powGlobals.hasVideo == 0) {
+					wjs().fullscreen(false);
+					wjs().clearPlaylist();
+					powGlobals.engine.server.close();
+					$('#player_wrapper').css("min-height","1px").css("height","1px").css("width","1px");
+					$('body').css("overflow-y","visible");
+				}
+							
+				$("#filesList").append($('<div style="width: 100%; height: 79px; background-color: #f6f6f5; text-align: center; line-height: 79px; font-family: \'Droid Sans Bold\'; font-size: 19px; border-bottom: 1px solid #b5b5b5">Scroll up to Start Video Mode</div>'));
+				for (ij = 0; typeof powGlobals.files[ij] !== 'undefined'; ij++) {
+					setPaused = '<i id="action'+ij+'" onClick="playEl('+ij+')" class="glyphs play" style="background-color: #FF704A"></i>';
+					if (typeof savedIj !== 'undefined' && savedIj == ij) setPaused = '<i id="action'+ij+'" onClick="pauseEl('+ij+')" class="glyphs pause" style="background-color: #F6BC24"></i>';
+					if (powGlobals.hasVideo == 0) {
+						setPaused = '<i id="action'+ij+'" onClick="pauseEl('+ij+')" class="glyphs pause" style="background-color: #F6BC24"></i>';
+						playEl(ij);
+					}
+					if (ij%2 !== 0) { backColor = '#f6f6f5'; } else { backColor = '#ffffff'; }
+					
+					$("#filesList").append($('<div style="width: 10%; text-align: right; position: absolute; right: 0px; font-size: 240%; margin-top: 24px; margin-right: 5%;">'+setPaused+'</div><div onClick="settingsEl('+ij+')" id="file'+ij+'" class="files" data-index="'+ij+'" style="text-align: left; padding-bottom: 8px; padding-top: 8px; width: 100%; background-color: '+backColor+'" data-color="'+backColor+'"><center><div style="width: 90%; text-align: left"><span class="filenames">'+powGlobals.engine.files[powGlobals.files[ij].index].name+'</span><br><div class="progressbars" style="width: 90%; display: inline-block"></div><div style="width: 10%; display: inline-block"></div><div id="p-file'+ij+'" class="progress" style="width: 90%; margin: 0; position: relative; top: -6px; display: inline-block"><div id="progressbar'+ij+'" class="progress-bar progress-bar-info" role="progressbar" data-transitiongoal="0"></div></div><br><span class="infos">Downloaded: <span id="down-fl'+ij+'">0 kB</span> / '+getReadableFileSizeString(powGlobals.engine.files[powGlobals.files[ij].index].length)+'</span></div></center></div>'))
+				}
+				
+				wjs().emitJsMessage("[refresh-disabled]");
+				
+			});
+					
+			powGlobals.engine.on('download',checkDownloaded);
+			
+			powGlobals.engine.on('ready', function () {
+				isReady = 1;
+			});
+			
+			onmagnet();
+		}
+	} else {
+		powGlobals.videos = [];
+		var thisVideoId = powGlobals.videos.length;
+		
+		powGlobals.videos[thisVideoId] = [];
+		powGlobals.videos[thisVideoId].local = 1;
+
+		if (typeof powGlobals.videos[thisVideoId].filename !== 'undefined') {
+			wjs().addPlaylist({
+				 url: torLink,
+				 title: getName(powGlobals.videos[thisVideoId].filename),
+				 vlcArgs: "--avi-index=3"
+			});
+			wjs().emitJsMessage("[saved-sub]"+localStorage.subLang);
+		}
+
+		for (oi = 0; targetHistory.playlist[oi.toString()]; oi++) {
+			if (targetHistory.playlist[oi.toString()].mrl) if (targetHistory.playlist[oi.toString()].title) {
+				torLink = targetHistory.playlist[oi.toString()].mrl;
+				powGlobals.videos[thisVideoId] = {};
+				if (torLink.substr(0,4) != "http" && torLink.substr(0,8) != "file:///") {
+					powGlobals.videos[thisVideoId].path = torLink;
+					powGlobals.videos[thisVideoId].filename = torLink.split('\\').pop();
+					powGlobals.videos[thisVideoId].byteLength = fs.statSync(powGlobals.videos[thisVideoId].path).size;
+					torLink = "file:///"+torLink.split("\\").join("/");
+				} else if (torLink.indexOf("file:///") > -1) {
+					powGlobals.videos[thisVideoId].path = torLink.replace("file:///","").split("/").join("\\");
+					powGlobals.videos[thisVideoId].filename = torLink.split('/').pop();
+					powGlobals.videos[thisVideoId].byteLength = fs.statSync(powGlobals.videos[thisVideoId].path).size;
+				} else if (torLink.substr(0,4) == "http") {
+					powGlobals.videos[thisVideoId].path = torLink;
+					powGlobals.videos[thisVideoId].filename = torLink.split('/').pop();
+				} else {
+					powGlobals.videos[thisVideoId].path = torLink;
+					if (torLink.indexOf("/") > -1) {
+						powGlobals.videos[thisVideoId].filename = torLink.split('/').pop();
+					} else if (torLink.indexOf("\\") > -1) {
+						powGlobals.videos[thisVideoId].filename = torLink.split('\\').pop();
+					}
+				}
+				if (typeof powGlobals.videos[thisVideoId].filename !== 'undefined') {
+					wjs().addPlaylist({
+						 url: torLink,
+						 title: getName(powGlobals.videos[thisVideoId].filename),
+						 vlcArgs: "--avi-index=3"
+					});
+					wjs().emitJsMessage("[saved-sub]"+localStorage.subLang);
+				}
+				thisVideoId++;
+			}
+			setTimeout(delayLoadHistory(targetHistory),200);
+		}
+	}
+	return this;
+}
+
 function playlistAddVideo(torLink) {
 	var thisVideoId = powGlobals.videos.length;
 	powGlobals.videos[thisVideoId] = [];
@@ -1553,12 +1858,40 @@ function runURL(torLink) {
 
 var lastItem = 0;
 var lastState = "";
+var savedHistory = 0;
 
 setTimeout(function() { 
 	wjs("#player_wrapper").addPlayer({ id: "webchimera", theme: "sleek", autoplay: 1, progressCache: 1, pausePolicy: localStorage.clickPause });
 	wjs().onMessage(handleMessages);
 	wjs().onPlaying(isPlaying);
 	wjs().onOpening(isOpening);
+	wjs().onPosition(function(position) {
+		if (position > 0.7 && savedHistory == 0) {
+			savedHistory = 1;
+			historyObject = JSON.parse(localStorage.history);
+			isSafe = 1;
+			for (oi = 0; historyObject[oi.toString()]; oi++) { if (historyObject[oi.toString()].title == this.plugin.playlist.items[this.currentItem()].title.replace("[custom]","")) isSafe = 0; }
+			if (isSafe == 1) {
+				for (oii = oi; oii > 0; oii--) if (historyObject[(oii -1).toString()]) historyObject[oii.toString()] = historyObject[(oii -1).toString()];
+				historyObject["0"] = {};
+				if (powGlobals.engine) historyObject["0"].infoHash = powGlobals.engine.infoHash;
+				historyObject["0"].currentItem = this.currentItem();
+				historyObject["0"].title = this.plugin.playlist.items[this.currentItem()].title.replace("[custom]","");
+				historyObject["0"].playlist = {};
+				for (ijk = 0; ijk < parseInt(this.itemCount()); ijk++) {
+					historyObject["0"].playlist[ijk.toString()] = {};
+					historyObject["0"].playlist[ijk.toString()].title = this.plugin.playlist.items[ijk].title.replace("[custom]","");
+					if (this.plugin.playlist.items[ijk].mrl.substr(0,17) == "http://localhost:" && isNaN(this.plugin.playlist.items[ijk].mrl.split("/").pop()) === false) {
+						historyObject["0"].playlist[ijk.toString()].mrl = parseInt(this.plugin.playlist.items[ijk].mrl.split("/").pop());
+					} else {
+						historyObject["0"].playlist[ijk.toString()].mrl = this.plugin.playlist.items[ijk].mrl;
+					}
+				}
+				for (oi = 0; historyObject[oi.toString()]; oi++) { if (oi > 5) delete historyObject[oi.toString()]; }
+				localStorage.history = JSON.stringify(historyObject);
+			}
+		}
+	});
 	wjs().onState(function() {
 		if (this.state() == "opening") {
 			lastItem = this.currentItem();
@@ -1673,3 +2006,19 @@ $('#magnetLink').mousedown(function(event) {
 		$('#magnetLink').val(clipboard.get('text')).select();
     }
 });
+
+function printHistory() {
+	$("#history-list").html("");
+	historyObject = JSON.parse(localStorage.history);
+	oi = 0;
+	if (historyObject[oi.toString()]) {
+		generateHistory = "";
+		for (oi = 0; historyObject[oi.toString()]; oi++) {
+			generateHistory += '<div onClick="wjs().loadHistory(JSON.parse(localStorage.history)['+oi.toString()+']); return false" class="actionButton" style="padding-left: 10px; width: 429px; font-family: \'Droid Sans Bold\'">'+historyObject[oi.toString()].title+'</div>';
+		}
+		$("#history-list").html(generateHistory);
+	} else {
+		generateHistory = "<div style=\"width: 100%; text-align: center; font-family: 'Droid Sans Bold'; padding: 15px 0; font-size: 17px;\">Your history is empty, watch something first.</span>";
+		$("#history-list").html(generateHistory);
+	}
+}

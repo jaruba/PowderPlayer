@@ -335,7 +335,7 @@ body {
 #logoBig {
 	margin-top: 47px;
 	margin-bottom: 13px;
-	margin-left: 21px;
+	margin-left: 58px;
 }
 #formHolder {
 	display: block;
@@ -377,7 +377,8 @@ body {
 .second-easy-modal-animated,
 .third-easy-modal-animated,
 .forth-easy-modal-animated,
-.update-easy-modal-animated {
+.update-easy-modal-animated,
+.history-easy-modal-animated {
 	width: 438px;
 	padding: 2em;
 	box-shadow: 1px 1px 3px rgba(0,0,0,0.35);
@@ -392,6 +393,10 @@ body {
 	top: 22% !important;
 }
 .forth-easy-modal-animated {
+	padding: 5px;
+	top: 22% !important;
+}
+.history-easy-modal-animated {
 	padding: 5px;
 	top: 22% !important;
 }
@@ -459,8 +464,8 @@ a.pl-settings {
 	text-decoration: none;
 	float: right;
 	font-style: normal;
-	margin-right: 11px;
-	margin-top: 3px;
+	margin-right: 12px;
+	margin-top: 5px;
 }
 a.pl-settings:hover {
 	color: #FFA741
@@ -468,6 +473,30 @@ a.pl-settings:hover {
 i.player-settings:before {
 	font-family: 'Glyphs';
 	content: "\E801";
+	font-style: normal
+}
+
+a.history-button {
+	color: #ccc;
+	font-size: 26px;
+	text-decoration: none;
+	float: right;
+	font-style: normal;
+	margin-right: 12px;
+	margin-top: 8px;
+}
+a.history-button:hover {
+	color: #FFA741
+}
+i.history-icon:before {
+	font-family: 'Glyphs';
+	content: "\E806";
+	font-style: normal
+}
+
+i.close-icon:before {
+	font-family: 'Glyphs';
+	content: "\E896";
 	font-style: normal
 }
 
@@ -568,7 +597,7 @@ h2 {
     </div>
 
     <div id="main" style="opacity: 0"><div class="wrapper"><center>
-    <div id="holder"><a class="pl-settings easy-modal-open" href="#player-settings"><i class="player-settings"></i></a><img src="images/powder-logo.png" id="logoBig"><br><b style="font-family: 'Droid Sans Bold', sans-serif; font-size: 36px; color: #767a7b; display: inline-block; margin-bottom: 2px">Drag & Drop a File</b><br><span style="font-size: 21px; color: #767a7b; font-weight: 100; margin-top: 13px; display: inline-block; margin-bottom: 11px">or select an option below</span><br><br><div style="width: 510px"><a href="#" onClick="chooseFile('#torrentDialog'); return false"><div id="torrentBut" class="mainButtons" style="float:left"><img src="images/torrent-icon.png" style="margin-top: 15px; margin-bottom: 11px"><br>Add Torrent</div></a><a href="#" onClick="chooseFile('#fileDialog'); return false"><div id="videoBut" class="mainButtons"><img src="images/video-icon.png" style="  margin-top: 19px; margin-bottom: 16px"><br>Add Video</div></a><a class="easy-modal-open" onClick="checkInternet(function(isConnected) { if (isConnected) { $('#internet-error').hide(); $('#internet-ok').show(1); $('#magnetLink').focus() } else { $('#internet-ok').hide(); $('#internet-error').show(1); } }); $('#open-url').css('top', Math.round(($(window).height() - 187) / 2)+'px');" href="#open-url"><div id="linkBut" class="mainButtons" style="margin-right: 0; float: right"><img src="images/link-icon.png" style="margin-top: 20px; margin-bottom: 9px"><br>Use a URL</div></a></div><br><br><span style="color: #8c8c8c; line-height: 29px; margin-bottom: 40px; display: inline-block;"><b style="font-family: 'Droid Sans Bold', sans-serif">Supports:</b> Torrent Files / Links, Magnet Links, Youtube Links,<br>Youtube Playlist Links and all <a class="mainLinks" onClick="gui.Shell.openExternal('http://www.videolan.org/vlc/features.php?cat=video'); return false" href="http://www.videolan.org/vlc/features.php?cat=video" target="_blank">VLC Supported Media Formats</a>.</span>
+    <div id="holder"><a class="pl-settings easy-modal-open" href="#player-settings"><i class="player-settings"></i></a><a class="history-button easy-modal-open" href="#history-powder" onClick="printHistory()"><i class="history-icon"></i></a><img src="images/powder-logo.png" id="logoBig"><br><b style="font-family: 'Droid Sans Bold', sans-serif; font-size: 36px; color: #767a7b; display: inline-block; margin-bottom: 2px">Drag & Drop a File</b><br><span style="font-size: 21px; color: #767a7b; font-weight: 100; margin-top: 13px; display: inline-block; margin-bottom: 11px">or select an option below</span><br><br><div style="width: 510px"><a href="#" onClick="chooseFile('#torrentDialog'); return false"><div id="torrentBut" class="mainButtons" style="float:left"><img src="images/torrent-icon.png" style="margin-top: 15px; margin-bottom: 11px"><br>Add Torrent</div></a><a href="#" onClick="chooseFile('#fileDialog'); return false"><div id="videoBut" class="mainButtons"><img src="images/video-icon.png" style="  margin-top: 19px; margin-bottom: 16px"><br>Add Video</div></a><a class="easy-modal-open" onClick="checkInternet(function(isConnected) { if (isConnected) { $('#internet-error').hide(); $('#internet-ok').show(1); $('#magnetLink').focus() } else { $('#internet-ok').hide(); $('#internet-error').show(1); } }); $('#open-url').css('top', Math.round(($(window).height() - 187) / 2)+'px');" href="#open-url"><div id="linkBut" class="mainButtons" style="margin-right: 0; float: right"><img src="images/link-icon.png" style="margin-top: 20px; margin-bottom: 9px"><br>Use a URL</div></a></div><br><br><span style="color: #8c8c8c; line-height: 29px; margin-bottom: 40px; display: inline-block;"><b style="font-family: 'Droid Sans Bold', sans-serif">Supports:</b> Torrent Files / Links, Magnet Links, Youtube Links,<br>Youtube Playlist Links and all <a class="mainLinks" onClick="gui.Shell.openExternal('http://www.videolan.org/vlc/features.php?cat=video'); return false" href="http://www.videolan.org/vlc/features.php?cat=video" target="_blank">VLC Supported Media Formats</a>.</span>
     </div></center></div></div>
 <div id="player_wrapper"></div>
 <center>
@@ -656,6 +685,10 @@ You require an internet connection to use this feature.<br><br>
 <div onClick="chooseFile('#folderDialog'); return false" class="actionButton" style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden"><span style="font-family: 'Droid Sans Bold'">Download Folder:</span> <span id="def-folder">Temp</span></div>
 <div id="closeAction" class="forth-animated-close actionButton">Close</div>
 </center>
+</div>
+<div class="history-easy-modal-animated" id="history-powder">
+<h2 style="width: 82%; float: left; background-color: #1C728A; text-align: left; padding-left: 12px">History</h2><h2 class="change-set history-animated-close" style="width: 8%; float: right; background-color: #549AAE; cursor: pointer; text-align: center"><i class="close-icon"></i></h2><div style="clear:both"></div>
+<div id="history-list" style="text-align: left; padding: 5px 0"></div>
 </div>
 <div class="update-easy-modal-animated" id="update-powder">
 <center>
