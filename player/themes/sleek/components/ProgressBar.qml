@@ -43,7 +43,7 @@ Rectangle {
 		anchors.right: parent.right
 		anchors.bottom: parent.bottom
 		anchors.bottomMargin: settings.multiscreen == 1 ? fullscreen ? 32 : -8 : fullscreen ? 32 : mousesurface.containsMouse ? 30 : 0 // Multiscreen - Edit
-		opacity: settings.multiscreen == 1 ? fullscreen ? settings.ismoving > 5 ? 0 : 1 : 0 : fullscreen ? settings.ismoving > 5 ? 0 : 1 : 1 // Multiscreen - Edit
+		opacity: settings.multiscreen == 1 ? fullscreen ? settings.ismoving > 3 ? 0 : 1 : 0 : fullscreen ? settings.ismoving > 3 ? 0 : 1 : 1 // Multiscreen - Edit
 		Behavior on anchors.bottomMargin {
 			PropertyAnimation {
 				id: effect
@@ -116,7 +116,7 @@ Rectangle {
 		
 		// Start Multiscreen - Edit
 		anchors.bottomMargin: settings.multiscreen == 1 ? fullscreen ? toolbar.height : -16 : fullscreen ? toolbar.height : mousesurface.containsMouse ? toolbar.height : 0
-		opacity: settings.multiscreen == 1 ? fullscreen ? settings.ismoving > 5 ? 0 : 1 : 0 : fullscreen ? settings.ismoving > 5 ? 0 : 1 : 1
+		opacity: settings.multiscreen == 1 ? fullscreen ? settings.ismoving > 3 ? 0 : 1 : 0 : fullscreen ? settings.ismoving > 3 ? 0 : 1 : 1
 		// End Multiscreen - Edit
 
 //		Behavior on anchors.leftMargin { PropertyAnimation { duration: settings.dragging ? 0 : vlcPlayer.time - lastTime > 0 ? vlcPlayer.time - lastTime : 0 } }
