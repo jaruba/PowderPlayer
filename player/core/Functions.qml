@@ -156,9 +156,9 @@ Rectangle {
 		// Start if mouse is moving above the Video Surface increase "settings.ismoving"
 		if (Math.floor(seconds /1000) > lastSecond) {
 			// Don't Hide Toolbar if it's Hovered
-			lastSecond = Math.floor(seconds /1000);
 			if (progressBar.dragpos.containsMouse === false && toolbarBackground.bottomtab.containsMouse === false && playButton.hover.containsMouse === false && prevBut.hover.containsMouse === false && nextBut.hover.containsMouse === false && fullscreenButton.hover.containsMouse === false && playlistButton.hover.containsMouse === false && mutebut.hover.containsMouse === false && volumeMouse.dragger.containsMouse === false && volumeMouse.hover.containsMouse === false) { settings.ismoving++; settings = settings; }
 		}
+		lastSecond = Math.floor(seconds /1000);
 		// End if mouse is moving above the Video Surface increase "settings.ismoving"
 	}
 	// End on Current Time Changed
