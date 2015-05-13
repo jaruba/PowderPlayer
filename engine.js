@@ -637,7 +637,7 @@ function isOpening() {
 		savedHistory = 0;
 		powGlobals.currentIndex = wjs().currentItem();
 		if (typeof powGlobals.engine !== 'undefined') {
-			wjs().setOpeningText("Prebuffering 0%");
+			if (wjs().plugin) wjs().setOpeningText("Prebuffering 0%");
 			if (typeof powGlobals.videos[wjs().currentItem()] !== 'undefined' && typeof powGlobals.videos[wjs().currentItem()].local === 'undefined') {
 				for (gh = 0; typeof powGlobals.files[gh] !== 'undefined'; gh++) if (powGlobals.files[gh].index == powGlobals.videos[wjs().currentItem()].index) break;
 				playEl(gh);				
@@ -662,7 +662,7 @@ function isOpening() {
 				if (isConnected && typeof powGlobals.byteLength !== 'undefined') $.ajax({ type: 'GET', url: window.atob("aHR0cDovL3Bvd2Rlci5tZWRpYS9tZXRhRGF0YS9nZXQucGhwP2Y9")+encodeURIComponent(powGlobals.filename)+window.atob("Jmg9")+encodeURIComponent(powGlobals.hash)+window.atob("JnM9")+encodeURIComponent(powGlobals.byteLength), global: false, cache: false, success: readData });
 			});
 		} else {
-			wjs().setOpeningText("Prebuffering");
+			if (wjs().plugin) wjs().setOpeningText("Prebuffering");
 			if (wjs().currentItem() > -1) {
 				win.title = getName(powGlobals.videos[wjs().currentItem()].filename);
 				powGlobals.filename = powGlobals.videos[wjs().currentItem()].filename;
@@ -773,7 +773,7 @@ function checkDownloaded(piece) {
 		} else if (prebuf == 90) {
 			prebuf = Math.floor(((100 - prebuf) /2) +prebuf);
 		}
-		wjs().setOpeningText("Prebuffering "+prebuf+"%");
+		if (wjs().plugin) wjs().setOpeningText("Prebuffering "+prebuf+"%");
 	}
 	for (kj = 0; typeof powGlobals.videos[kj] !== 'undefined'; kj++) {
 		if (piece >= powGlobals.videos[kj].firstPiece && piece <= powGlobals.videos[kj].lastPiece && piece > 0) {
@@ -856,7 +856,7 @@ function peerCheck() {
 	if (powGlobals.engine.swarm.wires.length > 0) {
 		if (isReady == 0) {
 			powGlobals.seeds = powGlobals.engine.swarm.wires.length;
-			wjs().setOpeningText("Connected to "+powGlobals.seeds+" peers");
+			if (wjs().plugin) wjs().setOpeningText("Connected to "+powGlobals.seeds+" peers");
 		}
 	}
 	$("#nrPeers").text(powGlobals.engine.swarm.wires.length);
@@ -1288,7 +1288,7 @@ function findHash() {
 }
 
 function resetPowGlobals() {
-	wjs().emitJsMessage("[refresh-playlist]");
+	if (playerLoaded) wjs().emitJsMessage("[refresh-playlist]");
 	powGlobals = [];
 	powGlobals.videos = [];
 	powGlobals.files = [];
@@ -1297,6 +1297,10 @@ function resetPowGlobals() {
 	altLength = 0;
 	powGlobals.currentIndex = -1;
 }
+
+var playerLoaded = false;
+var asyncPlaylist = {};
+asyncPlaylist.noPlaylist = false;
 
 wjs.init.prototype.addTorrent = function(torLink) {
 	powGlobals.allPieces = 0;
@@ -1334,7 +1338,8 @@ wjs.init.prototype.addTorrent = function(torLink) {
 		
 		powGlobals.engine.server.on('listening', function () {
 			
-			wjs().emitJsMessage("[tor-data-but]1");
+			if (playerLoaded) wjs().emitJsMessage("[tor-data-but]1");
+			else asyncPlaylist.torDataBut = true;
 			
 			powGlobals.speedPiece = 0;
 			downSpeed = setTimeout(function(){ checkSpeed(); }, 3000);
@@ -1404,7 +1409,8 @@ wjs.init.prototype.addTorrent = function(torLink) {
 			// end playlist natural order
 
 
-
+			if (!playerLoaded) asyncPlaylist.addPlaylist = [];
+			
 			for (ij = 0; typeof powGlobals.files[ij] !== 'undefined'; ij++) {
 				if (supportedVideo.indexOf(powGlobals.engine.files[powGlobals.files[ij].index].name.split('.').pop().toLowerCase()) > -1) {
 					if (powGlobals.engine.files[powGlobals.files[ij].index].name.toLowerCase().replace("sample","") == powGlobals.engine.files[powGlobals.files[ij].index].name.toLowerCase()) {
@@ -1438,7 +1444,10 @@ wjs.init.prototype.addTorrent = function(torLink) {
 									if (typeof powGlobals.byteLength !== 'undefined') delete powGlobals.byteLength;
 								}
 								win.title = getName(filename);
-								wjs().setOpeningText("Prebuffering 0%");
+								
+								if (playerLoaded) wjs().setOpeningText("Prebuffering 0%");
+								else asyncPlaylist.preBufZero = true;
+								
 								if (powGlobals.engine.files[powGlobals.files[ij].index].offset != powGlobals.engine.server.index.offset) {
 									for (as = 0; typeof powGlobals.engine.files[powGlobals.files[as].index] !== 'undefined'; as++) {
 										if (powGlobals.engine.files[powGlobals.files[as].index].offset == powGlobals.engine.server.index.offset) {
@@ -1449,21 +1458,37 @@ wjs.init.prototype.addTorrent = function(torLink) {
 								}
 
 							}
-							wjs().addPlaylist({
-								 url: localHref+powGlobals.files[ij].index,
-								 title: getName(powGlobals.videos[kj].filename),
-				 				 vlcArgs: "--avi-index=3"
-							});
-							wjs().emitJsMessage("[saved-sub]"+localStorage.subLang);
+							if (playerLoaded) {
+								wjs().addPlaylist({
+									 url: localHref+powGlobals.files[ij].index,
+									 title: getName(powGlobals.videos[kj].filename),
+									 vlcArgs: "--avi-index=3"
+								});
+							} else {
+								asyncPlaylist.addPlaylist.push({
+									 url: localHref+powGlobals.files[ij].index,
+									 title: getName(powGlobals.videos[kj].filename),
+									 vlcArgs: "--avi-index=3"
+								});
+							}
 							kj++;
 						}
 					}
 				}
 			}
 
+			wjs().emitJsMessage("[saved-sub]"+localStorage.subLang);
+
+			if (!playerLoaded) {
+				powGlobals.engine.discover();
+				asyncPlaylist.didDiscover = true;
+			}
+			
 			if (powGlobals.hasVideo == 0) {
-				wjs().fullscreen(false);
-				wjs().clearPlaylist();
+				if (playerLoaded) {
+					wjs().fullscreen(false);
+					wjs().clearPlaylist();
+				} else asyncPlaylist.noPlaylist = true;
 				powGlobals.engine.server.close();
 				$('#player_wrapper').css("min-height","1px").css("height","1px").css("width","1px");
 				$('body').css("overflow-y","visible");
@@ -1483,7 +1508,8 @@ wjs.init.prototype.addTorrent = function(torLink) {
 				$("#filesList").append($('<div style="width: 10%; text-align: right; position: absolute; right: 0px; font-size: 240%; margin-top: 24px; margin-right: 5%;">'+setPaused+'</div><div onClick="settingsEl('+ij+')" id="file'+ij+'" class="files" data-index="'+ij+'" style="text-align: left; padding-bottom: 8px; padding-top: 8px; width: 100%; background-color: '+backColor+'" data-color="'+backColor+'"><center><div style="width: 90%; text-align: left"><span class="filenames">'+powGlobals.engine.files[powGlobals.files[ij].index].name+'</span><br><div class="progressbars" style="width: 90%; display: inline-block"></div><div style="width: 10%; display: inline-block"></div><div id="p-file'+ij+'" class="progress" style="width: 90%; margin: 0; position: relative; top: -6px; display: inline-block"><div id="progressbar'+ij+'" class="progress-bar progress-bar-info" role="progressbar" data-transitiongoal="0"></div></div><br><span class="infos">Downloaded: <span id="down-fl'+ij+'">0 kB</span> / '+getReadableFileSizeString(powGlobals.engine.files[powGlobals.files[ij].index].length)+'</span></div></center></div>'))
 			}
 			
-			wjs().emitJsMessage("[refresh-disabled]");
+			if (playerLoaded) wjs().emitJsMessage("[refresh-disabled]");
+			else asyncPlaylist.refreshDisabled = true;
 			
 		});
 				
@@ -1834,12 +1860,22 @@ function runURL(torLink) {
 		}
 
 		if (typeof powGlobals.videos[thisVideoId].filename !== 'undefined') {
-			wjs().addPlaylist({
-				 url: torLink,
-				 title: getName(powGlobals.videos[thisVideoId].filename),
-				 vlcArgs: "--avi-index=3"
-			});
-			wjs().emitJsMessage("[saved-sub]"+localStorage.subLang);
+			
+			if (!playerLoaded) asyncPlaylist.addPlaylist = [];
+			if (playerLoaded) {
+				wjs().addPlaylist({
+					 url: torLink,
+					 title: getName(powGlobals.videos[thisVideoId].filename),
+					 vlcArgs: "--avi-index=3"
+				});
+				wjs().emitJsMessage("[saved-sub]"+localStorage.subLang);
+			} else {
+				asyncPlaylist.addPlaylist.push({
+					 url: torLink,
+					 title: getName(powGlobals.videos[thisVideoId].filename),
+					 vlcArgs: "--avi-index=3"
+				});
+			}
 		}
 
 		if (setOnlyFirst == 0 || setOnlyFirst == 2) {
@@ -1848,20 +1884,22 @@ function runURL(torLink) {
 		}
 	}
 
-	wjs().setOpeningText("Loading resource");
-	wjs().startPlayer();
+	if (wjs().plugin) {
+		wjs().setOpeningText("Loading resource");
+		wjs().startPlayer();
+		wjs().emitJsMessage("[gobackvar]0");
+		wjs().emitJsMessage("[refresh-disabled]");
+	}
+	if (!playerLoaded) asyncPlaylist.loadLocal = true;
 
 	win.setMinimumSize(300, 210);
 
 	$('#main').css("display","none");
 	$('#player_wrapper').css("min-height","100%").css("height","100%").css("width","auto");
-	wjs().emitJsMessage("[gobackvar]0");
 	
 	win.zoomLevel = 0;
 	
 	$("#header_container").show();
-	
-	wjs().emitJsMessage("[refresh-disabled]");
 	
 }
 
@@ -1928,15 +1966,39 @@ setTimeout(function() {
 			}
 		} else lastState = this.state();
 	});
+	playerLoaded = true;
 	if (gui.App.argv.length > 0) {
-		resetPowGlobals();
-		runURL(gui.App.argv[0]);
-		wjs().emitJsMessage("[refresh-playlist]");
+		$('#main').css("display","none");
+		$('#player_wrapper').css("min-height","100%").css("height","100%").css("width","auto");
+		
+		if (asyncPlaylist.torDataBut) wjs().emitJsMessage("[tor-data-but]1");
+		if (asyncPlaylist.preBufZero) wjs().setOpeningText("Prebuffering 0%");
+		if (typeof asyncPlaylist.addPlaylist !== 'undefined' && asyncPlaylist.addPlaylist.length > 0 && asyncPlaylist.noPlaylist === false) {
+			asyncPlaylist.addPlaylist.forEach(function(e) { wjs().addPlaylist(e); });
+		}
+		if (asyncPlaylist.refreshDisabled) wjs().emitJsMessage("[refresh-disabled]");
+		
+		wjs().emitJsMessage("[saved-sub]"+localStorage.subLang);
+
+		if (asyncPlaylist.loadLocal) {
+			wjs().setOpeningText("Loading resource");
+			wjs().startPlayer();
+			wjs().emitJsMessage("[gobackvar]0");
+			wjs().emitJsMessage("[refresh-disabled]");
+		}
+
+		if (typeof asyncPlaylist.didDiscover === 'undefined') if (powGlobals.engine) powGlobals.engine.discover();
+
+		asyncPlaylist = {};
+
 		$("#loading").fadeOut(200);
 	}
 },1);
 
-if (gui.App.argv.length == 0) {
+if (gui.App.argv.length > 0) {
+	resetPowGlobals();
+	runURL(gui.App.argv[0]);
+} else {
 	win.on('loaded', function() {
 		$("#loading").fadeOut(200);
 		$('#main').animate({ opacity: 1 },200, function() {
