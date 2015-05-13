@@ -246,6 +246,7 @@ Rectangle {
 					color: ui.colors.toolbar.currentTime
 				}
 				Loader.ToolbarTimeLength {
+					id: showtimetotal
 					anchors.left: showtime.right
 					anchors.leftMargin: 0
 					text: settings.errorLength == 6 ? settings.customLength > 0 ? " / "+ wjs.getLengthTime() : showtime.text.length > 5 ? " / 00:00:00" : " / 00:00" : " / "+ wjs.getLengthTime()

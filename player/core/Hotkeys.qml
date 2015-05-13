@@ -268,7 +268,7 @@ Rectangle {
 		}
 		if (event.key == Qt.Key_T) {
 			if (typeof settings.preventKey[Qt.Key_T] === "undefined") {
-				wjs.setText(showtime.text.trim());
+				wjs.setText(showtime.text.trim()+" "+showtimetotal.text.trim());
 			}
 		}
 		if (event.key == Qt.Key_G) {
