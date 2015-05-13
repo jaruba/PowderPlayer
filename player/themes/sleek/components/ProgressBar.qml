@@ -69,7 +69,7 @@ Rectangle {
 			}
 		}
 		Timer {
-			interval: 1010; running: checkWheel ? true : false; repeat: true
+			interval: 100; running: checkWheel ? true : false; repeat: true
 			onTriggered: {
 				if (lastTimestamp + 1000 < Date.now()) {
 					checkWheel = false;
