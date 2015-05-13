@@ -707,7 +707,6 @@ function getName(filename) {
 }
 
 function playEl(kj) {
-	if (powGlobals.engine.swarm.wires.length < 5) powGlobals.engine.discover();
 	if ($("#action"+kj).hasClass("play")) $("#action"+kj).removeClass("play").addClass("pause").css("background-color","#F6BC24").attr("onClick","pauseEl("+kj+")");
 	powGlobals.engine.files[powGlobals.files[kj].index].select();
 }
@@ -862,7 +861,12 @@ function peerCheck() {
 	if (Math.floor(Date.now() / 1000) - powGlobals.lastDownloadTime > 60) {
 		if ($(".pause:visible").length > 0) {
 			if (typeof powGlobals.engine !== 'undefined') {
-				powGlobals.engine.discover();
+				if (powGlobals.engine.amInterested) {
+					if (wjs().state() != "opening") {
+						powGlobals.lastDownloadTime = Math.floor(Date.now() / 1000);
+						powGlobals.engine.discover();
+					}
+				}
 			}
 		}
 	}
@@ -1460,13 +1464,14 @@ wjs.init.prototype.addTorrent = function(torLink) {
 				$('#player_wrapper').css("min-height","1px").css("height","1px").css("width","1px");
 				$('body').css("overflow-y","visible");
 			}
-						
+			
 			$("#filesList").append($('<div style="width: 100%; height: 79px; background-color: #f6f6f5; text-align: center; line-height: 79px; font-family: \'Droid Sans Bold\'; font-size: 19px; border-bottom: 1px solid #b5b5b5">Scroll up to Start Video Mode</div>'));
 			for (ij = 0; typeof powGlobals.files[ij] !== 'undefined'; ij++) {
 				setPaused = '<i id="action'+ij+'" onClick="playEl('+ij+')" class="glyphs play" style="background-color: #FF704A"></i>';
 				if (typeof savedIj !== 'undefined' && savedIj == ij) setPaused = '<i id="action'+ij+'" onClick="pauseEl('+ij+')" class="glyphs pause" style="background-color: #F6BC24"></i>';
 				if (powGlobals.hasVideo == 0) {
 					setPaused = '<i id="action'+ij+'" onClick="pauseEl('+ij+')" class="glyphs pause" style="background-color: #F6BC24"></i>';
+					powGlobals.engine.swarm.paused = false;
 					playEl(ij);
 				}
 				if (ij%2 !== 0) { backColor = '#f6f6f5'; } else { backColor = '#ffffff'; }
