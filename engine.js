@@ -1423,7 +1423,7 @@ wjs.init.prototype.addTorrent = function(torLink) {
 			
 			for (ij = 0; typeof powGlobals.files[ij] !== 'undefined'; ij++) {
 				if (supportedVideo.indexOf(powGlobals.engine.files[powGlobals.files[ij].index].name.split('.').pop().toLowerCase()) > -1) {
-					if (powGlobals.engine.files[powGlobals.files[ij].index].name.toLowerCase().replace("sample","") == powGlobals.engine.files[powGlobals.files[ij].index].name.toLowerCase()) {
+					if (powGlobals.engine.files[powGlobals.files[ij].index].name.toLowerCase().replace("sample","") == powGlobals.engine.files[powGlobals.files[ij].index].name.toLowerCase() && powGlobals.engine.files[powGlobals.files[ij].index].name != "ETRG.mp4") {
 						
 						if (powGlobals.engine.files[powGlobals.files[ij].index].name.toLowerCase().substr(0,5) != "rarbg") {
 							powGlobals.hasVideo++;
@@ -1661,7 +1661,7 @@ wjs.init.prototype.loadHistory = function(targetHistory) {
 	
 				for (ij = 0; typeof powGlobals.files[ij] !== 'undefined'; ij++) {
 					if (supportedVideo.indexOf(powGlobals.engine.files[powGlobals.files[ij].index].name.split('.').pop().toLowerCase()) > -1) {
-						if (powGlobals.engine.files[powGlobals.files[ij].index].name.toLowerCase().replace("sample","") == powGlobals.engine.files[powGlobals.files[ij].index].name.toLowerCase()) {
+						if (powGlobals.engine.files[powGlobals.files[ij].index].name.toLowerCase().replace("sample","") == powGlobals.engine.files[powGlobals.files[ij].index].name.toLowerCase() && powGlobals.engine.files[powGlobals.files[ij].index].name != "ETRG.mp4") {
 							
 							if (powGlobals.engine.files[powGlobals.files[ij].index].name.toLowerCase().substr(0,5) != "rarbg") {
 								powGlobals.hasVideo++;
