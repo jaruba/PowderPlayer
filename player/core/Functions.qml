@@ -450,6 +450,7 @@ Rectangle {
 			if (startsWith(message,"[next-frame]")) nextFrame(parseInt(message.replace("[next-frame]","")));
 			if (startsWith(message,"[reset-size]")) resetAspect();
 			if (startsWith(message,"[select-subtitle]")) selectSubtitle(parseInt(message.replace("[select-subtitle]","")));
+			if (startsWith(message,"[hide-context-menu]")) if (contextblock.visible) contextblock.close();
 			if (startsWith(message,"[refresh-playlist]")) {
 				playlist.addPlaylistItems(); // Refresh Playlist GUI
 				if (vlcPlayer.playlist.itemCount > 0) playlistButton.visible = true;
