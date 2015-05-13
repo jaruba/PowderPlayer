@@ -758,6 +758,14 @@ function checkSpeed() {
 	}
 }
 
+var delaySetDownload;
+
+function delayNewSetDownload(saveContext) {
+	return function() {
+		wjs().setDownloaded(saveContext);
+	}
+}
+
 function checkDownloaded(piece) {
 	powGlobals.lastDownloadTime = Math.floor(Date.now() / 1000);
 	if (firstTime == 0) {
@@ -795,7 +803,8 @@ function checkDownloaded(piece) {
 				if ((powGlobals.videos[kj].downloaded / (powGlobals.videos[kj].lastPiece - powGlobals.videos[kj].firstPiece)) > powGlobals.videos[kj].lastSent) {
 					powGlobals.videos[kj].lastSent = (powGlobals.videos[kj].downloaded / (powGlobals.videos[kj].lastPiece - powGlobals.videos[kj].firstPiece));
 					if (typeof wjs() !== 'undefined' && typeof wjs().setDownloaded !== 'undefined') {
-						wjs().setDownloaded(powGlobals.videos[kj].lastSent);
+						clearTimeout(delaySetDownload);
+						delaySetDownload = setTimeout(delayNewSetDownload(powGlobals.videos[kj].lastSent),100);
 					}
 				}
 			} else {
