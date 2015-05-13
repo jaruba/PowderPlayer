@@ -707,13 +707,17 @@ function getName(filename) {
 }
 
 function playEl(kj) {
-	if ($("#action"+kj).hasClass("play")) $("#action"+kj).removeClass("play").addClass("pause").css("background-color","#F6BC24").attr("onClick","pauseEl("+kj+")");
-	powGlobals.engine.files[powGlobals.files[kj].index].select();
+	if ($("#action"+kj).hasClass("play")) {
+		$("#action"+kj).removeClass("play").addClass("pause").css("background-color","#F6BC24").attr("onClick","pauseEl("+kj+")");
+		powGlobals.engine.files[powGlobals.files[kj].index].select();
+	}
 }
 
 function pauseEl(kj) {
-	if ($("#action"+kj).hasClass("pause")) $("#action"+kj).removeClass("pause").addClass("play").css("background-color","#FF704A").attr("onClick","playEl("+kj+")");
-	powGlobals.engine.files[powGlobals.files[kj].index].deselect();
+	if ($("#action"+kj).hasClass("pause")) {
+		$("#action"+kj).removeClass("pause").addClass("play").css("background-color","#FF704A").attr("onClick","playEl("+kj+")");
+		powGlobals.engine.files[powGlobals.files[kj].index].deselect();
+	}
 }
 
 function settingsEl(kj) {
@@ -1876,7 +1880,7 @@ setTimeout(function() {
 			if (wjs().currentItem() < (parseInt(wjs().itemCount()) -1)) {
 				if (typeof powGlobals.videos[wjs().currentItem()+1] !== 'undefined' && typeof powGlobals.videos[wjs().currentItem()+1].local === 'undefined') {
 					for (gh = 0; typeof powGlobals.files[gh] !== 'undefined'; gh++) if (powGlobals.files[gh].index == powGlobals.videos[wjs().currentItem()+1].index) break;
-					if ($("#action"+gh).hasClass("play")) playEl(gh);
+					playEl(gh);
 				}
 			}
 		}
