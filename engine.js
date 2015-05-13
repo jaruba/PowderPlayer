@@ -1871,6 +1871,15 @@ setTimeout(function() {
 	wjs().onPlaying(isPlaying);
 	wjs().onOpening(isOpening);
 	wjs().onPosition(function(position) {
+		// start downloading next episode after watching more then 70% of a video
+		if (position > 0.7) {
+			if (wjs().currentItem() < (parseInt(wjs().itemCount()) -1)) {
+				if (typeof powGlobals.videos[wjs().currentItem()+1] !== 'undefined' && typeof powGlobals.videos[wjs().currentItem()+1].local === 'undefined') {
+					for (gh = 0; typeof powGlobals.files[gh] !== 'undefined'; gh++) if (powGlobals.files[gh].index == powGlobals.videos[wjs().currentItem()+1].index) break;
+					if ($("#action"+gh).hasClass("play")) playEl(gh);
+				}
+			}
+		}
 		if (position > 0.7 && savedHistory == 0) {
 			savedHistory = 1;
 			historyObject = JSON.parse(localStorage.history);
