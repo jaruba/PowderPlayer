@@ -828,7 +828,7 @@ function checkDownloaded(piece) {
 			$('#all-download .progress-bar').removeClass("progress-bar-warning").addClass("progress-bar-danger").attr('data-transitiongoal', 100).progressbar({display_text: 'center'});
 			if (!focused) {
 				win.setProgressBar(-0.1);
-				win.requestAttention(true);
+				if (wjs().state() != "playing") win.requestAttention(true);
 			}
 		} else {
 			$('#all-download .progress-bar').attr('data-transitiongoal', updDownload).progressbar({display_text: 'center'});
