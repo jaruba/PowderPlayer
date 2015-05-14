@@ -2009,7 +2009,7 @@ if (gui.App.argv.length > 0) {
 	resetPowGlobals();
 	runURL(gui.App.argv[0]);
 } else {
-//	win.on('loaded', function() {
+	win.on('loaded', function() {
 		$("#loading").fadeOut(200);
 		$('#main').animate({ opacity: 1 },200, function() {
 			$("body").css("overflow-x","visible");
@@ -2020,7 +2020,7 @@ if (gui.App.argv.length > 0) {
 		});
 		checkUpdates();
 		checkedUpdates = 1;
-//	});
+	});
 }
 
 function checkUpdates() {
