@@ -56,7 +56,7 @@ Rectangle {
 							playSubtitles("http://dl.opensubtitles.org/en/download/file/"+subtitleElement.split('/').pop());
 						}
 					} else {
-						wjs.setText("Subtitle Error");
+						if (vlcPlayer.state != 2) wjs.setText("Subtitle Error");
 					}
 					return;
 				}
@@ -79,7 +79,7 @@ Rectangle {
 								playSubtitles("http://dl.opensubtitles.org/en/download/file/"+subtitleElement.split('/').pop());
 							}
 						} else {
-							wjs.setText("Subtitle Error");
+							if (vlcPlayer.state != 2) wjs.setText("Subtitle Error");
 						}
 						return;
 					}
@@ -119,7 +119,7 @@ Rectangle {
 										playSubtitles("http://dl.opensubtitles.org/en/download/file/"+subtitleElement.split('/').pop());
 									}
 								} else {
-									wjs.setText("Subtitle Error");
+									if (vlcPlayer.state != 2) wjs.setText("Subtitle Error");
 								}
 								  return;
 							  }
@@ -131,7 +131,7 @@ Rectangle {
 										playSubtitles("http://dl.opensubtitles.org/en/download/file/"+subtitleElement.split('/').pop());
 									}
 								} else {
-									wjs.setText("Subtitle Error");
+									if (vlcPlayer.state != 2) wjs.setText("Subtitle Error");
 								}
 								  return;
 							  }
@@ -161,7 +161,7 @@ Rectangle {
 								playSubtitles("http://dl.opensubtitles.org/en/download/file/"+subtitleElement.split('/').pop());
 							}
 						} else {
-							wjs.setText("Subtitle Error");
+							if (vlcPlayer.state != 2) wjs.setText("Subtitle Error");
 						}
 						return;
 					}
