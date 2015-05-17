@@ -1,0 +1,241 @@
+<!--
+Copyright (c) 2015 Branza Victor-Alexandru <branza.alex[at]gmail.com>
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program; if not, write to the Free Software Foundation,
+Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
+-->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Powder Player</title>
+
+    <link rel="stylesheet" href="resources/pure-min.css">
+    <link rel="stylesheet" href="resources/bootstrap-progressbar/css/bootstrap-progressbar-3.3.0.min.css">
+    <link rel="stylesheet" href="resources/animate.min.css">
+    <link rel="stylesheet" href="resources/jquery-ui-1.11.3/jquery-ui.min.css" />
+    <link rel="stylesheet" href="resources/bootstrap-dropdown/jquery.dropdown.css" />
+    <link rel="stylesheet" href="resources/style.css" />
+    <link rel="stylesheet" href="resources/loader.css" />
+
+    <script src="resources/jquery-2.1.3.min.js"></script>
+    <script src="resources/jquery.easyModal.js"></script>
+    <script src="resources/jquery-ui-1.11.3/jquery-ui.min.js"></script>
+    <script src="resources/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+    <script src="resources/bootstrap-dropdown/jquery.dropdown.js"></script>
+</head>
+
+<body>
+    <div id="loading">
+        <div id="loading-center">
+            <div id="loading-center-absolute">
+                <div class="object" id="object_one"></div>
+                <div class="object" id="object_two"></div>
+                <div class="object" id="object_three"></div>
+                <div class="object" id="object_four"></div>
+                <div class="object" id="object_five"></div>
+                <div class="object" id="object_six"></div>
+                <div class="object" id="object_seven"></div>
+                <div class="object" id="object_eight"></div>
+                <div class="object" id="object_big"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="main" class="opaque">
+        <div class="wrapper">
+            <center>
+		        <div id="holder">
+                    <a class="pl-settings easy-modal-open" href="#player-settings"><i class="player-settings"></i></a>
+                    <a class="history-button easy-modal-open" href="#history-powder" onClick="printHistory()"><i class="history-icon"></i></a>
+                    <img src="images/powder-logo.png" id="logoBig">
+                    <br>
+                    <b class="fl_dd droid-bold">Drag & Drop a File</b>
+                    <br>
+                    <span class="fl_sl">or select an option below</span>
+                    <br><br>
+                    <div id="mainButHold">
+						<a href="#" onClick="chooseFile('#torrentDialog'); return false">
+		                    <div id="torrentBut" class="mainButtons goLeft">
+								<img id="torIcon" src="images/torrent-icon.png">
+								<br>Add Torrent
+		                    </div>
+						</a>
+                    	<a href="#" onClick="chooseFile('#fileDialog'); return false">
+                    		<div id="videoBut" class="mainButtons">
+                    			<img id="vidIcon" src="images/video-icon.png">
+                    			<br>Add Video
+                    		</div>
+						</a>
+                    	<a class="easy-modal-open" onClick="checkInternet(function(isConnected) { if (isConnected) { $('#internet-error').hide(); $('#internet-ok').show(1); $('#magnetLink').focus() } else { $('#internet-ok').hide(); $('#internet-error').show(1); } }); $('#open-url').css('top', Math.round(($(window).height() - 187) / 2)+'px');" href="#open-url">
+		                    <div id="linkBut" class="mainButtons goRight noMarginRight">
+			                    <img id="urlIcon" src="images/link-icon.png">
+			                    <br>Use a URL
+		                    </div>
+                        </a>
+                    </div>
+                    <br><br>
+                    <span id="footer">
+                    	<b class="droid-bold">Supports:</b> Torrent Files / Links, Magnet Links, Youtube Links,<br>Youtube Playlist Links and all <a class="mainLinks" onClick="gui.Shell.openExternal('http://www.videolan.org/vlc/features.php?cat=video'); return false" href="http://www.videolan.org/vlc/features.php?cat=video" target="_blank">VLC Supported Media Formats</a>.
+                    </span>
+				</div>
+			</center>
+        </div>
+	</div>
+    
+    <div id="player_wrapper"></div>
+    
+    <center>
+        <div id="header_container" class="hidden">
+            <div id="header">
+                <div id="header_content">
+                    <div id="header_text" class="wrap-text goLeft"><span id="headerText"></span></div>
+                    <div id="optHold" class="goRight"><a id="optionsBut" href="#" data-dropdown="#dropdown-1">Options</a></div>
+                </div>
+                <center>
+                    <div id="all-download" class="progress">
+                        <div class="progress-bar progress-bar-warning" role="progressbar" data-transitiongoal="0"></div>
+                    </div>
+                    <div class="stats">
+                    	<span class="goLeft">Downloaded: <span id="downPart">0 kB</span> / <span id="downAll">0 kB</span></span>
+                        <span>Speed: <span id="speed">0.0 kB/s</span></span>
+                        <span class="goRight">Peers: <span id="nrPeers">0</span></span>
+                    </div>
+                </center>
+            </div>
+        </div>
+        <div id="filesList"></div>
+    </center>
+    
+    <div class="easy-modal-animated" id="open-url">
+        <div id="internet-ok">
+            <div id="holdCenter">
+                    <div id="formHolder">
+                        <form class="pure-form pure-form-aligned" onsubmit="resetPowGlobals(); runURL(document.getElementById('magnetLink').value); $('.easy-modal-animated').trigger('closeModal'); return false;" id="magnetForm">
+                            <fieldset>
+                                <div class="pure-control-group">
+                                    <input id="magnetLink" type="text" name="magnet" placeholder="Magnet URI or Video URL" onFocus="this.select();" onMouseUp="return false;">
+                                    <button id="magnetSubmit" type="submit" class="pure-button pure-button-primary">Stream</button>
+                                </div>
+                            </fieldset>
+                        </form>
+                    </div>
+            </div>
+            <button class="animated-close pure-button pure-margin" title="Close">Close</button>
+        </div>
+        <div id="internet-error" class="hidden">
+            <center>
+                You require an internet connection to use this feature.<br><br>
+                <button class="animated-close pure-button pure-margin" title="I understand">I understand</button>
+            </center>
+        </div>
+    </div>
+    
+    <div class="second-easy-modal-animated" id="file-settings">
+        <center>
+            <h2 class="spBottom">Select an Action</h2>
+            <div id="playAction" onClick="" class="actionButton">Play Now</div>
+            <div id="openAction" onClick="" class="actionButton">Open File</div>
+            <div id="openFolderAction" onClick="" class="actionButton">Open Containing Folder</div>
+            <div id="copyStream" onClick="" class="actionButton">Copy Stream URL</div>
+            <div id="closeAction"class="second-animated-close actionButton">Close</div>
+        </center>
+    </div>
+    
+    <div class="third-easy-modal-animated" id="player-settings">
+        <center>
+            <h2 class="headButs goLeft">Player Settings</h2>
+            <h2 class="headButs change-set goRight" onClick="$('.third-animated-close').trigger('click'); setTimeout(function() { $('#tr-settings').trigger('click'); },1000); return false">Torrent Settings</h2>
+            <div class="clear"></div>
+            <div onClick="regMagnet(); return false" class="actionButton droid-bold">Associate with Magnet Links</div>
+            <div onClick="regTorrent(); return false" class="actionButton droid-bold">Associate with Torrent Files</div>
+            <div onClick="regVideos(); return false" class="actionButton droid-bold">Associate with Video Files</div>
+            <div onClick="changeClickPause(); return false" class="actionButton wrap-text"><span class="droid-bold">Click to Pause:</span> <span id="click-pause">only in Fullscreen</span></div>
+            <div onClick="chooseFile('#libraryDialog'); return false" class="actionButton wrap-text"><span class="droid-bold">Library Folder:</span> <span id="lib-folder">Temp</span></div>
+            <div id="closeAction" class="third-animated-close actionButton">Close</div>
+        </center>
+    </div>
+    
+    <div class="forth-easy-modal-animated" id="torrent-settings">
+        <center>
+            <h2 class="headButs change-set goLeft" onClick="$('.forth-animated-close').trigger('click'); setTimeout(function() { $('.pl-settings').trigger('click'); },1000); return false">Player Settings</h2>
+            <h2 class="headButs goRight">Torrent Settings</h2><div class="clear"></div>
+            <div id="max-peers-hov" onClick="openPeerSelector(); return false" class="actionButton"><span class="droid-bold">Maximum Peers:</span> <span id="max-peers">100</span><input id="spinner" value="100" />
+            </div>
+            <div onClick="chooseFile('#folderDialog'); return false" class="actionButton wrap-text"><span class="droid-bold">Download Folder:</span> <span id="def-folder">Temp</span></div>
+            <div id="closeAction" class="forth-animated-close actionButton">Close</div>
+        </center>
+    </div>
+    
+    <div class="history-easy-modal-animated" id="history-powder">
+        <h2 id="history-title" class="goLeft">History</h2>
+        <h2 class="change-set history-animated-close goRight history-close"><i class="close-icon"></i></h2>
+        <div class="clear"></div>
+        <div id="history-list"></div>
+    </div>
+    
+    <div class="update-easy-modal-animated" id="update-powder">
+        <center>
+            <h2 id="update-header" class="spBottom">Update to Powder</h2>
+            <div id="donwload-now" onClick="gui.Shell.openExternal(window.atob('aHR0cDovL3Bvd2Rlci5tZWRpYS8=')); win.close(true);" class="actionButton droid-bold">Download Now!</div>
+            <div id="maybe-later" class="update-animated-close actionButton droid-bold">Maybe Later ...</div>
+        </center>
+    </div>
+    
+    <div id="dropdown-1" class="dropdown dropdown-tip">
+        <ul class="dropdown-menu">
+            <li><a onClick="gui.Shell.openItem(powGlobals['engine'].path+'\\'); return false" href="#">Open Folder</a></li>
+            <li class="dropdown-divider"></li>
+            <li><a onClick="gui.Clipboard.get().set('magnet:?xt=urn:btih:'+powGlobals['engine'].infoHash.toUpperCase(),'text'); return false" href="#">Copy Magnet URI</a></li>
+            <li class="dropdown-divider"></li>
+            <li><a onClick="for (ij = 0; typeof powGlobals['files'][ij] !== 'undefined'; ij++) playEl(ij); return false" href="#">Start All</a></li>
+            <li><a onClick="for (ij = 0; typeof powGlobals['files'][ij] !== 'undefined'; ij++) pauseEl(ij); return false" href="#">Pause All</a></li>
+            <li class="dropdown-divider"></li>
+            <li><a onClick="$('html, body').animate({ scrollTop: 0 }, 'slow'); return false" href="#">Back to Video</a></li>
+            <li><a onClick="goBack(); return false" href="#">Remove Torrent</a></li>
+        </ul>
+    </div>
+    
+    <input id="fileDialog" type="file" accept=".mkv,.avi,.mp4,.mpg,.mpeg,.m3u,video/*,audio/*" multiple />
+    <input id="addPlaylistDialog" type="file" accept=".mkv,.avi,.mp4,.mpg,.mpeg,video/*,audio/*" multiple />
+    <input id="torrentDialog" type="file" accept=".torrent" />
+    <input id="folderDialog" type="file" nwdirectory />
+    <input id="libraryDialog" type="file" nwdirectory />
+    
+    <a id="tr-settings" class="easy-modal-open" href="#torrent-settings">Torrent Settings</a>
+    <a id="open-file-settings" class="easy-modal-open" href="#file-settings">File Settings</a>
+    <a id="open-update-player" class="easy-modal-open" href="#update-powder">Update Player</a>
+    
+    <script src="player/webchimera.js"></script>
+    <script src="lib/settings.js"></script>
+    <script src="lib/check_internet.js"></script>
+    <script src="lib/update.js"></script>
+    <script src="lib/window.js"></script>
+    <script src="lib/natural_sort.js"></script>
+    <script src="lib/filename_parser.js"></script>
+    <script src="lib/delays.js"></script>
+    <script src="lib/registry.js"></script>
+    <script src="lib/library.js"></script>
+    <script src="lib/avi_length.js"></script>
+    <script src="lib/subtitles.js"></script>
+    <script src="lib/handlers/files.js"></script>
+    <script src="lib/handlers/player.js"></script>
+    <script src="lib/handlers/torrent.js"></script>
+    <script src="lib/modals_init.js"></script>
+    <script src="lib/ui.js"></script>
+    <script src="lib/engine.js"></script>
+    <script src="lib/init.js"></script>
+
+</body>
+</html>
