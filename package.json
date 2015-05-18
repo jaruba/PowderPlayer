@@ -20,7 +20,7 @@
     "type": "git", 
     "url": "git://github.com/jaruba/PowderPlayer.git"
   }],
-  "chromium-args": "--load-plugin=plugins\\npWebChimera.dll",
+  "chromium-args": "--load-plugin=npWebChimera.dll",
   "single-instance": false,
   "window": {
     "icon": "icon.png",
