@@ -279,7 +279,8 @@ input[type="file"] { display: none }
 	width: 100%;
 	z-index: 1000;
 	font-size: 13px;
-	color: #585247
+	color: #585247;
+	display: none
 }
 #header_content { width: 90%; margin-left: 5% }
 #header_text { width: 70%; color: #fff; text-align: left }
