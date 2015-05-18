@@ -193,6 +193,17 @@ Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
         </center>
     </div>
     
+    
+    <div class="unsupported-easy-modal-animated" id="unsupported">
+        <center>
+            <h2 class="spBottom">Unsupported Media Type</h2>
+        	<br>
+            <span class="droid-bold">It seems that the Media Type you tried to play is not currently supported by Powder Player.</span>
+        	<br><br>
+			<button class="unsupported-animated-close pure-button pure-margin droid-bold" title="I understand">I understand</button><br><br>
+        </center>
+    </div>
+    
     <div id="dropdown-1" class="dropdown dropdown-tip">
         <ul class="dropdown-menu">
             <li><a onClick="gui.Shell.openItem(powGlobals['engine'].path+'\\'); return false" href="#">Open Folder</a></li>
@@ -216,6 +227,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
     <a id="tr-settings" class="easy-modal-open" href="#torrent-settings">Torrent Settings</a>
     <a id="open-file-settings" class="easy-modal-open" href="#file-settings">File Settings</a>
     <a id="open-update-player" class="easy-modal-open" href="#update-powder">Update Player</a>
+    <a id="open-unsupported" class="easy-modal-open" href="#unsupported">Unsupported Media Error</a>
     
     <script src="player/webchimera.js"></script>
     <script src="lib/settings.js"></script>

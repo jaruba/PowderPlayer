@@ -25,7 +25,7 @@ body {
 	width: 1px;
     margin: 0 auto;
 	overflow: hidden;
-	background-color: #fff;
+	background: #fff;
 	z-index: 1003;
 	position: relative
 }
@@ -117,13 +117,15 @@ body {
 .third-easy-modal-animated,
 .forth-easy-modal-animated,
 .update-easy-modal-animated,
+.unsupported-easy-modal-animated,
 .history-easy-modal-animated {
 	width: 438px;
 	padding: 2em;
 	box-shadow: 1px 1px 3px rgba(0,0,0,0.35);
-	background-color: white;
+	background: #fff;
 }
 .update-easy-modal-animated { padding: 5px; top: 35% !important }
+.unsupported-easy-modal-animated { padding: 5px; top: 35% !important }
 .third-easy-modal-animated,
 .forth-easy-modal-animated,
 .history-easy-modal-animated,
@@ -149,8 +151,8 @@ a.mainLinks:hover { text-decoration: none }
 }
 .progress .progressbar-back-text { right: 0 }
 .files { cursor: pointer }
-.files:hover { background-color: #E0F4FD !important }
-.progress { background-color: #ebebea }
+.files:hover { background: #E0F4FD !important }
+.progress { background: #ebebea }
 i.glyphs {
 	font-family: 'Glyphs';
 	width: 34px;
@@ -169,7 +171,7 @@ i.pause {
 	top: -1px;
 }
 i.settings {
-	background-color: #5cb85c !important;
+	background: #5cb85c !important;
 	font-size: 27px;
 	position: relative;
 	top: -2px;
@@ -177,9 +179,9 @@ i.settings {
 i.play:before { content: "\E82D" }
 i.pause:before { content: "\E82E" }
 i.settings:before { content: "\E801" }
-i.play:hover { background-color: #EF4A1F !important }
-i.pause:hover { background-color: #CE9707 !important }
-i.settings:hover { background-color: #4A8B00 !important }
+i.play:hover { background: #EF4A1F !important }
+i.pause:hover { background: #CE9707 !important }
+i.settings:hover { background: #4A8B00 !important }
 a.pl-settings {
 	color: #ccc;
 	font-size: 30px;
@@ -213,7 +215,7 @@ i.close-icon:before { font-family: 'Glyphs'; content: "\E896"; font-style: norma
 	line-height: 43px;
 	cursor: pointer
 }
-.actionButton:hover { background-color: #0088cc; color: #ffffff }
+.actionButton:hover { background: #0088cc; color: #fff }
 .dropdown.dropdown-tip:before { left: 138px !important }
 .dropdown.dropdown-tip:after { left: 139px !important }
 #dropdown-1 {
@@ -230,24 +232,24 @@ i.close-icon:before { font-family: 'Glyphs'; content: "\E896"; font-style: norma
 	float: right;
 	font-size: 13px;
 	color: #fff;
-	background-color: #ff704a;
+	background: #ff704a;
 	border: 1px solid #b95e0d;
 	text-decoration: none
 }
-#optionsBut:hover { background-color: #F65024 }
+#optionsBut:hover { background: #F65024 }
 h2 {
 	margin-bottom: 10px;
 	color: #fff;
 	font-size: 20px;
 	margin: 0;
 	padding: 9px;
-	background-color: rgba(241,101,79,1);
+	background: rgba(241,101,79,1);
 	font-family: 'Droid Sans Bold';
 	font-weight: normal;
 	opacity: 1;
 }
-.change-set { background-color: #549AAE !important; cursor: pointer }
-.change-set:hover { background-color: #0E586D !important }
+.change-set { background: #549AAE !important; cursor: pointer }
+.change-set:hover { background: #0E586D !important }
 .ui-spinner {
   height: 27.6px !important;
   width: 100px !important;
@@ -285,7 +287,7 @@ input[type="file"] { display: none }
 #header_content { width: 90%; margin-left: 5% }
 #header_text { width: 70%; color: #fff; text-align: left }
 #optHold { width: 30% }
-.headButs { margin-bottom: 10px; width: 45.5%; background-color: #1C728A }
+.headButs { margin-bottom: 10px; width: 45.5%; background: #1C728A }
 .fl_dd {
 	font-size: 36px;
 	color: #767a7b;
@@ -315,13 +317,13 @@ input[type="file"] { display: none }
 .spBottom { margin-bottom: 10px }
 #history-title {
 	width: 82%;
-	background-color: #1C728A;
+	background: #1C728A;
 	text-align: left;
 	padding-left: 12px
 }
 .history-close {
 	width: 8%;
-	background-color: #549AAE;
+	background: #549AAE;
 	cursor: pointer;
 	text-align: center
 }
