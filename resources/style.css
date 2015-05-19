@@ -258,6 +258,7 @@ h2 {
 input[type="file"] { display: none }
 #tr-settings { display: none }
 #open-file-settings { display: none }
+#open-unsupported { display: none }
 .clear { clear:both }
 .droid-bold { font-family: 'Droid Sans Bold' !important }
 .wrap-text { white-space: nowrap; text-overflow: ellipsis; overflow: hidden }
@@ -324,4 +325,26 @@ input[type="file"] { display: none }
 	cursor: pointer;
 	text-align: center
 }
-#history-list { text-align: left; padding: 5px 0 }
+#history-list {
+	text-align: left;
+	margin-top: 5px;
+	max-height: 259px;
+	overflow-y: scroll;
+	overflow-x: hidden
+}
+.history-item {
+	padding-left: 10px;
+	width: 100%;
+	font-family: 'Droid Sans Bold';
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	box-sizing: border-box
+}
+.history-empty {
+	width: 100%;
+	text-align: center;
+	font-family: 'Droid Sans Bold';
+	padding: 15px 0;
+	font-size: 17px
+}
