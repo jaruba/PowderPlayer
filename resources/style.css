@@ -116,7 +116,6 @@ body {
 .second-easy-modal-animated,
 .third-easy-modal-animated,
 .forth-easy-modal-animated,
-.update-easy-modal-animated,
 .unsupported-easy-modal-animated,
 .history-easy-modal-animated {
 	width: 438px;
@@ -124,7 +123,6 @@ body {
 	box-shadow: 1px 1px 3px rgba(0,0,0,0.35);
 	background: #fff;
 }
-.update-easy-modal-animated { padding: 5px; top: 35% !important }
 .unsupported-easy-modal-animated { padding: 5px; top: 35% !important }
 .third-easy-modal-animated,
 .forth-easy-modal-animated,
@@ -260,7 +258,6 @@ h2 {
 input[type="file"] { display: none }
 #tr-settings { display: none }
 #open-file-settings { display: none }
-#open-update-player { display: none }
 .clear { clear:both }
 .droid-bold { font-family: 'Droid Sans Bold' !important }
 .wrap-text { white-space: nowrap; text-overflow: ellipsis; overflow: hidden }
