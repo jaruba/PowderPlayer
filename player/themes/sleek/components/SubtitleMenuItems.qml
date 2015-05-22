@@ -51,7 +51,11 @@ Rectangle {
 				if (srt.indexOf("[CRITICAL ERROR]") > -1) {
 					if (subtitleElement.indexOf("http://dl.opensubtitles.org/en/download/subencoding-") > -1) {
 						if (subtitleElement.indexOf("[-alt-]") > -1) {
-							 playSubtitles("http://dl.opensubtitles.org/en/download/subencoding-"+subtitleElement.split('[-alt-]')[1]+"/file/"+subtitleElement.split('[-alt-]')[0].split('/').pop());
+							if (subtitleElement.split('[-alt-]')[1] == "unknown" || subtitleElement.split('[-alt-]')[1] == "utf8") {
+								playSubtitles("http://dl.opensubtitles.org/en/download/file/"+subtitleElement.split('/').pop());
+							} else {
+								 playSubtitles("http://dl.opensubtitles.org/en/download/subencoding-"+subtitleElement.split('[-alt-]')[1]+"/file/"+subtitleElement.split('[-alt-]')[0].split('/').pop());
+							 }
 						} else {
 							playSubtitles("http://dl.opensubtitles.org/en/download/file/"+subtitleElement.split('/').pop());
 						}
@@ -74,7 +78,11 @@ Rectangle {
 					if (typeof srt === 'undefined') {
 						if (subtitleElement.indexOf("http://dl.opensubtitles.org/en/download/subencoding-") > -1) {
 							if (subtitleElement.indexOf("[-alt-]") > -1) {
-								playSubtitles("http://dl.opensubtitles.org/en/download/subencoding-"+subtitleElement.split('[-alt-]')[1]+"/file/"+subtitleElement.split('[-alt-]')[0].split('/').pop());
+								if (subtitleElement.split('[-alt-]')[1] == "unknown" || subtitleElement.split('[-alt-]')[1] == "utf8") {
+									playSubtitles("http://dl.opensubtitles.org/en/download/file/"+subtitleElement.split('/').pop());
+								} else {
+									 playSubtitles("http://dl.opensubtitles.org/en/download/subencoding-"+subtitleElement.split('[-alt-]')[1]+"/file/"+subtitleElement.split('[-alt-]')[0].split('/').pop());
+								 }
 							} else {
 								playSubtitles("http://dl.opensubtitles.org/en/download/file/"+subtitleElement.split('/').pop());
 							}
@@ -114,7 +122,11 @@ Rectangle {
 								if (subtitleElement.indexOf("http://dl.opensubtitles.org/en/download/subencoding-") > -1) {
 	
 									if (subtitleElement.indexOf("[-alt-]") > -1) {
-									playSubtitles("http://dl.opensubtitles.org/en/download/subencoding-"+subtitleElement.split('[-alt-]')[1]+"/file/"+subtitleElement.split('[-alt-]')[0].split('/').pop());
+										if (subtitleElement.split('[-alt-]')[1] == "unknown" || subtitleElement.split('[-alt-]')[1] == "utf8") {
+											playSubtitles("http://dl.opensubtitles.org/en/download/file/"+subtitleElement.split('/').pop());
+										} else {
+											 playSubtitles("http://dl.opensubtitles.org/en/download/subencoding-"+subtitleElement.split('[-alt-]')[1]+"/file/"+subtitleElement.split('[-alt-]')[0].split('/').pop());
+										 }
 									} else {
 										playSubtitles("http://dl.opensubtitles.org/en/download/file/"+subtitleElement.split('/').pop());
 									}
@@ -126,7 +138,11 @@ Rectangle {
 							  if (typeof st[1].split(' --> ')[1] === 'undefined') {
 								if (subtitleElement.indexOf("http://dl.opensubtitles.org/en/download/subencoding-") > -1) {
 									if (subtitleElement.indexOf("[-alt-]") > -1) {
-										playSubtitles("http://dl.opensubtitles.org/en/download/subencoding-"+subtitleElement.split('[-alt-]')[1]+"/file/"+subtitleElement.split('[-alt-]')[0].split('/').pop());
+										if (subtitleElement.split('[-alt-]')[1] == "unknown" || subtitleElement.split('[-alt-]')[1] == "utf8") {
+											playSubtitles("http://dl.opensubtitles.org/en/download/file/"+subtitleElement.split('/').pop());
+										} else {
+											 playSubtitles("http://dl.opensubtitles.org/en/download/subencoding-"+subtitleElement.split('[-alt-]')[1]+"/file/"+subtitleElement.split('[-alt-]')[0].split('/').pop());
+										 }
 									} else {
 										playSubtitles("http://dl.opensubtitles.org/en/download/file/"+subtitleElement.split('/').pop());
 									}
@@ -156,7 +172,11 @@ Rectangle {
 					if (typeof srt === 'undefined') {
 						if (subtitleElement.indexOf("http://dl.opensubtitles.org/en/download/subencoding-") > -1) {
 							if (subtitleElement.indexOf("[-alt-]") > -1) {
-								playSubtitles("http://dl.opensubtitles.org/en/download/subencoding-"+subtitleElement.split('[-alt-]')[1]+"/file/"+subtitleElement.split('[-alt-]')[0].split('/').pop());
+								if (subtitleElement.split('[-alt-]')[1] == "unknown" || subtitleElement.split('[-alt-]')[1] == "utf8") {
+									playSubtitles("http://dl.opensubtitles.org/en/download/file/"+subtitleElement.split('/').pop());
+								} else {
+									 playSubtitles("http://dl.opensubtitles.org/en/download/subencoding-"+subtitleElement.split('[-alt-]')[1]+"/file/"+subtitleElement.split('[-alt-]')[0].split('/').pop());
+								}
 							} else {
 								playSubtitles("http://dl.opensubtitles.org/en/download/file/"+subtitleElement.split('/').pop());
 							}
