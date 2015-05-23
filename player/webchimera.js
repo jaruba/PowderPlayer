@@ -914,7 +914,7 @@ wjs.init.prototype.addPlaylist = function(playlist) {
 				  }
 			 }
 		 }
-		 this.plugin.emitJsMessage("[refresh-playlist]");
+//		 this.plugin.emitJsMessage("[refresh-playlist]");
 	} else for (z = 0; z < this.allElements.length; z++) wjs("#"+this.allElements[z].id).addPlaylist(playlist);
 
 	return this;
