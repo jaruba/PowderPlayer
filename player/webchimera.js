@@ -39,6 +39,22 @@ if(isNode) {
 
 if (isNodeWebkit) {
 	var webchimeraFolder = "file:///"+ process.cwd() +"/player";
+	
+	function saveFile(name,data) {
+		var chooser = document.querySelector(name);
+		chooser.addEventListener("change", function(evt) {
+		console.log(this.value); // get your file name
+		var fs = require('fs');// save it now
+		fs.writeFile(this.value, data, function(err) {
+			if(err) {
+			   alert("error"+err);
+			}
+		});
+		}, false);
+	
+		chooser.click();  
+	}
+	
 } else {
 	var webchimeraFolder = webchimeraSrc.substring(0, webchimeraSrc.lastIndexOf("/"));
 }
@@ -777,6 +793,48 @@ wjs.init.prototype.addPlayer = function(qmlsettings) {
 		playerbody += '</object>';
 		
 		this.plugin.innerHTML = playerbody;
+		
+		wjs(newid).catchEvent("QmlMessage",function(event) {
+			if (event.substr(0,10) == "[snapshot]") {
+				if (wjs().state() == "playing") wjs().togglePause();
+				if (wjs().fullscreen()) wjs().toggleFullscreen();
+				var snapshot = event.replace("[snapshot]","");
+				var pngSnapshot = "data:image/png;base64,"+snapshot;
+
+				var image = document.createElement("img");
+				document.body.appendChild(image);
+				image.style.display="none";
+				image.src = pngSnapshot;
+				image.onload = function() {
+					var canvas = document.createElement("canvas");
+					canvas.style.display="none";
+					canvas.width = image.width;
+					canvas.height = image.height;
+					document.body.appendChild(canvas);
+					var ctx = canvas.getContext("2d");
+
+					ctx.drawImage(image, 0, 0, image.width, image.height);
+
+					if (isNodeWebkit) {
+						var jpgSnapshot = canvas.toDataURL('image/jpeg').split(',')[1];
+						saveFile("#export_file",new Buffer(jpgSnapshot, 'base64'));
+					} else {
+						var jpgSnapshot = canvas.toDataURL('image/jpeg')
+						var a = document.createElement("a");
+						document.body.appendChild(a);
+						a.style.display="none";
+						a.href = jpgSnapshot;
+						a.download = "snapshot.jpg";
+						a.click();
+						a.remove;
+					}
+					image.remove;
+					canvas.remove;
+				};
+				// end convert
+			}
+		});
+
 	
 		if (typeof debugPlaylist !== "undefined") {
 			wjs(newid).catchEvent("QmlMessage",function(event) {

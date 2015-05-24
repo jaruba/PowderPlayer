@@ -289,6 +289,7 @@ Rectangle {
 		vlcPlayer.onMediaPlayerMediaChanged.connect( onMediaChanged ); // Set Video Changed Event Handler
 		vlcPlayer.onStateChanged.connect( onState ); // Set State Changed Event Handler
 		
+		if (plugin.version == "0.2.8") plugin.onSnapshotReady.connect(function(snapshot) { fireQmlMessage("[snapshot]"+snapshot); });
 		plugin.jsMessage.connect( onMessage ); // Catch On Page JS Messages
 		
 		fireQmlMessage("[qml-loaded]"); // Send message to JS that QML has Loaded

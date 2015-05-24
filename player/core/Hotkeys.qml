@@ -180,6 +180,13 @@ Rectangle {
 					wjs.jumpTo(-3000);
 					return;
 				}
+			} else if (event.key == Qt.Key_S) {
+				if (typeof settings.preventKey[Qt.ShiftModifier+"+"+Qt.Key_S] === "undefined") {
+					if (plugin.version == "0.2.8") {
+						takeSnapshot(videoSource);
+						return;
+					}
+				}
 			}
 			return;
 		}
