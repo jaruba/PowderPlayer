@@ -24,6 +24,7 @@
   "single-instance": false,
   "window": {
     "icon": "icon.png",
+	"position": "mouse",
     "toolbar": false,
     "frame": true,
     "width": 530,
