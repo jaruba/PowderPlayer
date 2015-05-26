@@ -242,7 +242,7 @@ Rectangle {
 				// Start "Time / Length" Text in Toolbar
 				Loader.ToolbarTimeLength {
 					id: showtime
-					text: wjs.getTime(vlcPlayer.time)
+					text: wjs.getTime(vlcPlayer.time,true)
 					color: ui.colors.toolbar.currentTime
 				}
 				Loader.ToolbarTimeLength {

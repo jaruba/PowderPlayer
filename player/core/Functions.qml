@@ -798,14 +798,44 @@ Rectangle {
 	// Start Progress Bar Seek Functionality
 	function progressDrag(mouseX,mouseY) {
 		settings.dragging = true;
-		var newtime = (vlcPlayer.time * (1 / settings.newProgress)) * ((mouseX -4) / theview.width);
-		backupTime = newtime;
-		if (newtime > 0) timeBubble.srctime = getTime(newtime);
+		if (vlcPlayer.state == 3 && settings.buffering > -1 && settings.buffering < 100) {
+			var remLength = 0;
+			if (vlcPlayer.length > 0) remLength = vlcPlayer.length;
+			else if (settings.customLength > 0) remLength = settings.customLength;
+			if (remLength > 0) {
+				var newtime = remLength * ((mouseX -4) / theview.width);
+				backupTime = newtime;
+				if (newtime > 0) timeBubble.srctime = getTime(newtime);
+			} else {
+				var newtime = (vlcPlayer.time * (1 / settings.newProgress)) * ((mouseX -4) / theview.width);
+				backupTime = newtime;
+				if (newtime > 0) timeBubble.srctime = getTime(newtime);
+			}
+		} else {
+			var newtime = (vlcPlayer.time * (1 / settings.newProgress)) * ((mouseX -4) / theview.width);
+			backupTime = newtime;
+			if (newtime > 0) timeBubble.srctime = getTime(newtime);
+		}
 	}
 	function progressChanged(mouseX,mouseY) {
-		var newtime = (vlcPlayer.time * (1 / settings.newProgress)) * ((mouseX -4) / theview.width);
-		backupTime = newtime;
-		if (newtime > 0) timeBubble.srctime = getTime(newtime);
+		if (vlcPlayer.state == 3 && settings.buffering > -1 && settings.buffering < 100) {
+			var remLength = 0;
+			if (vlcPlayer.length > 0) remLength = vlcPlayer.length;
+			else if (settings.customLength > 0) remLength = settings.customLength;
+			if (remLength > 0) {
+				var newtime = remLength * ((mouseX -4) / theview.width);
+				backupTime = newtime;
+				if (newtime > 0) timeBubble.srctime = getTime(newtime);
+			} else {
+				var newtime = (vlcPlayer.time * (1 / settings.newProgress)) * ((mouseX -4) / theview.width);
+				backupTime = newtime;
+				if (newtime > 0) timeBubble.srctime = getTime(newtime);
+			}
+		} else {
+			var newtime = (vlcPlayer.time * (1 / settings.newProgress)) * ((mouseX -4) / theview.width);
+			backupTime = newtime;
+			if (newtime > 0) timeBubble.srctime = getTime(newtime);
+		}
 	}
 	function progressReleased(mouseX,mouseY) {
 		lastPos = (parseInt(mouseX) -4) / theview.width;
@@ -944,7 +974,19 @@ Rectangle {
 	// START TIME RELATED FUNCTIONS
 	
 	// Start Functions to Get Time and Video Length (format "00:00:00")
-	function getTime(t) {
+	function getTime(t,isStrict) {
+		isStrict = typeof isStrict !== 'undefined' ? isStrict : false;
+		if (isStrict === true && vlcPlayer.state == 3 && settings.buffering > -1 && settings.buffering < 100) {
+			var remLength = 0;
+			if (vlcPlayer.length > 0) remLength = vlcPlayer.length;
+			else if (settings.customLength > 0) remLength = settings.customLength;
+			
+			if (remLength > 0) {
+				var remNewTime = Math.floor(remLength * vlcPlayer.position);
+				if (t -60000 < remNewTime || t +60000 > remNewTime) t = remNewTime;
+			}
+		}
+
 		var tempHour = ("0" + Math.floor(t / 3600000)).slice(-2);
 		var tempMinute = ("0" + (Math.floor(t / 60000) %60)).slice(-2);
 		var tempSecond = ("0" + (Math.floor(t / 1000) %60)).slice(-2);
