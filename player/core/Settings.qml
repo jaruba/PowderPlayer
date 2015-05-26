@@ -18,6 +18,7 @@ QtObject {
 	property var totalSubs: 0;
 	property var totalSettings: 0;
 	property var totalSleepOpts: 0;
+	property var totalManDirOpts: 0;
 	property var title: "";
     property var multiscreen: 0;
 	property var timervolume: 0;

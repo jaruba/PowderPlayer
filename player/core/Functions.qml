@@ -670,6 +670,21 @@ Rectangle {
 	}
 	// End Toggle Sleep Timer Menu (open/close)
 	
+	// Start Toggle Manage Folders Menu (open/close)
+	function toggleManageFolders() {
+		if (!managefoldersblock.visible) {
+			manageFoldersMenu.addManageFoldersItems();
+			if (subMenublock.visible) subMenublock.visible = false;
+			if (playlistblock.visible) playlistblock.visible = false;
+			if (settingsblock.visible) settingsblock.visible = false;
+			managefoldersblock.visible = true;
+		} else {
+			manageFoldersMenu.clearAll();
+			managefoldersblockblock.visible = false;
+		}
+	}
+	// End Toggle Sleep Timer Menu (open/close)
+	
 	// Start Toggle Playlist Menu (open/close)
 	function togglePlaylist() {
 		if (!playlistblock.visible) {
@@ -886,6 +901,23 @@ Rectangle {
 		}
 	}
 	// End Scroll Sleep Timer Menu
+	
+	// Start Scroll Manage Folders Menu
+	function moveManageFoldersMenu(mousehint) {
+		if (mousehint <= (manageFoldersScroll.dragger.height / 2)) {
+			manageFoldersScroll.dragger.anchors.topMargin = 0;
+			manageFoldersMenu.anchors.topMargin = 0;
+		} else if (mousehint >= (240 - (manageFoldersScroll.dragger.height / 2))) {
+			manageFoldersScroll.dragger.anchors.topMargin = 240 - manageFoldersScroll.dragger.height;
+			if ((settings.totalManDirOpts *40) > 240) {
+				manageFoldersMenu.anchors.topMargin = 240 - (settings.totalManDirOpts *40);
+			}
+		} else {
+			manageFoldersScroll.dragger.anchors.topMargin = mousehint - (manageFoldersScroll.dragger.height / 2);
+			manageFoldersMenu.anchors.topMargin = -(((settings.totalManDirOpts * 40) - 240) / ((240 - manageFoldersScroll.dragger.height) / (mousehint - (manageFoldersScroll.dragger.height /2))));
+		}
+	}
+	// End Scroll Manage Folders Menu
 	
 	// Start Change Volume to New Volume (difference from current volume)
 	function volumeTo(newvolume) {

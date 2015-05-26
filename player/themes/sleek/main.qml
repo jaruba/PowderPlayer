@@ -620,6 +620,54 @@ Rectangle {
 		}
 		// End Sleep Timer Menu
 		
+		// Start Manage Folders Menu
+		Loader.Menu {
+			id: managefoldersblock
+			background.color: ui.colors.playlistMenu.background
+			width: (parent.width * 0.9) < 400 ? (parent.width * 0.9) : 400
+			
+			// Start Manage Folders Menu Scroll
+			Loader.MenuScroll {
+				id: manageFoldersScroll
+				draggerColor: ui.colors.playlistMenu.drag
+				backgroundColor: ui.colors.playlistMenu.scroller
+				onDrag: wjs.moveManageFoldersMenu(mouseY)
+				dragger.height: (settings.totalManDirOpts * 40) < 240 ? 240 : (240 / (settings.totalManDirOpts * 40)) * 240
+				height: 240
+			}
+			// End Manage Folders Menu Scroll
+		
+			Loader.MenuContent {
+				width: managefoldersblock.width < 400 ? (managefoldersblock.width -12) : 388
+				anchors.centerIn: parent
+				
+				Loader.ManageFoldersMenuItems { id: manageFoldersMenu } // Manage Folders Items Holder (This is where the Manage Folders Options will be loaded)
+		
+				// Top Holder (Title + Close Button)
+				Loader.MenuHeader {
+					text: "Manage Folders"
+					textColor: ui.colors.playlistMenu.headerFont
+					backgroundColor: ui.colors.playlistMenu.header
+										
+					// Start Close Sleep Timer Menu Button
+					Loader.MenuClose {
+						id: manageFoldersMenuClose
+						icon: settings.glyphsLoaded ? ui.icon.closePlaylist : ""
+						iconSize: 9
+						iconColor: manageFoldersMenuClose.hover.containsMouse ? ui.colors.playlistMenu.closeHover : ui.colors.playlistMenu.close
+						color: manageFoldersMenuClose.hover.containsMouse ? ui.colors.playlistMenu.closeBackgroundHover : ui.colors.playlistMenu.closeBackground
+						hover.onClicked: {
+							managefoldersblock.visible = false;
+						}
+					}
+					// End Close Sleep Timer Menu Button
+				}
+				// End Top Holder (Title + Close Button)
+				
+			}
+		}
+		// End Manage Folders Menu
+		
 		Rectangle {
 			visible: settings.uiVisible == 1 ? fullscreen ? false : mousesurface.containsMouse ? true : settingsBut.containsMouse ? true : false : false
 			
