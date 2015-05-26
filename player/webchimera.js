@@ -340,7 +340,7 @@ wjs.init.prototype.loadSettings = function(wjs_localsettings) {
 
 // proxy properties from .plugin to root functions
 wjs.init.prototype.audioCount = function() {
-	if (this.allElements.length == 1) return this.plugin.audio.count;
+	if (this.allElements.length == 1) return parseInt(this.plugin.audio.count);
 	return this;
 }
 wjs.init.prototype.audioTrack = function(newTrack) {
@@ -359,11 +359,11 @@ wjs.init.prototype.isPlaying = function() {
 	return this;
 }
 wjs.init.prototype.itemCount = function() {
-	if (this.allElements.length == 1) return this.plugin.playlist.itemCount;
+	if (this.allElements.length == 1) return parseInt(this.plugin.playlist.itemCount);
 	return this;
 }
 wjs.init.prototype.currentItem = function() {
-	if (this.allElements.length == 1) return this.plugin.playlist.currentItem;
+	if (this.allElements.length == 1) return parseInt(this.plugin.playlist.currentItem);
 	return this;
 }
 wjs.init.prototype.width = function() {
@@ -1214,7 +1214,7 @@ wjs.init.prototype.volume = function(newVolume) {
 			this.plugin.emitJsMessage("[set-volume]"+(parseInt(newVolume)));
 		} else {
 			// get volume
-			return this.plugin.volume;
+			return parseInt(this.plugin.volume);
 		}
 	} else for (z = 0; z < this.allElements.length; z++) wjs("#"+this.allElements[z].id).volume(newVolume);
 
