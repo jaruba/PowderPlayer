@@ -117,50 +117,56 @@ Rectangle {
 							if (st.length >=2) {
 						
 							  var n = st[0];
-							  if (typeof st[1].split(' --> ')[0] === 'undefined') {
-	
-								if (subtitleElement.indexOf("http://dl.opensubtitles.org/en/download/subencoding-") > -1) {
-	
-									if (subtitleElement.indexOf("[-alt-]") > -1) {
-										if (subtitleElement.split('[-alt-]')[1] == "unknown" || subtitleElement.split('[-alt-]')[1] == "utf8") {
-											playSubtitles("http://dl.opensubtitles.org/en/download/file/"+subtitleElement.split('/').pop());
-										} else {
-											 playSubtitles("http://dl.opensubtitles.org/en/download/subencoding-"+subtitleElement.split('[-alt-]')[1]+"/file/"+subtitleElement.split('[-alt-]')[0].split('/').pop());
-										 }
-									} else {
-										playSubtitles("http://dl.opensubtitles.org/en/download/file/"+subtitleElement.split('/').pop());
-									}
-								} else {
-									if (vlcPlayer.state != 2) wjs.setText("Subtitle Error");
-								}
-								  return;
-							  }
-							  if (typeof st[1].split(' --> ')[1] === 'undefined') {
-								if (subtitleElement.indexOf("http://dl.opensubtitles.org/en/download/subencoding-") > -1) {
-									if (subtitleElement.indexOf("[-alt-]") > -1) {
-										if (subtitleElement.split('[-alt-]')[1] == "unknown" || subtitleElement.split('[-alt-]')[1] == "utf8") {
-											playSubtitles("http://dl.opensubtitles.org/en/download/file/"+subtitleElement.split('/').pop());
-										} else {
-											 playSubtitles("http://dl.opensubtitles.org/en/download/subencoding-"+subtitleElement.split('[-alt-]')[1]+"/file/"+subtitleElement.split('[-alt-]')[0].split('/').pop());
-										 }
-									} else {
-										playSubtitles("http://dl.opensubtitles.org/en/download/file/"+subtitleElement.split('/').pop());
-									}
-								} else {
-									if (vlcPlayer.state != 2) wjs.setText("Subtitle Error");
-								}
-								  return;
-							  }
-							  var is = Math.round(toSeconds(wjs.strip(st[1].split(' --> ')[0])));
-							  var os = Math.round(toSeconds(wjs.strip(st[1].split(' --> ')[1])));
-							  var t = st[2];
+							  if (st[1].indexOf(' --> ') > -1) var stOrigin = st[1];
+							  else if (st[2].indexOf(' --> ') > -1) var stOrigin = st[2];
+							  else if (st[3].indexOf(' --> ') > -1) var stOrigin = st[3];
 							  
-							  if( st.length > 2) {
-								var j = 3;
-								for (j=3; j<st.length; j++) {
-									t = t + '\n'+st[j];
-								}
+							  if (typeof stOrigin !== 'undefined') {
+								  if (typeof stOrigin.split(' --> ')[0] === 'undefined') {
 		
+									if (subtitleElement.indexOf("http://dl.opensubtitles.org/en/download/subencoding-") > -1) {
+		
+										if (subtitleElement.indexOf("[-alt-]") > -1) {
+											if (subtitleElement.split('[-alt-]')[1] == "unknown" || subtitleElement.split('[-alt-]')[1] == "utf8") {
+												playSubtitles("http://dl.opensubtitles.org/en/download/file/"+subtitleElement.split('/').pop());
+											} else {
+												 playSubtitles("http://dl.opensubtitles.org/en/download/subencoding-"+subtitleElement.split('[-alt-]')[1]+"/file/"+subtitleElement.split('[-alt-]')[0].split('/').pop());
+											 }
+										} else {
+											playSubtitles("http://dl.opensubtitles.org/en/download/file/"+subtitleElement.split('/').pop());
+										}
+									} else {
+										if (vlcPlayer.state != 2) wjs.setText("Subtitle Error");
+									}
+									  return;
+								  }
+								  if (typeof stOrigin.split(' --> ')[1] === 'undefined') {
+									if (subtitleElement.indexOf("http://dl.opensubtitles.org/en/download/subencoding-") > -1) {
+										if (subtitleElement.indexOf("[-alt-]") > -1) {
+											if (subtitleElement.split('[-alt-]')[1] == "unknown" || subtitleElement.split('[-alt-]')[1] == "utf8") {
+												playSubtitles("http://dl.opensubtitles.org/en/download/file/"+subtitleElement.split('/').pop());
+											} else {
+												 playSubtitles("http://dl.opensubtitles.org/en/download/subencoding-"+subtitleElement.split('[-alt-]')[1]+"/file/"+subtitleElement.split('[-alt-]')[0].split('/').pop());
+											 }
+										} else {
+											playSubtitles("http://dl.opensubtitles.org/en/download/file/"+subtitleElement.split('/').pop());
+										}
+									} else {
+										if (vlcPlayer.state != 2) wjs.setText("Subtitle Error");
+									}
+									  return;
+								  }
+								  var is = Math.round(toSeconds(wjs.strip(stOrigin.split(' --> ')[0])));
+								  var os = Math.round(toSeconds(wjs.strip(stOrigin.split(' --> ')[1])));
+								  var t = st[2];
+								  
+								  if( st.length > 2) {
+									var j = 3;
+									for (j=3; j<st.length; j++) {
+										t = t + '\n'+st[j];
+									}
+			
+								  }
 							  }
 							  subtitles[is] = {i:is, o: os, t: t};
 							}
