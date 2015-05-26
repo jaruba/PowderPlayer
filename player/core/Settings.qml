@@ -9,7 +9,7 @@ QtObject {
 	property var gobigpause: false;
 	property var dragging: false;
 	property var ismoving: 1;
-	property var buffering: 0;
+	property var buffering: -1;
 	property var toolbar: 1;
 	property var autoloop: 0;
 	property var automute: 0;

@@ -9,7 +9,7 @@ Rectangle {
 	anchors.fill: parent
 	color: "transparent"
 	Rectangle {
-		visible: vlcPlayer.state == 1 ? true : settings.buffering > 0 && settings.buffering < 100 ? true : false
+		visible: vlcPlayer.state == 1 ? true : settings.buffering > -1 && settings.buffering < 100 ? true : false
 		color: 'transparent'
 		width: fullscreen ? parent.width -4 : parent.width -2
 		anchors.top: parent.top
@@ -17,7 +17,7 @@ Rectangle {
 		anchors.horizontalCenter: parent.horizontalCenter
 		Text {
 			id: bufshadow
-			visible: vlcPlayer.state == 1 ? true : settings.buffering > 0 && settings.buffering < 100 ? true : false
+			visible: vlcPlayer.state == 1 ? true : settings.buffering > -1 && settings.buffering < 100 ? true : false
 			anchors.horizontalCenter: parent.horizontalCenter
 			text: buftext.text
 			font.pointSize: buftext.font.pointSize
@@ -30,7 +30,7 @@ Rectangle {
 		}
 	}
 	Rectangle {
-		visible: vlcPlayer.state == 1 ? true : settings.buffering > 0 && settings.buffering < 100 ? true : false
+		visible: vlcPlayer.state == 1 ? true : settings.buffering > -1 && settings.buffering < 100 ? true : false
 		color: 'transparent'
 		width: parent.width
 		anchors.top: parent.top
@@ -38,7 +38,7 @@ Rectangle {
 		anchors.horizontalCenter: parent.horizontalCenter
 		Text {
 			id: buftext
-			visible: vlcPlayer.state == 1 ? true : settings.buffering > 0 && settings.buffering < 100 ? true : false
+			visible: vlcPlayer.state == 1 ? true : settings.buffering > -1 && settings.buffering < 100 ? true : false
 			anchors.horizontalCenter: parent.horizontalCenter
 			text: ""
 			font.pointSize: fullscreen ? mousesurface.height * 0.030 : (mousesurface.height * 0.035) < 16 ? 16 : mousesurface.height * 0.035
