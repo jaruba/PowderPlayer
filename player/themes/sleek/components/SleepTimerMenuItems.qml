@@ -26,7 +26,7 @@ Rectangle {
 	// End Remove all Sleep Timer Options
 	
 	function addSleepTimerItems(target) {
-		// Remove Old Setting Menu Items
+		// Remove Old Sleep Timer Menu Items
 		clearAll();
 	
 		// Adding Sleep Timer Menu Items
