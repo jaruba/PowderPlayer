@@ -43,7 +43,8 @@ if (isNodeWebkit) {
 	function saveFile(name,data) {
 		var chooser = document.querySelector(name);
 		chooser.addEventListener("change", function(evt) {
-		console.log(this.value); // get your file name
+// get your file name
+//		console.log(this.value);
 		var fs = require('fs');// save it now
 		fs.writeFile(this.value, data, function(err) {
 			if(err) {
@@ -966,6 +967,7 @@ wjs.init.prototype.addPlaylist = function(playlist) {
 					  if (typeof playlist[item].subtitles !== 'undefined') playerSettings.subtitles = playlist[item].subtitles;
 					  if (typeof playlist[item].aspectRatio !== 'undefined' && typeof playlist[item].aspectRatio === 'string') playerSettings.aspectRatio = playlist[item].aspectRatio;
 					  if (typeof playlist[item].crop !== 'undefined' && typeof playlist[item].crop === 'string') playerSettings.crop = playlist[item].crop;
+					  if (typeof playlist[item].contentType !== 'undefined' && typeof playlist[item].contentType === 'string') playerSettings.contentType = playlist[item].contentType;
 					  
 					  if (Object.keys(playerSettings).length > 0) this.plugin.playlist.items[pitem[this.context]].setting = JSON.stringify(playerSettings);
 					  pitem[this.context]++;
