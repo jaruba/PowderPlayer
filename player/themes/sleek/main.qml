@@ -405,7 +405,7 @@ Rectangle {
 						anchors.top: parent.top
 						anchors.topMargin: 6
 						anchors.left: parent.left
-						anchors.leftMargin: 76
+						anchors.leftMargin: 152
 						height: 22
 						width: 80
 						color: scanLibHover.containsMouse ? ui.colors.playlistMenu.closeBackgroundHover : ui.colors.playlistMenu.closeBackground
@@ -430,7 +430,7 @@ Rectangle {
 						anchors.top: parent.top
 						anchors.topMargin: 6
 						anchors.left: parent.left
-						anchors.leftMargin: 0
+						anchors.leftMargin: 76
 						height: 22
 						width: 70
 						color: addVideoHover.containsMouse ? ui.colors.playlistMenu.closeBackgroundHover : ui.colors.playlistMenu.closeBackground
@@ -447,6 +447,33 @@ Rectangle {
 							cursorShape: Qt.PointingHandCursor;
 							onClicked: {
 								fireQmlMessage("[add-video]");
+							}
+						}
+					}
+					Rectangle {
+						anchors.top: parent.top
+						anchors.topMargin: 6
+						anchors.left: parent.left
+						anchors.leftMargin: 0
+						height: 22
+						width: 70
+						color: addMrlHover.containsMouse ? ui.colors.playlistMenu.closeBackgroundHover : ui.colors.playlistMenu.closeBackground
+						Text {
+							anchors.centerIn: parent
+							text: "Add URL"
+							color: addMrlHover.containsMouse ? ui.colors.playlistMenu.closeHover : ui.colors.playlistMenu.close
+							font.pointSize: 9;
+						}
+						MouseArea {
+							id: addMrlHover
+							anchors.fill: parent;
+							hoverEnabled: true;
+							cursorShape: Qt.PointingHandCursor;
+							onClicked: {
+								if (inputBox.visible) inputBox.visible = false
+								inputAddBox.textBox.text = "";
+								inputAddBox.visible = true;
+								inputAddBox.textBox.forceActiveFocus();
 							}
 						}
 					}

@@ -61,7 +61,7 @@ Rectangle {
 	TextField {
     	id: newURL
 		readOnly: false
-		placeholderText: "Media URL"
+		placeholderText: "Magnet URI or Video URL"
 		width: (parent.width - 20) * 0.8
 		height: parent.height - 40
 		anchors.left: parent.left
@@ -126,8 +126,12 @@ Rectangle {
 			onClicked: {
 				mousesurface.forceActiveFocus();
 				inputAddBox.visible = false;
-				vlcPlayer.playlist.add(newURL.text);
-				playlist.addPlaylistItems(); // Refresh Playlist GUI
+				if (newURL.text.indexOf("magnet:?xt=urn:btih:") == 0) {
+					fireQmlMessage("[new-torrent]"+newURL.text);
+				} else {
+					vlcPlayer.playlist.add(newURL.text);
+					playlist.addPlaylistItems(); // Refresh Playlist GUI
+				}
 			}
 		}
 	}
