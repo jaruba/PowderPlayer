@@ -63,6 +63,8 @@ Rectangle {
 	// Start on Current Time Changed
 	function onTime( seconds ) {
 	
+		if (tempSplash) tempSplash = false;
+	
 		if (mediaChanged == 1) {
 			mediaChanged = 0;
 			firstSecond = seconds; // implementation for m3u runtime
@@ -419,6 +421,8 @@ Rectangle {
 			if (startsWith(message,"[gobackvar]0")) goneBack = 0;
 			if (startsWith(message,"[pause-policy]")) ui.settings.pausePolicy = message.replace("[pause-policy]","");
 			if (startsWith(message,"[refresh-disabled]")) playlist.refreshDisabled();
+			if (startsWith(message,"[temp-splash]")) tempSplash = true;
+			if (startsWith(message,"[temp-sel]")) tempSel = parseInt(message.replace("[temp-sel]",""));
 			if (startsWith(message,"[end-scan-library]")) {
 				if (parseInt(message.replace("[end-scan-library]","")) == 0) setText("No Episodes Found");
 				else setText("Found "+parseInt(message.replace("[end-scan-library]",""))+" Episodes");

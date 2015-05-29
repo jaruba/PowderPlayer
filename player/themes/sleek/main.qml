@@ -36,6 +36,8 @@ Rectangle {
 	property var savedSub: "-";
 	property var instantButEffect: 0; // for settings button
 	property variant disables: [];
+	property var tempSplash: false;
+	property var tempSel: 0;
 	JsLogic.Settings { id: settings }
 	JsLogic.Functions { id: wjs }
 	JsLogic.Hotkeys { id: hotkeys }
@@ -164,7 +166,7 @@ Rectangle {
 				// Start Play/Pause Button
 				Loader.ToolbarButton {
 					id: playButton
-					icon: settings.glyphsLoaded ? vlcPlayer.playing ? ui.icon.pause : vlcPlayer.state != 6 ? ui.icon.play : ui.icon.replay : ""
+					icon: settings.glyphsLoaded ? tempSplash ? ui.icon.pause : vlcPlayer.playing ? ui.icon.pause : vlcPlayer.state != 6 ? ui.icon.play : ui.icon.replay : ""
 					iconSize: fullscreen ? 14 : 13
 					anchors.left: prevBut.visible ? prevBut.right : parent.left
 					anchors.leftMargin: prevBut.visible ? 1 : 0

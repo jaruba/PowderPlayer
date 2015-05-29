@@ -10,7 +10,7 @@ Rectangle {
 
 	id: root
 	anchors.fill: parent
-	visible: vlcPlayer.state < 3 || vlcPlayer.state == 5 ? true : goneBack == 1 ? true : false
+	visible: tempSplash ? true : vlcPlayer.state < 3 || vlcPlayer.state == 5 ? true : goneBack == 1 ? true : false
 	// If Playlist is Open Show Top Text
 	Text {
 		id: openingtext
@@ -44,7 +44,7 @@ Rectangle {
 			}
 			Text {
 				id: loadingFont
-				visible: goneBack == 1 ? true : settings.multiscreen == 1 ? fullscreen ? vlcPlayer.state < 3 || vlcPlayer.state == 5 ? true : settings.buffering > 0 && settings.buffering < 100 ? true : false : false : vlcPlayer.state < 3 || vlcPlayer.state == 5 ? true : settings.buffering > 0 && settings.buffering < 100 ? true : false // Required for Multiscreen
+				visible: tempSplash ? true : goneBack == 1 ? true : settings.multiscreen == 1 ? fullscreen ? vlcPlayer.state < 3 || vlcPlayer.state == 5 ? true : settings.buffering > 0 && settings.buffering < 100 ? true : false : false : vlcPlayer.state < 3 || vlcPlayer.state == 5 ? true : settings.buffering > 0 && settings.buffering < 100 ? true : false // Required for Multiscreen
 				anchors.top: parent.top
 				anchors.topMargin: 80
 				anchors.horizontalCenter: parent.horizontalCenter

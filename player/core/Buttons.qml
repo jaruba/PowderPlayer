@@ -15,9 +15,11 @@ Rectangle {
 			wjs.togPause();
 		}
 		if (action == "prev") if (typeof settings.preventClicked[action] === "undefined") {
+			fireQmlMessage("[no-wait]");
 			vlcPlayer.playlist.prev();
 		}
 		if (action == "next") if (typeof settings.preventClicked[action] === "undefined") {
+			fireQmlMessage("[no-wait]");
 			vlcPlayer.playlist.next();
 		}
 		if (action == "mute") if (typeof settings.preventClicked[action] === "undefined") {
