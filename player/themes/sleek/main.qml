@@ -405,6 +405,28 @@ Rectangle {
 						anchors.top: parent.top
 						anchors.topMargin: 6
 						anchors.left: parent.left
+						anchors.leftMargin: 238
+						height: 22
+						width: 80
+						color: scanServHover.containsMouse ? ui.colors.playlistMenu.closeBackgroundHover : ui.colors.playlistMenu.closeBackground
+						Text {
+							anchors.centerIn: parent
+							text: "Scan Server"
+							color: scanServHover.containsMouse ? ui.colors.playlistMenu.closeHover : ui.colors.playlistMenu.close
+							font.pointSize: 9;
+						}
+						MouseArea {
+							id: scanServHover
+							anchors.fill: parent;
+							hoverEnabled: true;
+							cursorShape: Qt.PointingHandCursor;
+							onClicked: { fireQmlMessage("[scan-server]"); }
+						}
+					}
+					Rectangle {
+						anchors.top: parent.top
+						anchors.topMargin: 6
+						anchors.left: parent.left
 						anchors.leftMargin: 152
 						height: 22
 						width: 80
