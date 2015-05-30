@@ -1146,6 +1146,7 @@ wjs.init.prototype.subDesc = function(getDesc) {
 							wjs_subResponse.type = "external";
 							wjs_subResponse.url = wjs_target[newDesc];
 							wjs_subResponse.ext = wjs_target[newDesc].split('.').pop().toLowerCase();
+							if (wjs_subResponse.ext.indexOf('[') > -1) wjs_subResponse.ext = wjs_subResponse.ext.substr(0,wjs_subResponse.ext.indexOf('['));
 							return wjs_subResponse;
 						}
 						wjs_keepIndex++;
