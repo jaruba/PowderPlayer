@@ -827,10 +827,10 @@ wjs.init.prototype.addPlayer = function(qmlsettings) {
 						a.href = jpgSnapshot;
 						a.download = "snapshot.jpg";
 						a.click();
-						a.remove;
+						a.remove();
 					}
-					image.remove;
-					canvas.remove;
+					image.remove();
+					canvas.remove();
 				};
 				// end convert
 			}
