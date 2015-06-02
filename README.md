@@ -21,8 +21,12 @@ Current Features
 
 - Always on Top Feature
 
-- History
+- History of 20 last seen videos.
 
 - An Incredible [List of HotKeys](http://wiki.webchimera.org/Player_Hotkeys)
 
-- Can be opened multiple times (for torrents, if you close a window, it removes everything that it downloaded in that instance)
+- Stream to TV (through DLNA/UPNP)
+
+- Supports Playlist of Torrents
+
+- "Scan Library" and "Scan Server" features that either scan the download folder or the internet in order to try to add similar torrents/videos to your current playlist.
