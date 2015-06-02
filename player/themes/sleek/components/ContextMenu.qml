@@ -269,25 +269,25 @@ Rectangle {
 			pli++;
 		}
 
-		if (!settings.tooSmall) {
+//		if (!settings.tooSmall) {
 //			var plstring = "About WebChimera";
 			
 //			conItems[pli] = Qt.createQmlObject('import QtQuick 2.1; import QtQuick.Layouts 1.0; import QmlVlc 0.1; Rectangle { id: ctxitem'+ pli +'; anchors.left: parent.left; anchors.leftMargin: 1; anchors.top: parent.top; anchors.topMargin: 1+ ('+ pli +' *30); color: "transparent"; width: root.width -2; height: 30; MouseArea { id: cmitem'+ pli +'; cursorShape: Qt.PointingHandCursor; hoverEnabled: true; anchors.fill: parent; onClicked: { close(); href("http://www.webchimera.org/"); if (vlcPlayer.playing) vlcPlayer.togglePause(); } } Rectangle { width: root.width -2; clip: true; height: 30; color: cmitem'+ pli +'.containsMouse ? "#3D3D3D" : "transparent"; Text { anchors.left: parent.left; anchors.leftMargin: 9; anchors.verticalCenter: parent.verticalCenter; text: "'+ plstring +'"; font.pointSize: 9; color: "#e5e5e5"; } } }', root, 'cmenustr' +pli);
 	
 //			pli++;
-		}
+//		}
 		
-		if (vlcPlayer.state == 2 || vlcPlayer.state == 3 || vlcPlayer.state == 4) {
-			if (!settings.tooSmall) {
-				if (plugin.version == "0.2.8") {
-					var plstring = "Screenshot";
+//		if (vlcPlayer.state == 2 || vlcPlayer.state == 3 || vlcPlayer.state == 4) {
+//			if (!settings.tooSmall) {
+//				if (plugin.version == "0.2.8") {
+//					var plstring = "Screenshot";
 					
-					conItems[pli] = Qt.createQmlObject('import QtQuick 2.1; import QtQuick.Layouts 1.0; import QmlVlc 0.1; Rectangle { id: ctxitem'+ pli +'; anchors.left: parent.left; anchors.leftMargin: 1; anchors.top: parent.top; anchors.topMargin: 1+ ('+ pli +' *30); color: "transparent"; width: root.width -2; height: 30; MouseArea { id: cmitem'+ pli +'; cursorShape: Qt.PointingHandCursor; hoverEnabled: true; anchors.fill: parent; onClicked: { close(); takeSnapshot(videoSource); } } Rectangle { width: root.width -2; clip: true; height: 30; color: cmitem'+ pli +'.containsMouse ? "#3D3D3D" : "transparent"; Text { anchors.left: parent.left; anchors.leftMargin: 9; anchors.verticalCenter: parent.verticalCenter; text: "'+ plstring +'"; font.pointSize: 9; color: "#e5e5e5"; } } }', root, 'cmenustr' +pli);
+//					conItems[pli] = Qt.createQmlObject('import QtQuick 2.1; import QtQuick.Layouts 1.0; import QmlVlc 0.1; Rectangle { id: ctxitem'+ pli +'; anchors.left: parent.left; anchors.leftMargin: 1; anchors.top: parent.top; anchors.topMargin: 1+ ('+ pli +' *30); color: "transparent"; width: root.width -2; height: 30; MouseArea { id: cmitem'+ pli +'; cursorShape: Qt.PointingHandCursor; hoverEnabled: true; anchors.fill: parent; onClicked: { close(); takeSnapshot(videoSource); } } Rectangle { width: root.width -2; clip: true; height: 30; color: cmitem'+ pli +'.containsMouse ? "#3D3D3D" : "transparent"; Text { anchors.left: parent.left; anchors.leftMargin: 9; anchors.verticalCenter: parent.verticalCenter; text: "'+ plstring +'"; font.pointSize: 9; color: "#e5e5e5"; } } }', root, 'cmenustr' +pli);
 					
-					pli++;
-				}
-			}
-		}
+//					pli++;
+//				}
+//			}
+//		}
 
 		var plstring = "Exit to Main Menu";
 		
