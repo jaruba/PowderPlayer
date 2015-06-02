@@ -449,6 +449,19 @@ Rectangle {
 			if (startsWith(message,"[toggle-mute]")) toggleMute();
 			if (startsWith(message,"[set-volume]")) { vlcPlayer.volume = parseInt(message.replace("[set-volume]","")); volheat.volume = (parseInt(message.replace("[set-volume]","")) /200) * volheat.width; }
 			if (startsWith(message,"[toggle-subtitles]")) toggleSubtitles();
+			if (startsWith(message,"[cast-data]")) {
+				castData = JSON.parse(message.replace("[cast-data]",""));
+				castData = castData;
+				if (castData.casting == 1) {
+					if (subButton.visible) subButton.visible = false;
+					pausetog.z = 1;
+					playtog.z = 1;
+				} else {
+					if (!subButton.visible) subButton.visible = true;
+					pausetog.z = 0;
+					playtog.z = 0;
+				}
+			}
 			if (startsWith(message,"[aspect-ratio]")) changeAspect(message.replace("[aspect-ratio]",""),"ratio");
 			if (startsWith(message,"[crop]")) changeAspect(message.replace("[crop]",""),"crop");
 			if (startsWith(message,"[zoom]")) changeZoom(parseFloat(message.replace("[zoom]","")));
@@ -802,43 +815,65 @@ Rectangle {
 	// Start Progress Bar Seek Functionality
 	function progressDrag(mouseX,mouseY) {
 		settings.dragging = true;
-		if (vlcPlayer.state == 3 && settings.buffering > -1 && settings.buffering < 100) {
-			var remLength = 0;
-			if (vlcPlayer.length > 0) remLength = vlcPlayer.length;
-			else if (settings.customLength > 0) remLength = settings.customLength;
-			if (remLength > 0) {
-				var newtime = remLength * ((mouseX -4) / theview.width);
-				backupTime = newtime;
-				if (newtime > 0) timeBubble.srctime = getTime(newtime);
+		if (vlcPlayer.state == 5 && castData.casting == 1) {
+			if (castData.castLength) {
+				var remLength = castData.castLength;
+				if (remLength > 0) {
+					var newtime = remLength * ((mouseX -4) / theview.width);
+					backupTime = newtime;
+					if (newtime > 0) timeBubble.srctime = getTime(newtime);
+				} else {
+					var newtime = (vlcPlayer.time * (1 / settings.newProgress)) * ((mouseX -4) / theview.width);
+					backupTime = newtime;
+					if (newtime > 0) timeBubble.srctime = getTime(newtime,false);
+				}
+			}
+		} else {
+			if (vlcPlayer.state == 3 && settings.buffering > -1 && settings.buffering < 100) {
+				var remLength = 0;
+				if (vlcPlayer.length > 0) remLength = vlcPlayer.length;
+				else if (settings.customLength > 0) remLength = settings.customLength;
+				if (remLength > 0) {
+					var newtime = Math.floor(remLength * ((mouseX -4) / theview.width));
+					backupTime = newtime;
+					if (newtime > 0) timeBubble.srctime = getTime(newtime);
+				}
 			} else {
 				var newtime = (vlcPlayer.time * (1 / settings.newProgress)) * ((mouseX -4) / theview.width);
 				backupTime = newtime;
 				if (newtime > 0) timeBubble.srctime = getTime(newtime);
 			}
-		} else {
-			var newtime = (vlcPlayer.time * (1 / settings.newProgress)) * ((mouseX -4) / theview.width);
-			backupTime = newtime;
-			if (newtime > 0) timeBubble.srctime = getTime(newtime);
 		}
 	}
 	function progressChanged(mouseX,mouseY) {
-		if (vlcPlayer.state == 3 && settings.buffering > -1 && settings.buffering < 100) {
-			var remLength = 0;
-			if (vlcPlayer.length > 0) remLength = vlcPlayer.length;
-			else if (settings.customLength > 0) remLength = settings.customLength;
-			if (remLength > 0) {
-				var newtime = remLength * ((mouseX -4) / theview.width);
-				backupTime = newtime;
-				if (newtime > 0) timeBubble.srctime = getTime(newtime);
+		if (vlcPlayer.state == 5 && castData.casting == 1) {
+			if (castData.castLength) {
+				var remLength = castData.castLength;
+				if (remLength > 0) {
+					var newtime = Math.floor(remLength * ((mouseX -4) / theview.width));
+					backupTime = newtime;
+					if (newtime > 0) timeBubble.srctime = getTime(newtime,false);
+				}
+			}
+		} else {
+			if (vlcPlayer.state == 3 && settings.buffering > -1 && settings.buffering < 100) {
+				var remLength = 0;
+				if (vlcPlayer.length > 0) remLength = vlcPlayer.length;
+				else if (settings.customLength > 0) remLength = settings.customLength;
+				if (remLength > 0) {
+					var newtime = remLength * ((mouseX -4) / theview.width);
+					backupTime = newtime;
+					if (newtime > 0) timeBubble.srctime = getTime(newtime);
+				} else {
+					var newtime = (vlcPlayer.time * (1 / settings.newProgress)) * ((mouseX -4) / theview.width);
+					backupTime = newtime;
+					if (newtime > 0) timeBubble.srctime = getTime(newtime);
+				}
 			} else {
 				var newtime = (vlcPlayer.time * (1 / settings.newProgress)) * ((mouseX -4) / theview.width);
 				backupTime = newtime;
 				if (newtime > 0) timeBubble.srctime = getTime(newtime);
 			}
-		} else {
-			var newtime = (vlcPlayer.time * (1 / settings.newProgress)) * ((mouseX -4) / theview.width);
-			backupTime = newtime;
-			if (newtime > 0) timeBubble.srctime = getTime(newtime);
 		}
 	}
 	function progressReleased(mouseX,mouseY) {
@@ -847,9 +882,17 @@ Rectangle {
 			vlcPlayer.playlist.currentItem = lastItem;
 			vlcPlayer.playlist.play();
 		}
-		vlcPlayer.position = lastPos;
-		settings.newProgress = lastPos;
-
+		if (vlcPlayer.state == 5 && castData.casting == 1) {
+			if (castData.castLength) {
+				fireQmlMessage("[cast-seek]"+Math.floor(lastPos * (castData.castLength /1000)));
+				settings.openingText = "Updating playback position ...";
+				settings = settings;
+			}
+		} else {
+			vlcPlayer.position = lastPos;
+			settings.newProgress = lastPos;
+		}
+	
 		settings.dragging = false;
 	}
 	// End Progress Bar Seek Functionality
@@ -861,8 +904,12 @@ Rectangle {
 			vlcPlayer.playlist.currentItem = lastItem;
 			vlcPlayer.playlist.play();
 		}
-		vlcPlayer.position = lastPos;
-		settings.newProgress = lastPos;
+		if (vlcPlayer.state == 5 && castData.casting == 1) {
+			if (castData.castLength) fireQmlMessage("[cast-seek]"+Math.floor(lastPos * (castData.castLength /1000)));
+		} else {
+			vlcPlayer.position = lastPos;
+			settings.newProgress = lastPos;
+		}
 
 		settings.dragging = false;
 	}
@@ -979,26 +1026,43 @@ Rectangle {
 	
 	// Start Functions to Get Time and Video Length (format "00:00:00")
 	function getTime(t,isStrict) {
-		isStrict = typeof isStrict !== 'undefined' ? isStrict : false;
-		if (isStrict === true && vlcPlayer.state == 3 && settings.buffering > -1 && settings.buffering < 100) {
-			var remLength = 0;
-			if (vlcPlayer.length > 0) remLength = vlcPlayer.length;
-			else if (settings.customLength > 0) remLength = settings.customLength;
-			
-			if (remLength > 0) {
-				var remNewTime = Math.floor(remLength * vlcPlayer.position);
-				if (t -60000 < remNewTime || t +60000 > remNewTime) t = remNewTime;
+		if (castData.casting == 0) {
+			isStrict = typeof isStrict !== 'undefined' ? isStrict : false;
+			if (isStrict === true && vlcPlayer.state == 3 && settings.buffering > -1 && settings.buffering < 100) {
+				var remLength = 0;
+				if (vlcPlayer.length > 0) remLength = vlcPlayer.length;
+				else if (settings.customLength > 0) remLength = settings.customLength;
+				
+				if (remLength > 0) {
+					var remNewTime = Math.floor(remLength * vlcPlayer.position);
+					if (t -60000 < remNewTime || t +60000 > remNewTime) t = remNewTime;
+				}
 			}
-		}
-
-		var tempHour = ("0" + Math.floor(t / 3600000)).slice(-2);
-		var tempMinute = ("0" + (Math.floor(t / 60000) %60)).slice(-2);
-		var tempSecond = ("0" + (Math.floor(t / 1000) %60)).slice(-2);
 	
-		if (getLength() >= 3600000) {
-			return tempHour + ":" + tempMinute + ":" + tempSecond;
+			var tempHour = ("0" + Math.floor(t / 3600000)).slice(-2);
+			var tempMinute = ("0" + (Math.floor(t / 60000) %60)).slice(-2);
+			var tempSecond = ("0" + (Math.floor(t / 1000) %60)).slice(-2);
+		
+			if (getLength() >= 3600000) {
+				return tempHour + ":" + tempMinute + ":" + tempSecond;
+			} else {
+				return tempMinute + ":" + tempSecond;
+			}
 		} else {
-			return tempMinute + ":" + tempSecond;
+			isStrict = typeof isStrict !== 'undefined' ? isStrict : true;
+			if (castData.castTime) {
+				if (isStrict) var tempCastTime = castData.castTime;
+				else var tempCastTime = t;
+				var tempHour = ("0" + Math.floor(tempCastTime / 3600000)).slice(-2);
+				var tempMinute = ("0" + (Math.floor(tempCastTime / 60000) %60)).slice(-2);
+				var tempSecond = ("0" + (Math.floor(tempCastTime / 1000) %60)).slice(-2);
+			
+				if (getLength() >= 3600000) {
+					return tempHour + ":" + tempMinute + ":" + tempSecond;
+				} else {
+					return tempMinute + ":" + tempSecond;
+				}
+			} else return "00:00:00";
 		}
 	}
 	
@@ -1018,12 +1082,17 @@ Rectangle {
 	
 	// Start Get Video Length in seconds
 	function getLength() {
-		if (vlcPlayer.length > 0) {
-			return vlcPlayer.length;
-    	} else if (settings.customLength > 0) {
-			return settings.customLength;
-    	} else {
-			return vlcPlayer.time * (1 / vlcPlayer.position);
+		if (castData.casting == 0) {
+			if (vlcPlayer.length > 0) {
+				return vlcPlayer.length;
+			} else if (settings.customLength > 0) {
+				return settings.customLength;
+			} else {
+				return vlcPlayer.time * (1 / vlcPlayer.position);
+			}
+		} else {
+			if (castData.castLength) return castData.castLength;
+			else return 0;
 		}
 	}
 	// End Get Video Length in seconds
@@ -1037,30 +1106,53 @@ Rectangle {
 	// Start Toggle Pause
 	function togPause() {
 	
-		if (vlcPlayer.state == 6) {
-				
-			// if playback ended, restart playback
-			vlcPlayer.playlist.currentItem = lastItem;
-			vlcPlayer.playlist.play();
+		if (vlcPlayer.state == 5 && castData.casting == 1) {
 			
-		} else {
-		
-			// Change Icon from Pause to Play and vice versa
-			if (vlcPlayer.playing) {
+			if (castData.castPaused == 0) {
+				fireQmlMessage("[cast-pause]");
+				castData.castPaused = 1;
 				pausetog.visible = true;
 				settings.gobigpause = true;
-			} else {
+			} else if (castData.castPaused == 1) {
+				fireQmlMessage("[cast-play]");
+				castData.castPaused = 0;
+				playtog.visible = true;
+				settings.gobigplay = true;
+			} else if (castData.castPaused == 2) {
+				fireQmlMessage("[cast-replay]");
+				castData.castPaused = 0;
 				playtog.visible = true;
 				settings.gobigplay = true;
 			}
-			// End Change Icon
+			castData = castData;
 			
-			if (settings.multiscreen == 1 && fullscreen === false && vlcPlayer.playing === true) {
+		} else {
+	
+			if (vlcPlayer.state == 6) {
+					
+				// if playback ended, restart playback
+				vlcPlayer.playlist.currentItem = lastItem;
+				vlcPlayer.playlist.play();
 				
 			} else {
-				vlcPlayer.togglePause(); // Toggle Pause
-			}
 			
+				// Change Icon from Pause to Play and vice versa
+				if (vlcPlayer.playing) {
+					pausetog.visible = true;
+					settings.gobigpause = true;
+				} else {
+					playtog.visible = true;
+					settings.gobigplay = true;
+				}
+				// End Change Icon
+				
+				if (settings.multiscreen == 1 && fullscreen === false && vlcPlayer.playing === true) {
+					
+				} else {
+					vlcPlayer.togglePause(); // Toggle Pause
+				}
+				
+			}
 		}
 	}
 	// End Toggle Pause

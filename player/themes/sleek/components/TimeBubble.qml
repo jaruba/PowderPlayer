@@ -10,7 +10,7 @@ Rectangle {
 	property alias backgroundOpacity: backgroundIcon.opacity
 	
 
-	visible: sProgressBar.dragpos.containsMouse ? true : settings.glyphsLoaded ? vlcPlayer.position > 0 ? settings.dragging ? true : progressBar.dragpos.containsMouse ? true : false : false : false
+	visible: sProgressBar.dragpos.containsMouse ? true : settings.glyphsLoaded ? vlcPlayer.position > 0 || castData.castLength > 0 ? settings.dragging ? true : progressBar.dragpos.containsMouse ? true : false : false : false
 	anchors.bottom: parent.bottom
 	anchors.bottomMargin: sProgressBar.dragpos.containsMouse ? 54 : fullscreen ? 66 : 63
 	anchors.left: parent.left

@@ -36,6 +36,7 @@ Rectangle {
 	property var savedSub: "-";
 	property var instantButEffect: 0; // for settings button
 	property variant disables: [];
+	property variant castData: { 'casting': 0 };
 	property var tempSplash: false;
 	property var tempSel: 0;
 	JsLogic.Settings { id: settings }
@@ -166,7 +167,7 @@ Rectangle {
 				// Start Play/Pause Button
 				Loader.ToolbarButton {
 					id: playButton
-					icon: settings.glyphsLoaded ? tempSplash ? ui.icon.pause : vlcPlayer.playing ? ui.icon.pause : vlcPlayer.state != 6 ? ui.icon.play : ui.icon.replay : ""
+					icon: castData.casting == 1 ? castData.castPaused == 0 ? ui.icon.pause : castData.castPaused == 1 ? ui.icon.play : ui.icon.play : settings.glyphsLoaded ? tempSplash ? ui.icon.pause : vlcPlayer.playing ? ui.icon.pause : vlcPlayer.state != 6 ? ui.icon.play : ui.icon.replay : ""
 					iconSize: fullscreen ? 14 : 13
 					anchors.left: prevBut.visible ? prevBut.right : parent.left
 					anchors.leftMargin: prevBut.visible ? 1 : 0
@@ -201,6 +202,7 @@ Rectangle {
 				// Start Mute Button
 				Loader.ToolbarButton {
 					id: mutebut
+					visible: castData.casting == 1 ? false : true
 					anchors.left: nextBut.visible ? nextBut.right : playButton.right
 					anchors.leftMargin: 1
 					icon: settings.glyphsLoaded ? vlcPlayer.state == 0 ? ui.icon.volume.medium : vlcPlayer.position == 0 && vlcPlayer.playlist.currentItem == 0 ? settings.automute == 0 ? ui.icon.volume.medium : ui.icon.mute : vlcPlayer.audio.mute ? ui.icon.mute : vlcPlayer.volume == 0 ? ui.icon.mute : vlcPlayer.volume <= 30 ? ui.icon.volume.low : vlcPlayer.volume > 30 && vlcPlayer.volume <= 134 ? ui.icon.volume.medium : ui.icon.volume.high : ""
@@ -237,7 +239,7 @@ Rectangle {
 					anchors.left: mutebut.right
 					anchors.leftMargin: settings.firstvolume == 1 ? 0 : mutebut.hover.containsMouse ? 130 : volumeMouse.dragger.containsMouse ? 130 : 0
 					color: ui.colors.toolbar.border
-					visible: borderVisible
+					visible: castData.casting == 1 ? false : borderVisible
 					Behavior on anchors.leftMargin { PropertyAnimation { duration: 250 } }
 				}
 	
@@ -251,7 +253,7 @@ Rectangle {
 					id: showtimetotal
 					anchors.left: showtime.right
 					anchors.leftMargin: 0
-					text: settings.errorLength == 6 ? settings.customLength > 0 ? " / "+ wjs.getLengthTime() : showtime.text.length > 5 ? " / 00:00:00" : " / 00:00" : " / "+ wjs.getLengthTime()
+					text: castData.casting == 1 ? " / "+ wjs.getLengthTime() : settings.errorLength == 6 ? settings.customLength > 0 ? " / "+ wjs.getLengthTime() : showtime.text.length > 5 ? " / 00:00:00" : " / 00:00" : " / "+ wjs.getLengthTime()
 					color: ui.colors.toolbar.lengthTime
 				}
 				// End "Time / Length" Text in Toolbar

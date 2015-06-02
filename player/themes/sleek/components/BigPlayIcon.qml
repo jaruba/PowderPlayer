@@ -6,6 +6,7 @@ Rectangle {
 	property alias icon: icon.text
 	property alias iconColor: icon.color
 	
+	z: 0
 	anchors.centerIn: parent
 	visible: false
 	height: fullscreen ? settings.gobigplay ? 170 : 85 : settings.gobigplay ? 150 : 75
