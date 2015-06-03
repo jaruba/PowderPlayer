@@ -422,6 +422,7 @@ Rectangle {
 			if (startsWith(message,"[pause-policy]")) ui.settings.pausePolicy = message.replace("[pause-policy]","");
 			if (startsWith(message,"[refresh-disabled]")) playlist.refreshDisabled();
 			if (startsWith(message,"[temp-splash]")) tempSplash = true;
+			if (startsWith(message,"[temp-splash-stop]")) tempSplash = false;
 			if (startsWith(message,"[temp-sel]")) tempSel = parseInt(message.replace("[temp-sel]",""));
 			if (startsWith(message,"[end-scan-library]")) {
 				if (parseInt(message.replace("[end-scan-library]","")) == 0) setText("No Episodes Found");
@@ -457,10 +458,11 @@ Rectangle {
 					pausetog.z = 1;
 					playtog.z = 1;
 				} else {
-					if (!subButton.visible) subButton.visible = true;
+					if (!castData.castingPaused && !subButton.visible) subButton.visible = true;
 					pausetog.z = 0;
 					playtog.z = 0;
 				}
+				if (castData.castingPaused && subButton.visible) subButton.visible = false;
 			}
 			if (startsWith(message,"[aspect-ratio]")) changeAspect(message.replace("[aspect-ratio]",""),"ratio");
 			if (startsWith(message,"[crop]")) changeAspect(message.replace("[crop]",""),"crop");
@@ -1062,7 +1064,7 @@ Rectangle {
 				} else {
 					return tempMinute + ":" + tempSecond;
 				}
-			} else return "00:00:00";
+			} else return "00:00";
 		}
 	}
 	

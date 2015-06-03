@@ -36,7 +36,7 @@ Rectangle {
 	property var savedSub: "-";
 	property var instantButEffect: 0; // for settings button
 	property variant disables: [];
-	property variant castData: { 'casting': 0 };
+	property variant castData: { 'casting': 0, 'castingPaused': 0 };
 	property var tempSplash: false;
 	property var tempSel: 0;
 	JsLogic.Settings { id: settings }
@@ -202,7 +202,7 @@ Rectangle {
 				// Start Mute Button
 				Loader.ToolbarButton {
 					id: mutebut
-					visible: castData.casting == 1 ? false : true
+					visible: castData.casting || castData.castingPaused ? false : true
 					anchors.left: nextBut.visible ? nextBut.right : playButton.right
 					anchors.leftMargin: 1
 					icon: settings.glyphsLoaded ? vlcPlayer.state == 0 ? ui.icon.volume.medium : vlcPlayer.position == 0 && vlcPlayer.playlist.currentItem == 0 ? settings.automute == 0 ? ui.icon.volume.medium : ui.icon.mute : vlcPlayer.audio.mute ? ui.icon.mute : vlcPlayer.volume == 0 ? ui.icon.mute : vlcPlayer.volume <= 30 ? ui.icon.volume.low : vlcPlayer.volume > 30 && vlcPlayer.volume <= 134 ? ui.icon.volume.medium : ui.icon.volume.high : ""
@@ -239,7 +239,7 @@ Rectangle {
 					anchors.left: mutebut.right
 					anchors.leftMargin: settings.firstvolume == 1 ? 0 : mutebut.hover.containsMouse ? 130 : volumeMouse.dragger.containsMouse ? 130 : 0
 					color: ui.colors.toolbar.border
-					visible: castData.casting == 1 ? false : borderVisible
+					visible: castData.casting || castData.castingPaused ? false : borderVisible
 					Behavior on anchors.leftMargin { PropertyAnimation { duration: 250 } }
 				}
 	

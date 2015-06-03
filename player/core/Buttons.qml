@@ -12,15 +12,27 @@ Rectangle {
 		if (contextblock.visible === true) contextblock.close();
 		
 		if (action == "play") if (typeof settings.preventClicked[action] === "undefined") {
-			wjs.togPause();
+			if ((!castData.casting && (settings.openingText == "Searching for Device ..." || settings.openingText == "Streaming to TV ..." || settings.openingText == "Updating playback position ..." || settings.openingText == "Starting DLNA Server ...")) || castData.castingPaused) {
+				wjs.setText("Not Allowed Yet");
+			} else wjs.togPause();
 		}
 		if (action == "prev") if (typeof settings.preventClicked[action] === "undefined") {
 			fireQmlMessage("[no-wait]");
-			vlcPlayer.playlist.prev();
+			if ((!castData.casting && (settings.openingText == "Searching for Device ..." || settings.openingText == "Streaming to TV ..." || settings.openingText == "Updating playback position ..." || settings.openingText == "Starting DLNA Server ...")) || castData.castingPaused) {
+				wjs.setText("Not Allowed Yet");
+			} else {
+				if (castData.casting) fireQmlMessage("[dlna-prev]");
+				else vlcPlayer.playlist.prev();
+			}
 		}
 		if (action == "next") if (typeof settings.preventClicked[action] === "undefined") {
 			fireQmlMessage("[no-wait]");
-			vlcPlayer.playlist.next();
+			if ((!castData.casting && (settings.openingText == "Searching for Device ..." || settings.openingText == "Streaming to TV ..." || settings.openingText == "Updating playback position ..." || settings.openingText == "Starting DLNA Server ...")) || castData.castingPaused) {
+				wjs.setText("Not Allowed Yet");
+			} else {
+				if (castData.casting) fireQmlMessage("[dlna-next]");
+				else vlcPlayer.playlist.next();
+			}
 		}
 		if (action == "mute") if (typeof settings.preventClicked[action] === "undefined") {
 			wjs.toggleMute();
