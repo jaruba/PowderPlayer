@@ -20,7 +20,7 @@ body {
 	height: 100%
 }
 #player_wrapper {
-    min-height: 1px;
+    min-height: 100%;
     height: 1px;
 	width: 1px;
     margin: 0 auto;
