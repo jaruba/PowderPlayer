@@ -30,3 +30,12 @@ Current Features
 - Supports Playlist of Torrents
 
 - "Scan Library" and "Scan Server" features that either scan the download folder or the internet in order to try to add similar torrents/videos to your current playlist.
+
+
+Screenshots
+==============
+<img src="http://powder.media/screenshots/PowderPlayer-1.png">
+
+<img src="http://powder.media/screenshots/PowderPlayer-2.png">
+
+<img src="http://powder.media/screenshots/PowderPlayer-4.png">
