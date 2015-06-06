@@ -38,4 +38,4 @@ Screenshots
 
 <img src="http://powder.media/screenshots/PowderPlayer-2.png">
 
-<img src="http://powder.media/screenshots/PowderPlayer-4.png">
+<img src="http://powder.media/screenshots/PowderPlayer--4.png">
