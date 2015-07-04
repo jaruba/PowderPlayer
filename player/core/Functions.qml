@@ -13,8 +13,8 @@ Rectangle {
 	property var tempSecond: 0;
 	property var pli: 0;
 	property var plstring: "";
-	property var oldRatioWidth: 0;
-	property var oldRatioHeight: 0;
+	property var oldAspectType: "Default";
+	property var oldAspectValue: "Default";
 	property var itemnr: 0;
 	property var firstSecond: 0;
 	property var mediaChanged: 0;
@@ -607,11 +607,13 @@ Rectangle {
 		
 			settings.ismoving = 1;
 		
-			oldRatioWidth = videoSource.width / videoSource.parent.width;
-			oldRatioHeight = videoSource.height / videoSource.parent.height;
-			
 			progressBar.effectDuration = 0;
 			toggleFullscreen();
+
+			if (oldAspectType != "Default") {
+				if (oldAspectType == "zoom") changeZoom(oldAspectValue);
+				else changeAspect(oldAspectValue,oldAspectType);
+			} else resetAspect();
 			
 			if (settings.multiscreen == 0) progressBar.effectDuration = 250;
 		}
@@ -621,9 +623,9 @@ Rectangle {
 	// Start Reset Video Layer Size When Plugin Area Changed Size ( required by togFullscreen() )
 	function onSizeChanged() {
 		if (contextblock.visible) contextblock.close();
-		if ((oldRatioWidth > 0 && oldRatioHeight > 0) || (oldRatioWidth > 0 || oldRatioHeight > 0)) {
-			videoSource.width = videoSource.parent.width * oldRatioWidth;
-			videoSource.height = videoSource.parent.height * oldRatioHeight;
+		if (oldAspectType != "Default") {
+			if (oldAspectType == "zoom") changeZoom(oldAspectValue);
+			else changeAspect(oldAspectValue,oldAspectType);
 		} else resetAspect();
 		
 		if ((videoSource.width < 400 && videoSource.height < 250) || (videoSource.width < 400 || videoSource.height < 250)) {
@@ -1229,12 +1231,26 @@ Rectangle {
 	
 	// START VIDEO LAYER EFFECTS FUNCTIONS
 	
+	function gcd(a,b) {
+		if(b>a) {
+			var temp = a;
+			a = b;
+			b = temp;
+		}
+		while(b!=0) {
+			var m=a%b;
+			a=b;
+			b=m;
+		}
+		return a;
+	}
+	
 	// Start Change Zoom Mode
 	function changeZoom(newzoom) {
 		videoSource.width = videoSource.parent.width * newzoom;
 		videoSource.height = videoSource.parent.height * newzoom;
-		oldRatioWidth = videoSource.width / videoSource.parent.width;
-		oldRatioHeight = videoSource.height / videoSource.parent.height;
+		oldAspectType = "zoom";
+		oldAspectValue = newzoom;
 	}
 	// End Change Zoom Mode
 	
@@ -1252,31 +1268,26 @@ Rectangle {
 		// Start Set New Video Layer Size
 		var res = newaspect.split(":");
 		
-		var maxWidth = videoSource.parent.width;
-		var maxHeight = videoSource.parent.height;
-	
-		if (maxWidth < maxHeight) {
-			var width = maxWidth * parseFloat(res[0]);
-			var height = maxWidth * parseFloat(res[1]);
+		var ratio = gcd(vlcPlayer.video.width,vlcPlayer.video.height);
+		
+		var destAspect = videoSource.parent.width / videoSource.parent.height;
+		
+		if (ratio) var sourceAspect = (ratio * parseFloat(res[0])) / (ratio * parseFloat(res[1]));
+		else var sourceAspect = vlcPlayer.video.width / vlcPlayer.video.height;
+		
+		var cond = destAspect > sourceAspect;
+
+		if (cond) {
+			videoSource.height = videoSource.parent.height;
+			videoSource.width = videoSource.parent.height * sourceAspect;
 		} else {
-			var width = maxHeight * parseFloat(res[0]);
-			var height = maxHeight * parseFloat(res[1]);
+			videoSource.height = videoSource.parent.width / sourceAspect;
+			videoSource.width = videoSource.parent.width;
 		}
-	
-		if (width > maxWidth) {
-			videoSource.width = maxWidth;
-			videoSource.height = height * (maxWidth / width);
-		}
-		if (height > maxHeight) {
-			videoSource.height = maxHeight;
-			videoSource.width = width * (maxHeight / height);
-		}
-		if (height <= maxHeight && width <= maxWidth) {
-			videoSource.width = width;
-			videoSource.height = height;
-		}
-		oldRatioWidth = videoSource.width / videoSource.parent.width;
-		oldRatioHeight = videoSource.height / videoSource.parent.height;
+		
+		oldAspectType = newtype;
+		oldAspectValue = newaspect;
+		
 		// End Set New Video Layer Size
 	}
 	
@@ -1287,8 +1298,8 @@ Rectangle {
 		videoSource.fillMode = VlcVideoSurface.PreserveAspectFit;
 		videoSource.width = videoSource.parent.width;
 		videoSource.height = videoSource.parent.height;
-		oldRatioWidth = 0;
-		oldRatioHeight = 0;
+		oldAspectType = "Default";
+		oldAspectValue = "Default";
 	}
 	// End Change Aspect Ratio
 	
