@@ -2,7 +2,7 @@
   "name": "Powder",
   "description": "Hybrid between a Torrent Client and a Player",
   "main": "app://powder/mask.html",
-  "version": "0.70",
+  "version": "0.75",
   "author": "Branza Alexandru (@jaruba)",
   "homepage": "http://powder.media/",
   "contributors": [{
