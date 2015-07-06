@@ -162,8 +162,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
             <div onClick="regMagnet(); return false" class="actionButton droid-bold">Associate with Magnet Links</div>
             <div onClick="regTorrent(); return false" class="actionButton droid-bold">Associate with Torrent Files</div>
             <div onClick="regVideos(); return false" class="actionButton droid-bold">Associate with Video Files</div>
-            <div onClick="changeClickPause(); return false" class="actionButton wrap-text"><span class="droid-bold">Click to Pause:</span> <span id="click-pause">only in Fullscreen</span></div>
-            <div onClick="chooseFile('#libraryDialog'); return false" class="actionButton wrap-text"><span class="droid-bold">Library Folder:</span> <span id="lib-folder">Temp</span></div>
+            <div class="actionButton wrap-text"><span class="droid-bold">Video Player: <select id="use-player"><option>Internal</option><option>VLC</option></select></span></div>
+            <div onClick="changeClickPause(); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold">Click to Pause:</span> <span id="click-pause">only in Fullscreen</span></div>
+            <div onClick="chooseFile('#libraryDialog'); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold">Library Folder:</span> <span id="lib-folder">Temp</span></div>
             <div id="closeAction" class="third-animated-close actionButton">Close</div>
         </center>
     </div>
