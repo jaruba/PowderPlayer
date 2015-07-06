@@ -31,6 +31,8 @@ Current Features
 
 - "Scan Library" and "Scan Server" features that either scan the download folder or the internet in order to try to add similar torrents/videos to your current playlist.
 
+- Ability to use VLC instead of Internal Player
+
 
 Screenshots
 ==============
