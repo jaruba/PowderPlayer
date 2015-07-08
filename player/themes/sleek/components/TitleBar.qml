@@ -12,7 +12,6 @@ Rectangle {
 	color: "transparent"
 	Rectangle {
 		id: topBarBackground
-		visible: (vlcPlayer.state == 3 || vlcPlayer.state == 4 || vlcPlayer.state == 6) ? fullscreen ? true : false : false
 		width: parent.width
 		height: 34
 		anchors.top: parent.top

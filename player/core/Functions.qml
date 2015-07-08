@@ -33,6 +33,11 @@ Rectangle {
 	}
 	// End add startsWith function
 	
+	function isLocal() {
+		if (startsWith(vlcPlayer.playlist.items[vlcPlayer.playlist.currentItem].mrl,"file:///")) return true;
+		else return false;
+	}
+	
 	// add isJson function
 	function isJson(source) {
 		try {
@@ -50,8 +55,10 @@ Rectangle {
 	
 	// Start on Buffering Changed
 	function onBuffering( percents ) {
-		buftext.changeText = "Buffering " + percents +"%"; // Announce Buffering Percent
-		settings.buffering = percents; // Set Global Variable "buffering"
+		if (!isLocal()) {
+			buftext.changeText = "Buffering " + percents +"%"; // Announce Buffering Percent
+			settings.buffering = percents; // Set Global Variable "buffering"
+		} else settings.buffering = -1;
 		
 		if (percents == 100 && pauseAfterBuffer == 1) {
 			pauseAfterBuffer = 0;
@@ -169,7 +176,8 @@ Rectangle {
 	// Start on State Changed
 	function onState() {
 		if (vlcPlayer.state == 1) {
-			buftext.changeText = "Opening";
+			if (!isLocal()) buftext.changeText = "Opening";
+			else buftext.changeText = "";
 			
 			if (lastItem != vlcPlayer.playlist.currentItem) lastItem = vlcPlayer.playlist.currentItem;
 			if (lastItem == -1) lastItem = 0;

@@ -128,7 +128,7 @@ Rectangle {
 			id: topText
 			fontColor: ui.colors.titleBar.font
 			backgroundColor: ui.colors.titleBar.background
-			isVisible: settings.uiVisible == 0 ? false : (vlcPlayer.state == 3 || vlcPlayer.state == 4 || vlcPlayer.state == 6) ? ui.settings.titleBar == "fullscreen" ? fullscreen ? true : false : ui.settings.titleBar == "minimized" ? fullscreen === false ? true : false : ui.settings.titleBar == "both" ? true : ui.settings.titleBar == "none" ? false : false : false
+			isVisible: (fullscreen && wjs.isLocal()) ? true : settings.uiVisible == 0 ? false : (vlcPlayer.state == 3 || vlcPlayer.state == 4 || vlcPlayer.state == 6) ? ui.settings.titleBar == "fullscreen" ? fullscreen ? true : false : ui.settings.titleBar == "minimized" ? fullscreen === false ? true : false : ui.settings.titleBar == "both" ? true : ui.settings.titleBar == "none" ? false : false : false
 			icon: settings.glyphsLoaded ? ui.icon.settings : ""
 			iconSize: fullscreen ? 16 : 15
 		}
