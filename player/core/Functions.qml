@@ -34,8 +34,11 @@ Rectangle {
 	// End add startsWith function
 	
 	function isLocal() {
-		if (startsWith(vlcPlayer.playlist.items[vlcPlayer.playlist.currentItem].mrl,"file:///")) return true;
-		else return false;
+		if (vlcPlayer.playlist.currentItem > -1) {
+			if (startsWith(vlcPlayer.playlist.items[vlcPlayer.playlist.currentItem].mrl,"file:///")) localFile = true;
+			else localFile = false;
+		} else localFile = false;
+		return localFile;
 	}
 	
 	// add isJson function

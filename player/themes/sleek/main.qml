@@ -39,6 +39,7 @@ Rectangle {
 	property variant castData: { 'casting': 0, 'castingPaused': 0 };
 	property var tempSplash: false;
 	property var tempSel: 0;
+	property var localFile: false;
 	JsLogic.Settings { id: settings }
 	JsLogic.Functions { id: wjs }
 	JsLogic.Hotkeys { id: hotkeys }

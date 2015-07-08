@@ -10,7 +10,7 @@ Rectangle {
 
 	id: root
 	anchors.fill: parent
-	visible: wjs.isLocal() ? false : tempSplash ? true : vlcPlayer.state < 3 || vlcPlayer.state == 5 ? true : goneBack == 1 ? true : false
+	visible: localFile ? false : tempSplash ? true : vlcPlayer.state < 3 || vlcPlayer.state == 5 ? true : goneBack == 1 ? true : false
 	// If Playlist is Open Show Top Text
 	Text {
 		id: openingtext
