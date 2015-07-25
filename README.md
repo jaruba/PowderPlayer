@@ -7,6 +7,8 @@ It can do everything that a Torrent Client can, everything that a Video/Audio Pl
 
 *When streaming a Video from a Torrent, you can Right Click and select Torrent Data in order to see the Torrent Control Panel.*
 
+[**Building Instructions**](https://github.com/jaruba/PowderPlayer/wiki)
+
 Current Features
 ==============
 - Downloads Subtitles in All Languages from Open Subtitles
