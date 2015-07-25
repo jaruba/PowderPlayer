@@ -5,29 +5,23 @@
   "version": "0.7.5",
   "author": "Branza Alexandru (@jaruba)",
   "homepage": "http://powder.media/",
-  "contributors": [{
-    "name": "Branza Alexandru",
-    "email": "branza.alex@gmail.com"
-  }],
-  "licenses": [{
-    "type": "GPLv2",
-    "url": "https://github.com/jaruba/PowderPlayer/blob/master/LICENSE"
-  }],
-  "bugs": {
-    "url": "https://github.com/jaruba/PowderPlayer/issues"
-  },
+  "license" : "LGPL-2.1",
+  "author": "Branza Victor-Alexandru <branza.alex@gmail.com>",
   "repository": {
     "type": "git", 
     "url": "git://github.com/jaruba/PowderPlayer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jaruba/PowderPlayer/issues"
   },
   "chromium-args": "--d3d9 --disable-d3d11 --gpu-no-context-lost",
   "single-instance": false,
   "window": {
     "icon": "icon.png",
-	"position": "mouse",
+    "position": "mouse",
     "toolbar": true,
     "frame": true,
-	"transparent": false,
+    "transparent": false,
     "width": 530,
     "height": 460,
     "min_width": 530,
@@ -39,15 +33,17 @@
     "dns": "*",
     "mime-types": "*",
     "node-ssdp": "*",
-    "node-windows": "*",
-	"opensubtitles": "*",
-	"opensubtitles-client": "jaruba/node-opensubtitles-client",
-	"peerflix": "jaruba/peerflix",
-	"read-torrent": "*",
-	"request": "*",
-	"upnp-mediarenderer-client": "*",
-	"windows": "*",
-	"xmlrpc": "*",
+    "opensubtitles": "*",
+    "opensubtitles-client": "jaruba/node-opensubtitles-client",
+    "peerflix": "jaruba/peerflix",
+    "read-torrent": "*",
+    "request": "*",
+    "upnp-mediarenderer-client": "*",
+    "xmlrpc": "*",
     "pw-wcjs-player": "jaruba/pw-wcjs-player"
+  },
+  "optionalDependencies": {
+    "node-windows": "*",
+    "windows": "*"
   }
 }
