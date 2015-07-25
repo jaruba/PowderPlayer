@@ -1,5 +1,7 @@
 node_modules/
 locales/
+player/
+plugins/
 credits.html
 d3dcompiler_47.dll
 ffmpegsumo.dll
