@@ -41,6 +41,16 @@
 	<script>
 	localStorage.doUpdate = "0";
 	
+	var isWin = /^win/.test(process.platform);
+	
+	if (isWin) {
+		var pathBreak = "\\",
+			appExt = ".exe";
+	} else {
+		var pathBreak = "/",
+			appExt = "";
+	}
+	
 	var request = require('request'),
 		gui = require('nw.gui'),
 		fs = require('fs');
@@ -105,7 +115,7 @@
 	}
 	
 	function startDownload() {
-		var out = fs.createWriteStream(gui.App.dataPath+'\\updater.exe');
+		var out = fs.createWriteStream(gui.App.dataPath+pathBreak+'updater'+appExt);
 		
 		$("#starter").css("display","none");
 		$("#downloader").css("display","block");
@@ -135,7 +145,7 @@
 	}
 	function runUpdate() {
 		localStorage.doUpdate = "1";
-		gui.Shell.openExternal(gui.App.dataPath+'\\updater.exe');
+		gui.Shell.openExternal(gui.App.dataPath+pathBreak+'updater'+appExt);
 		win.close();
 	}
     </script>
