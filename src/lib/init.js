@@ -45,6 +45,10 @@ setTimeout(function() {
 	wjs().onState(changedState);
 	wjs().onError(handleErrors);
 	wjs().onFrameSetup(gotVideoSize);
+	wjs().onMediaChanged(function() {
+		// reset checked items in context menu
+		resetMenus([4,5,6]);
+	});
 	
 	wjs().onEnded(function() { disableCtxMenu(); });
 	wjs().onStopped(function() { disableCtxMenu(); });

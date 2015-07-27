@@ -45,16 +45,27 @@ zooms.forEach(function(el,i) {
 	zoomMenu.append(new gui.MenuItem(mnOpts));
 });
 
+function resetMenus(menus,sel) {
+	menus.forEach(function(subMenu) {
+		if (playerMenu.items[subMenu].submenu.items[sel] && !playerMenu.items[subMenu].submenu.items[sel].checked) {
+			playerMenu.items[subMenu].submenu.items.forEach(function(el,ij) {
+				if (ij == sel) el.checked = true;
+				else if (el.checked) el.checked = false;
+			});
+		}
+	});
+}
+
 function selectAudio(i) {
 	playerMenu.items[2].submenu.items.forEach(function(el,ij) {
 		if (el.checked) el.checked = false;
 	});
-	console.log(i);
 	playerMenu.items[2].submenu.items[i].checked = true;
 	wjs().audioTrack(i);
 }
 
 function selectAspect(i) {
+	resetMenus([5,6]);
 	playerMenu.items[4].submenu.items.forEach(function(el,ij) {
 		if (el.checked) el.checked = false;
 	});
@@ -63,6 +74,7 @@ function selectAspect(i) {
 }
 
 function selectCrop(i) {
+	resetMenus([4,6]);
 	playerMenu.items[5].submenu.items.forEach(function(el,ij) {
 		if (el.checked) el.checked = false;
 	});
@@ -71,6 +83,7 @@ function selectCrop(i) {
 }
 
 function selectZoom(i,newZoom) {
+	resetMenus([4,5]);
 	playerMenu.items[6].submenu.items.forEach(function(el,ij) {
 		if (el.checked) el.checked = false;
 	});
