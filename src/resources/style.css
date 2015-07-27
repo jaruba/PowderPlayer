@@ -8,7 +8,7 @@
 }
 @font-face {
   font-family: 'Glyphs';
-  src: url('../node_modules/pw-wcjs-player/fonts/glyphicons.ttf');
+  src: url('../../node_modules/pw-wcjs-player/fonts/glyphicons.ttf');
 }
 * { margin: 0 }
 html, body { height: 100% }
