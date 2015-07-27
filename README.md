@@ -1,4 +1,4 @@
-![alt tag](https://raw.github.com/jaruba/PowderPlayer/master/images/powder-logo.png)
+![alt tag](https://raw.githubusercontent.com/jaruba/PowderPlayer/master/src/images/powder-logo.png)
 
 <br/>
 Powder is the future of all torrent requirements, it's a hybrid between a Torrent Client ([Peerflix](https://github.com/mafintosh/peerflix)) and a Customized Player ([WebChimera](http://www.webchimera.org/)).
