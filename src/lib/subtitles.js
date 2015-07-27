@@ -32,7 +32,7 @@ function subtitlesByExactHash(hash,fileSize,tag) {
 	if (wjs().itemCount() > 0) {
 		opensubtitles.api.login().done(function(token){
 			powGlobals.osToken = token;
-			utils = require('./node_modules/opensubtitles-client/lib/Utils.js')
+			utils = require('../node_modules/opensubtitles-client/lib/Utils.js')
 			utils._getAllPostData(powGlobals.osToken, "all", hash, fileSize, tag).done(function(postData){
 				utils.request("http://api.opensubtitles.org/xml-rpc", postData).done(function(response){
 					try{
