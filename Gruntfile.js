@@ -116,7 +116,7 @@ module.exports = function (grunt) {
         unzip: {
             win: {
                 src: 'cache/vlc_2.2.1_win_ia32_with_avi_fix.zip',
-                dest: 'cache/vlc/'
+                dest: 'node_modules/pw-wcjs-player/node_modules/wcjs-renderer/node_modules/webchimera.js/build/Release'
             }
         },
         download: {
