@@ -1,49 +1,57 @@
 {
-  "name": "powder-player",
-  "description": "Hybrid between a Torrent Client and a Player",
-  "main": "app://powder/mask.html",
-  "version": "0.7.5",
-  "author": "Branza Alexandru (@jaruba)",
-  "homepage": "http://powder.media/",
-  "license" : "LGPL-2.1",
-  "author": "Branza Victor-Alexandru <branza.alex@gmail.com>",
-  "repository": {
-    "type": "git", 
-    "url": "git://github.com/jaruba/PowderPlayer.git"
-  },
-  "bugs": {
-    "url": "https://github.com/jaruba/PowderPlayer/issues"
-  },
-  "chromium-args": "--d3d9 --disable-d3d11 --gpu-no-context-lost",
-  "single-instance": false,
-  "window": {
-    "icon": "icon.png",
-    "position": "mouse",
-    "toolbar": true,
-    "frame": true,
-    "transparent": false,
-    "width": 530,
-    "height": 460,
-    "min_width": 530,
-    "min_height": 460
-  },
-  "dependencies": {
-    "dns": "*",
-    "fs": "*",
-    "dns": "*",
-    "mime-types": "*",
-    "node-ssdp": "*",
-    "opensubtitles": "*",
-    "opensubtitles-client": "jaruba/node-opensubtitles-client",
-    "peerflix": "jaruba/peerflix",
-    "read-torrent": "*",
-    "request": "*",
-    "upnp-mediarenderer-client": "*",
-    "xmlrpc": "*",
-    "pw-wcjs-player": "jaruba/pw-wcjs-player"
-  },
-  "optionalDependencies": {
-    "node-windows": "*",
-    "windows": "*"
-  }
+    "name": "powder-player",
+    "description": "Hybrid between a Torrent Client and a Player",
+    "main": "app://host/src/mask.html",
+    "version": "0.7.5",
+    "author": "Branza Victor-Alexandru <branza.alex@gmail.com>",
+    "homepage": "http://powder.media/",
+    "license": "LGPL-2.1",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/jaruba/PowderPlayer.git"
+    },
+    "bugs": {
+        "url": "https://github.com/jaruba/PowderPlayer/issues"
+    },
+    "chromium-args": "--d3d9 --disable-d3d11 --gpu-no-context-lost",
+    "single-instance": false,
+    "window": {
+        "icon": "icon.png",
+        "position": "mouse",
+        "toolbar": true,
+        "frame": true,
+        "transparent": false,
+        "width": 530,
+        "height": 460,
+        "min_width": 530,
+        "min_height": 460
+    },
+    "dependencies": {
+        "dns": "*",
+        "fs": "*",
+        "mime-types": "*",
+        "node-ssdp": "*",
+        "opensubtitles": "*",
+        "opensubtitles-client": "jaruba/node-opensubtitles-client",
+        "peerflix": "jaruba/peerflix",
+        "read-torrent": "*",
+        "request": "*",
+        "upnp-mediarenderer-client": "*",
+        "xmlrpc": "*",
+        "pw-wcjs-player": "jaruba/pw-wcjs-player"
+    },
+    "optionalDependencies": {
+        "node-windows": "*",
+        "windows": "*"
+    },
+    "devDependencies": {
+        "grunt": "^0.4.5",
+        "grunt-contrib-copy": "^0.8.0",
+        "grunt-download": "^0.2.0",
+        "grunt-exec": "0.4.x",
+        "grunt-nw-builder": "^2.0.0",
+        "grunt-shell": "^1.1.2",
+        "grunt-zip": "^0.16.2",
+        "load-grunt-tasks": "3.1.0"
+    }
 }
