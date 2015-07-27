@@ -48,6 +48,9 @@ module.exports = function (grunt) {
         'vlc:copy'
     ]);
 
+    grunt.registerTask('build', [
+        'nwjs'
+    ]);
 
     grunt.registerTask('start', function () {
         var start = parseBuildPlatforms();
