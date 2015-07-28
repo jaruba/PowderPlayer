@@ -16,6 +16,7 @@ function delayLoadHistory(targetHistory) {
     return function(){
 		wjs().playItem(targetHistory.currentItem);
 		win.title = getName(targetHistory.playlist[wjs().currentItem()].title);
+		winTitleLeft(getName(targetHistory.playlist[wjs().currentItem()].title));
     }
 }
 

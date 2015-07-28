@@ -1,6 +1,6 @@
 gui.Screen.Init();
-var win = gui.Window.get();
-win.zoomLevel = -1;
+var win = gui.Window.get(),
+    allowScrollHotkeys = true;
 
 win.on('focus', function() { focused = true; win.setProgressBar(-0.1); }); 
 win.on('blur', function() {
@@ -44,9 +44,9 @@ $.fn.scrollEnd = function(callback, timeout) {
   });
 };
 
-$(window).scrollEnd(function(){
-    if ($(document).scrollTop() == 0) if (powGlobals.engine) if (powGlobals.hasVideo > 0) {
-		if ($("body").css("overflow-y") == "visible" || $("body").css("overflow-y") == "auto") $("body").css("overflow-y","hidden");
+$("#inner-in-content").scrollEnd(function(){
+    if ($("#inner-in-content").scrollTop() == 0) if (powGlobals.engine) if (powGlobals.hasVideo > 0) {
+		if (["visible","auto"].indexOf($("#inner-in-content").css("overflow-y")) > -1) $("#inner-in-content").css("overflow-y","hidden");
 		win.setMinimumSize(372, 210);
 		if (!wjs().isPlaying()) if (!castData.casting && wjs().state() != "stopping") wjs().togglePause();
 	}
@@ -54,20 +54,20 @@ $(window).scrollEnd(function(){
 
 $(window).resize(function() {
 	if ($('#main').css("display") == "table") {
-		if ($(window).height() < $("#main").height() && win.zoomLevel == 0) {
-			if (win.zoomLevel > -1) win.zoomLevel = -1;
-		} else if ($(window).width() < $("#main").width() && win.zoomLevel == 0) {
-			if (win.zoomLevel > -1) win.zoomLevel = -1;
-		} else if ($(window).width() > 730 && $(window).height() > 650 && win.zoomLevel == -1) {
-			if (win.zoomLevel < 0) win.zoomLevel = 0;
+		if ($(window).height() < $("#main").height() && !$("body").hasClass("mini")) {
+			$("body").addClass("mini");
+		} else if ($(window).width() < $("#main").width() && !$("body").hasClass("mini")) {
+			$("body").addClass("mini");
+		} else if ($(window).width() > 730 && $(window).height() > 650 && $("body").hasClass("mini")) {
+			 $("body").removeClass("mini");
 		}
 		$('#open-url').css('top', Math.round(($(window).height() - 187) / 2)+'px');
 	} else {
-		if (win.zoomLevel != 0) win.zoomLevel = 0;
 		if (wjs()) {
-			if ($(window).width() <= 425 && wjs().wrapper.find(".wcp-add-url").is(":visible")) wjs().wrapper.find(".wcp-add-url").hide(0);
-			else if ($(window).width() > 425 && !wjs().wrapper.find(".wcp-add-url").is(":visible")) player.wrapper.find(".wcp-add-url").show(0);
+			if ($(window).width() <= 425 && wjs().find(".wcp-add-url").css("display") == "inline") wjs().find(".wcp-add-url").css("display","none");
+			else if ($(window).width() > 425 && wjs().find(".wcp-add-url").css("display") == "none") wjs().find(".wcp-add-url").css("display","inline");
 		}
+		if ($("body").hasClass("mini")) $("body").removeClass("mini");
 		$("#filesList").css("min-height",$("#player_wrapper").height());
 	}
 });

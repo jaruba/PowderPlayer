@@ -131,12 +131,12 @@ function goBack(nextTorrent) {
 			win.setAlwaysOnTop(false);
 		}
 
-		if ($(window).height() < $("#main").height() && win.zoomLevel == 0) {
-			if (win.zoomLevel > -1) win.zoomLevel = -1;
-		} else if ($(window).width() < $("#main").width() && win.zoomLevel == 0) {
-			if (win.zoomLevel > -1) win.zoomLevel = -1;
-		} else if ($(window).width() > 730 && $(window).height() > 650 && win.zoomLevel == -1) {
-			if (win.zoomLevel < 0) win.zoomLevel = 0;
+		if ($(window).height() < $("#main").height() && !$("body").hasClass("mini")) {
+			$("body").addClass("mini");
+		} else if ($(window).width() < $("#main").width() && !$("body").hasClass("mini")) {
+			$("body").addClass("mini");
+		} else if ($(window).width() > 730 && $(window).height() > 650 && $("body").hasClass("mini")) {
+			 $("body").removeClass("mini");
 		}
 		$('#open-url').css('top', Math.round(($(window).height() - 187) / 2)+'px');
 		wjs().clearPlaylist();
@@ -189,6 +189,7 @@ function goBack(nextTorrent) {
 		firstTimeEver = 1;
 		firstSize = 1;
 		win.title = "Powder Player";
+		winTitleCenter("Powder Player");
 	}
 }
 
@@ -227,6 +228,7 @@ if (localStorage.useVLC == "1") {
 }
 
 function torrentData() {
+	allowScrollHotkeys = false;
 	if (wjs().fullscreen()) wjs().fullscreen(false);
 	if (wjs().playing()) wjs().pause();
 	win.setMinimumSize(448, 370);
@@ -234,12 +236,12 @@ function torrentData() {
 		win.width = 448;
 		win.height = 370;
 		$("#filesList").css("min-height",448);
-		$("html, body").animate({ scrollTop: 448 }, "slow");
+		$("#inner-in-content").animate({ scrollTop: 448 }, "slow");
 	} else {
 		$("#filesList").css("min-height",$("#player_wrapper").height());
-		$("html, body").animate({ scrollTop: $("#player_wrapper").height() }, "slow");
+		$("#inner-in-content").animate({ scrollTop: $("#player_wrapper").height() }, "slow");
 	}
-	$("body").css("overflow-y","visible");
+	$("#inner-in-content").css("overflow-y","visible");
 }
 
 function urlFormAction() {
