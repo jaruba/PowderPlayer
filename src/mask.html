@@ -187,6 +187,14 @@ body {
 #filesList {
   background: #fff
 }
+
+.lean-overlay {
+  top: 34px !important;
+  left: 6px !important;
+  height: calc(100% - 40px) !important;
+  width: calc(100% - 12px) !important;
+}
+
 </style>
 
     <script src="resources/jquery-2.1.3.min.js"></script>
@@ -396,6 +404,10 @@ body {
     <script src="lib/window.js"></script>
     <script src="lib/frameless_window.js"></script>
 	<script src="lib/titlebar.js"></script>
+    <script>
+    updateContentStyle();
+	centerInScreen();
+    </script>
     <script src="lib/keep_awake/index.js"></script>
     <script src="lib/dlna.js"></script>
     <script src="lib/check_internet.js"></script>
@@ -419,7 +431,6 @@ body {
     addButtonHandlers("top-titlebar-maximize-button", "maximize.png", "maximize_hover.png", winMax);
     addButtonHandlers("top-titlebar-restore-button", "restore.png", "restore_hover.png", winRestore);
     addButtonHandlers("top-titlebar-minimize-button", "minimize.png", "minimize_hover.png", winMin);
-    updateContentStyle();
     </script>
 </body>
 </html>

@@ -127,13 +127,6 @@
   font-size: 17px;
 }
 
-.mini .lean-overlay {
-  top: 34px !important;
-  left: 6px !important;
-  height: calc(100% - 40px) !important;
-  width: calc(100% - 12px) !important;
-}
-
 .mini .third-easy-modal-animated {
   margin-top: -20px !important;
 }

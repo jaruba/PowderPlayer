@@ -72,7 +72,8 @@ $(window).resize(function() {
 	}
 });
 
-function resizeInBounds(newWidth,newHeight) {
+
+function centerInScreen() {
 	// find the screen where the window is
 	gui.Screen.screens.some(function(screen,i) {
 		// check if the window is horizontally inside the bounds of this screen
@@ -82,49 +83,74 @@ function resizeInBounds(newWidth,newHeight) {
 		} else if (i == 0 && parseInt(win.x) <= parseInt(screen.bounds.x)) inTheScreen = 1;
 		if (inTheScreen) {
 			// resize the window, but keep it in bounds
-			if (parseInt(newWidth) >= parseInt(screen.work_area.width)) {
-				if (parseInt(newHeight) >= parseInt(screen.work_area.height)) {
-					win.resizeTo(screen.work_area.width, screen.work_area.height);
-					win.moveTo(0,0);
-				} else {
-					win.resizeTo(screen.work_area.width, newHeight);
-					win.moveTo(0,Math.floor((screen.work_area.height - newHeight)/2));
-				}
+			win.moveTo((screen.work_area.width - win.width)/2,(screen.work_area.height - win.height)/2);
+			return false;
+		}
+	});
+	// end find the screen where the window is
+}
+
+function resizeInBounds(newWidth,newHeight) {
+	// find the screen where the window is
+	gui.Screen.screens.some(function(screen,i) {
+		// check if the window is horizontally inside the bounds of this screen
+		var inTheScreen = 0;
+		if (parseInt(win.x) > parseInt(screen.bounds.x) && parseInt(win.x) < (parseInt(screen.bounds.x) + parseInt(screen.work_area.width))) {
+			inTheScreen = 1;
+		} else if (i == 0 && parseInt(win.x) <= parseInt(screen.bounds.x)) inTheScreen = 1;
+		if (inTheScreen) {
+			// if perfectly centered, keep it centered
+			if (win.x == (screen.work_area.width - win.width)/2 && win.y == (screen.work_area.height - win.height)/2) {
+				win.moveTo((screen.work_area.width - newWidth)/2,(screen.work_area.height - newHeight)/2);
+				win.resizeTo(newWidth, newHeight);
 			} else {
-				if (parseInt(newHeight) >= parseInt(screen.work_area.height)) {
-					win.resizeTo(newWidth, screen.work_area.height);
-					win.moveTo(Math.floor((screen.work_area.width - newWidth)/2),0);
-				} else {
-					win.resizeTo(newWidth, newHeight);
-					if ((parseInt(win.x) + parseInt(newWidth)) > parseInt(screen.work_area.width)) {
-						if ((parseInt(win.y) + parseInt(newHeight)) > parseInt(screen.work_area.height)) {
-							win.moveTo((screen.work_area.width - newWidth),(screen.work_area.height - newHeight));
-						} else if (parseInt(win.y) < 0) {
-							win.moveTo((screen.work_area.width - newWidth),0);
-						} else {
-							win.moveTo((screen.work_area.width - newWidth),win.y);
-						}
+				// resize the window, but keep it in bounds
+				if (parseInt(newWidth) >= parseInt(screen.work_area.width)) {
+					if (parseInt(newHeight) >= parseInt(screen.work_area.height)) {
+						win.resizeTo(screen.work_area.width, screen.work_area.height);
+						win.moveTo(0,0);
 					} else {
-						if ((parseInt(win.y) + parseInt(newHeight)) > parseInt(screen.work_area.height)) {
-							if (parseInt(win.x) < 0) {
-								win.moveTo(0,(screen.work_area.height - newHeight));
+						win.resizeTo(screen.work_area.width, newHeight);
+						win.moveTo(0,Math.floor((screen.work_area.height - newHeight)/2));
+					}
+				} else {
+					if (parseInt(newHeight) >= parseInt(screen.work_area.height)) {
+						win.resizeTo(newWidth, screen.work_area.height);
+						win.moveTo(Math.floor((screen.work_area.width - newWidth)/2),0);
+					} else {
+						win.resizeTo(newWidth, newHeight);
+						if ((parseInt(win.x) + parseInt(newWidth)) > parseInt(screen.work_area.width)) {
+							if ((parseInt(win.y) + parseInt(newHeight)) > parseInt(screen.work_area.height)) {
+								win.moveTo((screen.work_area.width - newWidth),(screen.work_area.height - newHeight));
+							} else if (parseInt(win.y) < 0) {
+								win.moveTo((screen.work_area.width - newWidth),0);
 							} else {
-								win.moveTo(win.x,(screen.work_area.height - newHeight));
-							}
-						} else if (parseInt(win.y) < 0) {
-							if (parseInt(win.x) < 0) {
-								win.moveTo(0,0);
-							} else {
-								win.moveTo(win.x,0);
+								win.moveTo((screen.work_area.width - newWidth),win.y);
 							}
 						} else {
-							if (parseInt(win.x) < 0) {
-								win.moveTo(0,win.y);
+							if ((parseInt(win.y) + parseInt(newHeight)) > parseInt(screen.work_area.height)) {
+								if (parseInt(win.x) < 0) {
+									win.moveTo(0,(screen.work_area.height - newHeight));
+								} else {
+									win.moveTo(win.x,(screen.work_area.height - newHeight));
+								}
+							} else if (parseInt(win.y) < 0) {
+								if (parseInt(win.x) < 0) {
+									win.moveTo(0,0);
+								} else {
+									win.moveTo(win.x,0);
+								}
+							} else {
+								if (parseInt(win.x) < 0) {
+									win.moveTo(0,win.y);
+								}
 							}
 						}
 					}
 				}
 			}
+			setTimeout(function() { player.refreshSize(); },200);
+			setTimeout(function() { player.refreshSize(); },500);
 			return false;
 		}
 	});
