@@ -168,4 +168,3 @@ win.on('move', function() {
 });
 
 win.show();
-win.showDevTools();
