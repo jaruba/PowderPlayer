@@ -11,6 +11,9 @@ function isYoutube(plItem) {
 }
 
 function isPlaying() {
+	if (!allowScrollHotkeys) setTimeout(function() { allowScrollHotkeys = true; },1000);
+	clearTimeout(frameTimer);
+	frameHidden = false;
 	if (doSubsLocal == 1 && typeof powGlobals.engine === 'undefined') {
 		wjs().setDownloaded(0.0000000000000000001);
 		doSubsLocal = 0;
@@ -42,7 +45,8 @@ function isPlaying() {
 function gotVideoSize(width,height) {
 	if (firstSize == 1) {
 		firstSize = 0;
-		resizeInBounds((width + (win.width - window.innerWidth)),(height + (win.height - window.innerHeight)));
+		resizeInBounds((wjs().width() + 12),(wjs().height() + 40));
+		remHeight = wjs().height() + 40;
 	}
 }
 

@@ -4,13 +4,25 @@ var os = new OS();
 
 // fetch Open Subtitles cookie
 var osCookie;
-var req = require('http').request({ host: "dl.opensubtitles.org", path: "/en/download/subencoding-utf8/file/5833874" },function(res) {
-	if (res.headers["set-cookie"][0]) {
-		tempCookie = res.headers["set-cookie"][0];
-		osCookie = (tempCookie + "").split(";").shift();
-	}
-});
-req.end();
+
+function fetchOsCookie(retryCookie) {
+	checkInternet(function(isConnected) {
+		if (isConnected) {
+			var req = require('http').request({ host: "dl.opensubtitles.org", path: "/en/download/subencoding-utf8/file/5833874" },function(res) {
+				if (res.headers["set-cookie"] && res.headers["set-cookie"][0]) {
+					tempCookie = res.headers["set-cookie"][0];
+					osCookie = (tempCookie + "").split(";").shift();
+				} else if (!res.headers["set-cookie"] && retryCookie) {
+					console.log("fetching OS cookie failed, trying again in 20 sec");
+					setTimeout(function() { fetchOsCookie(false) },20000);
+				}
+			});
+			req.end();
+		}
+	});
+}
+
+fetchOsCookie(true);
 
 function readData(xhr) {
 	if (IsJsonString(xhr)) {

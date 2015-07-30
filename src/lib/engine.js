@@ -380,7 +380,6 @@ function runURL(torLink,noAutoStart) {
 		} else asyncPlaylist.loadLocal = true;
 	
 		win.setMinimumSize(372, 210);
-		win.zoomLevel = 0;
 		
 		$("#header_container").show();
 		
@@ -550,8 +549,6 @@ function loadHistory(targetHistory) {
 	$('#player_wrapper').css("min-height","100%").css("height","100%").css("width","auto");
 	
 	$('.history-animated-close').trigger("click");
-	
-	win.zoomLevel = 0;
 	
 	$("#header_container").show();
 	

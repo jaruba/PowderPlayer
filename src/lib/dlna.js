@@ -167,6 +167,7 @@ function prepareDlnaServer(dlnaReconnect) {
 		nextStartDlna = 1;
 		nextTorrent = wjs().plugin.playlist.items[dlna.lastIndex].mrl.replace("pow://","");
 		win.title = wjs().plugin.playlist.items[dlna.lastIndex].title.replace("[custom]","");
+		winTitleLeft(wjs().plugin.playlist.items[dlna.lastIndex].title.replace("[custom]",""));
 		if (nextTorrent.indexOf("/") > -1 && isNaN(nextTorrent.split("/")[1]) === false) {
 			nextTorrent = nextTorrent.split("/")[0];
 		}
@@ -418,7 +419,10 @@ function dlnaPlay(remIndex) {
 				}
 				dlna.prevIndex = dlna.lastIndex
 				dlna.lastIndex = remIndex;
-				if (wjs().plugin.playlist.items[dlna.lastIndex]) win.title = wjs().plugin.playlist.items[dlna.lastIndex].title.replace("[custom]","");
+				if (wjs().plugin.playlist.items[dlna.lastIndex]) {
+					win.title = wjs().plugin.playlist.items[dlna.lastIndex].title.replace("[custom]","");
+					winTitleLeft(wjs().plugin.playlist.items[dlna.lastIndex].title.replace("[custom]",""));
+				}
 				if (powGlobals.engine) {
 					powGlobals.files.some(function(el,ij) { if (ij == powGlobals.videos[dlna.lastIndex].index) { playEl(ij); return true; } });
 				}

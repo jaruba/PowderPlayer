@@ -1,0 +1,146 @@
+.mini #holder {
+  border-width: 2px;
+  margin: 12px;
+  min-width: 481px;
+  overflow: visible;
+  min-width: 475px;
+  max-width: 520px;
+}
+
+.mini .pl-settings {
+  font-size: 26px;
+}
+
+.mini .history-button {
+  font-size: 22px;
+}
+
+.mini #logoBig {
+  width: 357px;
+  margin-left: 55px;
+  margin-top: 31px;
+  margin-bottom: 6px;
+}
+
+.mini #header {
+  font-size: 14px;
+}
+
+.mini .second-easy-modal-animated {
+	width: 300px;
+}
+
+.mini .second-easy-modal-animated h2 {
+  font-size: 17px;
+  margin-bottom: 5px;
+}
+
+.mini .easy-modal-animated {
+  width: 391px;
+  padding: 15px;
+  font-size: 90% !important;
+  top: 165px !important;
+}
+
+.mini #holdCenter {
+  width: 391px;
+  margin: 0;
+  padding: 0;
+}
+
+.mini .easy-modal-animated .pure-control-group {
+  margin-bottom: 0;
+}
+
+.mini #magnetForm {
+  height: 42px;
+}
+
+.mini #magnetLink {
+  width: 281px;
+}
+
+.mini .fl_dd {
+  font-size: 30px;
+}
+
+.mini .fl_sl {
+  font-size: 19px;
+  margin-top: 7px;
+  margin-bottom: 5px;
+}
+
+.mini #mainButHold {
+  width: 411px;
+  font-size: 14px;
+}
+
+.mini .mainButtons {
+  width: 110px !important;
+  height: 100px !important;
+}
+
+.mini #torIcon {
+  width: 41px;
+  height: 41px;
+}
+
+.mini #vidIcon {
+  width: 40px;
+  height: 35px;
+  margin-bottom: 13px;
+}
+
+.mini #urlIcon {
+  width: 38px;
+  height: 38px;
+}
+
+.mini #footer {
+  font-size: 14px;
+  margin-top: -18px;
+  margin-bottom: 11px;
+}
+
+.mini .headButs {
+  font-size: 17px;
+  margin-bottom: 5px;
+}
+
+.mini #history-title {
+  font-size: 17px;
+  margin-bottom: 0;
+  width: 85%;
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+.mini .history-close {
+  font-size: 17px;
+  margin-bottom: 0;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  width: 5% !important;
+}
+
+.mini .close-icon {
+  font-size: 17px;
+}
+
+.mini .third-easy-modal-animated {
+  margin-top: -20px !important;
+}
+
+.mini .history-easy-modal-animated {
+  margin-top: -20px !important;
+}
+
+.mini .forth-easy-modal-animated {
+  margin-top: 53px !important;
+}
+
+.mini .actionButton {
+  font-size: 14px;
+  height: 38px;
+  line-height: 38px;
+}

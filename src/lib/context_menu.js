@@ -110,11 +110,14 @@ playerMenu.append(new gui.MenuItem({
 	checked: false,
 	click: function() {
 		if (onTop) {
+			clearTimeout(frameTimer);
 			onTop = false;
 			win.setAlwaysOnTop(false);
 			if (playerMenu.items[6].checked) playerMenu.items[6].checked = false;
 		} else {
 			setTimeout(win.setAlwaysOnTop(true),1);
+			clearTimeout(frameTimer);
+			frameTimer = setTimeout(function() { hideFrame(); },5000);
 			onTop = true;
 			if (!playerMenu.items[6].checked) playerMenu.items[6].checked = true;
 		}
