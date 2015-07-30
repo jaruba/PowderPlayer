@@ -80,10 +80,7 @@ setTimeout(function() {
 checkUpdates();
 
 // if powder was updated, delete the package file to save space
-fs.stat(gui.App.dataPath+pathBreak+'updater'+appExt, function(err,stat) { if (err == null) fs.unlink(gui.App.dataPath+pathBreak+'updater.exe'); });
-
-// position the window for the first time
-resizeInBounds(win.width,win.height);
+fs.stat(gui.App.dataPath+pathBreak+'updater'+appExt, function(err,stat) { if (err == null) fs.unlink(gui.App.dataPath+pathBreak+'updater'+appExt); });
 
 disableCtxMenu();
 
