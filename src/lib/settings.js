@@ -4,6 +4,7 @@ if (!localStorage.maxPeers) localStorage.maxPeers = 200;
 if (!localStorage.tmpDir) localStorage.tmpDir = 'Temp';
 if (!localStorage.libDir) localStorage.libDir = 'Temp';
 if (!localStorage.clickPause) localStorage.clickPause = 'both';
+if (!localStorage.subEncoding) localStorage.subEncoding = 'auto';
 if (!localStorage.history) {
 	dummyObject = {};
 	localStorage.history = JSON.stringify(dummyObject);

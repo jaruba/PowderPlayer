@@ -151,6 +151,10 @@ function loadPlayerSubs(results,reorder) {
 		newSettings = wjs().plugin.playlist.items[keepCurrent].setting;
 		if (IsJsonString(newSettings)) {
 			newSettings = JSON.parse(newSettings);
+			if (newSettings.subtitles) {
+				oldString = JSON.stringify(newSettings.subtitles);
+				newString = oldString.substr(0,oldString.length -1)+","+newString.substr(2);
+			}
 		} else newSettings = {};
 		newSettings.subtitles = JSON.parse(newString);
 		setTimeout(function() {
@@ -162,7 +166,6 @@ function loadPlayerSubs(results,reorder) {
 				if (player.fullscreen()) wjs().notify('<i class="wcp-subtitle-icon-big"></i>');
 				else wjs().notify('<i class="wcp-subtitle-icon"></i>');
 			}
-//			wjs().emitJsMessage("[refresh-subtitles]");
 		},100);
 	}
 }

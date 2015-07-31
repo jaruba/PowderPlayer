@@ -55,6 +55,30 @@ $('#fileDialog').change(function(evt) {
 	else runURL($(this).val());
 });
 
+$('#subtitleDialog').change(function(evt) {
+	  var targetSub = $(this).val();
+	  if (["sub","srt","vtt"].indexOf(targetSub.split('.').pop().toLowerCase()) > -1) {
+		  if (targetSub.indexOf("/") > -1) {
+			  newString = '{"'+targetSub.split('/').pop()+'":"file:///'+targetSub+'"}';
+		  } else {
+			  newString = '{"'+targetSub.split('\\').pop()+'":"'+targetSub.split('\\').join('\\\\')+'"}';
+		  }
+		newSettings = player.vlc.playlist.items[player.currentItem()].setting;
+		if (window.IsJsonString(newSettings)) {
+			newSettings = JSON.parse(newSettings);
+			if (newSettings.subtitles) {
+				oldString = JSON.stringify(newSettings.subtitles);
+				newString = oldString.substr(0,oldString.length -1)+","+newString.substr(1);
+			}
+		} else newSettings = {};
+		newSettings.subtitles = JSON.parse(newString);
+		player.vlc.playlist.items[player.currentItem()].setting = JSON.stringify(newSettings);
+		player.subTrack(player.subCount()-1);
+		player.notify("Subtitle Loaded");
+	  } else {
+		  player.notify("Subtitle Unsupported");
+	  }
+});
 
 function chooseFile(name) {
 	$(name).trigger('click');
