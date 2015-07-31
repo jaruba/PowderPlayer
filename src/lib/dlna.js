@@ -383,7 +383,10 @@ function checkClients() {
 
 // listeners
 function onDlnaLoad(err, result) {
-	if(err) throw err;
+	if(err) {
+		player.setOpeningText(err);
+		throw err;
+	}
 	castData = {};
 	keepAwake();
 	if (dlna.lastSecond > 30) wjs().setOpeningText("Updating playback position ...");
