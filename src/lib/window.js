@@ -99,21 +99,22 @@ function resizeInBounds(newWidth,newHeight) {
 			inTheScreen = 1;
 		} else if (i == 0 && parseInt(win.x) <= parseInt(screen.bounds.x)) inTheScreen = 1;
 		if (inTheScreen) {
-			// if perfectly centered, keep it centered
-			if (win.x == (screen.work_area.width - win.width)/2 && win.y == (screen.work_area.height - win.height)/2) {
-				win.moveTo((screen.work_area.width - newWidth)/2,(screen.work_area.height - newHeight)/2);
-				win.resizeTo(newWidth, newHeight);
-			} else {
-				// resize the window, but keep it in bounds
-				if (parseInt(newWidth) >= parseInt(screen.work_area.width)) {
-					if (parseInt(newHeight) >= parseInt(screen.work_area.height)) {
-						win.resizeTo(screen.work_area.width, screen.work_area.height);
-						win.moveTo(0,0);
-					} else {
-						win.resizeTo(screen.work_area.width, newHeight);
-						win.moveTo(0,Math.floor((screen.work_area.height - newHeight)/2));
-					}
+			if (parseInt(newWidth) >= parseInt(screen.work_area.width)) {
+				if (parseInt(newHeight) >= parseInt(screen.work_area.height)) {
+					win.resizeTo(screen.work_area.width, screen.work_area.height);
+					win.moveTo(0,0);
 				} else {
+					win.resizeTo(screen.work_area.width, newHeight);
+					win.moveTo(0,Math.floor((screen.work_area.height - newHeight)/2));
+				}
+				player.refreshSize(200).refreshSize(500).refreshSize(1000);
+			} else {
+				if (win.x == (screen.work_area.width - win.width)/2 && win.y == (screen.work_area.height - win.height)/2) {
+					// if perfectly centered, keep it centered
+					win.moveTo((screen.work_area.width - newWidth)/2,(screen.work_area.height - newHeight)/2);
+					win.resizeTo(newWidth, newHeight);
+				} else {
+					// resize the window, but keep it in bounds
 					if (parseInt(newHeight) >= parseInt(screen.work_area.height)) {
 						win.resizeTo(newWidth, screen.work_area.height);
 						win.moveTo(Math.floor((screen.work_area.width - newWidth)/2),0);
@@ -148,10 +149,8 @@ function resizeInBounds(newWidth,newHeight) {
 						}
 					}
 				}
+				$(player.canvas).css("width","100%").css("height","100%");
 			}
-			setTimeout(function() { player.refreshSize(); },200);
-			setTimeout(function() { player.refreshSize(); },500);
-			setTimeout(function() { player.refreshSize(); },1000);
 			return false;
 		}
 	});
