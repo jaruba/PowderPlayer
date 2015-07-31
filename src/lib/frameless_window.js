@@ -7,7 +7,6 @@ if (process.platform == "darwin") {
 
 var firstBlur = true,
 	frameTimer,
-	timerUpdateStyle,
 	maximized = false,
 	frameHidden = false,
 	frameImune = false,
@@ -136,9 +135,6 @@ win.on('resize', function() {
   if (win.height > 200) remHeight = win.height;
   clearTimeout(frameTimer);
   frameTimer = setTimeout(function() { hideFrame(); },5000);
-  clearTimeout(timerUpdateStyle);
-  timerUpdateStyle = setTimeout(function() { updateContentStyle(); },100);
-  updateContentStyle();
 });
 
 win.on('maximize', function() {
@@ -154,9 +150,6 @@ win.on('restore', function() {
   $(".top-titlebar-maximize-button").show(0);
   clearTimeout(frameTimer);
   frameTimer = setTimeout(function() { hideFrame(); },5000);
-  clearTimeout(timerUpdateStyle);
-  timerUpdateStyle = setTimeout(function() { updateContentStyle(); },100);
-  updateContentStyle();
 });
 
 win.on('move', function() {

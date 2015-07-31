@@ -151,6 +151,7 @@ function resizeInBounds(newWidth,newHeight) {
 			}
 			setTimeout(function() { player.refreshSize(); },200);
 			setTimeout(function() { player.refreshSize(); },500);
+			setTimeout(function() { player.refreshSize(); },1000);
 			return false;
 		}
 	});

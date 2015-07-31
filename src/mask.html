@@ -206,7 +206,7 @@ body {
 
 <body class="mini">
 <div id="top-titlebar" class="top-titlebar" style="opacity: 1;"><div class="top-titlebar-icon"><img id="top-titlebaricon" src="../icon.png"></div><div class="top-titlebar-text top-text-center">Powder Player</div><div id="titlebar-buttons"><div class="top-titlebar-close-button"><img id="top-titlebar-close-button" src="images/button_close.png"></div><div class="top-titlebar-maximize-button"><img id="top-titlebar-maximize-button" src="images/maximize.png"></div><div class="top-titlebar-restore-button"><img id="top-titlebar-restore-button" src="images/restore.png"></div><div class="top-titlebar-minimize-button"><img id="top-titlebar-minimize-button" src="images/minimize.png"></div></div></div>
-  <div id="content" style="height: 500px; padding:5px">
+  <div id="content" style="position: absolute; left: 0px; top: 33px; width: calc(100% - 10px); height: calc(100% - 34px); border-color: rgb(54, 54, 54)">
     <div id="inner-content">
     	<div id="inner-in-content">
 			<div id="inner-in-in-content">
@@ -405,7 +405,6 @@ body {
     <script src="lib/frameless_window.js"></script>
 	<script src="lib/titlebar.js"></script>
     <script>
-    updateContentStyle();
 	centerInScreen();
     </script>
     <script src="lib/keep_awake/index.js"></script>
