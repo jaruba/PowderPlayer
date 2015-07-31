@@ -99,7 +99,7 @@ function stopDlna(noSubs) {
 	wjs().wrapper.find(".wcp-vol-control")[0].style.borderRight = "1px solid #262626";
 
 	wjs().setOpeningText("Stopped Streaming");
-	dlna.controls.stop();
+	if (dlna.controls) dlna.controls.stop();
 	letSleep();
 	dlna.initiated = false;
 	player.wrapper.find(".wcp-vol-button").show(0);
