@@ -104,7 +104,7 @@ function settingsEl(kj) {
 }
 
 function goBack(nextTorrent) {
-	if (castData.casting) stopDlna();
+	if (dlna.initiated) stopDlna();
 	if (peerInterval) clearInterval(peerInterval);
 	if (delaySetDownload) clearTimeout(delaySetDownload);
 	savedHistory = 0;

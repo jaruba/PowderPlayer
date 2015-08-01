@@ -4,7 +4,8 @@ var dlna = {},
 	oldHttpServer = false,
 	pUrl = require('url'),
 	samsungDlna = {},
-	nextStartDlna = 0;
+	nextStartDlna = 0,
+	notFoundTimer;
 
 dlna.clients = [];
 dlna.checks = 0;
@@ -41,6 +42,8 @@ function setDlnaOpts() {
 		if (dlna.lastSecond > 30) {
 			dlna.controls.seek(dlna.lastSecond);
 			wjs().setOpeningText("Streaming to TV ...");
+			clearTimeout(notFoundTimer);
+			$(".wcp-dlna-buttons").hide(0);
 			samsungDlna.retries = 0;
 		}
 		dlna.lastSecond = 0;
@@ -90,6 +93,7 @@ function resetDlnaData(keepCasting,cb) {
 }
 
 function stopDlna(noSubs) {
+	win.setMinimumSize(372, 210);
 	if (dlna.controls) dlna.controls.removeAllListeners();
 	if (castData.casting) resetDlnaData();
 
@@ -97,6 +101,7 @@ function stopDlna(noSubs) {
 	wjs().wrapper.find(".wcp-time-total").text("");
 	wjs().wrapper.find(".wcp-progress-seen")[0].style.width = "0%";
 	wjs().wrapper.find(".wcp-vol-control")[0].style.borderRight = "1px solid #262626";
+	$(".wcp-dlna-buttons").hide(0);
 
 	wjs().setOpeningText("Stopped Streaming");
 	if (dlna.controls) dlna.controls.stop();
@@ -121,7 +126,20 @@ function startDlnaServer(httpServer,dlnaReconnect) {
 	
 	if (!dlnaReconnect) {
 		wjs().setOpeningText("Starting DLNA Server ...");
+		clearTimeout(notFoundTimer);
 		dlna.controls = new MediaRendererClient(dlna.clients[0]);
+		oldClients = JSON.parse(localStorage.dlnaClients);
+		var votedClient = false;
+		for (var k in oldClients) if (oldClients.hasOwnProperty(k)) {
+            if (k == dlna.clients[0]) {
+				oldClients[k] = oldClients[k] +1;
+				votedClient = true;
+				break;
+			}
+        }
+		if (!votedClient) oldClients[dlna.clients[0]] = 1;
+		localStorage.dlnaClients = JSON.stringify(oldClients);
+		localStorage.lastDlna = dlna.clients[0];
 		dlna.controls.on('status', onDlnaStatus);
 		dlna.controls.on('playing', onDlnaPlaying);
 		dlna.controls.on('paused', onDlnaPaused);
@@ -334,6 +352,7 @@ function findMyIp() {
 }
 
 function findDlnaClient() {
+	win.setMinimumSize(448, 348);
 	if (wjs().state() == "playing" || wjs().state() == "paused") dlna.lastSecond = Math.floor(wjs().time()/1000);
 	else dlna.lastSecond = 0;
 	dlna.lastIndex = parseInt(wjs().currentItem());
@@ -347,6 +366,9 @@ function findDlnaClient() {
 	wjs().stopPlayer();
 	wjs().wrapper.find(".wcp-splash-screen").show(0);
 	dlna.clients = [];
+	clearTimeout(notFoundTimer);
+	notFoundTimer = setTimeout(function() { player.setOpeningText("Error: Nothing Found"); },12000);
+	$(".wcp-dlna-buttons").show(0);
 
     var Client = require('node-ssdp').Client
       , client = new Client();
@@ -391,6 +413,8 @@ function onDlnaLoad(err, result) {
 	keepAwake();
 	if (dlna.lastSecond > 30) wjs().setOpeningText("Updating playback position ...");
 	else wjs().setOpeningText("Streaming to TV ...");
+	clearTimeout(notFoundTimer);
+	$(".wcp-dlna-buttons").hide(0);
 	samsungDlna.retries = 0;
 	castData.casting = 1;
 	castData.castingPaused = 0;
@@ -454,12 +478,14 @@ function onDlnaStatus(status) {
 			} else {
 				// remove this line when adding playlist support
 				wjs().setOpeningText("Playback Ended");
+				$(".wcp-dlna-buttons").show(0);
 				if (dlna.controls) dlna.controls.server.close(function() { resetDlnaGlobals(); });
 			}
 		}
 	}
 	if (status["TransportStatus"] == "ERROR_OCCURRED") {
 		wjs().setOpeningText("Error Occurred");
+		$(".wcp-dlna-buttons").show(0);
 		if (dlna.serverName == "SHP, UPnP/1.0, Samsung UPnP SDK/1.0" && samsungDlna.retries < 3) {
 			// reconnect if samsung and the previous or next file is mkv (this is a bug from samsung)
 			wjs().setOpeningText("Reconnecting ...");
@@ -504,6 +530,8 @@ function onDlnaStatus(status) {
 }
 function onDlnaPlaying() {
 	wjs().setOpeningText("Streaming to TV ...");
+	clearTimeout(notFoundTimer);
+	$(".wcp-dlna-buttons").hide(0);
 	samsungRetries = 0;
 	castData.casting = 1;
 	castData.castingPaused = 0;
