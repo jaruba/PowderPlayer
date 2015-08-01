@@ -372,12 +372,12 @@ body {
     
     <div id="dropdown-1" class="dropdown dropdown-tip">
         <ul class="dropdown-menu">
-            <li><a onClick="gui.Shell.openItem(powGlobals['engine'].path+'\\'); return false" href="#">Open Folder</a></li>
+            <li><a onClick="gui.Shell.openItem(powGlobals.engine.path+pathBreak+powGlobals.engine.torrent.name+pathBreak); return false" href="#">Open Folder</a></li>
             <li class="dropdown-divider"></li>
-            <li><a onClick="gui.Clipboard.get().set('magnet:?xt=urn:btih:'+powGlobals['engine'].infoHash.toUpperCase(),'text'); return false" href="#">Copy Magnet URI</a></li>
+            <li><a onClick="gui.Clipboard.get().set('magnet:?xt=urn:btih:'+powGlobals.engine.infoHash.toUpperCase(),'text'); return false" href="#">Copy Magnet URI</a></li>
             <li class="dropdown-divider"></li>
-            <li><a onClick="for (ij = 0; typeof powGlobals['files'][ij] !== 'undefined'; ij++) playEl(ij); return false" href="#">Start All</a></li>
-            <li><a onClick="for (ij = 0; typeof powGlobals['files'][ij] !== 'undefined'; ij++) pauseEl(ij); return false" href="#">Pause All</a></li>
+            <li><a onClick="for (ij = 0; typeof powGlobals.files[ij] !== 'undefined'; ij++) playEl(ij); return false" href="#">Start All</a></li>
+            <li><a onClick="for (ij = 0; typeof powGlobals.files[ij] !== 'undefined'; ij++) pauseEl(ij); return false" href="#">Pause All</a></li>
             <li class="dropdown-divider"></li>
             <li><a onClick="$('html, body').animate({ scrollTop: 0 }, 'slow'); return false" href="#">Back to Video</a></li>
             <li><a onClick="goBack(); return false" href="#">Remove Torrent</a></li>
