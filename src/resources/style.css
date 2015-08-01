@@ -217,7 +217,8 @@ i.close-icon:before { font-family: 'Glyphs'; content: "\E896"; font-style: norma
 .dropdown.dropdown-tip:before { left: 138px !important }
 .dropdown.dropdown-tip:after { left: 139px !important }
 #dropdown-1 {
-	right: 5% !important;
+	top: 25px !important;
+	right: 7% !important;
 	left: initial !important;
 	font-size: 13px
 }
