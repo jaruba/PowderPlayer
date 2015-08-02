@@ -143,11 +143,11 @@ function goBack(nextTorrent) {
 	} else wjs().setOpeningText("Loading resource");
 	wjs().setDownloaded(0);
 	if (powGlobals.engine) {
-		isReady = 0;
 		clearTimeout(downSpeed);
 		powGlobals.engine.swarm.removeListener('wire', onmagnet);
 		if (nextStartDlna) { dlna.controls.stop(); }
 		if (isReady) {
+			isReady = 0;
 			if (powGlobals.serverReady) {
 				powGlobals.engine.server.close(function() {
 					powGlobals.engine.remove(function() {

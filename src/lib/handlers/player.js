@@ -1,6 +1,6 @@
 var rememberPlaylist = {};
 var waitForNext = false;
-var nextPlay = 0;
+var nextPlay = -1;
 var keepCurrent = 0;
 var keepState = "opening";
 
@@ -11,6 +11,12 @@ function isYoutube(plItem) {
 }
 
 function isPlaying() {
+	if (waitForNext) {
+		waitForNext = false;
+		nextPlay = -1;
+		if (player.zoom() == 0) player.zoom(1);
+		if (player.length()) player.find(".wcp-time-total").text(" / "+player.parseTime(player.length()));
+	}
 	if (!allowScrollHotkeys) setTimeout(function() { allowScrollHotkeys = true; },1000);
 	clearTimeout(frameTimer);
 	frameHidden = false;
@@ -51,6 +57,17 @@ function gotVideoSize(width,height) {
 }
 
 function handleErrors() {
+	if (tempSel > -1) {
+		setTimeout(function() {
+			if (player.state() == "error" && tempSel > -1) {
+				if (player.itemDesc(tempSel).mrl.indexOf("pow://") == 0) player.stop(true);
+				else player.stop(true).playItem(tempSel);
+			} else if (player.state() == "stopping" && tempSel > -1) {
+				if (player.itemDesc(tempSel).mrl.indexOf("pow://") == -1) player.playItem(tempSel);
+			}
+		},1000);
+		return;
+	}
 	if (wjs().plugin.playlist.items[wjs().currentItem()].mrl.indexOf("pow://") == 0) waitForNext = true;
 	disableCtxMenu();
 }
@@ -58,10 +75,17 @@ function handleErrors() {
 var tempSel = -1;
 
 function isOpening() {
+	if (waitForNext && tempSel != wjs().currentItem()) {
+		player.stop(true);
+		return;
+	}
 	if (powGlobals.currentIndex != wjs().currentItem() && !waitForNext) {
 		if (castData.casting) stopDlna();
 		keepCurrent = wjs().currentItem();
 		if (wjs().plugin.playlist.items[wjs().currentItem()].mrl.indexOf("pow://") == 0) {
+			wjs().find(".wcp-status").text("");
+			wjs().stop(true);
+			waitForNext = true;
 			tempSel = wjs().currentItem();
 			wjs().refreshPlaylist();
 			
