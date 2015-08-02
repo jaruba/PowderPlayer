@@ -32,7 +32,7 @@
         "fs": "*",
         "mime-types": "*",
         "node-ssdp": "*",
-        "opensubtitles": "*",
+        "opensubtitles": "jaruba/node-opensubtitles-api",
         "opensubtitles-client": "jaruba/node-opensubtitles-client",
         "peerflix": "jaruba/peerflix",
         "read-torrent": "*",
