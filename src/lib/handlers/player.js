@@ -1,6 +1,6 @@
 var rememberPlaylist = {};
 var waitForNext = false;
-var nextPlay = -1;
+var nextPlay = 0;
 var keepCurrent = 0;
 var keepState = "opening";
 
@@ -13,7 +13,7 @@ function isYoutube(plItem) {
 function isPlaying() {
 	if (waitForNext) {
 		waitForNext = false;
-		nextPlay = -1;
+		nextPlay = 0;
 		if (player.zoom() == 0) player.zoom(1);
 		if (player.length()) player.find(".wcp-time-total").text(" / "+player.parseTime(player.length()));
 	}

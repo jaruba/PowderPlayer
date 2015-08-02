@@ -292,13 +292,19 @@ function engage(targetHistory) {
 		if (typeof kla !== 'undefined') nextPlay += kla;
 		if (nextStartDlna == 1) {
 			nextStartDlna = 0;
-			if (waitForNext && tempSel > -1) dlnaPlay(tempSel);
-			else dlnaPlay(nextPlay);
+			if (powGlobals.hasVideo > 1) dlnaPlay(nextPlay);
+			else {
+				if (waitForNext && tempSel > -1) dlnaPlay(tempSel);
+				else dlnaPlay(nextPlay);
+			}
 		} else {
-			if (waitForNext && tempSel > -1) wjs().playItem(tempSel);
-			else wjs().playItem(nextPlay);
+			if (powGlobals.hasVideo > 1) wjs().playItem(nextPlay);
+			else {
+				if (waitForNext && tempSel > -1) wjs().playItem(tempSel);
+				else wjs().playItem(nextPlay);
+			}
 		}
-		nextPlay = -1;
+		nextPlay = 0;
 		rememberPlaylist = {};
 	}
 	
