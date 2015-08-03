@@ -1,7 +1,7 @@
 ![alt tag](https://raw.githubusercontent.com/jaruba/PowderPlayer/master/src/images/powder-logo.png)
 
 <br/>
-Powder is the future of all torrent requirements, it's a hybrid between a Torrent Client ([Peerflix](https://github.com/mafintosh/peerflix)) and a Customized Player ([WebChimera](http://www.webchimera.org/)).
+Powder is the future of all torrent requirements, it's a hybrid between a Torrent Client ([Peerflix](https://github.com/mafintosh/peerflix)) and a Customized Player ([WebChimera.js](https://github.com/RSATom/WebChimera.js)).
 
 It can do everything that a Torrent Client can, everything that a Video/Audio Player can and much more!
 
@@ -25,7 +25,7 @@ Current Features
 
 - History of 20 last seen videos.
 
-- An Incredible [List of HotKeys](http://wiki.webchimera.org/Player_Hotkeys)
+- An Incredible [List of HotKeys](https://github.com/jaruba/PowderPlayer/wiki/Hotkeys)
 
 - Stream to TV (through DLNA/UPNP)
 
