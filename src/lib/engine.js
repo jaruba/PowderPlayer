@@ -185,12 +185,13 @@ function engage(targetHistory,remPlaylist,remSel) {
 		fs.exists(gui.App.dataPath+pathBreak+'vlc_playlist.m3u', function(exists) {
 			if (exists) fs.unlink(gui.App.dataPath+pathBreak+'vlc_playlist.m3u', function() {
 				fs.writeFile(gui.App.dataPath+pathBreak+'vlc_playlist.m3u', newM3U, function() {
-					require('child_process').exec('"'+require('path').dirname(process.execPath)+pathBreak+'node_modules'+pathBreak+'wcjs-player'+pathBreak+'node_modules'+pathBreak+'wcjs-renderer'+pathBreak+'node_modules'+pathBreak+'webchimera.js'+pathBreak+'build'+pathBreak+'Release'+pathBreak+'vlc'+appExt+'" "'+gui.App.dataPath+pathBreak+'vlc_playlist.m3u"');
+					require('child_process').exec('"'+require('path').dirname(process.execPath)+pathBreak+'node_modules'+pathBreak+'webchimera.js'+pathBreak+'build'+pathBreak+'Release'+pathBreak+'vlc'+appExt+'" "'+gui.App.dataPath+pathBreak+'vlc_playlist.m3u"');
 				});
 			});
 			else fs.writeFile(gui.App.dataPath+pathBreak+'vlc_playlist.m3u', newM3U, function() {
-				require('child_process').exec('"'+require('path').dirname(process.execPath)+pathBreak+'node_modules'+pathBreak+'wcjs-player'+pathBreak+'node_modules'+pathBreak+'wcjs-renderer'+pathBreak+'node_modules'+pathBreak+'webchimera.js'+pathBreak+'build'+pathBreak+'Release'+pathBreak+'vlc'+appExt+'" "'+gui.App.dataPath+pathBreak+'vlc_playlist.m3u"');
+				require('child_process').exec('"'+require('path').dirname(process.execPath)+pathBreak+'node_modules'+pathBreak+'webchimera.js'+pathBreak+'build'+pathBreak+'Release'+pathBreak+'vlc'+appExt+'" "'+gui.App.dataPath+pathBreak+'vlc_playlist.m3u"');
 			});
+			$(window).trigger('resize');
 		});
 	}
 	

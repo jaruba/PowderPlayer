@@ -135,7 +135,7 @@ a.mainLinks:hover { text-decoration: none }
 	border-bottom:1px solid #b5b5b5;
 	left:0;
 	position:fixed;
-	width:100%;
+	width: calc(100% - 22px);
 	top:0;
 	padding-top: 8px;
 	z-index: 1001
@@ -395,4 +395,7 @@ input[type="file"] { display: none }
 	border-radius: 0 !important;
 	padding: 6px 9px !important;
 	font-size: 15px !important;
+}
+.header-full-width {
+	width: calc(100% - 12px) !important;
 }
