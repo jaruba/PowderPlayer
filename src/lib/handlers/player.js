@@ -15,7 +15,7 @@ function isPlaying() {
 	if (waitForNext) {
 		waitForNext = false;
 		nextPlay = 0;
-		if (player.zoom() == 0) player.zoom(1);
+//		if (player.zoom() == 0) player.zoom(1);
 		if (player.length()) player.find(".wcp-time-total").text(" / "+player.parseTime(player.length()));
 	}
 	if (!allowScrollHotkeys) setTimeout(function() { allowScrollHotkeys = true; },1000);
@@ -27,7 +27,7 @@ function isPlaying() {
 		clearTimeout(findHashTime);
 		findHash();
 	}
-	if (firstTime == 0 && focused === false) if (!wjs().fullscreen()) win.requestAttention(true);
+	if (firstTime == 0 && focused === false && !wjs().fullscreen()) win.requestAttention(true);
 	if (firstTime == 0) {
 		wjs().vlc.playlist.mode = 1;
 		if (tempSel > -1) tempSel = -1;

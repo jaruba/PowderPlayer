@@ -13,14 +13,14 @@ function loopDownloaded(el,ij,torIndex) {
 		if ((el.downloaded +1 +el.firstPiece) == torPieces[torIndex]) {
 			  powGlobals.videos[ij].downloaded = el.downloaded = el.downloaded+1;
 			  torPieces.splice(torIndex, 1);
-			  setTimeout(delayLoopDown(el,ij,torIndex),100);
+			  setTimeout(delayLoopDown(el,ij,torIndex),50);
 		} else {
 			if (ij == keepCurrent) {
 				if ((el.downloaded / (el.lastPiece - el.firstPiece)) > el.lastSent) {
 					powGlobals.videos[ij].lastSent = el.lastSent = (el.downloaded / (el.lastPiece - el.firstPiece));
 					if (typeof wjs() !== 'undefined' && wjs().setDownloaded) {
 						clearTimeout(delaySetDownload);
-						delaySetDownload = setTimeout(delayNewSetDownload(el.lastSent),1000);
+						delaySetDownload = setTimeout(delayNewSetDownload(el.lastSent),500);
 					}
 				}
 			} else {
@@ -82,7 +82,7 @@ function checkDownloaded(piece) {
 									powGlobals.videos[ij].lastSent = el.lastSent = (el.downloaded / (el.lastPiece - el.firstPiece));
 									if (typeof wjs() !== 'undefined' && wjs().setDownloaded) {
 										clearTimeout(delaySetDownload);
-										delaySetDownload = setTimeout(delayNewSetDownload(el.lastSent),1000);
+										delaySetDownload = setTimeout(delayNewSetDownload(el.lastSent),500);
 									}
 								}
 							} else {
