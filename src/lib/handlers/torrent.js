@@ -54,7 +54,7 @@ function checkDownloaded(piece) {
 					$('#all-download .progress-bar').removeClass("progress-bar-warning").addClass("progress-bar-danger").attr('data-transitiongoal', 100).progressbar({display_text: 'center'});
 					if (!focused) {
 						win.setProgressBar(-0.1);
-						if (keepState != "playing") win.requestAttention(true);
+						if (keepState != "playing" && !focused && !dlna.initiated) win.requestAttention(true);
 					}
 				} else {
 					$('#all-download .progress-bar').attr('data-transitiongoal', updDownload).progressbar({display_text: 'center'});
