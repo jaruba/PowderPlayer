@@ -97,18 +97,18 @@ function stopDlna(noSubs) {
 	if (dlna.controls) dlna.controls.removeAllListeners();
 	if (castData.casting) resetDlnaData();
 
-	wjs().wrapper.find(".wcp-time-current").text("");
-	wjs().wrapper.find(".wcp-time-total").text("");
-	wjs().wrapper.find(".wcp-progress-seen")[0].style.width = "0%";
-	wjs().wrapper.find(".wcp-vol-control")[0].style.borderRight = "1px solid #262626";
+	wjs().find(".wcp-time-current").text("");
+	wjs().find(".wcp-time-total").text("");
+	wjs().find(".wcp-progress-seen")[0].style.width = "0%";
+	wjs().find(".wcp-vol-control")[0].style.borderRight = "1px solid #262626";
 	$(".wcp-dlna-buttons").hide(0);
 
 	wjs().setOpeningText("Stopped Streaming");
 	if (dlna.controls) dlna.controls.stop();
 	letSleep();
 	dlna.initiated = false;
-	player.wrapper.find(".wcp-vol-button").show(0);
-	player.wrapper.find(".wcp-pause").removeClass("wcp-pause").addClass("wcp-play");
+	player.find(".wcp-vol-button").show(0);
+	player.find(".wcp-pause").removeClass("wcp-pause").addClass("wcp-play");
 	if (typeof noSubs === 'undefined') {
 		newSettings = wjs().plugin.playlist.items[dlna.lastIndex].setting;
 		if (IsJsonString(newSettings)) {
@@ -358,13 +358,13 @@ function findDlnaClient() {
 	dlna.lastIndex = parseInt(wjs().currentItem());
 	dlna.initiated = true;
 
-	player.wrapper.find(".wcp-vol-button").hide(0);
-	wjs().wrapper.find(".wcp-vol-control")[0].style.borderRight = "none";
-	player.wrapper.find(".wcp-subtitle-but").hide(0);
+	wjs().find(".wcp-vol-button").hide(0);
+	wjs().find(".wcp-vol-control")[0].style.borderRight = "none";
+	wjs().find(".wcp-subtitle-but").hide(0);
 
 	wjs().setOpeningText("Searching for Device ...");
 	wjs().stopPlayer();
-	wjs().wrapper.find(".wcp-splash-screen").show(0);
+	wjs().find(".wcp-splash-screen").show(0);
 	dlna.clients = [];
 	clearTimeout(notFoundTimer);
 	notFoundTimer = setTimeout(function() { player.setOpeningText("Error: Nothing Found"); },12000);
@@ -440,6 +440,11 @@ function dlnaPlay(remIndex) {
 		dlna.lastPos = 0;
 		if (typeof remIndex !== 'undefined') {
 			resetDlnaData(function() {
+				if (dlna.controls) {
+					dlna.controls.removeListener('status', onDlnaStatus);
+					dlna.controls.removeListener('playing', onDlnaPlaying);
+					dlna.controls.removeListener('paused', onDlnaPaused);
+				}
 				if (dlna.interval) {
 					clearInterval(dlna.interval);
 					delete dlna.interval;
@@ -451,9 +456,27 @@ function dlnaPlay(remIndex) {
 					winTitleLeft(wjs().plugin.playlist.items[dlna.lastIndex].title.replace("[custom]",""));
 				}
 				if (powGlobals.engine) {
-					powGlobals.files.some(function(el,ij) { if (ij == powGlobals.videos[dlna.lastIndex].index) { playEl(ij); return true; } });
+					powGlobals.files.some(function(el,ij) {
+						if (powGlobals.videos && powGlobals.videos[dlna.lastIndex] && powGlobals.videos[dlna.lastIndex].index == ij) {
+							playEl(ij);
+							return true;
+						}
+					});
 				}
-				prepareDlnaServer(true);
+				tempSel = remIndex;
+				dlna.duration = 0;
+				wjs().find(".wcp-vol-button").hide(0);
+				wjs().find(".wcp-vol-control")[0].style.borderRight = "none";
+				wjs().find(".wcp-subtitle-but").hide(0);
+				wjs().find(".wcp-time-current").text("");
+				wjs().find(".wcp-time-total").text("");
+				wjs().find(".wcp-progress-seen")[0].style.width = "0%";
+				$(".wcp-dlna-buttons").show(0);
+
+// this is a bit faster but it's highly unstable
+//				prepareDlnaServer(true);
+				prepareDlnaServer();
+				
 			});
 		} else dlna.controls.play();
 	}

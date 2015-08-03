@@ -225,4 +225,18 @@ function announceNoPeers() {
 	}
 }
 
+function killEngine(targetEngine) {
+	targetEngine.server.close(function(dyingEngine) {
+		return function() {
+			dyingEngine.remove(function(deadEngine) {
+				return function() {
+					deadEngine.destroy(function() {
+						waitForNext = false;
+					});
+				}
+			}(dyingEngine));
+		}
+	}(targetEngine));
+}
+
 var onmagnet = function () { peerCheck(); }

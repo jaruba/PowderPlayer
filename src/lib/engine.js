@@ -18,19 +18,20 @@
 
 var peerflix = require('peerflix');
 
-function engage(targetHistory) {
+function engage(targetHistory,remPlaylist,remSel) {
 	if (holdTorrent) {
 		holdTorrent = false;
-		powGlobals.engine.server.close(function() {
-			powGlobals.engine.remove(function() {
-				powGlobals.engine.destroy();
-			});
-		});
+		killEngine(powGlobals.engine);
 		return;
 	}
 
 	$("#filesList").css("display","block");
+	
 	targetHistory = typeof targetHistory !== 'undefined' ? targetHistory : 0;
+	
+	if (remPlaylist && remPlaylist["0"]) rememberPlaylist = playlistIntegrity(remPlaylist);
+	
+	if (remSel && remSel > -1 && tempSel != remSel) tempSel = remSel;
 	
 	powGlobals.speedPiece = 0;
 	powGlobals.speedUpdate = Math.floor(Date.now() / 1000);
@@ -48,7 +49,7 @@ function engage(targetHistory) {
 	powGlobals.hasVideo = 0;
 	$("#filesList").html("");
 
-	for (ij = 0; powGlobals.engine.files[ij]; ij++) {				
+	for (ij = 0; powGlobals.engine.files[ij]; ij++) {
 		var fileStart = powGlobals.engine.files[ij].offset;
 		if (powGlobals.engine.files[ij].offset > 0) fileStart++;
 		var fileEnd = fileStart + powGlobals.engine.files[ij].length;
@@ -290,8 +291,11 @@ function engage(targetHistory) {
 	
 	if (rememberPlaylist["0"]) {
 		if (typeof kla !== 'undefined') nextPlay += kla;
+		if (wjs().state() == "error") wjs().stop(true);
 		if (nextStartDlna == 1) {
 			nextStartDlna = 0;
+			dlna.initiated = true;
+			wjs().setOpeningText("Starting DLNA Server ...");
 			if (powGlobals.hasVideo > 1) dlnaPlay(nextPlay);
 			else {
 				if (waitForNext && tempSel > -1) dlnaPlay(tempSel);
@@ -538,8 +542,29 @@ function addTorrent(torLink,isHistory) {
 		powGlobals.engine.swarm.on('wire', onmagnet);
 		peerInterval = setInterval(function(){ peerCheck() }, 2000);
 		
-		if (!isHistory) powGlobals.engine.server.on('listening', function() { engage(); powGlobals.serverReady = 1; });
-		else if (isHistory) powGlobals.engine.server.on('listening', function() { engage(targetHistory); powGlobals.serverReady = 1; });
+		if (!isHistory) powGlobals.engine.server.on('listening', function(remSel,remPlaylist,remEngine) {
+			return function() {
+				if (tempSel != remSel) {
+					killEngine(remEngine);
+					return;
+				}
+				powGlobals.engine = remEngine;
+				if (remPlaylist["0"]) engage(0,remPlaylist,remSel);
+				else engage();
+				powGlobals.serverReady = 1;
+			}
+		}(tempSel,rememberPlaylist,powGlobals.engine));
+		else if (isHistory) powGlobals.engine.server.on('listening', function(remSel,remHistory,remEngine) {
+			return function() {
+				if (tempSel != remSel) {
+					killEngine(remEngine);
+					return;
+				}
+				powGlobals.engine = remEngine;
+				engage(remHistory);
+				powGlobals.serverReady = 1;
+			}
+		}(tempSel,targetHistory,powGlobals.engine));
 				
 		powGlobals.engine.on('download',checkDownloaded);
 		

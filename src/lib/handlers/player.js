@@ -1,4 +1,5 @@
 var rememberPlaylist = {};
+var correctPlaylist = {};
 var waitForNext = false;
 var nextPlay = 0;
 var keepCurrent = 0;
@@ -28,6 +29,7 @@ function isPlaying() {
 	}
 	if (firstTime == 0 && focused === false) if (!wjs().fullscreen()) win.requestAttention(true);
 	if (firstTime == 0) {
+		wjs().vlc.playlist.mode = 1;
 		if (tempSel > -1) tempSel = -1;
 		if (typeof powGlobals.duration !== 'undefined') wjs().setTotalLength(powGlobals.duration);
 		firstTime = 1;
@@ -57,18 +59,6 @@ function gotVideoSize(width,height) {
 }
 
 function handleErrors() {
-	if (tempSel > -1) {
-		setTimeout(function() {
-			if (player.state() == "error" && tempSel > -1) {
-				if (player.itemDesc(tempSel).mrl.indexOf("pow://") == 0) player.stop(true);
-				else player.stop(true).playItem(tempSel);
-			} else if (player.state() == "stopping" && tempSel > -1) {
-				if (player.itemDesc(tempSel).mrl.indexOf("pow://") == -1) player.playItem(tempSel);
-			}
-		},1000);
-		return;
-	}
-	if (wjs().plugin.playlist.items[wjs().currentItem()].mrl.indexOf("pow://") == 0) waitForNext = true;
 	disableCtxMenu();
 }
 
@@ -83,6 +73,7 @@ function isOpening() {
 		if (castData.casting) stopDlna();
 		keepCurrent = wjs().currentItem();
 		if (wjs().plugin.playlist.items[wjs().currentItem()].mrl.indexOf("pow://") == 0) {
+			wjs().vlc.playlist.mode = 0;
 			wjs().find(".wcp-status").text("");
 			wjs().stop(true);
 			waitForNext = true;
@@ -218,7 +209,47 @@ function retrievePlaylist() {
 			plObject[ijk.toString()].mrl = wjs().plugin.playlist.items[ijk].mrl;
 		}
 	}
+	if (!correctPlaylist["0"]) correctPlaylist = plObject;
 	return plObject;
+}
+
+function playlistIntegrity(remPlaylist) {
+	var integrity = true;
+	var allTitles = [],
+		allMRLs = [],
+		allHashes = [],
+		kj = 0;
+	
+	while (remPlaylist[kj.toString()]) {
+		var thisHash = false;
+		if (remPlaylist[kj.toString()].mrl.indexOf("pow://") == 0) {
+			thisHash = remPlaylist[kj.toString()].mrl.replace("pow://","").toLowerCase();
+			if (thisHash.indexOf("/") > -1) thisHash = thisHash.substr(0,thisHash.indexOf("/"));
+		}
+		if (kj == 0 || (allTitles.indexOf(remPlaylist[kj.toString()].title) == -1 && allMRLs.indexOf(remPlaylist[kj.toString()].mrl) == -1)) {
+			if (thisHash && allHashes.length == 0) allHashes.push(thisHash);
+			else {
+				if (thisHash && allHashes.indexOf(thisHash) == -1) allHashes.push(thisHash);
+				else {
+					integrity = false;
+					break;
+				}
+			}
+			allTitles.push(remPlaylist[kj.toString()].title);
+			allMRLs.push(remPlaylist[kj.toString()].mrl); 
+		} else {
+			integrity = false;
+			break;
+		}
+		kj++;
+	}
+	if (integrity) {
+		correctPlaylist = remPlaylist;
+		return remPlaylist;
+	} else {
+		if (correctPlaylist["0"]) return correctPlaylist;
+		else return rememberPlaylist;
+	}
 }
 
 function changedState() {

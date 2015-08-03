@@ -109,6 +109,7 @@ function goBack(nextTorrent) {
 	if (delaySetDownload) clearTimeout(delaySetDownload);
 	savedHistory = 0;
 	if (typeof nextTorrent === 'undefined') {
+		correctPlaylist = {};
 		disableCtxMenu();
 		window.scrollTo(0, 0);
 		wjs().setOpeningText("Stopping");
@@ -149,16 +150,12 @@ function goBack(nextTorrent) {
 		if (isReady) {
 			isReady = 0;
 			if (powGlobals.serverReady) {
-				powGlobals.engine.server.close(function() {
-					powGlobals.engine.remove(function() {
-						powGlobals.engine.destroy();
-						powGlobals = [];
-						if (typeof nextTorrent !== 'undefined') {
-							resetPowGlobals();
-							addTorrent(nextTorrent);
-						}
-					});
-				});
+				killEngine(powGlobals.engine);
+				powGlobals = [];
+				if (typeof nextTorrent !== 'undefined') {
+					resetPowGlobals();
+					addTorrent(nextTorrent);
+				}
 			} else {
 				powGlobals.engine.destroy();
 				powGlobals = [];
