@@ -120,6 +120,10 @@ function goBack(nextTorrent) {
 		$('#main').css("display","table");	
 		document.getElementById('magnetLink').value = "";
 		$('#player_wrapper').css("min-height","1px").css("height","1px").css("width","1px");
+		if ($("#open-url").hasClass("dark-add-url")) {
+			$("#magnetSubmit").text("Stream");
+			$("#open-url").removeClass("dark-add-url");
+		}
 		win.setMinimumSize(530, 440);
 	
 		if ((win.width < 530 && win.height < 440) || (win.width < 530 || win.height < 440)) {

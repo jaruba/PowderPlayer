@@ -60,6 +60,11 @@ setTimeout(function() {
 		$('#main').css("display","none");
 		$('#player_wrapper').css("min-height","100%").css("height","100%").css("width","auto");
 		
+		if (!$("#open-url").hasClass("dark-add-url")) {
+			$("#magnetSubmit").text("Add");
+			$("#open-url").addClass("dark-add-url");
+		}
+		
 		if (asyncPlaylist.preBufZero) wjs().setOpeningText("Prebuffering ...");
 		if (asyncPlaylist.addPlaylist && asyncPlaylist.addPlaylist.length > 0 && asyncPlaylist.noPlaylist === false) {
 			asyncPlaylist.addPlaylist.forEach(function(e) { wjs().addPlaylist(e); });

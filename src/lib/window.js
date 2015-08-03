@@ -64,8 +64,18 @@ $(window).resize(function() {
 		$('#open-url').css('top', Math.round(($(window).height() - 187) / 2)+'px');
 	} else {
 		if (wjs()) {
-			if ($(window).width() <= 425 && wjs().find(".wcp-add-url").css("display") == "inline") wjs().find(".wcp-add-url").css("display","none");
-			else if ($(window).width() > 425 && wjs().find(".wcp-add-url").css("display") == "none") wjs().find(".wcp-add-url").css("display","inline");
+			if ($(window).width() <= 482 && wjs().find(".wcp-add-url").css("display") == "inline") {
+				$("#open-url").hide(0)
+				for (kl = 0; kl < $(".lean-overlay").length; kl++) {
+					if (parseInt($($(".lean-overlay")[kl]).css("zIndex")) > 0) {
+						$($(".lean-overlay")[kl]).css("zIndex","0");
+						break;
+					}
+				}
+				wjs().find(".wcp-add-url").css("display","none");
+			} else if ($(window).width() > 482 && wjs().find(".wcp-add-url").css("display") == "none") {
+				wjs().find(".wcp-add-url").css("display","inline");
+			}
 		}
 		if ($("body").hasClass("mini")) $("body").removeClass("mini");
 		$("#filesList").css("min-height",$("#player_wrapper").height());

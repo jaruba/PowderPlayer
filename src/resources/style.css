@@ -349,3 +349,50 @@ input[type="file"] { display: none }
 	padding: 15px 0;
 	font-size: 17px
 }
+.dark-add-url {
+	width: 393px !important;
+	background: #292929 !important;
+	padding: 10px !important;
+}
+.dark-add-url #holdCenter {
+	width: 373px !important;
+	padding: 10px !important;
+	background: rgba(0,0,0,0.3) !important;
+	-webkit-border-radius: 0 !important;
+	-moz-border-radius: 0 !important;
+	border-radius: 0 !important;
+}
+.dark-add-url #formHolder {
+	padding: 0 !important;
+	padding-right: 0 !important;
+	background: rgba(0,0,0,0) !important;
+	-webkit-border-radius: 0 !important;
+	-moz-border-radius: 0 !important;
+	border-radius: 0 !important;
+}
+.dark-add-url #magnetForm {
+	height: 37px !important
+}
+.dark-add-url fieldset {
+	margin: 0 !important;
+	padding: 0 !important;
+	border: 0 !important;
+}
+.dark-add-url #magnetLink {
+	-webkit-border-radius: 0 !important;
+	-moz-border-radius: 0 !important;
+	border-radius: 0 !important;
+	width: 300px !important;
+}
+.dark-add-url #magnetSubmit {
+	-webkit-border-radius: 0 !important;
+	-moz-border-radius: 0 !important;
+	border-radius: 0 !important;
+}
+.dark-add-url .animated-close {
+	-webkit-border-radius: 0 !important;
+	-moz-border-radius: 0 !important;
+	border-radius: 0 !important;
+	padding: 6px 9px !important;
+	font-size: 15px !important;
+}

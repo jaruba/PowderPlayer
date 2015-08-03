@@ -331,6 +331,11 @@ function runURL(torLink,noAutoStart) {
 			$('#main').css("display","none");
 			$('#player_wrapper').css("min-height","100%").css("height","100%").css("width","auto");
 
+			if (!$("#open-url").hasClass("dark-add-url")) {
+				$("#magnetSubmit").text("Add");
+				$("#open-url").addClass("dark-add-url");
+			}
+
 			if (typeof wjs !== 'undefined') {
 				wjs().showSplashScreen();
 				wjs().wrapper.find(".wcp-subtitle-text").text("");
@@ -486,6 +491,10 @@ function runMultiple(fileArray) {
 	if (!ranURL) wjs().startPlayer();
 	$('#main').css("display","none");
 	$('#player_wrapper').css("min-height","100%").css("height","100%").css("width","auto");
+	if (!$("#open-url").hasClass("dark-add-url")) {
+		$("#magnetSubmit").text("Add");
+		$("#open-url").addClass("dark-add-url");
+	}
 	setOnlyFirst = 0;
 	
 	return false;
@@ -583,6 +592,10 @@ function loadHistory(targetHistory) {
 
 	$('#main').css("display","none");
 	$('#player_wrapper').css("min-height","100%").css("height","100%").css("width","auto");
+	if (!$("#open-url").hasClass("dark-add-url")) {
+		$("#magnetSubmit").text("Add");
+		$("#open-url").addClass("dark-add-url");
+	}
 	
 	$('.history-animated-close').trigger("click");
 	
