@@ -374,6 +374,8 @@ body {
         <ul class="dropdown-menu">
             <li><a onClick="gui.Shell.openItem(powGlobals.engine.path+pathBreak+powGlobals.engine.torrent.name+pathBreak); return false" href="#">Open Folder</a></li>
             <li class="dropdown-divider"></li>
+            <li><a onClick="powGlobals.engine.discover(); powGlobals.engine.swarm.reconnectAll(); return false" href="#">Force Download</a></li>
+            <li class="dropdown-divider"></li>
             <li><a onClick="gui.Clipboard.get().set('magnet:?xt=urn:btih:'+powGlobals.engine.infoHash.toUpperCase(),'text'); return false" href="#">Copy Magnet URI</a></li>
             <li class="dropdown-divider"></li>
             <li><a onClick="for (ij = 0; typeof powGlobals.files[ij] !== 'undefined'; ij++) playEl(ij); return false" href="#">Start All</a></li>
