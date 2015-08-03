@@ -263,7 +263,7 @@ function engage(targetHistory,remPlaylist,remSel) {
 		} else asyncPlaylist.noPlaylist = true;
 		if (localStorage.useVLC != "1") powGlobals.engine.server.close();
 		$('#player_wrapper').css("min-height","1px").css("height","1px").css("width","1px");
-		$('body').css("overflow-y","visible");
+		$('#inner-in-content').css("overflow-y","visible");
 //		win.title = powGlobals.engine.torrent.name;
 	}
 				

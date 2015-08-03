@@ -89,7 +89,7 @@ function settingsEl(kj) {
 		// if the item is a video
 		powGlobals.videos.some(function(el,ij) {
 			if (el.index == kj) {
-				$("#playAction").attr("onClick","wjs().playItem("+ij+"); $('#closeAction').trigger('click'); $('html, body').animate({ scrollTop: 0 }, 'slow'); playEl("+kj+"); $('body').css('overflow-y','hidden')");
+				$("#playAction").attr("onClick","wjs().playItem("+ij+"); $('#closeAction').trigger('click'); $('#inner-in-content').animate({ scrollTop: 0 }, 'slow'); playEl("+kj+"); $('#inner-in-content').css('overflow-y','hidden')");
 				$("#copyStream").attr("onClick","gui.Clipboard.get().set('http://localhost:'+powGlobals['engine'].server.address().port+'/"+powGlobals.files[kj].index+"','text'); $('#closeAction').trigger('click')");
 				$("#playAction").show(0);
 				$("#copyStream").show(0);
@@ -111,11 +111,11 @@ function goBack(nextTorrent) {
 	if (typeof nextTorrent === 'undefined') {
 		correctPlaylist = {};
 		disableCtxMenu();
-		window.scrollTo(0, 0);
+		$("#inner-in-content").animate({ scrollTop: 0 }, 0);
 		wjs().setOpeningText("Stopping");
 		wjs().fullscreen(false);
 		$("#header_container").css("display","none");
-		$("body").css("overflow-y","hidden");
+		$("#inner-in-content").css("overflow-y","hidden");
 		if (parseInt($("#main").css("opacity")) == 0) $("#main").css("opacity","1");
 		$('#main').css("display","table");	
 		document.getElementById('magnetLink').value = "";

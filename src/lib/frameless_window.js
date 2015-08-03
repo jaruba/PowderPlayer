@@ -68,7 +68,7 @@ function showFrame() {
 document.addEventListener('mousemove', function(e){
 	if (typeof player !== 'undefined' && parseInt($("#top-titlebar").css("opacity")) == 0 && !frameImune) {
 		showFrame();
-	} else if ($('#main').css("display") != "table" && $(document).scrollTop() == 0) {
+	} else if ($('#main').css("display") != "table" && $("#inner-in-content").scrollTop() == 0) {
 		clearTimeout(frameTimer);
 		frameTimer = setTimeout(function() { hideFrame(); },5000);
 	}

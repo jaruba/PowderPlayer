@@ -47,7 +47,7 @@ function isPlaying() {
 		}
 	}
 //	if (isYoutube(wjs().currentItem()) && win.title != wjs().plugin.playlist.items[wjs().currentItem()].title.replace("[custom]","")) win.title = wjs().plugin.playlist.items[wjs().currentItem()].title.replace("[custom]","");
-	if ($("body").css("overflow-y") == "visible" || $("body").css("overflow-y") == "auto") $('html, body').animate({ scrollTop: 0 }, 'slow');
+	if ($("#inner-in-content").css("overflow-y") == "visible" || $("#inner-in-content").css("overflow-y") == "auto") $("#inner-in-content").animate({ scrollTop: 0 }, 'slow');
 }
 
 function gotVideoSize(width,height) {

@@ -3,7 +3,7 @@ if (gui.App.argv.length > 0) {
 	runURL(gui.App.argv[0]);
 	win.on('loaded', function() {
 		$("#webchimera").mousedown(function(e){ 
-		    if (e.button == 2 && $('#main').css("display") != "table" && $(document).scrollTop() == 0 && !$("#magnetLink").is(":hover")) {
+		    if (e.button == 2 && $('#main').css("display") != "table" && $('#inner-in-content').scrollTop() == 0 && !$("#magnetLink").is(":hover")) {
 				playerMenu.popup(e.pageX, e.pageY);
 			}
 		});
@@ -19,7 +19,7 @@ if (gui.App.argv.length > 0) {
 			}
 		});
 		$(document).mousedown(function(e){ 
-		    if (e.button == 2 && $('#main').css("display") != "table" && $(document).scrollTop() == 0 && !$("#magnetLink").is(":hover")) {
+		    if (e.button == 2 && $('#main').css("display") != "table" && $('#inner-in-content').scrollTop() == 0 && !$("#magnetLink").is(":hover")) {
 				playerMenu.popup(e.pageX, e.pageY);
 			}
 		});

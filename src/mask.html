@@ -379,7 +379,7 @@ body {
             <li><a onClick="for (ij = 0; typeof powGlobals.files[ij] !== 'undefined'; ij++) playEl(ij); return false" href="#">Start All</a></li>
             <li><a onClick="for (ij = 0; typeof powGlobals.files[ij] !== 'undefined'; ij++) pauseEl(ij); return false" href="#">Pause All</a></li>
             <li class="dropdown-divider"></li>
-            <li><a onClick="$('html, body').animate({ scrollTop: 0 }, 'slow'); return false" href="#">Back to Video</a></li>
+            <li><a onClick="$('#inner-in-content').animate({ scrollTop: 0 }, 'slow'); return false" href="#">Back to Video</a></li>
             <li><a onClick="goBack(); return false" href="#">Remove Torrent</a></li>
         </ul>
     </div>
