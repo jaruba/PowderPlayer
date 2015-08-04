@@ -59,7 +59,7 @@ $('#subtitleDialog').change(function(evt) {
 	  var targetSub = $(this).val();
 	  if (["sub","srt","vtt"].indexOf(targetSub.split('.').pop().toLowerCase()) > -1) {
 		  if (targetSub.indexOf("/") > -1) {
-			  newString = '{"'+targetSub.split('/').pop()+'":"file:///'+targetSub+'"}';
+			  newString = '{"'+targetSub.split('/').pop()+'":"'+targetSub+'"}';
 		  } else {
 			  newString = '{"'+targetSub.split('\\').pop()+'":"'+targetSub.split('\\').join('\\\\')+'"}';
 		  }
