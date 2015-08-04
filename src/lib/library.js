@@ -16,10 +16,10 @@ var walk = function(dir, done) {
           });
         } else {
 		  if (supportedVideo.indexOf(file.split('.').pop().toLowerCase()) > -1) {
-			  if (getShowName(powGlobals.videos[powGlobals.videos.length - 1].filename) == getShowName(file)) {
-				  if (getSeason(file) == getSeason(powGlobals.videos[powGlobals.videos.length - 1].filename) && getEpisode(file) > getEpisode(powGlobals.videos[powGlobals.videos.length - 1].filename)) {
+			  if (getShowName(wjs().itemDesc(wjs().itemCount()-1).title) == getShowName(file)) {
+				  if (getSeason(file) == getSeason(wjs().itemDesc(wjs().itemCount()-1).title) && getEpisode(file) > getEpisode(wjs().itemDesc(wjs().itemCount()-1).title)) {
 					  results.push(file);
-				  } else if (getSeason(file) > getSeason(powGlobals.videos[powGlobals.videos.length - 1].filename)) {
+				  } else if (getSeason(file) > getSeason(wjs().itemDesc(wjs().itemCount()-1).title)) {
 					  results.push(file);
 				  }
 			  }
@@ -84,7 +84,7 @@ function scanLibrary() {
 				 title: getName(el)
 			});
 			if (disableAll) wjs().vlc.playlist.items[newVideoId].disabled = true;
-			else if (getSeason(el) == getSeason(powGlobals.videos[powGlobals.videos.length - 2].filename) && getEpisode(el) -1 != getEpisode(powGlobals.videos[powGlobals.videos.length - 2].filename)) {
+			else if (getSeason(el) == getSeason(wjs().itemDesc(wjs().itemCount()-2).title) && getEpisode(el) -1 != getEpisode(wjs().itemDesc(wjs().itemCount()-2).title)) {
 				wjs().vlc.playlist.items[newVideoId].disabled = true;
 				disableAll = true;
 			}
@@ -99,8 +99,8 @@ function scanLibrary() {
 function scanServer() {
 	checkInternet(function(isConnected) {
 		if (isConnected) {
-			if (getShortSzEp(powGlobals.videos[powGlobals.videos.length - 1].filename)) {
-				var metaServer = window.atob("aHR0cDovL3Bvd2Rlci5tZWRpYS9tZXRhRGF0YS9zY2FuLnBocD9zPQ==")+encodeURIComponent(getSeason(powGlobals.videos[powGlobals.videos.length - 1].filename))+window.atob("JmU9")+encodeURIComponent(getEpisode(powGlobals.videos[powGlobals.videos.length - 1].filename))+window.atob("JnNuPQ==")+encodeURIComponent(getShowName(powGlobals.videos[powGlobals.videos.length - 1].filename).toLowerCase());
+			if (getShortSzEp(wjs().itemDesc(wjs().itemCount()-1).title)) {
+				var metaServer = window.atob("aHR0cDovL3Bvd2Rlci5tZWRpYS9tZXRhRGF0YS9zY2FuLnBocD9zPQ==")+encodeURIComponent(getSeason(wjs().itemDesc(wjs().itemCount()-1).title))+window.atob("JmU9")+encodeURIComponent(getEpisode(wjs().itemDesc(wjs().itemCount()-1).title))+window.atob("JnNuPQ==")+encodeURIComponent(getShowName(wjs().itemDesc(wjs().itemCount()-1).title).toLowerCase());
 				if ((keepState == "playing" || keepState == "paused") && wjs().height() > 0) {
 					qualities = [480, 720, 1080];
 					metaServer += window.atob("JnBmPQ==")+encodeURIComponent(closest(wjs().height(),qualities));
