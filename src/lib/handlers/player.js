@@ -200,6 +200,7 @@ function retrievePlaylist() {
 	for (ijk = 0; ijk < wjs().itemCount(); ijk++) {
 		plObject[ijk.toString()] = {};
 		plObject[ijk.toString()].title = wjs().plugin.playlist.items[ijk].title.replace("[custom]","");
+		plObject[ijk.toString()].disabled = wjs().plugin.playlist.items[ijk].disabled;
 		if (powGlobals.engine && powGlobals.videos[ijk] && powGlobals.videos[ijk].index) {
 			plObject[ijk.toString()].contentType = require('mime-types').lookup(powGlobals.engine.files[powGlobals.files[powGlobals.videos[ijk].index].index].path);
 		}

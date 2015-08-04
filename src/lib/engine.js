@@ -79,12 +79,14 @@ function engage(targetHistory,remPlaylist,remSel) {
 					wjs().addPlaylist({
 						 url: rememberPlaylist[kj.toString()].mrl,
 						 title: rememberPlaylist[kj.toString()].title,
+						 disabled: rememberPlaylist[kj.toString()].disabled,
 						 contentType: rememberPlaylist[kj.toString()].contentType
 					});
 				} else {
 					wjs().addPlaylist({
 						 url: rememberPlaylist[kj.toString()].mrl,
-						 title: rememberPlaylist[kj.toString()].title
+						 title: rememberPlaylist[kj.toString()].title,
+						 disabled: rememberPlaylist[kj.toString()].disabled
 					});
 				}
 				powGlobals.videos[kj] = {};
@@ -202,12 +204,14 @@ function engage(targetHistory,remPlaylist,remSel) {
 					wjs().addPlaylist({
 						 url: rememberPlaylist[kj.toString()].mrl,
 						 title: rememberPlaylist[kj.toString()].title,
+						 disabled: rememberPlaylist[kj.toString()].disabled,
 						 contentType: rememberPlaylist[kj.toString()].contentType
 					});
 				} else {
 					wjs().addPlaylist({
 						 url: rememberPlaylist[kj.toString()].mrl,
-						 title: rememberPlaylist[kj.toString()].title
+						 title: rememberPlaylist[kj.toString()].title,
+						 disabled: rememberPlaylist[kj.toString()].disabled
 					});
 				}
 				powGlobals.videos[kj] = {};
