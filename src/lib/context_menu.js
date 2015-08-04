@@ -1,4 +1,5 @@
 var playerMenu = new gui.Menu(),
+	torrentMenu = new gui.Menu(),
 	audioMenu = new gui.Menu(),
 	aspectRatioMenu = new gui.Menu(),
 	cropMenu = new gui.Menu(),
@@ -13,6 +14,21 @@ audioMenu.append(new gui.MenuItem({
 	type: 'checkbox',
 	checked: true,
 	click: function() { selectAudio(0); }
+}));
+
+torrentMenu.append(new gui.MenuItem({
+	label: 'Torrent Data',
+	click: function() { torrentData(); }
+}));
+
+torrentMenu.append(new gui.MenuItem({
+	label: 'Force Download',
+	click: function() {
+		if (powGlobals.engine) {
+			powGlobals.engine.discover();
+			powGlobals.engine.swarm.reconnectAll();
+		}
+	}
 }));
 
 aspectRatios.forEach(function(el,i) {
@@ -47,10 +63,12 @@ zooms.forEach(function(el,i) {
 
 function resetMenus(menus,sel) {
 	menus.forEach(function(subMenu) {
-		if (playerMenu.items[subMenu].submenu.items[sel] && !playerMenu.items[subMenu].submenu.items[sel].checked) {
+		if (playerMenu.items[subMenu].submenu.items[sel] && playerMenu.items[subMenu].submenu.items[sel].type == "checkbox" && !playerMenu.items[subMenu].submenu.items[sel].checked) {
 			playerMenu.items[subMenu].submenu.items.forEach(function(el,ij) {
-				if (ij == sel) el.checked = true;
-				else if (el.checked) el.checked = false;
+				if (el.type == "checkbox") {
+					if (ij == sel) el.checked = true;
+					else if (el.checked) el.checked = false;
+				}
 			});
 		}
 	});
@@ -58,45 +76,42 @@ function resetMenus(menus,sel) {
 
 function selectAudio(i) {
 	playerMenu.items[2].submenu.items.forEach(function(el,ij) {
-		if (el.checked) el.checked = false;
+		if (el.type == "checkbox" && el.checked) el.checked = false;
 	});
-	playerMenu.items[2].submenu.items[i].checked = true;
+	if (playerMenu.items[2].submenu.items[i].type == "checkbox") playerMenu.items[2].submenu.items[i].checked = true;
 	wjs().audioTrack(i);
 }
 
 function selectAspect(i) {
 	resetMenus([5,6]);
 	playerMenu.items[4].submenu.items.forEach(function(el,ij) {
-		if (el.checked) el.checked = false;
+		if (el.type == "checkbox" && el.checked) el.checked = false;
 	});
-	playerMenu.items[4].submenu.items[i].checked = true;
+	if (playerMenu.items[4].submenu.items[i].type == "checkbox") playerMenu.items[4].submenu.items[i].checked = true;
 	wjs().aspectRatio(playerMenu.items[4].submenu.items[i].label);
 }
 
 function selectCrop(i) {
 	resetMenus([4,6]);
 	playerMenu.items[5].submenu.items.forEach(function(el,ij) {
-		if (el.checked) el.checked = false;
+		if (el.type == "checkbox" && el.checked) el.checked = false;
 	});
-	playerMenu.items[5].submenu.items[i].checked = true;
+	if (playerMenu.items[5].submenu.items[i].type == "checkbox") playerMenu.items[5].submenu.items[i].checked = true;
 	wjs().crop(playerMenu.items[5].submenu.items[i].label);
 }
 
 function selectZoom(i,newZoom) {
 	resetMenus([4,5]);
 	playerMenu.items[6].submenu.items.forEach(function(el,ij) {
-		if (el.checked) el.checked = false;
+		if (el.type == "checkbox" && el.checked) el.checked = false;
 	});
-	playerMenu.items[6].submenu.items[i].checked = true;
+	if (playerMenu.items[6].submenu.items[i].type == "checkbox") playerMenu.items[6].submenu.items[i].checked = true;
 	wjs().zoom(newZoom);
 }
 // end submenus
 
 // context menu
-playerMenu.append(new gui.MenuItem({
-	label: 'Torrent Data',
-	click: function() { torrentData(); }
-}));
+playerMenu.append(new gui.MenuItem({ label: 'Torrent', submenu: torrentMenu }));
 playerMenu.append(new gui.MenuItem({ type: 'separator' }));
 playerMenu.append(new gui.MenuItem({ label: 'Audio Tracks', submenu: audioMenu }));
 playerMenu.append(new gui.MenuItem({ type: 'separator' }));
@@ -113,13 +128,13 @@ playerMenu.append(new gui.MenuItem({
 			clearTimeout(frameTimer);
 			onTop = false;
 			win.setAlwaysOnTop(false);
-			if (playerMenu.items[6].checked) playerMenu.items[6].checked = false;
+			if (playerMenu.items[8].type == "checkbox" && playerMenu.items[8].checked) playerMenu.items[8].checked = false;
 		} else {
 			setTimeout(win.setAlwaysOnTop(true),1);
 			clearTimeout(frameTimer);
 			frameTimer = setTimeout(function() { hideFrame(); },5000);
 			onTop = true;
-			if (!playerMenu.items[6].checked) playerMenu.items[6].checked = true;
+			if (playerMenu.items[8].type == "checkbox" && !playerMenu.items[8].checked) playerMenu.items[8].checked = true;
 		}
 	}
 }));
@@ -149,16 +164,16 @@ function refreshCtxMenu() {
 	playerMenu.removeAt(2);
 	playerMenu.insert(audioMenuBackup,2);
 
-	playerMenu.items[4].submenu.items.forEach(function(el,ij) { if (el.checked) el.checked = false; });
-	playerMenu.items[4].submenu.items[0].checked = true;
+	playerMenu.items[4].submenu.items.forEach(function(el,ij) { if (el.type == "checkbox" && el.checked) el.checked = false; });
+	if (playerMenu.items[4].submenu.items[0].type == "checkbox") playerMenu.items[4].submenu.items[0].checked = true;
 	playerMenu.items[4].enabled = true;
 
-	playerMenu.items[5].submenu.items.forEach(function(el,ij) { if (el.checked) el.checked = false; });
-	playerMenu.items[5].submenu.items[0].checked = true;
+	playerMenu.items[5].submenu.items.forEach(function(el,ij) { if (el.type == "checkbox" && el.checked) el.checked = false; });
+	if (playerMenu.items[5].submenu.items[0].type == "checkbox") playerMenu.items[5].submenu.items[0].checked = true;
 	playerMenu.items[5].enabled = true;
 
-	playerMenu.items[6].submenu.items.forEach(function(el,ij) { if (el.checked) el.checked = false; });
-	playerMenu.items[6].submenu.items[0].checked = true;
+	playerMenu.items[6].submenu.items.forEach(function(el,ij) { if (el.type == "checkbox" && el.checked) el.checked = false; });
+	if (playerMenu.items[6].submenu.items[0].type == "checkbox") playerMenu.items[6].submenu.items[0].checked = true;
 	playerMenu.items[6].enabled = true;
 	
 	if (powGlobals.engine) playerMenu.items[0].enabled = true;
