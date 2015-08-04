@@ -243,6 +243,7 @@ function torrentData() {
 		$("#inner-in-content").animate({ scrollTop: $("#player_wrapper").height() }, "slow");
 	}
 	$("#inner-in-content").css("overflow-y","visible");
+	if ($("#all-download").find(".progressbar-front-text").css("width") == "0px") $(window).trigger('resize');
 }
 
 function urlFormAction() {
