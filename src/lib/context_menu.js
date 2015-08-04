@@ -18,7 +18,28 @@ audioMenu.append(new gui.MenuItem({
 
 torrentMenu.append(new gui.MenuItem({
 	label: 'Torrent Data',
-	click: function() { torrentData(); }
+	click: function() {
+		torrentData();
+	}
+}));
+
+torrentMenu.append(new gui.MenuItem({
+	label: 'Open Folder',
+	click: function() {
+		if (powGlobals.engine) {
+			gui.Shell.openItem(powGlobals.engine.path+pathBreak+powGlobals.engine.torrent.name+pathBreak);
+		}
+	}
+}));
+
+torrentMenu.append(new gui.MenuItem({
+	label: 'Download All',
+	click: function() {
+		if (powGlobals.engine) {
+			for (ij = 0; typeof powGlobals.files[ij] !== 'undefined'; ij++) playEl(ij);
+			wjs().notify("Downloading All Files");
+		}
+	}
 }));
 
 torrentMenu.append(new gui.MenuItem({
@@ -27,6 +48,7 @@ torrentMenu.append(new gui.MenuItem({
 		if (powGlobals.engine) {
 			powGlobals.engine.discover();
 			powGlobals.engine.swarm.reconnectAll();
+			wjs().notify("Throttling Download");
 		}
 	}
 }));
