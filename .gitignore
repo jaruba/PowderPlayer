@@ -4,6 +4,7 @@ player/
 plugins/
 cache/
 build/
+nwjs.app/
 credits.html
 d3dcompiler_47.dll
 ffmpegsumo.dll
@@ -15,3 +16,4 @@ nw.pak
 nwjc.exe
 pdf.dll
 powder.exe
+nwjc
