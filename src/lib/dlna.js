@@ -5,7 +5,8 @@ var dlna = {},
 	pUrl = require('url'),
 	samsungDlna = {},
 	nextStartDlna = 0,
-	notFoundTimer;
+	notFoundTimer,
+	savedDlna = {};
 
 dlna.clients = [];
 dlna.checks = 0;
@@ -47,13 +48,33 @@ function setDlnaOpts() {
 			samsungDlna.retries = 0;
 		}
 		dlna.lastSecond = 0;
+	} else {
+		if (savedDlna.allowOnce) {
+			if (wjs().itemDesc(dlna.lastIndex).title == savedDlna.title && savedDlna.time) {
+				dlna.controls.seek(savedDlna.time);
+				wjs().setOpeningText("Streaming to TV ...");
+			}
+			savedDlna = {};
+		}
 	}
+	if (savedDlna.allowOnce) savedDlna = {};
 }
 
 function sendDlnaData(dlnaTime,dlnaLength) {
 	castData.castTime = dlnaTime * 1000;
 	castData.castLength = dlnaLength * 1000;
 	castData.castPos = (dlnaTime / dlnaLength);
+	if (castData.castPos < 0.94 && !savedDlna.allowOnce) {
+		savedDlna.time = dlnaTime;
+		if (!savedDlna.title && typeof dlna.lastIndex !== 'undefined') savedDlna.title = wjs().itemDesc(dlna.lastIndex).title;
+	} else if (castData.castPos > 0.94) {
+		if (savedDlna.time) {
+			// giving it 3 chances before removal to avoid data loss from errors that trigger the Endded State
+			if (!savedDlna.removal) savedDlna.removal = 1;
+			else savedDlna.removal++;
+			if (savedDlna.removal == 3) savedDlna = {};
+		}
+	}
 	if (castData.castTime > 0 && castData.castLength > 0) {
 		wjs().wrapper.find(".wcp-time-current").text(wjs().parseTime(castData.castTime,castData.castLength));
 		wjs().wrapper.find(".wcp-time-total").text(" / "+wjs().parseTime(castData.castLength));
@@ -122,6 +143,8 @@ function stopDlna(noSubs) {
 function startDlnaServer(httpServer,dlnaReconnect) {
 	dlnaReconnect = typeof dlnaReconnect !== 'undefined' ? dlnaReconnect : false;
 
+	savedDlna.allowOnce = true;
+
 	var MediaRendererClient = require('upnp-mediarenderer-client');
 	
 	if (!dlnaReconnect) {
@@ -178,8 +201,10 @@ function startDlnaServer(httpServer,dlnaReconnect) {
 }
 
 function prepareDlnaServer(dlnaReconnect) {
+	wjs().refreshPlaylist();
 	dlna.lastPos = 0;
 	dlnaReconnect = typeof dlnaReconnect !== 'undefined' ? dlnaReconnect : false;
+	if (dlna.lastIndex == -1 && typeof tempSel !== 'undefined' && tempSel > -1) dlna.lastIndex = tempSel;
 	if (wjs().plugin.playlist.items[dlna.lastIndex].mrl.indexOf("pow://") == 0) {
 		waitForNext = true;
 		nextStartDlna = 1;
@@ -363,7 +388,7 @@ function findDlnaClient() {
 	wjs().find(".wcp-subtitle-but").hide(0);
 
 	wjs().setOpeningText("Searching for Device ...");
-	wjs().stopPlayer();
+	wjs().stop(true);
 	wjs().find(".wcp-splash-screen").show(0);
 	dlna.clients = [];
 	clearTimeout(notFoundTimer);
@@ -611,7 +636,7 @@ function attachDlnaHandlers() {
 
 					wjs().setOpeningText("Starting Previous Video ...");
 					castData.castingPaused = 1;
-					dlnaPlay(dlna.lastIndex-1);
+					dlnaPlay(i);
 				}
 			} else if (buttonClass == "wcp-next") {
 				if (dlna.lastIndex +1 < wjs().itemCount()) {
@@ -626,7 +651,7 @@ function attachDlnaHandlers() {
 
 					wjs().setOpeningText("Starting Next Video ...");
 					castData.castingPaused = 1;
-					dlnaPlay(dlna.lastIndex+1);
+					dlnaPlay(i);
 				}
 			}
 		}
