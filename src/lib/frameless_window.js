@@ -132,32 +132,38 @@ function hideFrame() {
 }
 
 win.on('resize', function() {
-  if (win.height > 200) remHeight = win.height;
-  clearTimeout(frameTimer);
-  frameTimer = setTimeout(function() { hideFrame(); },5000);
+	if (win.height > 200) remHeight = win.height;
+	clearTimeout(frameTimer);
+	frameTimer = setTimeout(function() { hideFrame(); },5000);
 });
 
 win.on('maximize', function() {
-  clearTimeout(frameTimer);
-  maximized = true;
-  $(".top-titlebar-maximize-button").hide(0);
-  $(".top-titlebar-restore-button").show(0);
+	clearTimeout(frameTimer);
+	if (!maximized) {
+		maximized = true;
+		if (!$(".top-titlebar-restore-button").is(":visible")) $(".top-titlebar-restore-button").show(0);
+		if ($(".top-titlebar-maximize-button").is(":visible")) $(".top-titlebar-maximize-button").hide(0);
+	}
 });
 
 win.on('restore', function() {
-	maximized = false;
-  $(".top-titlebar-restore-button").hide(0);
-  $(".top-titlebar-maximize-button").show(0);
-  clearTimeout(frameTimer);
-  frameTimer = setTimeout(function() { hideFrame(); },5000);
+	if (maximized) {
+		maximized = false;
+		if ($(".top-titlebar-restore-button").is(":visible")) $(".top-titlebar-restore-button").hide(0);
+		if (!$(".top-titlebar-maximize-button").is(":visible")) $(".top-titlebar-maximize-button").show(0);
+	}
+	clearTimeout(frameTimer);
+	frameTimer = setTimeout(function() { hideFrame(); },5000);
 });
 
 win.on('move', function() {
-	maximized = false;
-  $(".top-titlebar-restore-button").hide(0);
-  $(".top-titlebar-maximize-button").show(0);
-  clearTimeout(frameTimer);
-  frameTimer = setTimeout(function() { hideFrame(); },5000);
+	if (maximized) {
+		maximized = false;
+		if ($(".top-titlebar-restore-button").is(":visible")) $(".top-titlebar-restore-button").hide(0);
+		if (!$(".top-titlebar-maximize-button").is(":visible")) $(".top-titlebar-maximize-button").show(0);
+	}
+	clearTimeout(frameTimer);
+	frameTimer = setTimeout(function() { hideFrame(); },5000);
 });
 
 win.show();
