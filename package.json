@@ -36,6 +36,7 @@
         "opensubtitles-client": "jaruba/node-opensubtitles-client",
         "peerflix": "jaruba/peerflix",
         "read-torrent": "*",
+		"universal-analytics": "*",
         "request": "*",
         "upnp-mediarenderer-client": "*",
         "xmlrpc": "*",

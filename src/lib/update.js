@@ -21,6 +21,12 @@ function checkUpdates() {
 					}
 				}
 			});
+			
+			// analytics
+			var ua = require('universal-analytics');
+			gaVisitor = ua('UA-65979437-2');
+			gaVisitor.pageview("/mask.html").send();
+			gaLoaded = true;
 		}
 	});
 }
