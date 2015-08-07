@@ -242,6 +242,10 @@ function torrentData() {
 		$("#filesList").css("min-height",$("#player_wrapper").height());
 		$("#inner-in-content").animate({ scrollTop: $("#player_wrapper").height() }, "slow");
 	}
+	setTimeout(function() {
+		win.title = powGlobals.engine.torrent.name;
+		winTitleLeft(powGlobals.engine.torrent.name);
+	},600);
 	$("#inner-in-content").css("overflow-y","visible");
 	if ($("#all-download").find(".progressbar-front-text").css("width") == "0px") $(window).trigger('resize');
 }

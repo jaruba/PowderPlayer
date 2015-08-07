@@ -49,6 +49,10 @@ $("#inner-in-content").scrollEnd(function(){
 		if (["visible","auto"].indexOf($("#inner-in-content").css("overflow-y")) > -1) $("#inner-in-content").css("overflow-y","hidden");
 		win.setMinimumSize(372, 210);
 		if (!wjs().isPlaying()) if (!castData.casting && wjs().state() != "stopping") wjs().togglePause();
+		if (win.title != player.itemDesc(player.currentItem()).title) {
+			win.title = player.itemDesc(player.currentItem()).title;
+			winTitleLeft(player.itemDesc(player.currentItem()).title);
+		}
 	}
 }, 1000);
 

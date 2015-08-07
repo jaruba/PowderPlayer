@@ -14,7 +14,6 @@ if (!localStorage.history) {
 
 var supportedVideo = ["mkv", "avi", "mp4", "mpg", "mpeg", "webm", "flv", "ogg", "ogv", "mov", "wmv", "3gp", "3g2"],
 	powGlobals = [],
-	torPieces = [],
 	firstTimeEver = 1,
 	firstTime = 0,
 	firstSize = 1,

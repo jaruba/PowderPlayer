@@ -49,20 +49,24 @@ function engage(targetHistory,remPlaylist,remSel) {
 	powGlobals.hasVideo = 0;
 	$("#filesList").html("");
 
-	for (ij = 0; powGlobals.engine.files[ij]; ij++) {
-		var fileStart = powGlobals.engine.files[ij].offset;
-		if (powGlobals.engine.files[ij].offset > 0) fileStart++;
-		var fileEnd = fileStart + powGlobals.engine.files[ij].length;
+	powGlobals.engine.files.forEach(function(el,ij) {
+		var fileStart = el.offset;
+		if (el.offset > 0) fileStart++;
+		var fileEnd = fileStart + el.length;
+		eli = [];
+		eli.firstPiece = Math.floor(fileStart / powGlobals.engine.torrent.pieceLength)
+		eli.lastPiece = Math.floor((fileEnd -1) / powGlobals.engine.torrent.pieceLength)
+		eli.lastDownload = 0;
+		eli.downloaded = 0;
+		eli.index = ij;
+		eli.byteLength = el.length;
+		eli.name = el.name;
+		if (supportedVideo.indexOf(eli.name.split('.').pop().toLowerCase()) > -1 && eli.name.toLowerCase().replace("sample","") == eli.name.toLowerCase() && eli.name != "ETRG.mp4" && eli.name.toLowerCase().substr(0,5) != "rarbg") {
+			eli.isVideo = true;
+		} else eli.isVideo = false;
 		powGlobals.indexes[ij] = ij;
-		powGlobals.files[ij] = [];
-		powGlobals.files[ij].firstPiece = Math.floor(fileStart / powGlobals.engine.torrent.pieceLength)
-		powGlobals.files[ij].lastPiece = Math.floor((fileEnd -1) / powGlobals.engine.torrent.pieceLength)
-		powGlobals.files[ij].lastDownload = 0;
-		powGlobals.files[ij].downloaded = 0;
-		powGlobals.files[ij].index = ij;
-		powGlobals.files[ij].byteLength = powGlobals.engine.files[ij].length;
-		powGlobals.files[ij].name = powGlobals.engine.files[ij].name;
-	}
+		powGlobals.files[ij] = eli;
+	});
 	
 	if (getShortSzEp(powGlobals.files[0].name)) powGlobals.files = sortEpisodes(powGlobals.files,2);
 	else powGlobals.files = naturalSort(powGlobals.files,2);
@@ -101,73 +105,69 @@ function engage(targetHistory,remPlaylist,remSel) {
 
 	if (localStorage.useVLC != "1") {
 		powGlobals.files.forEach(function(el,ij) {
-			var thisName = el.name;
-			if (supportedVideo.indexOf(thisName.split('.').pop().toLowerCase()) > -1) {
-				if (thisName.toLowerCase().replace("sample","") == thisName.toLowerCase() && thisName != "ETRG.mp4") {
+			if (el.isVideo) {
+				var thisName = el.name;
+				powGlobals.hasVideo++;
+				if (typeof savedIj === 'undefined') savedIj = ij;
+
+				powGlobals.videos[kj] = [];
+
+				powGlobals.files[ij].vIndex = kj;
+				powGlobals.videos[kj].checkHashes = [];
+				powGlobals.videos[kj].lastSent = 0;
+				powGlobals.videos[kj].index = ij;
+				powGlobals.videos[kj].filename = thisName.split('/').pop().replace(/\{|\}/g, '');
+				var fileStart = powGlobals.engine.files[el.index].offset;
+				var fileEnd = powGlobals.engine.files[el.index].offset + powGlobals.engine.files[el.index].length;
+				powGlobals.videos[kj].firstPiece = Math.floor(fileStart / powGlobals.engine.torrent.pieceLength);
+				powGlobals.videos[kj].lastPiece = Math.floor((fileEnd -1) / powGlobals.engine.torrent.pieceLength);
+				powGlobals.videos[kj].path = "" + powGlobals.engine.path + pathBreak + powGlobals.engine.files[el.index].path;
+				powGlobals.videos[kj].byteLength = powGlobals.engine.files[el.index].length;
+				powGlobals.videos[kj].downloaded = 0;
+				if (powGlobals.hasVideo == 1) {
+					var filename = thisName.split('/').pop().replace(/\{|\}/g, '')
+					powGlobals.filename = filename;
+					powGlobals.path = powGlobals.videos[kj].path;
+					powGlobals.firstPiece = powGlobals.videos[kj].firstPiece;
+					powGlobals.lastPiece = powGlobals.videos[kj].lastPiece;
+					if (powGlobals.videos[kj].byteLength) powGlobals.byteLength = powGlobals.videos[kj].byteLength;
+					else if (powGlobals.byteLength) delete powGlobals.byteLength;
 					
-					if (thisName.toLowerCase().substr(0,5) != "rarbg") {
-						powGlobals.hasVideo++;
-						if (typeof savedIj === 'undefined') savedIj = ij;
-	
-						powGlobals.videos[kj] = [];
-	
-						powGlobals.videos[kj].checkHashes = [];
-						powGlobals.videos[kj].lastSent = 0;
-						powGlobals.videos[kj].index = ij;
-						powGlobals.videos[kj].filename = thisName.split('/').pop().replace(/\{|\}/g, '');
-						var fileStart = powGlobals.engine.files[el.index].offset;
-						var fileEnd = powGlobals.engine.files[el.index].offset + powGlobals.engine.files[el.index].length;
-						powGlobals.videos[kj].firstPiece = Math.floor(fileStart / powGlobals.engine.torrent.pieceLength);
-						powGlobals.videos[kj].lastPiece = Math.floor((fileEnd -1) / powGlobals.engine.torrent.pieceLength);
-						powGlobals.videos[kj].path = "" + powGlobals.engine.path + pathBreak + powGlobals.engine.files[el.index].path;
-						powGlobals.videos[kj].byteLength = powGlobals.engine.files[el.index].length;
-						powGlobals.videos[kj].downloaded = 0;
-						if (powGlobals.hasVideo == 1) {
-							var filename = thisName.split('/').pop().replace(/\{|\}/g, '')
-							powGlobals.filename = filename;
-							powGlobals.path = powGlobals.videos[kj].path;
-							powGlobals.firstPiece = powGlobals.videos[kj].firstPiece;
-							powGlobals.lastPiece = powGlobals.videos[kj].lastPiece;
-							if (powGlobals.videos[kj].byteLength) powGlobals.byteLength = powGlobals.videos[kj].byteLength;
-							else if (powGlobals.byteLength) delete powGlobals.byteLength;
-							
-//							if (targetHistory == 0) win.title = getName(filename);
-	
-							if (playerLoaded) {
-								if (powGlobals.engine.swarm.wires.length == 0) wjs().setOpeningText("No Peers Found");
-								else wjs().setOpeningText("Prebuffering ...");
-								setTimeout(function() { announceNoPeers(); },3000);
-							}
-							else asyncPlaylist.preBufZero = true;
-							
-							if (powGlobals.engine.files[el.index].offset != powGlobals.engine.server.index.offset) {
-								for (as = 0; powGlobals.engine.files[powGlobals.files[as].index]; as++) {
-									if (powGlobals.engine.files[powGlobals.files[as].index].offset == powGlobals.engine.server.index.offset) {
-										powGlobals.engine.files[powGlobals.files[as].index].deselect();
-										break;
-									}
-								}
-							}
-	
-						}
-						if (targetHistory == 0) {
-							if (playerLoaded) {
-								wjs().addPlaylist({
-									 url: localHref+el.index,
-									 title: getName(el.name),
-									 contentType: require('mime-types').lookup(powGlobals.engine.files[el.index].path)
-								});
-							} else {
-								asyncPlaylist.addPlaylist.push({
-									 url: localHref+el.index,
-									 title: getName(el.name),
-									 contentType: require('mime-types').lookup(powGlobals.engine.files[el.index].path)
-								});
+//					if (targetHistory == 0) win.title = getName(filename);
+
+					if (playerLoaded) {
+						if (powGlobals.engine.swarm.wires.length == 0) wjs().setOpeningText("No Peers Found");
+						else wjs().setOpeningText("Prebuffering ...");
+						setTimeout(function() { announceNoPeers(); },3000);
+					}
+					else asyncPlaylist.preBufZero = true;
+					
+					if (powGlobals.engine.files[el.index].offset != powGlobals.engine.server.index.offset) {
+						for (as = 0; powGlobals.engine.files[powGlobals.files[as].index]; as++) {
+							if (powGlobals.engine.files[powGlobals.files[as].index].offset == powGlobals.engine.server.index.offset) {
+								powGlobals.engine.files[powGlobals.files[as].index].deselect();
+								break;
 							}
 						}
-						kj++;
+					}
+
+				}
+				if (targetHistory == 0) {
+					if (playerLoaded) {
+						wjs().addPlaylist({
+							 url: localHref+el.index,
+							 title: getName(el.name),
+							 contentType: require('mime-types').lookup(powGlobals.engine.files[el.index].path)
+						});
+					} else {
+						asyncPlaylist.addPlaylist.push({
+							 url: localHref+el.index,
+							 title: getName(el.name),
+							 contentType: require('mime-types').lookup(powGlobals.engine.files[el.index].path)
+						});
 					}
 				}
+				kj++;
 			}
 		});
 	} else {
@@ -175,13 +175,9 @@ function engage(targetHistory,remPlaylist,remSel) {
 		var newM3U = "#EXTM3U";
 		powGlobals.files.forEach(function(el,ij) {
 			var thisName = el.name;
-			if (supportedVideo.indexOf(thisName.split('.').pop().toLowerCase()) > -1) {
-				if (thisName.toLowerCase().replace("sample","") == thisName.toLowerCase() && thisName != "ETRG.mp4") {
-					if (thisName.toLowerCase().substr(0,5) != "rarbg") {
-						if (newM3U == "#EXTM3U") powGlobals.engine.files[el.index].select();
-						newM3U += os.EOL+"#EXTINF:0,"+getName(el.name)+os.EOL+localHref+el.index;
-					}
-				}
+			if (el.isVideo) {
+				if (newM3U == "#EXTM3U") powGlobals.engine.files[el.index].select();
+				newM3U += os.EOL+"#EXTINF:0,"+getName(el.name)+os.EOL+localHref+el.index;
 			}
 		});
 		fs.exists(gui.App.dataPath+pathBreak+'vlc_playlist.m3u', function(exists) {
@@ -269,10 +265,12 @@ function engage(targetHistory,remPlaylist,remSel) {
 		if (localStorage.useVLC != "1") powGlobals.engine.server.close();
 		$('#player_wrapper').css("min-height","1px").css("height","1px").css("width","1px");
 		$('#inner-in-content').css("overflow-y","visible");
-//		win.title = powGlobals.engine.torrent.name;
+		win.title = powGlobals.engine.torrent.name;
+		winTitleLeft(powGlobals.engine.torrent.name);
+		$(window).trigger('resize');
 	}
 				
-	$("#filesList").append($('<div style="width: 100%; height: 79px; background-color: #f6f6f5; text-align: center; line-height: 79px; font-family: \'Droid Sans Bold\'; font-size: 19px; border-bottom: 1px solid #b5b5b5">Scroll up to Start Video Mode</div>'));
+	$("#filesList").append($('<div style="width: 100%; height: 79px; text-align: center; line-height: 79px; font-family: \'Droid Sans Bold\'; font-size: 19px; border-bottom: 1px solid #353535; background: #4d4d4d">Scroll up to Start Video Mode</div>'));
 	
 	powGlobals.files.forEach(function(el,ij) {
 		setPaused = '<i id="action'+ij+'" onClick="playEl('+ij+')" class="glyphs play" style="background-color: #FF704A"></i>';
@@ -283,11 +281,19 @@ function engage(targetHistory,remPlaylist,remSel) {
 			playEl(ij);
 		}
 		
-		if (ij%2 !== 0) backColor = '#f6f6f5';
-		else backColor = '#ffffff';
+		if (ij%2 !== 0) backColor = '#3e3e3e';
+		else backColor = '#444';
 		
-		$("#filesList").append($('<div style="width: 10%; text-align: right; position: absolute; right: 0px; font-size: 240%; margin-top: 24px; margin-right: 5%;">'+setPaused+'</div><div onClick="settingsEl('+ij+')" id="file'+ij+'" class="files" data-index="'+ij+'" style="text-align: left; padding-bottom: 8px; padding-top: 8px; width: 100%; background-color: '+backColor+'" data-color="'+backColor+'"><center><div style="width: 90%; text-align: left"><span class="filenames">'+powGlobals.engine.files[el.index].name+'</span><br><div class="progressbars" style="width: 90%; display: inline-block"></div><div style="width: 10%; display: inline-block"></div><div id="p-file'+ij+'" class="progress" style="width: 90%; margin: 0; position: relative; top: -6px; display: inline-block"><div id="progressbar'+ij+'" class="progress-bar progress-bar-info" role="progressbar" data-transitiongoal="0"></div></div><br><span class="infos">Downloaded: <span id="down-fl'+ij+'">0 kB</span> / '+getReadableFileSizeString(powGlobals.engine.files[el.index].length)+'</span></div></center></div>'));
+		$("#filesList").append($('<div style="width: 70px; text-align: right; position: absolute; right: 0px; font-size: 240%; margin-top: 14px; margin-right: 19px;">'+setPaused+'</div><div onClick="settingsEl('+ij+')" id="file'+ij+'" class="files" data-index="'+ij+'" style="text-align: left; padding-bottom: 8px; padding-top: 8px; width: 100%; background-color: '+backColor+'" data-color="'+backColor+'"><div id="p-file'+ij+'" class="circle"><strong></strong></div><div style="width: calc(100% - 89px); text-align: left"><span class="filenames">'+powGlobals.engine.files[el.index].name+'</span><span class="infos">Downloaded: <span id="down-fl'+ij+'">0 kB</span> / '+getReadableFileSizeString(powGlobals.engine.files[el.index].length)+'</span><div style="clear: both"></div></div></center></div>'));
 
+	});
+	$('.circle').circleProgress({
+		value: 0,
+		size: 64,
+		thickness: 6,
+		fill: { gradient: [['#0681c4', .5], ['#4ac5f8', .5]], gradientAngle: Math.PI / 4 }
+	}).on('circle-animation-progress', function(event, progress, stepValue) {
+		$(this).find('strong').html(parseInt(100 * stepValue) + '<i>%</i>');
 	});
 	if (powGlobals.hasVideo == 0 && localStorage.useVLC != "1") {
 		// reselect all files

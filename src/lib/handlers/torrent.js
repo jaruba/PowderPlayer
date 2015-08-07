@@ -3,36 +3,6 @@ function delayCheckDown(savedPiece) {
 		checkDownloaded(savedPiece);
 	}
 }
-function delayLoopDown(el,ij,torIndex) {
-	return function() {
-		loopDownloaded(el,ij,torIndex);
-	}
-}
-function loopDownloaded(el,ij,torIndex) {
-	if (powGlobals.videos && powGlobals.videos[ij]) {
-		if ((el.downloaded +1 +el.firstPiece) == torPieces[torIndex]) {
-			  powGlobals.videos[ij].downloaded = el.downloaded = el.downloaded+1;
-			  torPieces.splice(torIndex, 1);
-			  setTimeout(delayLoopDown(el,ij,torIndex),50);
-		} else {
-			if (ij == keepCurrent) {
-				if ((el.downloaded / (el.lastPiece - el.firstPiece)) > el.lastSent) {
-					powGlobals.videos[ij].lastSent = el.lastSent = (el.downloaded / (el.lastPiece - el.firstPiece));
-					if (typeof wjs() !== 'undefined' && wjs().setDownloaded) {
-						clearTimeout(delaySetDownload);
-						delaySetDownload = setTimeout(delayNewSetDownload(el.lastSent),500);
-					}
-				}
-			} else {
-				if ((el.downloaded / (el.lastPiece - el.firstPiece)) > el.lastSent) {
-					powGlobals.videos[ij].lastSent = el.lastSent = (el.downloaded / (el.lastPiece - el.firstPiece));
-				}
-			}
-			downloadWorking = false;
-		}
-	}
-}
-var isRecursive = false;
 function checkDownloaded(piece) {
 	if (powGlobals.engine && powGlobals.engine.torrent) {
 		if (downloadWorking) {
@@ -51,131 +21,83 @@ function checkDownloaded(piece) {
 			if (updDownload != powGlobals.lastDownload) {
 				powGlobals.lastDownload = updDownload;
 				if (updDownload >= 100) {
-					$('#all-download .progress-bar').removeClass("progress-bar-warning").addClass("progress-bar-danger").attr('data-transitiongoal', 100).progressbar({display_text: 'center'});
+					$('#all-download .progress-bar').removeClass("progress-bar-warning").addClass("progress-bar-danger").attr('data-transitiongoal', 100).progressbar();
+					if ($('#downloadPercent').text() != '100%') $('#downloadPercent').text('100%');
 					if (!focused) {
 						win.setProgressBar(-0.1);
 						if (keepState != "playing" && !focused && !dlna.initiated) win.requestAttention(true);
 					}
 				} else {
-					$('#all-download .progress-bar').attr('data-transitiongoal', updDownload).progressbar({display_text: 'center'});
+					$('#all-download .progress-bar').attr('data-transitiongoal', updDownload).progressbar();
+					if ($('#downloadPercent').text() != updDownload+'%') $('#downloadPercent').text(updDownload+'%');
 					if (focused === false && $('#main').css("display") != "table" && powGlobals.engine && powGlobals.hasVideo == 0) win.setProgressBar(parseInt(updDownload)/100);
 				}
 			}
 			var foundFirstPiece = false;
 			var foundLastPiece = false;
-			if (powGlobals.videos && powGlobals.videos.length) {
-				powGlobals.videos.some(function(el,ij) {
-					if (el.path != "unknown" && piece >= el.firstPiece && piece <= el.lastPiece && piece > 0) {
-						if (el.downloaded +1 == piece - el.firstPiece) {
-							powGlobals.videos[ij].downloaded = el.downloaded = el.downloaded+1;
-						} else {
-							torPieces.push(piece);
-							torPieces.sort(function(a,b){return a-b});
+			powGlobals.files.some(function(el,ij) {
+				if (piece >= el.firstPiece && piece <= el.lastPiece && piece >= 0) {
+					powGlobals.files[ij].downloaded = el.downloaded = el.downloaded+1;
+					updDownload = Math.floor((el.downloaded / (el.lastPiece - el.firstPiece)) *100);
+					if (powGlobals.videos[wjs().currentItem()] && ij == powGlobals.videos[wjs().currentItem()].index && wjs().state() == "opening") {
+						if (firstTime == 0) {
+							tempPrebuf = Math.floor((el.downloaded / (el.lastPiece - el.firstPiece)) *100*45);
+							if (tempPrebuf <= 100 && tempPrebuf > prebuf) {
+								prebuf = tempPrebuf;
+								if (playerLoaded && !stopPrebuf) wjs().setOpeningText("Prebuffering "+prebuf+"%");
+							} else if (tempPrebuf > 100 && !stopPrebuf) wjs().setOpeningText("Opening Video");
 						}
-						if (torPieces.indexOf(el.downloaded +1 +el.firstPiece) > -1) {
-							var torIndex = torPieces.indexOf(el.downloaded +1 +el.firstPiece);
-							setTimeout(delayLoopDown(el,ij,torIndex),0);
-							isRecursive = true;
-						} else {
-							if (ij == keepCurrent) {
-								if ((el.downloaded / (el.lastPiece - el.firstPiece)) > el.lastSent) {
-									powGlobals.videos[ij].lastSent = el.lastSent = (el.downloaded / (el.lastPiece - el.firstPiece));
-									if (typeof wjs() !== 'undefined' && wjs().setDownloaded) {
-										clearTimeout(delaySetDownload);
-										delaySetDownload = setTimeout(delayNewSetDownload(el.lastSent),500);
-									}
-								}
-							} else {
-								if ((el.downloaded / (el.lastPiece - el.firstPiece)) > el.lastSent) {
-									powGlobals.videos[ij].lastSent = el.lastSent = (el.downloaded / (el.lastPiece - el.firstPiece));
-								}
-							}
-						}
-						if (typeof el.index !== 'undefined') {
-							eli = powGlobals.files[el.index];
-							powGlobals.files[el.index].downloaded = eli.downloaded = eli.downloaded+1;
-							updDownload = Math.floor((eli.downloaded / (eli.lastPiece - eli.firstPiece)) *100);
-							if (powGlobals.videos[keepCurrent] && el.index == powGlobals.videos[keepCurrent].index && keepState == "opening") {
-								if (firstTime == 0) {
-									tempPrebuf = Math.floor((eli.downloaded / (eli.lastPiece - eli.firstPiece)) *100*45);
-									if (tempPrebuf <= 100 && tempPrebuf > prebuf) {
-										prebuf = tempPrebuf;
-										if (playerLoaded && keepState != "playing" && keepState != "paused" && !stopPrebuf) wjs().setOpeningText("Prebuffering "+prebuf+"%");
-									} else if (tempPrebuf > 100 && !stopPrebuf) wjs().setOpeningText("Opening Video");
-								}
-							}
-							if (updDownload != eli.lastDownload) {
-								newFileSize = Math.floor(eli.byteLength * (updDownload /100));
-								if (newFileSize > eli.byteLength) {
-									$("#down-fl"+el.index).text(getReadableFileSizeString(Math.floor(eli.byteLength)));
-								} else {
-									$("#down-fl"+el.index).text(getReadableFileSizeString(Math.floor(eli.byteLength * (updDownload /100))));
-								}
-								powGlobals.files[el.index].lastDownload = eli.lastDownload = updDownload;
-								if (updDownload >= 100) {
-									// give some time for the file to write then declare the video as finished
-									setTimeout(delayFinished(el.index),20000);
-									
-									$("#action"+el.index).removeClass("pause").addClass("settings").attr("onClick","settingsEl("+el.index+")");
-									$('#p-file'+el.index+' .progress-bar').removeClass("progress-bar-info").addClass("progress-bar-success").attr('data-transitiongoal', 100).progressbar({display_text: 'center'});
-								} else {
-									$('#p-file'+el.index+' .progress-bar').attr('data-transitiongoal', updDownload).progressbar({display_text: 'center'});
-								}
-							}
-						}
-						if (piece > el.firstPiece && piece < el.lastPiece) return true;
-						if (piece == el.firstPiece) foundFirstPiece = true;
-						if (piece == el.lastPiece) foundLastPiece = true;
-						if (foundFirstPiece && foundLastPiece) return true;
 					}
-				});
-			} else {
-				powGlobals.files.some(function(el,ij) {
-					if (piece >= el.firstPiece && piece <= el.lastPiece && piece > 0) {
-						powGlobals.files[ij].downloaded = el.downloaded = el.downloaded+1;
-						updDownload = Math.floor((el.downloaded / (el.lastPiece - el.firstPiece)) *100);
-						if (powGlobals.videos[wjs().currentItem()] && ij == powGlobals.videos[wjs().currentItem()].index && wjs().state() == "opening") {
-							if (firstTime == 0) {
-								tempPrebuf = Math.floor((el.downloaded / (el.lastPiece - el.firstPiece)) *100*45);
-								if (tempPrebuf <= 100 && tempPrebuf > prebuf) {
-									prebuf = tempPrebuf;
-									if (playerLoaded && !stopPrebuf) wjs().setOpeningText("Prebuffering "+prebuf+"%");
-								} else if (tempPrebuf > 100 && !stopPrebuf) wjs().setOpeningText("Opening Video");
+					
+					if (powGlobals.hasVideo > 0 && el.isVideo) {
+						if (powGlobals.videos[wjs().currentItem()].index == ij) {
+							eli = powGlobals.videos[el.vIndex];
+							if ((el.downloaded / (el.lastPiece - el.firstPiece)) > eli.lastSent) {
+								powGlobals.videos[wjs().currentItem()].lastSent = (el.downloaded / (el.lastPiece - el.firstPiece));
+								if (typeof wjs() !== 'undefined' && wjs().setDownloaded) {
+									clearTimeout(delaySetDownload);
+									delaySetDownload = setTimeout(delayNewSetDownload(eli.lastSent),500);
+								}
 							}
 						}
-						if (updDownload != el.lastDownload) {
-							newFileSize = Math.floor(el.byteLength * (updDownload /100));
-							if (newFileSize > el.byteLength) {
-								$("#down-fl"+ij).text(getReadableFileSizeString(Math.floor(el.byteLength)));
-							} else {
-								$("#down-fl"+ij).text(getReadableFileSizeString(Math.floor(el.byteLength * (updDownload /100))));
-							}
-							powGlobals.files[ij].lastDownload = el.lastDownload = updDownload;
-							if (updDownload >= 100) {
-								// give some time for the file to write then declare the video as finished
-								setTimeout(delayFinished(ij),20000);
-								
+					}
+					
+					if (updDownload != el.lastDownload) {
+						newFileSize = Math.floor(el.byteLength * (updDownload /100));
+						if (newFileSize > el.byteLength) {
+							$("#down-fl"+ij).text(getReadableFileSizeString(Math.floor(el.byteLength)));
+						} else {
+							$("#down-fl"+ij).text(getReadableFileSizeString(Math.floor(el.byteLength * (updDownload /100))));
+						}
+						powGlobals.files[ij].lastDownload = el.lastDownload = updDownload;
+						if (updDownload >= 100) {
+							// give some time for the file to write then declare the video as finished
+							setTimeout(delayFinished(ij),20000);
+							
+							if ($("#action"+ij).hasClass("pause")) {
 								$("#action"+ij).removeClass("pause").addClass("settings").attr("onClick","settingsEl("+ij+")");
-								$('#p-file'+ij+' .progress-bar').removeClass("progress-bar-info").addClass("progress-bar-success").attr('data-transitiongoal', 100).progressbar({display_text: 'center'});
-							} else {
-								$('#p-file'+ij+' .progress-bar').attr('data-transitiongoal', updDownload).progressbar({display_text: 'center'});
-								if (localStorage.useVLC == "1") {
-									if (updDownload >= 5 && !powGlobals.engine.files[el.index].selected) {
-										playEl(ij);
-									} else if (updDownload < 5 && powGlobals.engine.files[el.index].selected && $("#action"+ij).hasClass("play")) {
-										$("#action"+ij).removeClass("play").addClass("pause").css("background-color","#F6BC24").attr("onClick","pauseEl("+ij+")");
-									}
+							} else if ($("#action"+ij).hasClass("play")) {
+								$("#action"+ij).removeClass("play").addClass("settings").attr("onClick","settingsEl("+ij+")");
+							}
+							$('#p-file'+ij).circleProgress('value', 1);
+						} else {
+							$('#p-file'+ij).circleProgress('value', updDownload/100);
+							if (localStorage.useVLC == "1") {
+								if (updDownload >= 5 && !powGlobals.engine.files[el.index].selected) {
+									playEl(ij);
+								} else if (updDownload < 5 && powGlobals.engine.files[el.index].selected && $("#action"+ij).hasClass("play")) {
+									$("#action"+ij).removeClass("play").addClass("pause").css("background-color","#F6BC24").attr("onClick","pauseEl("+ij+")");
 								}
 							}
 						}
-						if (piece > el.firstPiece && piece < el.lastPiece) return true;
-						if (piece == el.firstPiece) foundFirstPiece = true;
-						if (piece == el.lastPiece) foundLastPiece = true;
-						if (foundFirstPiece && foundLastPiece) return true;
 					}
-				});
-			}
-			if (!isRecursive) downloadWorking = false;
+					if (piece > el.firstPiece && piece < el.lastPiece) return true;
+					if (piece == el.firstPiece) foundFirstPiece = true;
+					if (piece == el.lastPiece) foundLastPiece = true;
+					if (foundFirstPiece && foundLastPiece) return true;
+				}
+			});
+			downloadWorking = false;
 		}
 	} else downloadWorking = false;
 }

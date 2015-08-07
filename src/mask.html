@@ -183,10 +183,6 @@ body {
   background: transparent !important;
 }
 
-#filesList {
-  background: #fff
-}
-
 .lean-overlay {
   top: 34px !important;
   left: 6px !important;
@@ -201,6 +197,7 @@ body {
     <script src="resources/jquery-ui-1.11.3/jquery-ui.min.js"></script>
     <script src="resources/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
     <script src="resources/bootstrap-dropdown/jquery.dropdown.js"></script>
+    <script src="resources/jquery-circle-progress-1.1.3/dist/circle-progress.js"></script>
 </head>
 
 <body class="mini">
@@ -269,23 +266,23 @@ body {
     
     <div id="player_wrapper"></div>
     
-    <center>
+    <center id="filesListBack">
         <div id="header_container" class="hidden">
             <div id="header">
-                <div id="header_content">
-                    <div id="header_text" class="wrap-text goLeft"><span id="headerText"></span></div>
-                    <div id="optHold" class="goRight"><a id="optionsBut" href="#" data-dropdown="#dropdown-1">Options</a></div>
+                <div class="stats">
+                    <span><i class="peersIcon"></i>Peers: <span id="nrPeers">0</span></span><br>
+                    <span><i class="speedIcon"></i>Speed: <span id="speed">0.0 kB/s</span></span><br>
+                    <span><i class="downloadIcon"></i>Downloaded: <span id="downPart">0 kB</span> / <span id="downAll">0 kB</span></span>
                 </div>
-                <center>
-                    <div id="all-download" class="progress">
-                        <div class="progress-bar progress-bar-warning" role="progressbar" data-transitiongoal="0"></div>
-                    </div>
-                    <div class="stats">
-                    	<span class="goLeft">Downloaded: <span id="downPart">0 kB</span> / <span id="downAll">0 kB</span></span>
-                        <span>Speed: <span id="speed">0.0 kB/s</span></span>
-                        <span class="goRight">Peers: <span id="nrPeers">0</span></span>
-                    </div>
-                </center>
+                <div id="all-download" class="progress">
+                    <div class="progress-bar progress-bar-warning" role="progressbar" data-transitiongoal="0"></div><br>
+                </div>
+                <span id="downloadPercent">0%</span>
+
+                <div id="header_content">
+                    <div id="header_text" class="wrap-text goLeft" style="display:none"><span id="headerText"></span></div>
+                    <div id="optHold" class="goRight"><a id="optionsBut" href="#" data-dropdown="#dropdown-1"><i class="tools"></i></a></div>
+                </div>
             </div>
         </div>
         <div id="filesList"></div>
