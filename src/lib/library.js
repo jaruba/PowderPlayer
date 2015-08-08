@@ -105,6 +105,7 @@ function scanServer() {
 					qualities = [480, 720, 1080];
 					metaServer += window.atob("JnBmPQ==")+encodeURIComponent(closest(wjs().height(),qualities));
 				}
+				pauseFlood();
 				$.ajax({ type: 'GET', url: metaServer, dataType: 'json', global: false, cache: false, success: function(xhr) {
 					if (xhr.constructor === Array) {
 						xhr.forEach(function(el) {
@@ -119,6 +120,7 @@ function scanServer() {
 						else wjs().notify(xhr.length+" Episodes Found");
 						wjs().refreshPlaylist();
 					} else wjs().notify("No Items Found");
+					startFlood();
 				} });
 			} else wjs().notify("No Items Found");
 		} else wjs().notify("No Internet");
