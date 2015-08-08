@@ -43,6 +43,7 @@ function engage(targetHistory,remPlaylist,remSel) {
 	var localHref = 'http://localhost:' + powGlobals.engine.server.address().port + '/'
 	powGlobals.hash = powGlobals.engine.infoHash;
 	powGlobals.downloaded = 0;
+	powGlobals.pulse = 0;
 	
 	$("#downAll").text(getReadableFileSizeString(Math.floor(powGlobals.engine.torrent.length)));
 
@@ -268,6 +269,8 @@ function engage(targetHistory,remPlaylist,remSel) {
 		win.title = powGlobals.engine.torrent.name;
 		winTitleLeft(powGlobals.engine.torrent.name);
 		$(window).trigger('resize');
+		powGlobals.pulse = 1000000; // 1 Mbps pulse for non-video torrents
+		if (localStorage.pulseRule == "always" || (localStorage.pulseRule == "auto" && !focused)) powGlobals.engine.setPulse(powGlobals.pulse);
 	}
 				
 	$("#filesList").append($('<div style="width: 100%; height: 79px; text-align: center; line-height: 79px; font-family: \'Droid Sans Bold\'; font-size: 19px; border-bottom: 1px solid #353535; background: #4d4d4d">Scroll up to Start Video Mode</div>'));

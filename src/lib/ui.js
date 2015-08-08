@@ -50,6 +50,19 @@ function changeClickPause() {
 	}
 }
 
+function changePulseSetting() {
+	if (localStorage.pulse == 'auto') {
+		$("#click-pulse").text("always");
+		localStorage.pulse = "always";
+	} else if (localStorage.pulse == 'always') {
+		$("#click-pulse").text("disabled");
+		localStorage.pulse = "disabled";
+	} else {
+		$("#click-pulse").text("auto");
+		localStorage.pulse = "auto";
+	}
+}
+
 function openPeerSelector() {
 	if($('#max-peers').is(':visible')) $('#max-peers').hide(0,function() { $('.ui-spinner').show(0); })
 }

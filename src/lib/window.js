@@ -2,10 +2,15 @@ gui.Screen.Init();
 var win = gui.Window.get(),
     allowScrollHotkeys = true;
 
-win.on('focus', function() { focused = true; win.setProgressBar(-0.1); }); 
+win.on('focus', function() {
+	focused = true;
+	win.setProgressBar(-0.1);
+	if (localStorage.pulseRule == "auto" && powGlobals.engine && powGlobals.pulse) powGlobals.engine.flood();
+});
 win.on('blur', function() {
 	focused = false;
 	if ($('#main').css("display") != "table" && typeof powGlobals.engine !== 'undefined' && powGlobals.hasVideo == 0 && parseInt($('#all-download .progress-bar').attr('data-transitiongoal')) < 100) win.setProgressBar(parseInt($('#all-download .progress-bar').attr('data-transitiongoal'))/100);
+	if (localStorage.pulseRule == "auto" && powGlobals.engine && powGlobals.pulse) powGlobals.engine.setPulse(powGlobals.pulse);
 }); 
 win.on('close', function() {
 	

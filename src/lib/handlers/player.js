@@ -36,6 +36,11 @@ function isPlaying() {
 		wjs().plugin.subtitles.track = 0;
 		
 		refreshCtxMenu(); // refresh context menu
+		
+		if (powGlobals.engine && wjs().length() > 0 && powGlobals.videos[wjs().currentItem()] && powGlobals.videos[wjs().currentItem()].byteLength) {
+			powGlobals.pulse = Math.round(powGlobals.videos[wjs().currentItem()].byteLength / (wjs().length() /1000) *2);
+			if (localStorage.pulseRule == "always" || (localStorage.pulseRule == "auto" && !focused)) powGlobals.engine.setPulse(powGlobals.pulse);
+		}
 	}
 	if (firstTimeEver == 1) {
 		firstTimeEver = 0;
