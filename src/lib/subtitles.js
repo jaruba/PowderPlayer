@@ -42,6 +42,8 @@ function readData(xhr) {
 
 function subtitlesByExactHash(hash,fileSize,tag) {
 	if (wjs().itemCount() > 0) {
+		pauseFlood();
+		setTimeout(function() { startFlood(); },3000); // to ensure it's started again even if errors arise
 		opensubtitles.api.login().done(function(token){
 			powGlobals.osToken = token;
 			utils = require('../node_modules/opensubtitles-client/lib/Utils.js')
@@ -78,7 +80,9 @@ function checkSubData(isConnected,results) {
 	if (isConnected) {
 		var subjectUrl = window.atob("aHR0cDovL3Bvd2Rlci5tZWRpYS9tZXRhRGF0YS9nZXRvcmRlci5waHA/Zj0=")+encodeURIComponent(powGlobals.filename)+window.atob("JmloPQ==")+encodeURIComponent(powGlobals.fileHash);
 		if (powGlobals.engine) subjectUrl += window.atob("Jmg9")+encodeURIComponent(powGlobals.engine.infoHash);
+		pauseFlood();
 		$.ajax({ type: 'GET', url: subjectUrl, dataType: 'json', global: false, cache: false, success: function(xhr) {
+			startFlood();
 			if (xhr.constructor === {}.constructor) loadPlayerSubs(results,xhr);
 			else loadPlayerSubs(results);
 		}, error: function() { loadPlayerSubs(results); } });

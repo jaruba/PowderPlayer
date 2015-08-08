@@ -161,4 +161,15 @@ function killEngine(targetEngine) {
 	}(targetEngine));
 }
 
+function pauseFlood() {
+	if (powGlobals.engine && powGlobals.pulse && ["always","auto"].indexOf(localStorage.pulseRule) > -1) powGlobals.engine.setPulse(powGlobals.pulse);
+}
+
+function startFlood() {
+	if (powGlobals.engine && powGlobals.pulse) {
+		if (localStorage.pulseRule == "auto" && !focused) powGlobals.engine.flood();
+		else if (localStorage.pulseRule == "always") powGlobals.engine.flood();
+	}
+}
+
 var onmagnet = function () { peerCheck(); }
