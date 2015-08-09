@@ -53,6 +53,15 @@ torrentMenu.append(new gui.MenuItem({
 	}
 }));
 
+torrentMenu.append(new gui.MenuItem({
+	label: 'Speed Pulsing',
+	type: 'checkbox',
+	checked: true,
+	click: function() {
+		if (powGlobals.engine) switchPulsing();
+	}
+}));
+
 aspectRatios.forEach(function(el,i) {
 	mnOpts = {
 		label: el,

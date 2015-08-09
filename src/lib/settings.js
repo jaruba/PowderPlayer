@@ -6,7 +6,7 @@ if (!localStorage.libDir) localStorage.libDir = 'Temp';
 if (!localStorage.clickPause) localStorage.clickPause = 'both';
 if (!localStorage.subEncoding) localStorage.subEncoding = 'auto';
 if (!localStorage.dlnaClients) localStorage.dlnaClients = '{}';
-if (!localStorage.pulseRule) localStorage.pulseRule = "auto";
+if (!localStorage.pulseRule) localStorage.pulseRule = "disabled";
 if (!localStorage.history) {
 	dummyObject = {};
 	localStorage.history = JSON.stringify(dummyObject);

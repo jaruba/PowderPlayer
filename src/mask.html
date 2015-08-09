@@ -372,6 +372,7 @@ body {
             <li><a onClick="gui.Shell.openItem(powGlobals.engine.path+pathBreak+powGlobals.engine.torrent.name+pathBreak); return false" href="#">Open Folder</a></li>
             <li class="dropdown-divider"></li>
             <li><a onClick="powGlobals.engine.discover(); powGlobals.engine.swarm.reconnectAll(); return false" href="#">Force Download</a></li>
+            <li><a id="menuPulsing" onClick="switchPulsing(); return false" href="#">Disable Pulsing</a></li>
             <li class="dropdown-divider"></li>
             <li><a onClick="gui.Clipboard.get().set('magnet:?xt=urn:btih:'+powGlobals.engine.infoHash.toUpperCase(),'text'); return false" href="#">Copy Magnet URI</a></li>
             <li class="dropdown-divider"></li>
@@ -421,9 +422,9 @@ body {
     <script src="lib/handlers/player.js"></script>
     <script src="lib/handlers/torrent.js"></script>
     <script src="lib/modals_init.js"></script>
+    <script src="lib/context_menu.js"></script>
     <script src="lib/ui.js"></script>
     <script src="lib/engine.js"></script>
-    <script src="lib/context_menu.js"></script>
     <script src="lib/init.js"></script>
 	<script>
     addButtonHandlers("top-titlebar-close-button", "button_close.png", "button_close_hover.png", closeWindow);

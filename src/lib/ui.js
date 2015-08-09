@@ -9,6 +9,13 @@ if (localStorage.clickPause == 'fullscreen') {
 } else $("#click-pause").text("Fullscreen + Windowed");
 $('#open-url').css('top', Math.round(($(window).height() - 187) / 2)+'px');
 
+if (localStorage.pulseRule == "disabled") {
+	$("#menuPulsing").text("Enable Pulsing");
+	playerMenu.items[0].submenu.items[4].checked = false;
+}
+
+$("#click-pulse").text(localStorage.pulseRule);
+
 $('#magnetLink').mousedown(function(event) {
     if (event.which == 3) {
 		var clipboard = gui.Clipboard.get();
@@ -51,17 +58,35 @@ function changeClickPause() {
 }
 
 function changePulseSetting() {
-	if (localStorage.pulse == 'auto') {
+	if (localStorage.pulseRule == 'auto') {
 		$("#click-pulse").text("always");
-		localStorage.pulse = "always";
-	} else if (localStorage.pulse == 'always') {
+		localStorage.pulseRule = "always";
+		if ($("#menuPulsing").text() == "Disable Pulsing") $("#menuPulsing").text("Enable Pulsing");
+	} else if (localStorage.pulseRule == 'always') {
 		$("#click-pulse").text("disabled");
-		localStorage.pulse = "disabled";
+		localStorage.pulseRule = "disabled";
+		if ($("#menuPulsing").text() == "Enable Pulsing") $("#menuPulsing").text("Disable Pulsing");
 	} else {
 		$("#click-pulse").text("auto");
-		localStorage.pulse = "auto";
+		localStorage.pulseRule = "auto";
+		if ($("#menuPulsing").text() == "Disable Pulsing") $("#menuPulsing").text("Enable Pulsing");
 	}
 }
+
+function switchPulsing() {
+	if ($("#menuPulsing").text() == "Disable Pulsing") {
+		localStorage.pulseRule = "disabled";
+		$("#menuPulsing").text("Enable Pulsing");
+		$("#click-pulse").text("disabled");
+		playerMenu.items[0].submenu.items[4].checked = false;
+	} else {
+		localStorage.pulseRule = "auto";
+		$("#menuPulsing").text("Disable Pulsing");
+		$("#click-pulse").text("auto");
+		playerMenu.items[0].submenu.items[4].checked = true;
+	}
+}
+
 
 function openPeerSelector() {
 	if($('#max-peers').is(':visible')) $('#max-peers').hide(0,function() { $('.ui-spinner').show(0); })
