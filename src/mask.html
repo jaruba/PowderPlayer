@@ -334,7 +334,8 @@ body {
             <div class="actionButton wrap-text"><span class="droid-bold">Video Player: <select id="use-player"><option>Internal</option><option>VLC</option></select></span></div>
             <div onClick="changeClickPause(); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold">Click to Pause:</span> <span id="click-pause">only in Fullscreen</span></div>
             <div onClick="chooseFile('#libraryDialog'); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold">Library Folder:</span> <span id="lib-folder">Temp</span></div>
-            <div id="closeAction" class="third-animated-close actionButton">Close</div>
+            <div onClick="changeNoSub(); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold">Auto-Download Subtitles:</span> <span id="click-no-sub">True</span></div>
+            <div id="closeAction" class="third-animated-close actionButton" style="font-family: 'Droid Sans Bold' !important;font-weight: bold">Close Menu</div>
         </center>
     </div>
     
@@ -346,7 +347,7 @@ body {
             </div>
             <div onClick="chooseFile('#folderDialog'); return false" class="actionButton wrap-text"><span class="droid-bold">Download Folder:</span> <span id="def-folder">Temp</span></div>
             <div onClick="changePulseSetting(); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold">Speed Pulsing:</span> <span id="click-pulse">auto</span></div>
-            <div id="closeAction" class="forth-animated-close actionButton">Close</div>
+            <div id="closeAction" class="forth-animated-close actionButton" style="font-family: 'Droid Sans Bold' !important;font-weight: bold">Close Menu</div>
         </center>
     </div>
     

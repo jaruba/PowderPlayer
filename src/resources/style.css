@@ -124,10 +124,10 @@ body {
 	background: #fff;
 }
 .unsupported-easy-modal-animated { padding: 5px; top: 35% !important }
-.third-easy-modal-animated,
 .forth-easy-modal-animated,
 .history-easy-modal-animated,
 #file-settings { padding: 5px; top: 22% !important }
+.third-easy-modal-animated { padding: 5px; top: 23% !important }
 a.mainLinks { color: #1ca8ed; text-decoration: underline }
 a.mainLinks:hover { text-decoration: none }
 .progressbar-front-text { display: none !important }

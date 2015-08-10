@@ -14,6 +14,10 @@ if (localStorage.pulseRule == "disabled") {
 	playerMenu.items[0].submenu.items[4].checked = false;
 }
 
+if (localStorage.noSubs == "1") {
+	$("#click-no-sub").text("False");
+}
+
 $("#click-pulse").text(localStorage.pulseRule);
 
 $('#magnetLink').mousedown(function(event) {
@@ -87,6 +91,15 @@ function switchPulsing() {
 	}
 }
 
+function changeNoSub() {
+	if ($("#click-no-sub").text() == "True") {
+		$("#click-no-sub").text("False");
+		localStorage.noSubs = "1";
+	} else {
+		$("#click-no-sub").text("True");
+		localStorage.noSubs = "0";
+	}
+}
 
 function openPeerSelector() {
 	if($('#max-peers').is(':visible')) $('#max-peers').hide(0,function() { $('.ui-spinner').show(0); })

@@ -24,8 +24,10 @@ function isPlaying() {
 	if (doSubsLocal == 1 && typeof powGlobals.engine === 'undefined') {
 		wjs().setDownloaded(0.0000000000000000001);
 		doSubsLocal = 0;
-		clearTimeout(findHashTime);
-		findHash();
+		if (localStorage.noSubs == "0") {
+			clearTimeout(findHashTime);
+			findHash();
+		}
 	}
 	if (firstTime == 0 && focused === false && !wjs().fullscreen()) win.requestAttention(true);
 	if (firstTime == 0) {
@@ -145,9 +147,11 @@ function isOpening() {
 			}
 			firstTime = 0;
 			
-			checkInternet(function(isConnected) {
-				if (isConnected && powGlobals.byteLength) $.ajax({ type: 'GET', url: window.atob("aHR0cDovL3Bvd2Rlci5tZWRpYS9tZXRhRGF0YS9nZXQucGhwP2Y9")+encodeURIComponent(powGlobals.filename)+window.atob("Jmg9")+encodeURIComponent(powGlobals.hash)+window.atob("JnM9")+encodeURIComponent(powGlobals.byteLength), global: false, cache: false, success: readData });
-			});
+			if (localStorage.noSubs == "0") {
+				checkInternet(function(isConnected) {
+					if (isConnected && powGlobals.byteLength) $.ajax({ type: 'GET', url: window.atob("aHR0cDovL3Bvd2Rlci5tZWRpYS9tZXRhRGF0YS9nZXQucGhwP2Y9")+encodeURIComponent(powGlobals.filename)+window.atob("Jmg9")+encodeURIComponent(powGlobals.hash)+window.atob("JnM9")+encodeURIComponent(powGlobals.byteLength), global: false, cache: false, success: readData });
+				});
+			}
 		} else {
 			if (wjs().plugin) wjs().setOpeningText("Loading resource");
 			if (wjs().currentItem() > -1) {

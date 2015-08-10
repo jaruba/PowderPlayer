@@ -24,8 +24,10 @@ function delayFinished(kj) {
     return function(){
 		if (powGlobals.files && powGlobals.files[kj]) {
 			powGlobals.files[kj].finished = true;
-			clearTimeout(findHashTime);
-			findHash();
+			if (localStorage.noSubs == "0") {
+				clearTimeout(findHashTime);
+				findHash();
+			}
 		}
     }
 }
