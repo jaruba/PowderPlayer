@@ -16,7 +16,7 @@ function addButtonHandlers(button_id, normal_image_url, hover_image_url, click_f
 }
 
 
-function closeWindow() { window.close(); }
+function closeWindow() { closeProcedure(); }
 
 function winMin() {
 	win.minimize();

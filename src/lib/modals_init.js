@@ -49,6 +49,14 @@ $(function() {
 		closeButtonClass: '.forth-animated-close'
 	});
 	
+	$('.ask-remove-files').easyModal({
+		top: 200,
+		overlay: 0.2,
+		transitionIn: 'animated bounceInLeft',
+		transitionOut: 'animated bounceOutRight',
+		closeButtonClass: '.forth-animated-close'
+	});
+	
 	$('.history-easy-modal-animated').easyModal({
 		top: 200,
 		overlay: 0.2,

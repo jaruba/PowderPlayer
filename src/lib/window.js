@@ -13,17 +13,26 @@ win.on('blur', function() {
 	if (localStorage.pulseRule == "auto" && powGlobals.engine && powGlobals.pulse) powGlobals.engine.setPulse(powGlobals.pulse);
 }); 
 win.on('close', function() {
-	
+	closeProcedure();
+});
+
+function closeProcedure(doCheck) {
 	if ($('#main').css("display") != "table") {
 		if (castData.casting) stopDlna();
-		if (powGlobals.engine && powGlobals.hasVideo == 0) var r = confirm("Are you sure? This action will delete all downloaded files.");
+		if (powGlobals.engine && powGlobals.hasVideo == 0 && typeof doCheck === 'undefined') {
+			$('.ask-remove-files').trigger('openModal');
+			return;
+		}
+		
+		setTimeout(function() { win.close(true); },180000); // fallback, if any error appears and the process didn't finish, the app should still close (3 mins)
+		win.hide();
+		if ($('#main').css("display") != "table") wjs().stopPlayer();
+
+		if (typeof doCheck !== 'undefined') r = doCheck;
 		else r = true;
+
 		if (r) {
-			setTimeout(function() { win.close(true); },180000); // fallback, if any error appears and the process didn't finish, the app should still close (3 mins)
-			win.hide();
-			if ($('#main').css("display") != "table") wjs().stopPlayer();
 			if (powGlobals.engine) {
-				isReady = 0;
 				clearTimeout(downSpeed);
 				powGlobals.engine.swarm.removeListener('wire', onmagnet);
 				powGlobals.engine.server.close(function() {
@@ -35,9 +44,20 @@ win.on('close', function() {
 			} else {
 				win.close(true);
 			}
+		} else {
+			if (powGlobals.engine) {
+				clearTimeout(downSpeed);
+				powGlobals.engine.swarm.removeListener('wire', onmagnet);
+				powGlobals.engine.server.close(function() {
+					if (powGlobals.engine) powGlobals.engine.destroy(function() { win.close(true); });
+					else win.close(true);
+				});
+			} else {
+				win.close(true);
+			}
 		}
 	} else win.close(true);
-});
+}
 
 $.fn.scrollEnd = function(callback, timeout) {          
   $(this).scroll(function(){
