@@ -47,7 +47,8 @@ var supportedVideo = ["mkv", "avi", "mp4", "mpg", "mpeg", "webm", "flv", "ogg", 
 	controlSecret,
 	controlAuth = false,
 	controlSocket,
-	argData = {};
+	argData = {},
+	vlcPath;
 
 if (isWin) {
 	var pathBreak = "\\",

@@ -228,3 +228,13 @@ if (!isWin) {
 	$("#but-assoc2").hide(0);
 	$("#but-assoc3").hide(0);
 }
+
+(({
+    linux: ["/usr/bin/vlc", "/usr/local/bin/vlc"],
+    darwin: ["/Applications/VLC.app/Contents/MacOS/VLC", process.env.HOME+"/Applications/VLC.app/Contents/MacOS/VLC"],
+    win32: [require('path').dirname(process.execPath)+pathBreak+'node_modules'+pathBreak+'webchimera.js'+pathBreak+'build'+pathBreak+'Release'+pathBreak+'vlc'+appExt]
+})[process.platform] || []).forEach(function(path) {
+    if (fs.existsSync(path)) vlcPath = path;
+});
+
+if (!vlcPath) $("#but-vlc").hide(0);
