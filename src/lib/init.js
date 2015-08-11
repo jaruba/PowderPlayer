@@ -6,16 +6,30 @@ if (gui.App.argv.length > 0) {
 				controlPort = parseInt(gui.App.argv[kn].replace("--controller-port=",""));
 			} else if (gui.App.argv[kn].indexOf("--controller-secret=") == 0) {
 				controlSecret = gui.App.argv[kn].replace("--controller-secret=","");
+			} else if (gui.App.argv[kn].indexOf("--sub-file=") == 0) {
+				argData.subFile = gui.App.argv[kn].replace("--sub-file=","");
+			} else if (gui.App.argv[kn].indexOf("--fs") == 0) {
+				argData.fs = true;
+			} else if (gui.App.argv[kn].indexOf("--title=") == 0) {
+				argData.title = gui.App.argv[kn].replace("--title=","");
 			}
 		} else {
 			if (!ranFirstArg) {
 				ranFirstArg = true;
-				resetPowGlobals();
-				runURL(gui.App.argv[kn]);
+				argData.keepFirst = gui.App.argv[kn];
 			}
 		}
 	}
+	if (argData.keepFirst) {
+		resetPowGlobals();
+		runURL(argData.keepFirst);
+		delete argData.keepFirst;
+	}
 	win.on('loaded', function() {
+		if (argData.fs) {
+			player.fullscreen(true);
+			delete argData.fs;
+		}
 		if (controlPort && controlSecret) {
 			// start support for powder-remote
 			var io = require('socket.io-client');

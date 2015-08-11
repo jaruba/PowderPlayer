@@ -46,7 +46,8 @@ var supportedVideo = ["mkv", "avi", "mp4", "mpg", "mpeg", "webm", "flv", "ogg", 
 	controlPort = 0,
 	controlSecret,
 	controlAuth = false,
-	controlSocket;
+	controlSocket,
+	argData = {};
 
 if (isWin) {
 	var pathBreak = "\\",

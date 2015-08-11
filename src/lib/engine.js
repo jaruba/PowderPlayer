@@ -80,20 +80,15 @@ function engage(targetHistory,remPlaylist,remSel) {
 		wjs().plugin.playlist.clear();
 		if (isNaN(rememberPlaylist["0"].mrl) === true) {
 			while (rememberPlaylist[kj.toString()] && isNaN(rememberPlaylist[kj.toString()].mrl) === true && rememberPlaylist[kj.toString()].mrl.toLowerCase().indexOf("pow://"+powGlobals.engine.infoHash.toLowerCase()) == -1 && rememberPlaylist[kj.toString()].mrl.toLowerCase().indexOf("magnet:?xt=urn:btih:"+powGlobals.engine.infoHash.toLowerCase()) == -1) {
-				if (rememberPlaylist[kj.toString()].contentType) {
-					wjs().addPlaylist({
-						 url: rememberPlaylist[kj.toString()].mrl,
-						 title: rememberPlaylist[kj.toString()].title,
-						 disabled: rememberPlaylist[kj.toString()].disabled,
-						 contentType: rememberPlaylist[kj.toString()].contentType
-					});
-				} else {
-					wjs().addPlaylist({
-						 url: rememberPlaylist[kj.toString()].mrl,
-						 title: rememberPlaylist[kj.toString()].title,
-						 disabled: rememberPlaylist[kj.toString()].disabled
-					});
-				}
+				var set = {
+					url: rememberPlaylist[kj.toString()].mrl,
+					title: rememberPlaylist[kj.toString()].title,
+					disabled: rememberPlaylist[kj.toString()].disabled
+				};
+				if (rememberPlaylist[kj.toString()].contentType) set.contentType = rememberPlaylist[kj.toString()].contentType;
+
+				wjs().addPlaylist(set);
+				
 				powGlobals.videos[kj] = {};
 				powGlobals.videos[kj].path = "unknown";
 				powGlobals.videos[kj].filename = "unknown";
@@ -154,19 +149,22 @@ function engage(targetHistory,remPlaylist,remSel) {
 
 				}
 				if (targetHistory == 0) {
-					if (playerLoaded) {
-						wjs().addPlaylist({
-							 url: localHref+el.index,
-							 title: getName(el.name),
-							 contentType: require('mime-types').lookup(powGlobals.engine.files[el.index].path)
-						});
-					} else {
-						asyncPlaylist.addPlaylist.push({
-							 url: localHref+el.index,
-							 title: getName(el.name),
-							 contentType: require('mime-types').lookup(powGlobals.engine.files[el.index].path)
-						});
+					var set = {
+						 url: localHref+el.index,
+						 title: getName(el.name),
+						 contentType: require('mime-types').lookup(powGlobals.engine.files[el.index].path)
+					};
+					if (argData.title) {
+						set.title = argData.title;
+						delete argData.title;
 					}
+					if (argData.subFile) {
+						set.defaultSub = "Custom Subtitle";
+						set.subtitles = { "Custom Subtitle": argData.subFile };
+						delete argData.subFile;
+					}
+					if (playerLoaded) wjs().addPlaylist(set);
+					else asyncPlaylist.addPlaylist.push(set);
 				}
 				kj++;
 			}
@@ -197,20 +195,14 @@ function engage(targetHistory,remPlaylist,remSel) {
 	if (rememberPlaylist[kj.toString()]) {
 		if (isNaN(rememberPlaylist[kj.toString()].mrl) === true) {
 			while (rememberPlaylist[kj.toString()]) {
-				if (rememberPlaylist[kj.toString()].contentType) {
-					wjs().addPlaylist({
-						 url: rememberPlaylist[kj.toString()].mrl,
-						 title: rememberPlaylist[kj.toString()].title,
-						 disabled: rememberPlaylist[kj.toString()].disabled,
-						 contentType: rememberPlaylist[kj.toString()].contentType
-					});
-				} else {
-					wjs().addPlaylist({
-						 url: rememberPlaylist[kj.toString()].mrl,
-						 title: rememberPlaylist[kj.toString()].title,
-						 disabled: rememberPlaylist[kj.toString()].disabled
-					});
-				}
+				var set = {
+					 url: rememberPlaylist[kj.toString()].mrl,
+					 title: rememberPlaylist[kj.toString()].title,
+					 disabled: rememberPlaylist[kj.toString()].disabled
+				};
+				if (rememberPlaylist[kj.toString()].contentType) set.contentType = rememberPlaylist[kj.toString()].contentType;
+				wjs().addPlaylist(set);
+
 				powGlobals.videos[kj] = {};
 				powGlobals.videos[kj].path = "unknown";
 				powGlobals.videos[kj].filename = "unknown";
@@ -222,34 +214,11 @@ function engage(targetHistory,remPlaylist,remSel) {
 	if (targetHistory != 0) {
 		for (oi = 0; targetHistory.playlist[oi.toString()]; oi++) {
 			if (targetHistory.playlist[oi.toString()].mrl || targetHistory.playlist[oi.toString()].mrl == 0) if (targetHistory.playlist[oi.toString()].title) {
-				if (!isNaN(targetHistory.playlist[oi.toString()].mrl)) {
-					if (targetHistory.playlist[oi.toString()].contentType) {
-						wjs().addPlaylist({
-							 url: localHref+targetHistory.playlist[oi.toString()].mrl,
-							 title: targetHistory.playlist[oi.toString()].title,
-							 contentType: targetHistory.playlist[oi.toString()].contentType
-						});
-					} else {
-						wjs().addPlaylist({
-							 url: localHref+targetHistory.playlist[oi.toString()].mrl,
-							 title: targetHistory.playlist[oi.toString()].title
-						});
-					}
-					
-				} else {
-					if (targetHistory.playlist[oi.toString()].contentType) {
-						wjs().addPlaylist({
-							 url: targetHistory.playlist[oi.toString()].mrl,
-							 title: targetHistory.playlist[oi.toString()].title,
-							 contentType: targetHistory.playlist[oi.toString()].contentType
-						});
-					} else {
-						wjs().addPlaylist({
-							 url: targetHistory.playlist[oi.toString()].mrl,
-							 title: targetHistory.playlist[oi.toString()].title
-						});
-					}
-				}
+				var set = { title: targetHistory.playlist[oi.toString()].title };
+				if (targetHistory.playlist[oi.toString()].contentType) set.contentType = targetHistory.playlist[oi.toString()].contentType;
+				if (!isNaN(targetHistory.playlist[oi.toString()].mrl)) set.url = localHref+targetHistory.playlist[oi.toString()].mrl;
+				else set.url = targetHistory.playlist[oi.toString()].mrl;
+				wjs().addPlaylist(set);
 			}
 			setTimeout(delayLoadHistory(targetHistory),200);
 		}
@@ -389,17 +358,23 @@ function runURL(torLink,noAutoStart) {
 			if (powGlobals.videos[thisVideoId].filename) {
 				
 				if (!playerLoaded) asyncPlaylist.addPlaylist = [];
-				if (playerLoaded) {
-					wjs().addPlaylist({
-						 url: torLink,
-						 title: getName(powGlobals.videos[thisVideoId].filename)
-					});
-				} else {
-					asyncPlaylist.addPlaylist.push({
-						 url: torLink,
-						 title: getName(powGlobals.videos[thisVideoId].filename)
-					});
+				var set = {
+					 url: torLink,
+					 title: getName(powGlobals.videos[thisVideoId].filename)
+				};
+				if (argData.title) {
+					set.title = argData.title;
+					delete argData.title;
 				}
+				if (argData.subFile) {
+					set.defaultSub = "Custom Subtitle";
+					set.subtitles = { "Custom Subtitle": argData.subFile };
+					delete argData.subFile;
+				}
+				
+				if (playerLoaded) wjs().addPlaylist(set);
+				else asyncPlaylist.addPlaylist.push(set);
+
 			}
 	
 			if (setOnlyFirst == 0 || setOnlyFirst == 2) {
@@ -421,12 +396,22 @@ function runURL(torLink,noAutoStart) {
 		if (torLink.toLowerCase().replace(".torrent","") != torLink.toLowerCase() || torLink.toLowerCase().match(/magnet:\?xt=urn:btih:[a-z0-9]{20,50}/i) != null || torLink.toLowerCase().match(/magnet:\?xt=urn:sha1:[a-z0-9]{20,50}/i) != null) {
 			var readTorrent = require('read-torrent');
 			readTorrent(torLink, function(err, torrent) {
-				if (torrent.name) {
-					wjs().addPlaylist({
-						url: "pow://"+torrent.infoHash,
-						title: getName(torrent.name)
-					});
-				} else wjs().addPlaylist("pow://"+torrent.infoHash);
+				
+				if (!playerLoaded) asyncPlaylist.addPlaylist = [];
+				
+				var set = { url: "pow://"+torrent.infoHash };
+				if (argData.title) {
+					set.title = argData.title;
+					delete argData.title;
+				} else if (torrent.name) set.title = getName(torrent.name);
+				if (argData.subFile) {
+					set.defaultSub = "Custom Subtitle";
+					set.subtitles = { "Custom Subtitle": argData.subFile };
+					delete argData.subFile;
+				}
+
+				wjs().addPlaylist(set);
+
 			});
 		} else {
 			var thisVideoId = powGlobals.videos.length;
@@ -460,10 +445,20 @@ function runURL(torLink,noAutoStart) {
 			}
 
 			if (powGlobals.videos[thisVideoId].filename) {
-				wjs().addPlaylist({
+				var set = {
 					 url: torLink,
 					 title: getName(powGlobals.videos[thisVideoId].filename)
-				});
+				};
+				if (argData.title) {
+					set.title = argData.title;
+					delete argData.title;
+				}
+				if (argData.subFile) {
+					set.defaultSub = "Custom Subtitle";
+					set.subtitles = { "Custom Subtitle": argData.subFile };
+					delete argData.subFile;
+				}
+				wjs().addPlaylist(set);
 			}
 		}
 	}
@@ -480,10 +475,21 @@ function runMultiple(fileArray) {
 		if (el.split('.').pop().toLowerCase() == 'torrent') {
 			var readTorrent = require('read-torrent');
 			readTorrent(el, function(err, torrent) {
-				wjs().addPlaylist({
+				var set = {
 					url: "pow://"+torrent.infoHash,
 					title: getName(torrent.name)
-				});
+				};
+				if (argData.title) {
+					set.title = argData.title;
+					delete argData.title;
+				}
+				if (argData.subFile) {
+					set.defaultSub = "Custom Subtitle";
+					set.subtitles = { "Custom Subtitle": argData.subFile };
+					delete argData.subFile;
+				}
+
+				wjs().addPlaylist(set);
 			});
 		} else {
 			ranURL = true;
@@ -624,10 +630,21 @@ function loadHistory(targetHistory) {
 		powGlobals.videos[thisVideoId].local = 1;
 
 		if (powGlobals.videos[thisVideoId].filename) {
-			wjs().addPlaylist({
+			var set = {
 				 url: torLink,
 				 title: getName(powGlobals.videos[thisVideoId].filename)
-			});
+			};
+			if (argData.title) {
+				set.title = argData.title;
+				delete argData.title;
+			}
+			if (argData.subFile) {
+				set.defaultSub = "Custom Subtitle";
+				set.subtitles = { "Custom Subtitle": argData.subFile };
+				delete argData.subFile;
+			}
+
+			wjs().addPlaylist(set);
 		}
 
 		for (oi = 0; targetHistory.playlist[oi.toString()]; oi++) {
@@ -659,10 +676,21 @@ function loadHistory(targetHistory) {
 					else if (torLink.indexOf("\\") > -1) powGlobals.videos[thisVideoId].filename = torLink.split('\\').pop();
 				}
 				if (powGlobals.videos[thisVideoId].filename) {
-					wjs().addPlaylist({
+					var set = {
 						 url: torLink,
 						 title: getName(powGlobals.videos[thisVideoId].filename)
-					});
+					};
+					if (argData.title) {
+						set.title = argData.title;
+						delete argData.title;
+					}
+					if (argData.subFile) {
+						set.defaultSub = "Custom Subtitle";
+						set.subtitles = { "Custom Subtitle": argData.subFile };
+						delete argData.subFile;
+					}
+		
+					wjs().addPlaylist(set);
 				}
 				thisVideoId++;
 			}
@@ -684,9 +712,20 @@ function playlistAddVideo(torLink) {
 	powGlobals.videos[thisVideoId].byteLength = fs.statSync(powGlobals.videos[thisVideoId].path).size;
 	if (powGlobals.videos[thisVideoId].filename) {
 		torLink = "file:///"+torLink.split("\\").join("/");
-		wjs().addPlaylist({
+		var set = {
 			 url: torLink,
 			 title: getName(powGlobals.videos[thisVideoId].filename)
-		});
+		};
+		if (argData.title) {
+			set.title = argData.title;
+			delete argData.title;
+		}
+		if (argData.subFile) {
+			set.defaultSub = "Custom Subtitle";
+			set.subtitles = { "Custom Subtitle": argData.subFile };
+			delete argData.subFile;
+		}
+
+		wjs().addPlaylist(set);
 	}
 }
