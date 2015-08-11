@@ -42,8 +42,12 @@ var supportedVideo = ["mkv", "avi", "mp4", "mpg", "mpeg", "webm", "flv", "ogg", 
 	isWin = /^win/.test(process.platform),
 	holdTorrent = false,
 	autoPlay = false,
-	stopPrebuf = false;
-	
+	stopPrebuf = false,
+	controlPort = 0,
+	controlSecret,
+	controlAuth = false,
+	controlSocket;
+
 if (isWin) {
 	var pathBreak = "\\",
 		appExt = ".exe";

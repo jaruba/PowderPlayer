@@ -12,6 +12,7 @@ function isYoutube(plItem) {
 }
 
 function isPlaying() {
+	if (controlPort && controlSecret && controllSocket) controllSocket.emit('event', { name: 'Playing' });
 	if (waitForNext) {
 		waitForNext = false;
 		nextPlay = 0;
@@ -66,12 +67,14 @@ function gotVideoSize(width,height) {
 }
 
 function handleErrors() {
+	if (controlPort && controlSecret && controllSocket) controllSocket.emit('event', { name: 'Error' });
 	disableCtxMenu();
 }
 
 var tempSel = -1;
 
 function isOpening() {
+	if (controlPort && controlSecret && controllSocket) controllSocket.emit('event', { name: 'Opening' });
 	if (waitForNext && tempSel != wjs().currentItem()) {
 		player.stop(true);
 		return;
@@ -154,7 +157,7 @@ function isOpening() {
 			}
 		} else {
 			if (wjs().plugin) wjs().setOpeningText("Loading resource");
-			if (wjs().currentItem() > -1) {
+			if (wjs().currentItem() > -1 && powGlobals.videos) {
 //				if (!isYoutube(wjs().currentItem())) win.title = getName(powGlobals.videos[wjs().currentItem()].filename); // if not youtube, set window title
 				powGlobals.filename = powGlobals.videos[wjs().currentItem()].filename;
 				powGlobals.path = powGlobals.videos[wjs().currentItem()].path;
@@ -165,6 +168,7 @@ function isOpening() {
 }
 
 function changedPosition(position) {
+	if (controlPort && controlSecret && controllSocket) controllSocket.emit('event', { name: 'Position', value: position });
 	// start downloading next episode after watching more then 70% of a video
 	if (position > 0.7) {
 		if (wjs().currentItem() < (wjs().itemCount() -1)) {
@@ -264,6 +268,7 @@ function playlistIntegrity(remPlaylist) {
 
 function changedState() {
 	if (wjs().state() != lastState) {
+		if (controlPort && controlSecret && controllSocket) controllSocket.emit('event', { name: 'State', value: wjs().state() });
 		keepState = wjs().state();
 
 		// detect unsupported media types
@@ -292,14 +297,6 @@ function changedState() {
 			}
 		}
 		lastState = wjs().state();
-	}
-}
-
-function handleMessages(event) {
-	if (event == "[window-bigger]") {
-		resizeInBounds(Math.round(win.width*1.1),Math.round(win.height*1.1));
-	} else if (event == "[window-smaller]") {
-		resizeInBounds(Math.round(win.width*0.9),Math.round(win.height*0.9));
 	}
 }
 
