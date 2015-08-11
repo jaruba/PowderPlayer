@@ -61,7 +61,9 @@ function isPlaying() {
 function gotVideoSize(width,height) {
 	if (firstSize == 1) {
 		firstSize = 0;
+		win.setTransparent(false);
 		resizeInBounds((wjs().width() + 12),(wjs().height() + 40));
+		win.setTransparent(true);
 		remHeight = wjs().height() + 40;
 	}
 }
