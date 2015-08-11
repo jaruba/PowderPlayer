@@ -196,7 +196,10 @@ function goBack(nextTorrent) {
 		}
 		$('#open-url').css('top', Math.round(($(window).height() - 187) / 2)+'px');
 		wjs().clearPlaylist();
-	} else wjs().setOpeningText("Loading resource");
+	} else {
+		wjs().setOpeningText("Loading resource");
+		$("#header_container").show();
+	}
 	wjs().setDownloaded(0);
 	if (powGlobals.engine) {
 		clearTimeout(downSpeed);

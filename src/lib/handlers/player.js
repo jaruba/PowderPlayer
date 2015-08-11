@@ -82,7 +82,7 @@ function isOpening() {
 	if (powGlobals.currentIndex != wjs().currentItem() && !waitForNext) {
 		if (castData.casting) stopDlna();
 		keepCurrent = wjs().currentItem();
-		if (wjs().plugin.playlist.items[wjs().currentItem()].mrl.indexOf("pow://") == 0) {
+		if (wjs().plugin.playlist.items[wjs().currentItem()].mrl.indexOf("pow://") == 0 || wjs().plugin.playlist.items[wjs().currentItem()].mrl.indexOf("magnet:?xt=urn:btih:") == 0) {
 			wjs().vlc.playlist.mode = 0;
 			wjs().find(".wcp-status").text("");
 			wjs().stop(true);
@@ -90,17 +90,19 @@ function isOpening() {
 			tempSel = wjs().currentItem();
 			wjs().refreshPlaylist();
 			
-			nextTorrent = wjs().plugin.playlist.items[wjs().currentItem()].mrl.replace("pow://","");
-//			win.title = wjs().plugin.playlist.items[wjs().currentItem()].title.replace("[custom]","");
-			if (nextTorrent.indexOf("/") > -1 && isNaN(nextTorrent.split("/")[1]) === false) {
-				nextTorrent = nextTorrent.split("/")[0];
-			}
+			if (wjs().plugin.playlist.items[wjs().currentItem()].mrl.indexOf("pow://") == 0) {
+				nextTorrent = "magnet:?xt=urn:btih:"+wjs().plugin.playlist.items[wjs().currentItem()].mrl.replace("pow://","");
+//				win.title = wjs().plugin.playlist.items[wjs().currentItem()].title.replace("[custom]","");
+				if (nextTorrent.indexOf("/") > -1 && isNaN(nextTorrent.split("/")[1]) === false) {
+					nextTorrent = nextTorrent.split("/")[0];
+				}
+			} else nextTorrent = wjs().plugin.playlist.items[wjs().currentItem()].mrl;
 			rememberPlaylist = retrievePlaylist();
 			for (ijk = 0; ijk < wjs().itemCount(); ijk++) {
 				if (isNaN(rememberPlaylist[ijk.toString()].mrl) === false) rememberPlaylist[ijk.toString()].mrl = "pow://"+powGlobals.engine.infoHash+"/"+rememberPlaylist[ijk.toString()].mrl;
 			}
 			wjs().setDownloaded(0);
-			goBack("magnet:?xt=urn:btih:"+nextTorrent);
+			goBack(nextTorrent);
 			return;
 		}
 		delete powGlobals.duration;

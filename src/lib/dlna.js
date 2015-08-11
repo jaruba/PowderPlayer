@@ -205,22 +205,24 @@ function prepareDlnaServer(dlnaReconnect) {
 	dlna.lastPos = 0;
 	dlnaReconnect = typeof dlnaReconnect !== 'undefined' ? dlnaReconnect : false;
 	if (dlna.lastIndex == -1 && typeof tempSel !== 'undefined' && tempSel > -1) dlna.lastIndex = tempSel;
-	if (wjs().plugin.playlist.items[dlna.lastIndex].mrl.indexOf("pow://") == 0) {
+	if (wjs().plugin.playlist.items[dlna.lastIndex].mrl.indexOf("pow://") == 0 || wjs().plugin.playlist.items[dlna.lastIndex].mrl.indexOf("magnet:?xt=urn:btih:") == 0) {
 		waitForNext = true;
 		nextStartDlna = 1;
-		nextTorrent = wjs().plugin.playlist.items[dlna.lastIndex].mrl.replace("pow://","");
+		if (wjs().plugin.playlist.items[wjs().currentItem()].mrl.indexOf("pow://") == 0) {
+			nextTorrent = "magnet:?xt=urn:btih:"+wjs().plugin.playlist.items[dlna.lastIndex].mrl.replace("pow://","");
+			if (nextTorrent.indexOf("/") > -1 && isNaN(nextTorrent.split("/")[1]) === false) {
+				nextTorrent = nextTorrent.split("/")[0];
+			}
+		} else nextTorrent = wjs().plugin.playlist.items[dlna.lastIndex].mrl;
 		win.title = wjs().plugin.playlist.items[dlna.lastIndex].title.replace("[custom]","");
 		winTitleLeft(wjs().plugin.playlist.items[dlna.lastIndex].title.replace("[custom]",""));
-		if (nextTorrent.indexOf("/") > -1 && isNaN(nextTorrent.split("/")[1]) === false) {
-			nextTorrent = nextTorrent.split("/")[0];
-		}
 		rememberPlaylist = retrievePlaylist();
 		for (ijk = 0; ijk < wjs().itemCount(); ijk++) {
 			if (isNaN(rememberPlaylist[ijk.toString()].mrl) === false) rememberPlaylist[ijk.toString()].mrl = "pow://"+powGlobals.engine.infoHash+"/"+rememberPlaylist[ijk.toString()].mrl;
 		}
 		wjs().setDownloaded(0);
 //		console.log("magnet:?xt=urn:btih:"+nextTorrent);
-		goBack("magnet:?xt=urn:btih:"+nextTorrent);
+		goBack(nextTorrent);
 		return;
 	}
 //	console.log("local ip: "+dlna.localIp);

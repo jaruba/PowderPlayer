@@ -79,7 +79,7 @@ function engage(targetHistory,remPlaylist,remSel) {
 	if (rememberPlaylist["0"]) {
 		wjs().plugin.playlist.clear();
 		if (isNaN(rememberPlaylist["0"].mrl) === true) {
-			while (rememberPlaylist[kj.toString()] && isNaN(rememberPlaylist[kj.toString()].mrl) === true && rememberPlaylist[kj.toString()].mrl.toLowerCase().indexOf("pow://"+powGlobals.engine.infoHash.toLowerCase()) == -1) {
+			while (rememberPlaylist[kj.toString()] && isNaN(rememberPlaylist[kj.toString()].mrl) === true && rememberPlaylist[kj.toString()].mrl.toLowerCase().indexOf("pow://"+powGlobals.engine.infoHash.toLowerCase()) == -1 && rememberPlaylist[kj.toString()].mrl.toLowerCase().indexOf("magnet:?xt=urn:btih:"+powGlobals.engine.infoHash.toLowerCase()) == -1) {
 				if (rememberPlaylist[kj.toString()].contentType) {
 					wjs().addPlaylist({
 						 url: rememberPlaylist[kj.toString()].mrl,
