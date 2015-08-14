@@ -47,8 +47,9 @@
 		var pathBreak = "\\",
 			appExt = ".exe";
 	} else {
-		var pathBreak = "/",
-			appExt = "";
+		var pathBreak = "/";
+		if (process.platform == "darwin") var appExt = ".dmg";
+		else if (process.platform == "linux") var appExt = ".tar.gz";
 	}
 	
 	var request = require('request'),
@@ -74,7 +75,7 @@
 			jsonData = JSON.parse(body);
 			for (mn = 0; jsonData[mn]; mn++) {
 				for (kl = 0; jsonData[mn]["assets"][kl]; kl++) {
-					if (jsonData[mn]["assets"][kl]["content_type"] == "application/x-msdownload") {
+					if (jsonData[mn]["assets"][kl]["browser_download_url"].split(".").pop() == appExt.split(".").pop()) {
 						file_url = jsonData[mn]["assets"][kl]["browser_download_url"];
 						$("#update-header").text("Update to Powder "+jsonData[mn]["tag_name"]);
 						$(".spinner").fadeOut();
