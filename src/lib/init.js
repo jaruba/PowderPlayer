@@ -1,22 +1,22 @@
-if (gui.App.argv.length > 0) {
+function processArgs(args) {
 	var ranFirstArg = false;
-	for (kn = 0; gui.App.argv[kn]; kn++) {
-		if (gui.App.argv[kn].indexOf("--") == 0) {
-			if (gui.App.argv[kn].indexOf("--controller-port=") == 0) {
-				controlPort = parseInt(gui.App.argv[kn].replace("--controller-port=",""));
-			} else if (gui.App.argv[kn].indexOf("--controller-secret=") == 0) {
-				controlSecret = gui.App.argv[kn].replace("--controller-secret=","");
-			} else if (gui.App.argv[kn].indexOf("--sub-file=") == 0) {
-				argData.subFile = gui.App.argv[kn].replace("--sub-file=","");
-			} else if (gui.App.argv[kn].indexOf("--fs") == 0) {
+	for (kn = 0; args[kn]; kn++) {
+		if (args[kn].indexOf("--") == 0) {
+			if (args[kn].indexOf("--controller-port=") == 0) {
+				controlPort = parseInt(args[kn].replace("--controller-port=",""));
+			} else if (args[kn].indexOf("--controller-secret=") == 0) {
+				controlSecret = args[kn].replace("--controller-secret=","");
+			} else if (args[kn].indexOf("--sub-file=") == 0) {
+				argData.subFile = args[kn].replace("--sub-file=","");
+			} else if (args[kn].indexOf("--fs") == 0) {
 				argData.fs = true;
-			} else if (gui.App.argv[kn].indexOf("--title=") == 0) {
-				argData.title = gui.App.argv[kn].replace("--title=","");
+			} else if (args[kn].indexOf("--title=") == 0) {
+				argData.title = args[kn].replace("--title=","");
 			}
 		} else {
 			if (!ranFirstArg) {
 				ranFirstArg = true;
-				argData.keepFirst = gui.App.argv[kn];
+				argData.keepFirst = args[kn];
 			}
 		}
 	}
@@ -25,6 +25,10 @@ if (gui.App.argv.length > 0) {
 		runURL(argData.keepFirst);
 		delete argData.keepFirst;
 	}
+}
+
+if (gui.App.argv.length > 0) {
+	processArgs(gui.App.argv);
 	win.on('loaded', function() {
 		if (argData.fs) {
 			player.fullscreen(true);
@@ -148,6 +152,22 @@ if (gui.App.argv.length > 0) {
 
 var wcp = require('pw-wcjs-player');
 var player;
+
+gui.App.on("open",function(msg) {
+	if (powGlobals.engine) {
+		if (peerInterval) clearInterval(peerInterval);
+		if (delaySetDownload) clearTimeout(delaySetDownload);
+		clearTimeout(downSpeed);
+		powGlobals.engine.swarm.removeListener('wire', onmagnet);
+		killEngine(powGlobals.engine);
+	}
+	powGlobals = [];
+	resetPowGlobals();
+	player.stop();
+	player.clearPlaylist();
+	$('#main').css("display","table");
+	processArgs([msg]);
+});
 
 var wjs = function(context) {
     // Call the constructor
