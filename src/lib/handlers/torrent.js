@@ -28,7 +28,14 @@ function checkDownloaded(piece) {
 						if (keepState != "playing" && !focused && !dlna.initiated) win.requestAttention(true);
 					}
 					for (ij = 0; ij < $(".circle").length; ij++) {
-						if ($($(".circle")[ij]).circleProgress('value') < 1) $($(".circle")[ij]).circleProgress('value',1)
+						if ($($(".circle")[ij]).circleProgress('value') < 1) {
+							$($(".circle")[ij]).circleProgress('value',1)
+							if ($("#action"+ij).hasClass("pause")) {
+								$("#action"+ij).removeClass("pause").addClass("settings").attr("onClick","settingsEl("+ij+")");
+							} else if ($("#action"+ij).hasClass("play")) {
+								$("#action"+ij).removeClass("play").addClass("settings").attr("onClick","settingsEl("+ij+")");
+							}
+						}
 					}
 				} else {
 					$('#all-download .progress-bar').attr('data-transitiongoal', updDownload).progressbar();
