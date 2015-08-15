@@ -238,6 +238,7 @@ function engage(targetHistory,remPlaylist,remSel) {
 		win.title = powGlobals.engine.torrent.name;
 		winTitleLeft(powGlobals.engine.torrent.name);
 		$(window).trigger('resize');
+		setTimeout(function() { $(window).trigger('resize'); },50);
 		powGlobals.pulse = 1000000; // 1 Mbps pulse for non-video torrents
 		if (localStorage.pulseRule == "always" || (localStorage.pulseRule == "auto" && !focused)) powGlobals.engine.setPulse(powGlobals.pulse);
 	}
