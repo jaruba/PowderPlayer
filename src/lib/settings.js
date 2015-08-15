@@ -1,4 +1,4 @@
-localStorage.powderVersion = "0.75";
+localStorage.powderVersion = "0.90";
 
 if (!localStorage.maxPeers) localStorage.maxPeers = 200;
 if (!localStorage.tmpDir) localStorage.tmpDir = 'Temp';
