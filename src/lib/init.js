@@ -242,8 +242,8 @@ fs.stat(gui.App.dataPath+pathBreak+'updater'+appExt, function(err,stat) { if (er
 
 disableCtxMenu();
 
-// disable windows specific settings
-if (!isWin) {
+// disable on the fly association on Mac
+if (process.platform == 'darwin') {
 	$("#but-assoc1").hide(0);
 	$("#but-assoc2").hide(0);
 	$("#but-assoc3").hide(0);
