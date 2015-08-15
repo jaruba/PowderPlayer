@@ -27,6 +27,9 @@ function checkDownloaded(piece) {
 						win.setProgressBar(-0.1);
 						if (keepState != "playing" && !focused && !dlna.initiated) win.requestAttention(true);
 					}
+					for (ij = 0; ij < $(".circle").length; ij++) {
+						if ($($(".circle")[ij]).circleProgress('value') < 1) $($(".circle")[ij]).circleProgress('value',1)
+					}
 				} else {
 					$('#all-download .progress-bar').attr('data-transitiongoal', updDownload).progressbar();
 					if ($('#downloadPercent').text() != updDownload+'%') $('#downloadPercent').text(updDownload+'%');
