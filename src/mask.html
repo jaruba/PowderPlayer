@@ -414,6 +414,7 @@ body {
     <script src="lib/frameless_window.js"></script>
 	<script src="lib/titlebar.js"></script>
     <script>
+	if (process.platform == 'linux') $("#top-titlebar").css("borderRadius","0");
 	centerInScreen();
     </script>
     <script src="lib/keep_awake/index.js"></script>

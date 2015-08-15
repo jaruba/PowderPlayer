@@ -25,7 +25,7 @@ win.on('restore',function() {
 });
 
 function showFrame() {
-	if (allowMouseMove) {
+	if (allowMouseMove && process.platform != 'linux') {
 		if (firstBlur) firstBlur = false;
 		else if (typeof player !== 'undefined' && !frameImune) {
 			clearTimeout(frameTimer);
@@ -75,7 +75,7 @@ document.addEventListener('mousemove', function(e){
 });
 
 function hideFrame() {
-	if (typeof player !== 'undefined' && onTop && !firstBlur && !frameHidden && !maximized && !wjs().fullscreen() && wjs().isPlaying() && wjs().time() > 0 && !frameImune) {
+	if (typeof player !== 'undefined' && onTop && !firstBlur && !frameHidden && !maximized && !wjs().fullscreen() && wjs().isPlaying() && wjs().time() > 0 && !frameImune && process.platform != 'linux') {
 	  clearTimeout(frameTimer);
 	  frameHidden = true;
 
