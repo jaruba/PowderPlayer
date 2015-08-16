@@ -7,7 +7,7 @@ function checkUpdates() {
 						// there is a new version of powder
 						
 						$("#update-header").html("Update to Powder v"+xhr);
-						var updater = gui.Window.open('app://powder/updater.html',{ width: 320, height: 133, icon: "icon.png", toolbar: false });
+						var updater = gui.Window.open('app://powder/src/updater.html',{ width: 320, height: 133, icon: "icon.png", toolbar: false });
 						
 						updater.on('close', function() {
 							fs.stat(gui.App.dataPath+pathBreak+'updater.exe', function(err,stat) {
