@@ -54,7 +54,8 @@
 	
 	var request = require('request'),
 		gui = require('nw.gui'),
-		fs = require('fs');
+		fs = require('fs'),
+		file_url;
 	
 	var https = require('https');
 	
@@ -84,6 +85,7 @@
 					}
 				}
 			}
+			if (!file_url) win.close();
 		});
 	});
 	

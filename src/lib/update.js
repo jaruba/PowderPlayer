@@ -8,12 +8,16 @@ function checkUpdates() {
 						
 						$("#update-header").html("Update to Powder v"+xhr);
 						var updater = gui.Window.open('app://powder/src/updater.html',{ width: 320, height: 133, icon: "icon.png", toolbar: false });
-						
+						if (isWin) updExt = ".exe";
+						else {
+							if (process.platform == "darwin") var updExt = ".dmg";
+							else if (process.platform == "linux") var updExt = ".tar.gz";
+						}
 						updater.on('close', function() {
-							fs.stat(gui.App.dataPath+pathBreak+'updater.exe', function(err,stat) {
+							fs.stat(gui.App.dataPath+pathBreak+'updater'+updExt, function(err,stat) {
 								if (err == null) {
 									if (localStorage.doUpdate == "1") win.close();
-									else fs.unlink(gui.App.dataPath+pathBreak+'updater.exe');
+									else fs.unlink(gui.App.dataPath+pathBreak+'updater'+updExt);
 								}
 							});
 							updater.close(true);
