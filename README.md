@@ -11,6 +11,8 @@ It can do everything that a Torrent Client can, everything that a Video/Audio Pl
 
 Current Features
 ==============
+
+[![Join the chat at https://gitter.im/jaruba/PowderPlayer](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/jaruba/PowderPlayer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 - Downloads Subtitles in All Languages from Open Subtitles
 
 - Supports Internal Video Subtitles and Audio Tracks
