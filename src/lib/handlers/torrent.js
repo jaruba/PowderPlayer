@@ -3,6 +3,12 @@ function delayCheckDown(savedPiece) {
 		checkDownloaded(savedPiece);
 	}
 }
+function saveTorrentData() {
+	var fetchData = powGlobals.allPieces+"||";
+	fetchData += $('#all-download .progress-bar').attr('data-transitiongoal');
+	for (ij = 0; ij < $(".circle").length; ij++) fetchData += "|"+$($(".circle")[ij]).circleProgress('value').toString();
+	return fetchData;
+}
 function checkDownloaded(piece) {
 	if (powGlobals.engine && powGlobals.engine.torrent) {
 		if (downloadWorking) {
@@ -73,6 +79,7 @@ function checkDownloaded(piece) {
 					}
 					
 					if (updDownload != el.lastDownload) {
+						if (powGlobals.savedData && typeof powGlobals.savedData[ij+1] !== 'undefined') updDownload += parseFloat(powGlobals.savedData[ij+1])*100;
 						newFileSize = Math.floor(el.byteLength * (updDownload /100));
 						if (newFileSize > el.byteLength) {
 							$("#down-fl"+ij).text(getReadableFileSizeString(Math.floor(el.byteLength)));

@@ -268,6 +268,44 @@ function engage(targetHistory,remPlaylist,remSel) {
 	}).on('circle-animation-progress', function(event, progress, stepValue) {
 		$(this).find('strong').html(parseInt(100 * stepValue) + '<i>%</i>');
 	});
+	var savePath = gui.App.dataPath+pathBreak+'interrupted'+pathBreak+powGlobals.engine.infoHash.toLowerCase();
+	fs.exists(savePath, function(exists) {
+		if (exists) {
+			fs.readFile(savePath, {encoding: 'utf-8'}, function(err,data){
+				if (!err){
+					fs.unlinkSync(savePath);
+					if (!powGlobals.allPieces) powGlobals.allPieces = 0;
+					powGlobals.allPieces = powGlobals.allPieces + parseInt(data.split("||")[0]);
+					powGlobals.savedData = data.split("||")[1].split("|");
+					newDownloadVar = parseInt($('#all-download .progress-bar').attr('data-transitiongoal'))+parseInt(powGlobals.savedData[0]);
+					$('#all-download .progress-bar').removeClass("progress-bar-warning").addClass("progress-bar-danger").attr('data-transitiongoal', newDownloadVar).progressbar();
+					$('#downloadPercent').text(newDownloadVar+'%');
+					if (newDownloadVar >= 100) {
+						$("#downPart").text(getReadableFileSizeString(Math.floor(powGlobals.engine.torrent.length)));
+					} else {
+						$("#downPart").text(getReadableFileSizeString(Math.floor(powGlobals.allPieces * powGlobals.engine.torrent.pieceLength)));
+					}
+					for (mij=1; typeof powGlobals.savedData[mij] !== 'undefined'; mij++) {
+						if ($($(".circle")[mij-1]).length > 0) {
+							newDownloadVar = parseFloat($($(".circle")[mij-1]).circleProgress('value'))+parseFloat(powGlobals.savedData[mij]);
+							$($(".circle")[mij-1]).circleProgress('value',newDownloadVar);
+							if (newDownloadVar >= 1) {
+								$("#down-fl"+(mij-1)).text(getReadableFileSizeString(Math.floor(powGlobals.files[mij-1].byteLength)));
+								if ($("#action"+(mij-1)).hasClass("pause")) {
+									$("#action"+(mij-1)).removeClass("pause").addClass("settings").attr("onClick","settingsEl("+(mij-1)+")");
+								} else if ($("#action"+(mij-1)).hasClass("play")) {
+									$("#action"+(mij-1)).removeClass("play").addClass("settings").attr("onClick","settingsEl("+(mij-1)+")");
+								}
+							} else {
+								$("#down-fl"+(mij-1)).text(getReadableFileSizeString(Math.floor(powGlobals.files[mij-1].byteLength * (newDownloadVar /100))));
+							}
+						}
+					}
+				}
+			
+			});
+		}
+	});
 	if (powGlobals.hasVideo == 0 && localStorage.useVLC != "1") {
 		// reselect all files
 		setTimeout(function() { powGlobals.engine.files.forEach(function(el) { el.select(); }); },1000);

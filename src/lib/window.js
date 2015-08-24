@@ -24,7 +24,7 @@ function closeProcedure(doCheck) {
 			return;
 		}
 		
-		closeWindow(180000); // fallback, if any error appears and the process didn't finish, the app should still close (3 mins)
+		exitApp(180000); // fallback, if any error appears and the process didn't finish, the app should still close (3 mins)
 		win.hide();
 		player.stop();
 
@@ -37,28 +37,59 @@ function closeProcedure(doCheck) {
 				powGlobals.engine.swarm.removeListener('wire', onmagnet);
 				powGlobals.engine.server.close(function() {
 					powGlobals.engine.remove(function() {
-						if (powGlobals.engine) powGlobals.engine.destroy(function() { closeWindow(1500); });
-						else closeWindow(1500);
+						if (powGlobals.engine) powGlobals.engine.destroy(function() { exitApp(1500); });
+						else exitApp(1500);
 					});
 				});
-			} else closeWindow(1000);
+			} else exitApp(1000);
 		} else {
 			if (powGlobals.engine) {
 				clearTimeout(downSpeed);
 				powGlobals.engine.swarm.removeListener('wire', onmagnet);
 				powGlobals.engine.server.close(function() {
-					if (powGlobals.engine) powGlobals.engine.destroy(function() { closeWindow(1500); });
-					else closeWindow(1500);
+					if (powGlobals.engine) {
+						powGlobals.engine.destroy(function() {
+							ensureExists(gui.App.dataPath+pathBreak+'interrupted', 0744, function(err) {
+								if (err) {
+									win.close(true);
+									return;
+								}
+								var saver = {};
+								saver.torData = saveTorrentData();
+								saver.infoHash = powGlobals.engine.infoHash;
+								fs.writeFile(gui.App.dataPath+pathBreak+'interrupted'+pathBreak+saver.infoHash.toLowerCase(), saver.torData, function (err) {
+									if (err) {
+										win.close(true);
+										return;
+									}
+									exitApp(1500);
+								});
+							});
+						});
+					} else exitApp(1500);
 				});
-			} else closeWindow(1000);
+			} else exitApp(1000);
 		}
-	} else closeWindow(1);
+	} else exitApp(1);
 }
 
-function closeWindow(countdown) {
+function exitApp(countdown) {
 	setTimeout(function() {
 		win.close(true);
 	},countdown);
+}
+
+function ensureExists(path, mask, cb) {
+    if (typeof mask == 'function') { // allow the `mask` parameter to be optional
+        cb = mask;
+        mask = 0777;
+    }
+    fs.mkdir(path, mask, function(err) {
+        if (err) {
+            if (err.code == 'EEXIST') cb(null); // ignore the error if the folder already exists
+            else cb(err); // something else went wrong
+        } else cb(null); // successfully created folder
+    });
 }
 
 $.fn.scrollEnd = function(callback, timeout) {          
