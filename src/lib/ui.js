@@ -127,7 +127,7 @@ function pauseEl(kj) {
 }
 
 function settingsEl(kj) {
-	if (parseInt($("#progressbar"+kj).attr("data-transitiongoal")) > 0) {
+	if (parseFloat($($(".circle")[kj]).circleProgress('value')) > 0) {
 		$("#openAction").attr("onClick","gui.Shell.openItem(powGlobals['engine'].path+pathBreak+powGlobals['engine'].files[powGlobals['files']["+kj+"].index].path); $('#closeAction').trigger('click'); playEl("+kj+")");
 		$("#openFolderAction").attr("onClick","gui.Shell.showItemInFolder(powGlobals['engine'].path+pathBreak+powGlobals['engine'].files[powGlobals['files']["+kj+"].index].path); $('#closeAction').trigger('click')");
 		$("#openAction").show(0);
