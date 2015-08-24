@@ -24,9 +24,9 @@ function closeProcedure(doCheck) {
 			return;
 		}
 		
-		setTimeout(function() { win.close(true); },180000); // fallback, if any error appears and the process didn't finish, the app should still close (3 mins)
+		closeWindow(180000); // fallback, if any error appears and the process didn't finish, the app should still close (3 mins)
 		win.hide();
-		if ($('#main').css("display") != "table") wjs().stopPlayer();
+		player.stop();
 
 		if (typeof doCheck !== 'undefined') r = doCheck;
 		else r = true;
@@ -37,26 +37,28 @@ function closeProcedure(doCheck) {
 				powGlobals.engine.swarm.removeListener('wire', onmagnet);
 				powGlobals.engine.server.close(function() {
 					powGlobals.engine.remove(function() {
-						if (powGlobals.engine) powGlobals.engine.destroy(function() { win.close(true); });
-						else win.close(true);
+						if (powGlobals.engine) powGlobals.engine.destroy(function() { closeWindow(1500); });
+						else closeWindow(1500);
 					});
 				});
-			} else {
-				win.close(true);
-			}
+			} else closeWindow(1000);
 		} else {
 			if (powGlobals.engine) {
 				clearTimeout(downSpeed);
 				powGlobals.engine.swarm.removeListener('wire', onmagnet);
 				powGlobals.engine.server.close(function() {
-					if (powGlobals.engine) powGlobals.engine.destroy(function() { win.close(true); });
-					else win.close(true);
+					if (powGlobals.engine) powGlobals.engine.destroy(function() { closeWindow(1500); });
+					else closeWindow(1500);
 				});
-			} else {
-				win.close(true);
-			}
+			} else closeWindow(1000);
 		}
-	} else win.close(true);
+	} else closeWindow(1);
+}
+
+function closeWindow(countdown) {
+	setTimeout(function() {
+		win.close(true);
+	},countdown);
 }
 
 $.fn.scrollEnd = function(callback, timeout) {          
