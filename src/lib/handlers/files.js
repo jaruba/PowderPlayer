@@ -8,14 +8,14 @@ holder.ondragover = function () { this.className = 'hover'; return false; };
 holder.ondragleave = function () { this.className = ''; return false; };
 holder.ondrop = function (e) {
   e.preventDefault();
-  win.focus();
-  resetPowGlobals();
+  win.gui.focus();
+  utils.resetPowGlobals();
   
-  if (e.dataTransfer.files.length == 1) runURL(e.dataTransfer.files[0].path);
+  if (e.dataTransfer.files.length == 1) load.url(e.dataTransfer.files[0].path);
   else {
 	  var newFiles = [];
 	  for (var i = 0; i < e.dataTransfer.files.length; ++i) newFiles[i] = e.dataTransfer.files[i].path;
-	  runMultiple(newFiles);
+	  load.multiple(newFiles);
   }
   this.className = '';
   return false;
@@ -24,11 +24,11 @@ holder.ondrop = function (e) {
 
 $('#torrentDialog').change(function(evt) {
 	var torDial = $(this);
-	checkInternet(function(isConnected) {
+	utils.checkInternet(function(isConnected) {
 		if (isConnected) {
-			resetPowGlobals();
-			if (torDial.val().indexOf(";") > -1) runMultiple(torDial.val().split(";"));
-			else runURL(torDial.val());
+			utils.resetPowGlobals();
+			if (torDial.val().indexOf(";") > -1) load.multiple(torDial.val().split(";"));
+			else load.url(torDial.val());
 		} else $('.easy-modal-animated').trigger('openModal');
 	});
 });
@@ -45,14 +45,14 @@ $('#folderDialog').change(function(evt) {
 });
 
 $('#addPlaylistDialog').change(function(evt) {
-	if ($(this).val().indexOf(";") > -1) $(this).val().split(";").forEach(function(e) { playlistAddVideo(e); });
-	else playlistAddVideo($(this).val());
+	if ($(this).val().indexOf(";") > -1) $(this).val().split(";").forEach(function(e) { load.playlistItem(e); });
+	else load.playlistItem($(this).val());
 });
 
 $('#fileDialog').change(function(evt) {
-	resetPowGlobals();
-	if ($(this).val().indexOf(";") > -1) runMultiple($(this).val().split(";"));
-	else runURL($(this).val());
+	utils.resetPowGlobals();
+	if ($(this).val().indexOf(";") > -1) load.multiple($(this).val().split(";"));
+	else load.url($(this).val());
 });
 
 $('#subtitleDialog').change(function(evt) {
@@ -64,7 +64,7 @@ $('#subtitleDialog').change(function(evt) {
 			  newString = '{"'+targetSub.split('\\').pop()+'":"'+targetSub.split('\\').join('\\\\')+'"}';
 		  }
 		newSettings = player.vlc.playlist.items[player.currentItem()].setting;
-		if (window.IsJsonString(newSettings)) {
+		if (utils.isJsonString(newSettings)) {
 			newSettings = JSON.parse(newSettings);
 			if (newSettings.subtitles) {
 				oldString = JSON.stringify(newSettings.subtitles);

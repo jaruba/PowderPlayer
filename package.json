@@ -21,7 +21,7 @@
         "transparent": true,
         "toolbar": false,
         "frame": false,
-		"show": false,
+        "show": false,
         "width": 530,
         "height": 460,
         "min_width": 530,
@@ -36,11 +36,12 @@
         "opensubtitles-client": "jaruba/node-opensubtitles-client",
         "peerflix": "jaruba/peerflix",
         "read-torrent": "*",
-		"universal-analytics": "*",
+        "universal-analytics": "*",
         "request": "*",
         "upnp-mediarenderer-client": "*",
         "xmlrpc": "*",
-        "pw-wcjs-player": "jaruba/pw-wcjs-player"
+        "pw-wcjs-player": "jaruba/pw-wcjs-player",
+        "computer-sleep": "jaruba/computer-sleep"
     },
     "optionalDependencies": {
         "node-windows": "*",
