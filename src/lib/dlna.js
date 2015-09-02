@@ -18,6 +18,7 @@ var dlna = {
 	
 	castData: {},
 	saved: {},
+	notFoundTimer: false,
 	
 	setOpts: function() {
 		dlna.started = true;
@@ -410,7 +411,7 @@ var dlna = {
 		player.find(".wcp-splash-screen").show(0);
 		dlna.instance.clients = [];
 		clearTimeout(dlna.notFoundTimer);
-		notFoundTimer = setTimeout(function() { player.setOpeningText("Error: Nothing Found"); },12000);
+		dlna.notFoundTimer = setTimeout(function() { player.setOpeningText("Error: Nothing Found"); },12000);
 		$(".wcp-dlna-buttons").show(0);
 	
 		var Client = require('node-ssdp').Client
