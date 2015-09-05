@@ -16,15 +16,6 @@ var remote = {
 			remote.socket.on('advanceItem', function(webData) { if (remote.auth) player.advanceItem(webData.ind,webData.count) });
 			remote.socket.on('close', function() { if (remote.auth) win.closeProcedure(); });
 
-			var methods = ['fps','length','width','height','state','stateInt','itemCount','playing','subCount','audioCount'];
-			methods.forEach(function(el) {
-				remote.socket.on(el, function(elem) {
-					return function(webData) {
-						if (remote.auth && typeof webData.ind !== 'undefined') remote.socket.emit(webData.cbType, { ind: webData.ind, value: player[elem]() });
-					}
-				}(el))
-			});
-
 			methods = ['addPlaylist','mute','fullscreen','removeItem','notify','playItem','toggleMute','toggleFullscreen','play','pause','stop','next','prev','clearPlaylist'];
 			methods.forEach(function(el) {
 				remote.socket.on(el, function(elem) {
@@ -59,6 +50,10 @@ var remote = {
 									else if (webData.value.url.indexOf('/') > -1) powGlobals.lists.videos[newInd].filename = webData.value.url.split('/').pop();
 									else powGlobals.lists.videos[newInd].filename = 'unknown';
 								}
+								if (webData.value.url.indexOf("pow://") == 0 || webData.value.url.indexOf("magnet:?xt=urn:btih:") == 0) {
+									if (!playerApi.savedPlaylists) playerApi.savedPlaylists = [];
+									playerApi.savedPlaylists.push(webData.value);
+								}
 							}
 							if (webData && typeof webData.value !== 'undefined') player[elem](webData.value);
 							else player[elem]();
@@ -71,13 +66,8 @@ var remote = {
 			methods.forEach(function(el) {
 				remote.socket.on(el, function(elem) {
 					return function(webData) {
-						if (remote.auth && typeof webData.ind !== 'undefined') {
-							var set = { ind: webData.ind };
-							if (typeof webData.value !== 'undefined') {
-								player[elem](webData.value);
-								set.value = true;
-							} else set.value = player[elem]();
-							remote.socket.emit(webData.cbType, set);
+						if (remote.auth && typeof webData.ind !== 'undefined' && typeof webData.value !== 'undefined') {
+							player[elem](webData.value);
 						}
 					}
 				}(el));
@@ -92,14 +82,48 @@ var remote = {
 								if (elem == 'itemDesc') webData.value = player.currentItem();
 								else if (typeof webData.value === 'undefined') webData.value = player[elem.replace("Desc","Track")]();
 							}
-							remote.socket.emit(webData.cbType, { ind: webData.ind, value: player[elem](webData.value) });
+							returnObj = player[elem](webData.value);
+							if (elem == 'itemDesc') {
+								if (powGlobals.lists.videos[webData.value]) {
+									if (powGlobals.lists.videos[webData.value].filename) {
+										returnObj.filename = powGlobals.lists.videos[webData.value].filename;
+									}
+									if (powGlobals.lists.videos[webData.value].path) {
+										returnObj.path = powGlobals.lists.videos[webData.value].path;
+									}
+								}
+							}
+							remote.socket.emit(webData.cbType, { ind: webData.ind, value: returnObj });
 						}
 					}
 				}(el));
 			});
-
+			
+			methods = ['torrentPause','torrentPlay'];
+			methods.forEach(function(el) {
+				remote.socket.on(el, function(elem) {
+					return function(webData) {
+						if (remote.auth) {
+							action = el.replace('torrent','');
+							if (action == 'Play') {
+								for (ij = 0; typeof powGlobals.lists.files[ij] !== 'undefined'; ij++) ui.buttons.play(ij);
+							} else if (action == 'Pause') {
+								for (ij = 0; typeof powGlobals.lists.files[ij] !== 'undefined'; ij++) ui.buttons.pause(ij);
+							}
+						}
+					}
+				}(el));
+			});
+			
 		}
 
+	},
+	
+	updateVal: function(param,val) {
+		if (remote.port && remote.secret && remote.socket && remote.auth) {
+			remote.socket.emit('update', { name: param, value: val });
+		}
+		return this;
 	}
 }
 

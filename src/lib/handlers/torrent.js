@@ -20,6 +20,21 @@ var torrent = {
 		return fetchData;
 	},
 	
+	setProgress: function(val) {
+		if (val == 100) {
+			if ($('#all-download .progress-bar').hasClass("progress-bar-warning")) $('#all-download .progress-bar').removeClass("progress-bar-warning");
+			$('#all-download .progress-bar').addClass("progress-bar-danger");
+		}
+		$('#all-download .progress-bar').attr('data-transitiongoal', val).progressbar();
+		
+		if (remote.port && remote.secret && remote.socket && remote.auth) {
+			remote.socket.emit('event', { name: 'TorrentProgress', value: val });
+		}
+		if ($('#downloadPercent').text() != val+'%') $('#downloadPercent').text(val+'%');
+
+
+	},
+	
 	checkDownloaded: function(piece) {
 		if (powGlobals.torrent.engine && powGlobals.torrent.engine.torrent) {
 			if (torrent.downloadWorking) {
@@ -40,8 +55,7 @@ var torrent = {
 				if (updDownload != powGlobals.torrent.lastDownload) {
 					powGlobals.torrent.lastDownload = updDownload;
 					if (updDownload >= 100) {
-						$('#all-download .progress-bar').removeClass("progress-bar-warning").addClass("progress-bar-danger").attr('data-transitiongoal', 100).progressbar();
-						if ($('#downloadPercent').text() != '100%') $('#downloadPercent').text('100%');
+						torrent.setProgress(100);
 						if (!win.focused) {
 							win.gui.setProgressBar(-0.1);
 							if (player.state() != "playing" && !win.focused && !dlna.initiated) win.gui.requestAttention(true);
@@ -57,8 +71,7 @@ var torrent = {
 							}
 						}
 					} else {
-						$('#all-download .progress-bar').attr('data-transitiongoal', updDownload).progressbar();
-						if ($('#downloadPercent').text() != updDownload+'%') $('#downloadPercent').text(updDownload+'%');
+						torrent.setProgress(updDownload);
 						if (win.focused === false && $('#main').css("display") != "table" && powGlobals.torrent.engine && powGlobals.torrent.hasVideo == 0) {
 							win.gui.setProgressBar(parseInt(updDownload)/100);
 						}
@@ -218,7 +231,7 @@ var torrent = {
 			
 			if (remPlaylist && remPlaylist["0"]) playerApi.playlist.saved = playerApi.playlist.integrity(remPlaylist);
 			
-			if (remSel && remSel > -1 && tempSel != remSel) tempSel = remSel;
+			if (remSel && remSel > -1 && playerApi.tempSel != remSel) playerApi.tempSel = remSel;
 			
 			powGlobals.torrent.speedPiece = 0;
 			powGlobals.torrent.speedUpdate = Math.floor(Date.now() / 1000);
@@ -333,11 +346,17 @@ var torrent = {
 		
 						}
 						if (targetHistory == 0) {
-							var set = {
-								 url: localHref+el.index,
-								 title: utils.parser(el.name).name(),
-								 contentType: require('mime-types').lookup(powGlobals.torrent.engine.files[el.index].path)
-							};
+							if (playerApi.lastPlaylist) {
+								var set = playerApi.lastPlaylist;
+								set.url = localHref+el.index;
+								delete playerApi.lastPlaylist;
+							} else {
+								var set = {
+									 url: localHref+el.index,
+									 title: utils.parser(el.name).name(),
+									 contentType: require('mime-types').lookup(powGlobals.torrent.engine.files[el.index].path)
+								};
+							}
 							set = load.pushArgs(set);
 							if (playerApi.loaded) player.addPlaylist(set);
 							else playerApi.playlist.async.addPlaylist.push(set);
@@ -377,6 +396,7 @@ var torrent = {
 							 disabled: playerApi.playlist.saved[kj.toString()].disabled
 						};
 						if (playerApi.playlist.saved[kj.toString()].contentType) set.contentType = playerApi.playlist.saved[kj.toString()].contentType;
+						
 						player.addPlaylist(set);
 		
 						powGlobals.lists.videos[kj] = {};
@@ -464,8 +484,7 @@ var torrent = {
 							powGlobals.torrent.allPieces = powGlobals.torrent.allPieces + parseInt(data.split("||")[0]);
 							powGlobals.torrent.savedData = data.split("||")[1].split("|");
 							newDownloadVar = parseInt($('#all-download .progress-bar').attr('data-transitiongoal'))+parseInt(powGlobals.torrent.savedData[0]);
-							$('#all-download .progress-bar').removeClass("progress-bar-warning").addClass("progress-bar-danger").attr('data-transitiongoal', newDownloadVar).progressbar();
-							$('#downloadPercent').text(newDownloadVar+'%');
+							torrent.setProgress(newDownloadVar);
 							if (newDownloadVar >= 100) {
 								$("#downPart").text(utils.fs.getReadableSize(Math.floor(powGlobals.torrent.engine.torrent.length)));
 							} else {
@@ -510,13 +529,13 @@ var torrent = {
 					player.setOpeningText("Starting DLNA Server ...");
 					if (powGlobals.torrent.hasVideo > 1) dlna.play(playerApi.nextPlay);
 					else {
-						if (playerApi.waitForNext && tempSel > -1) dlna.play(tempSel);
+						if (playerApi.waitForNext && playerApi.tempSel > -1) dlna.play(playerApi.tempSel);
 						else dlna.play(playerApi.nextPlay);
 					}
 				} else {
 					if (powGlobals.torrent.hasVideo > 1) player.playItem(nextPlay);
 					else {
-						if (playerApi.waitForNext && tempSel > -1) player.playItem(tempSel);
+						if (playerApi.waitForNext && playerApi.tempSel > -1) player.playItem(playerApi.tempSel);
 						else player.playItem(playerApi.nextPlay);
 					}
 				}

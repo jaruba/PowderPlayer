@@ -31,7 +31,7 @@ var playerApi = {
 			player.onError(playerApi.listeners.handleErrors);
 			player.onFrameSetup(playerApi.listeners.gotVideoSize);
 			player.onMediaChanged(function() {
-				if (remote.port && remote.secret && remote.socket) remote.socket.emit('event', { name: 'MediaChanged' });
+				if (remote.port && remote.secret && remote.socket) remote.socket.emit('event', { name: 'MediaChanged', value: player.currentItem() });
 				// reset checked items in context menu
 				ctxMenu.reset([4,5,6]);
 			});
@@ -106,6 +106,7 @@ var playerApi = {
 					if (player.width() == 0 && player.height() == 0) playerApi.firstTimeEver = true;
 					else if (playerApi.isYoutube(0)) setTimeout(function() { player.refreshPlaylist(); },500); // fix youtube playlist titles
 				}
+				remote.updateVal("fullscreen",player.fullscreen());
 			}
 		//	if (playerApi.isYoutube(player.currentItem()) && win.gui.title != player.vlc.playlist.items[player.currentItem()].title.replace("[custom]","")) win.gui.title = player.vlc.playlist.items[player.currentItem()].title.replace("[custom]","");
 			if ($("#inner-in-content").css("overflow-y") == "visible" || $("#inner-in-content").css("overflow-y") == "auto") $("#inner-in-content").animate({ scrollTop: 0 }, 'slow');
@@ -118,6 +119,11 @@ var playerApi = {
 				win.position.resizeInBounds((player.width() + 12),(player.height() + 40));
 				win.gui.setTransparent(true);
 				remHeight = player.height() + 40;
+				remote.updateVal("width",player.width())
+                      .updateVal("height",player.height())
+                      .updateVal("fps",player.fps())
+                      .updateVal("subCount",player.subCount())
+                      .updateVal("audioCount",player.audioCount());
 			}
 		},
 		
@@ -135,6 +141,14 @@ var playerApi = {
 			if (powGlobals.lists.currentIndex != player.currentItem() && !playerApi.waitForNext) {
 				if (dlna.castData.casting) dlna.stop();
 				if (player.vlc.playlist.items[player.currentItem()].mrl.indexOf("pow://") == 0 || player.vlc.playlist.items[player.currentItem()].mrl.indexOf("magnet:?xt=urn:btih:") == 0) {
+					if (playerApi.savedPlaylists) {
+						if (playerApi.lastPlaylist) delete playerApi.lastPlaylist;
+						playerApi.savedPlaylists.forEach(function(el,ij) {
+							if (el.url == player.vlc.playlist.items[player.currentItem()].mrl) {
+								playerApi.lastPlaylist = el;
+							}
+						});
+					}
 					player.vlc.playlist.mode = 0;
 					player.find(".wcp-status").text("");
 					player.stop(true);

@@ -165,6 +165,7 @@ var subtitles = {
 			setTimeout(function() {
 	//			console.log(JSON.stringify(newSettings));
 				player.plugin.playlist.items[player.currentItem()].setting = JSON.stringify(newSettings);
+				setTimeout(function() { remote.updateVal("subCount",player.subCount()); },100);
 				if (!dlna.initiated) {
 					subtitles.updateSub();
 					player.wrapper.find(".wcp-subtitle-but").show(0);
