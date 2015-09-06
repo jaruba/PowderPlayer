@@ -127,17 +127,34 @@ var utils = {
 	processArgs: function(args) {
 		var ranFirstArg = false;
 		for (kn = 0; args[kn]; kn++) {
-			if (args[kn].indexOf("--") == 0) {
-				if (args[kn].indexOf("--controller-port=") == 0) {
+			if (args[kn].startsWith("--")) {
+				if (args[kn].startsWith("--controller-port=")) {
 					remote.port = parseInt(args[kn].replace("--controller-port=",""));
-				} else if (args[kn].indexOf("--controller-secret=") == 0) {
+				} else if (args[kn].startsWith("--controller-secret=")) {
 					remote.secret = args[kn].replace("--controller-secret=","");
-				} else if (args[kn].indexOf("--sub-file=") == 0) {
+				} else if (args[kn].startsWith("--sub-file=")) {
 					load.argData.subFile = args[kn].replace("--sub-file=","");
-				} else if (args[kn].indexOf("--fs") == 0) {
+				} else if (args[kn].startsWith("--fs")) {
 					load.argData.fs = true;
-				} else if (args[kn].indexOf("--title=") == 0) {
+				} else if (args[kn].startsWith('--silent')) {
+					load.argData.silent = true;
+				} else if (args[kn].startsWith('--dlna')) {
+					load.argData.dlna = true;
+				} else if (args[kn].startsWith("--title=")) {
 					load.argData.title = args[kn].replace("--title=","");
+				} else if (args[kn].startsWith("--agent")) {
+					if (!load.argData.agent) load.argData.agent = {};
+					if (args[kn].startsWith("--agent-name=")) {
+						load.argData.agent.name = args[kn].replace("--agent-name=","");
+					} else if (args[kn].startsWith("--agent-img=")) {
+						load.argData.agent.img = args[kn].replace("--agent-img=","");
+					} else if (args[kn].startsWith("--agent-pos=")) {
+						load.argData.agent.pos = args[kn].replace("--agent-pos=","");
+					} else if (args[kn].startsWith("--agent-url=")) {
+						load.argData.agent.url = args[kn].replace("--agent-url=","");
+					} else if (args[kn].startsWith("--agent-background=")) {
+						load.argData.agent.background = args[kn].replace("--agent-background=","");
+					}
 				}
 			} else {
 				if (!ranFirstArg) {
@@ -146,6 +163,7 @@ var utils = {
 				}
 			}
 		}
+		
 		if (load.argData.keepFirst) {
 			utils.resetPowGlobals();
 			load.url(load.argData.keepFirst);

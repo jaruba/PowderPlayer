@@ -237,9 +237,9 @@ var dlna = {
 		}
 	//	console.log("local ip: "+dlna.localIp);
 		if (dlna.instance.localIp) {
-			if (powGlobals.torrent.engine) {
-				dlna.mimeType = require('mime-types').lookup(powGlobals.torrent.engine.files[powGlobals.lists.files[powGlobals.lists.videos[dlna.instance.lastIndex].index].index].path);
-			} else dlna.mimeType = require('mime-types').lookup(powGlobals.lists.videos[dlna.instance.lastIndex].path);
+			if (powGlobals.lists.videos[dlna.instance.lastIndex] && powGlobals.lists.videos[dlna.instance.lastIndex].path) {
+				dlna.mimeType = require('mime-types').lookup(powGlobals.lists.videos[dlna.instance.lastIndex].path);
+			}
 	
 			if (player.plugin.playlist.items[dlna.instance.lastIndex].mrl.indexOf("http://localhost") == 0) {
 				dlna.startServer(player.plugin.playlist.items[dlna.instance.lastIndex].mrl.replace('localhost',dlna.instance.localIp),dlnaReconnect);

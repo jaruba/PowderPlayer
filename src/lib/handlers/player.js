@@ -179,7 +179,7 @@ var playerApi = {
 				playerApi.subVoteSent = false;
 				powGlobals.lists.currentIndex = player.currentItem();
 				if (powGlobals.torrent.engine) {
-					if (player.plugin) player.setOpeningText("Prebuffering ...");
+					if (player.plugin && !load.argData.dlna) player.setOpeningText("Prebuffering ...");
 					if (typeof powGlobals.lists.videos[player.currentItem()] !== 'undefined' && typeof powGlobals.lists.videos[player.currentItem()].local === 'undefined') {
 						powGlobals.lists.files.some(function(el,ij) {
 							if (ij == powGlobals.lists.videos[player.currentItem()].index) {
@@ -212,9 +212,8 @@ var playerApi = {
 		
 						if (!powGlobals.lists.videos) powGlobals.lists.videos = [];
 						
-						powGlobals.current.filename = fetchMRL.substr(fetchMRL.lastIndexOf("/")+1);
-						if (isWin) powGlobals.current.path = fetchMRL.replace("file:///","").split("/").join("\\");
-						else powGlobals.current.path = fetchMRL.replace("file:///","");
+						powGlobals.current.filename = utils.parser(fetchMRL).filename();
+						powGlobals.current.path = utils.parser(fetchMRL).deWebize();
 		
 						powGlobals.lists.videos[fetchItem] = {};
 						powGlobals.lists.videos[fetchItem].filename = powGlobals.current.filename;
@@ -234,7 +233,7 @@ var playerApi = {
 						});
 					}
 				} else {
-					if (player.plugin) player.setOpeningText("Loading resource");
+					if (player.plugin && !load.argData.dlna) player.setOpeningText("Loading resource");
 					if (player.currentItem() > -1 && powGlobals.lists.videos) {
 		//				if (!playerApi.isYoutube(player.currentItem())) {
 		//					win.gui.title = new parser(powGlobals.lists.videos[player.currentItem()].filename).name(); // if not youtube, set window title
@@ -244,6 +243,10 @@ var playerApi = {
 						playerApi.doSubsLocal = true;
 					}
 				}
+			}
+			if (load.argData.dlna) {
+				delete load.argData.dlna;
+				dlna.findClient();
 			}
 		},
 		
@@ -311,17 +314,10 @@ var playerApi = {
 				else if (playerApi.lastState == "opening" && player.state() == "ended") {
 					if (powGlobals.torrent.engine) {
 						if (player.vlc.playlist.items[playerApi.lastItem].mrl.substr(0,17) == "http://localhost:") {
-							if (!isWin) {
-								player.replaceMRL(playerApi.lastItem,{
-									url: "file:///"+powGlobals.lists.videos[playerApi.lastItem].path,
-									title: player.itemDesc(playerApi.lastItem).title
-								});
-							} else {
-								player.replaceMRL(playerApi.lastItem,{
-									url: "file:///"+powGlobals.lists.videos[playerApi.lastItem].path.split("\\").join("/"),
-									title: player.itemDesc(playerApi.lastItem).title
-								});
-							}
+							player.replaceMRL(playerApi.lastItem,{
+								url: utils.parser(powGlobals.lists.videos[playerApi.lastItem].path).webize(),
+								title: player.itemDesc(playerApi.lastItem).title
+							});
 							setTimeout(function() { player.playItem(playerApi.lastItem); },1000);
 						}
 					}
@@ -345,8 +341,8 @@ var playerApi = {
 				plObject[ijk.toString()] = {};
 				plObject[ijk.toString()].title = player.vlc.playlist.items[ijk].title.replace("[custom]","");
 				plObject[ijk.toString()].disabled = player.vlc.playlist.items[ijk].disabled;
-				if (powGlobals.torrent.engine && powGlobals.lists.videos[ijk] && powGlobals.lists.videos[ijk].index) {
-					plObject[ijk.toString()].contentType = require('mime-types').lookup(powGlobals.torrent.engine.files[powGlobals.lists.files[powGlobals.torrent.videos[ijk].index].index].path);
+				if (powGlobals.torrent.engine && powGlobals.lists.videos[ijk] && powGlobals.lists.videos[ijk].path) {
+					plObject[ijk.toString()].contentType = require('mime-types').lookup(powGlobals.lists.videos[ijk].path);
 				}
 				if (player.vlc.playlist.items[ijk].mrl.substr(0,17) == "http://localhost:" && isNaN(player.vlc.playlist.items[ijk].mrl.split("/").pop()) === false) {
 					plObject[ijk.toString()].mrl = parseInt(player.vlc.playlist.items[ijk].mrl.split("/").pop());

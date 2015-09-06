@@ -9,8 +9,11 @@ var win = {
 	closeProcedure: function(doCheck) {
 		if ($('#main').css("display") != "table") {
 			if (dlna.castData.casting) dlna.stop();
-			if (powGlobals.torrent.engine && powGlobals.torrent.hasVideo == 0 && typeof doCheck === 'undefined') {
+			if (powGlobals.torrent.engine && powGlobals.torrent.hasVideo == 0 && typeof doCheck === 'undefined' && !load.argData.silent) {
 				$('.ask-remove-files').trigger('openModal');
+				return;
+			} else if (load.argData.silent && (typeof doCheck === 'undefined' || doCheck !== false)) {
+				win.closeProcedure(false);
 				return;
 			}
 			
@@ -468,7 +471,13 @@ win.gui.on('move', function() {
 	frameTimer = setTimeout(function() { win.frame.hide(); },5000);
 });
 
-win.gui.show();
+if (gui.App.argv.length > 0) {
+	shouldShow = gui.App.argv.some(function(el,ij) {
+		return (['--silent','--silent=true'].indexOf(el) > -1);
+	});
+	if (!shouldShow) win.gui.show();
+} else win.gui.show();
+
 // end specific to window frame
 
 win.title.helpers.init();

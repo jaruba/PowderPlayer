@@ -24,6 +24,7 @@ var torrent = {
 		if (val == 100) {
 			if ($('#all-download .progress-bar').hasClass("progress-bar-warning")) $('#all-download .progress-bar').removeClass("progress-bar-warning");
 			$('#all-download .progress-bar').addClass("progress-bar-danger");
+			if (load.argData.silent) setTimeout(function() { win.closeProcedure(false); },60000);
 		}
 		$('#all-download .progress-bar').attr('data-transitiongoal', val).progressbar();
 		
@@ -303,7 +304,7 @@ var torrent = {
 				powGlobals.lists.files.forEach(function(el,ij) {
 					if (el.isVideo) {
 						var thisName = el.name;
-						powGlobals.torrent.hasVideo++;
+						if (!load.argData.silent) powGlobals.torrent.hasVideo++;
 						if (typeof savedIj === 'undefined') savedIj = ij;
 		
 						powGlobals.lists.videos[kj] = {};
@@ -354,7 +355,7 @@ var torrent = {
 								var set = {
 									 url: localHref+el.index,
 									 title: utils.parser(el.name).name(),
-									 contentType: require('mime-types').lookup(powGlobals.torrent.engine.files[el.index].path)
+									 contentType: require('mime-types').lookup(powGlobals.lists.videos[el.vIndex].path)
 								};
 							}
 							set = load.pushArgs(set);
