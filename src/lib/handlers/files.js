@@ -57,12 +57,10 @@ $('#fileDialog').change(function(evt) {
 
 $('#subtitleDialog').change(function(evt) {
 	  var targetSub = $(this).val();
-	  if (["sub","srt","vtt"].indexOf(targetSub.split('.').pop().toLowerCase()) > -1) {
-		  if (targetSub.indexOf("/") > -1) {
-			  newString = '{"'+targetSub.split('/').pop()+'":"'+targetSub+'"}';
-		  } else {
-			  newString = '{"'+targetSub.split('\\').pop()+'":"'+targetSub.split('\\').join('\\\\')+'"}';
-		  }
+	  if (["sub","srt","vtt"].indexOf(utils.parser(targetSub).extension()) > -1) {
+		newString = '{"'+utils.parser(targetSub).filename()+'":"';
+		if (targetSub.indexOf("/") > -1) newString += targetSub+'"}';
+		else newString += targetSub.split('\\').join('\\\\')+'"}';
 		newSettings = player.vlc.playlist.items[player.currentItem()].setting;
 		if (utils.isJsonString(newSettings)) {
 			newSettings = JSON.parse(newSettings);

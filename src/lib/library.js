@@ -19,7 +19,7 @@ var scan = {
 				next();
 			  });
 			} else {
-			  if (playerApi.supportedVideo.indexOf(file.split('.').pop().toLowerCase()) > -1) {
+			  if (playerApi.supportedTypes.indexOf(utils.parser(file).extension()) > -1) {
 				  clean = utils.parser(player.itemDesc(player.itemCount()-1).title);
 				  compare = utils.parser(file);
 				  if (clean.showName() == compare.showName()) {
@@ -54,7 +54,7 @@ var scan = {
 			cleanArray = [];
 			if (results.length > 0) {
 				results.forEach(function(el,ij) {
-					clean = utils.parser(el.split('/').pop());
+					clean = utils.parser(el);
 					if (clean.shortSzEp() !== false && remSzEp.indexOf(clean.shortSzEp()) == -1) {
 						remSzEp.push(clean.shortSzEp());
 						cleanArray.push(el);
@@ -75,17 +75,17 @@ var scan = {
 			
 			results.forEach(function(el,ij) {
 				mj = ij;
-				newVideoId = powGlobals.lists.videos.length;
-				powGlobals.lists.videos[newVideoId] = {};
-				powGlobals.lists.videos[newVideoId].filename = el.split('/').pop();
+				newVideoId = powGlobals.lists.media.length;
+				powGlobals.lists.media[newVideoId] = {};
+				powGlobals.lists.media[newVideoId].filename = utils.parser(el).filename();
 				if (isWin) {
-					powGlobals.lists.videos[newVideoId].path = el.split('/').join('\\');
-					powGlobals.lists.videos[newVideoId].byteLength = utils.fs.size(el.split('/').join('\\'));
+					powGlobals.lists.media[newVideoId].path = el.split('/').join('\\');
+					powGlobals.lists.media[newVideoId].byteLength = utils.fs.size(el.split('/').join('\\'));
 				} else {
-					powGlobals.lists.videos[newVideoId].path = el;
-					powGlobals.lists.videos[newVideoId].byteLength = utils.fs.size(el);
+					powGlobals.lists.media[newVideoId].path = el;
+					powGlobals.lists.media[newVideoId].byteLength = utils.fs.size(el);
 				}
-				powGlobals.lists.videos[newVideoId].local = 1;
+				powGlobals.lists.media[newVideoId].local = 1;
 				clean = utils.parser(el);
 				player.addPlaylist({
 					 url: "file:///"+el,

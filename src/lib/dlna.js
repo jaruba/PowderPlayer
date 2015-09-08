@@ -21,7 +21,7 @@ var dlna = {
 	notFoundTimer: false,
 	
 	setOpts: function() {
-		dlna.started = true;
+		dlna.instance.started = true;
 		dlna.castData.casting = 1;
 		dlna.castData.castingPaused = 0;
 		
@@ -237,8 +237,8 @@ var dlna = {
 		}
 	//	console.log("local ip: "+dlna.localIp);
 		if (dlna.instance.localIp) {
-			if (powGlobals.lists.videos[dlna.instance.lastIndex] && powGlobals.lists.videos[dlna.instance.lastIndex].path) {
-				dlna.mimeType = require('mime-types').lookup(powGlobals.lists.videos[dlna.instance.lastIndex].path);
+			if (powGlobals.lists.media[dlna.instance.lastIndex] && powGlobals.lists.media[dlna.instance.lastIndex].path) {
+				dlna.mimeType = require('mime-types').lookup(powGlobals.lists.media[dlna.instance.lastIndex].path);
 			}
 	
 			if (player.plugin.playlist.items[dlna.instance.lastIndex].mrl.indexOf("http://localhost") == 0) {
@@ -250,7 +250,7 @@ var dlna = {
 						remIj = 0;
 						if (player.plugin.playlist.items[dlna.instance.lastIndex].mrl.indexOf("file:///") == 0) {
 							isLoaded = dlna.instance.files.some(function (el,ij) {
-								if (el.filename == player.plugin.playlist.items[dlna.instance.lastIndex].mrl.split("/").pop()) {
+								if (el.filename == utils.parser(player.vlc.playlist.items[dlna.instance.lastIndex].mrl).filename()) {
 									remIj = ij;
 									return true;
 								}
@@ -273,9 +273,9 @@ var dlna = {
 						  for (i = 0; i < player.itemCount(); i++) {
 							  if (player.plugin.playlist.items[i].mrl.indexOf("file:///") == 0) {
 								  dlna.instance.files[uig] = {};
-								  dlna.instance.files[uig].filename = powGlobals.lists.videos[i].filename;
+								  dlna.instance.files[uig].filename = powGlobals.lists.media[i].filename;
 								  dlna.instance.files[uig].videoIndex = i;
-								  dlna.instance.files[uig].mimeType = require('mime-types').lookup(powGlobals.lists.videos[i].path);
+								  dlna.instance.files[uig].mimeType = require('mime-types').lookup(powGlobals.lists.media[i].path);
 								  uig++;
 							  }
 						  }
@@ -292,10 +292,10 @@ var dlna = {
 						  
 						  var uig = Number(u.pathname.slice(1));
 		
-						  var path = powGlobals.lists.videos[dlna.files[uig].videoIndex].path;
+						  var path = powGlobals.lists.media[dlna.instance.files[uig].videoIndex].path;
 						  var total = utils.fs.size(path);
 						  
-						  if (isNaN(uig) || uig >= dlna.files.length) {
+						  if (isNaN(uig) || uig >= dlna.instance.files.length) {
 							  res.statusCode = 404
 							  res.end()
 							  return
@@ -333,7 +333,7 @@ var dlna = {
 							res.setHeader('Content-Range', 'bytes ' + start + '-' + end + '/' + total);
 							res.setHeader('Accept-Ranges', 'bytes');
 							res.setHeader('Content-Length', chunksize);
-							res.setHeader('Content-Type', dlna.files[uig].mimeType);
+							res.setHeader('Content-Type', dlna.instance.files[uig].mimeType);
 							res.setHeader('transferMode.dlna.org', 'Streaming');
 							res.setHeader('contentFeatures.dlna.org', 'DLNA.ORG_OP=01;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=017000 00000000000000000000000000');
 							
@@ -342,7 +342,7 @@ var dlna = {
 						  } else {
 							res.statusCode = 200;
 							res.setHeader('Content-Length', total);
-							res.setHeader('Content-Type', dlna.files[uig].mimeType);
+							res.setHeader('Content-Type', dlna.instance.files[uig].mimeType);
 							res.setHeader('transferMode.dlna.org', 'Streaming');
 							res.setHeader('contentFeatures.dlna.org', 'DLNA.ORG_OP=01;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=017000 00000000000000000000000000');
 							if (res.method === 'HEAD') return res.end();
@@ -354,7 +354,7 @@ var dlna = {
 						dlna.instance.server.on('listening',function() {
 							var remIj = 0;
 							dlna.instance.files.some(function(el,ij) {
-								if (el.filename == player.plugin.playlist.items[dlna.instance.lastIndex].mrl.split("/").pop()) {
+								if (el.filename == utils.parser(player.plugin.playlist.items[dlna.instance.lastIndex].mrl).filename()) {
 									remIj = ij;
 									return true;
 								}
@@ -368,18 +368,18 @@ var dlna = {
 						if (remIj == -1) {
 							  uig = dlna.instance.files.length;
 							  dlna.instance.files[uig] = {};
-							  dlna.instance.files[uig].filename = powGlobals.lists.videos[dlna.instance.lastIndex].filename;
+							  dlna.instance.files[uig].filename = powGlobals.lists.media[dlna.instance.lastIndex].filename;
 							  dlna.instance.files[uig].videoIndex = dlna.instance.lastIndex;
-							  dlna.instance.files[uig].mimeType = require('mime-types').lookup(powGlobals.lists.videos[dlna.instance.lastIndex].path);
+							  dlna.instance.files[uig].mimeType = require('mime-types').lookup(powGlobals.lists.media[dlna.instance.lastIndex].path);
 							  dlna.startServer('http://'+dlna.instance.localIp+':'+dlna.instance.server.address().port+'/'+uig);
 						} else dlna.startServer('http://'+dlna.instance.localIp+':'+dlna.instance.server.address().port+'/'+remIj);
 					}
 				} else {
 				  uig = dlna.instance.files.length;
 				  dlna.instance.files[uig] = {};
-				  dlna.instance.files[uig].filename = powGlobals.lists.videos[dlna.instance.lastIndex].filename;
+				  dlna.instance.files[uig].filename = powGlobals.lists.media[dlna.instance.lastIndex].filename;
 				  dlna.instance.files[uig].videoIndex = dlna.instance.lastIndex;
-				  dlna.instance.files[uig].mimeType = require('mime-types').lookup(powGlobals.lists.videos[dlna.instance.lastIndex].path);
+				  dlna.instance.files[uig].mimeType = require('mime-types').lookup(powGlobals.lists.media[dlna.instance.lastIndex].path);
 				  dlna.startServer('http://'+dlna.instance.localIp+':'+dlna.instance.server.address().port+'/'+uig);
 				}
 			}
@@ -479,7 +479,7 @@ var dlna = {
 					}
 					if (powGlobals.torrent.engine) {
 						powGlobals.lists.files.some(function(el,ij) {
-							if (powGlobals.lists.videos && powGlobals.lists.videos[dlna.instance.lastIndex] && powGlobals.lists.videos[dlna.instance.lastIndex].index == ij) {
+							if (powGlobals.lists.media && powGlobals.lists.media[dlna.instance.lastIndex] && powGlobals.lists.media[dlna.instance.lastIndex].index == ij) {
 								ui.buttons.play(ij);
 								return true;
 							}

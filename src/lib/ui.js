@@ -106,9 +106,9 @@ var ui = {
 				$("#openAction").hide(0);
 				$("#openFolderAction").hide(0);
 			}
-			if (playerApi.supportedVideo.indexOf($("#file"+kj).find(".filenames").text().split(".").pop().toLowerCase()) > -1) {
-				// if the item is a video
-				powGlobals.lists.videos.some(function(el,ij) {
+			if (playerApi.supportedTypes.indexOf(utils.parser($("#file"+kj).find(".filenames").text()).extension()) > -1) {
+				// if the item is a video or audio file
+				powGlobals.lists.media.some(function(el,ij) {
 					if (el.index == kj) {
 						$("#playAction").attr("onClick","player.playItem("+ij+"); $('#closeAction').trigger('click'); $('#inner-in-content').animate({ scrollTop: 0 }, 'slow'); ui.buttons.play("+kj+"); $('#inner-in-content').css('overflow-y','hidden')");
 						$("#copyStream").attr("onClick","gui.Clipboard.get().set('http://localhost:'+powGlobals.torrent.engine.server.address().port+'/"+powGlobals.lists.files[kj].index+"','text'); $('#closeAction').trigger('click')");

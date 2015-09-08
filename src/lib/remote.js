@@ -22,33 +22,46 @@ var remote = {
 					return function(webData) {
 						if (remote.auth) {
 							if (elem == 'addPlaylist') {
-								if (!powGlobals.lists.videos) powGlobals.lists.videos = [];
-								var newInd = powGlobals.lists.videos.length;
-								powGlobals.lists.videos[newInd] = {};
+								if (!powGlobals.lists.media) powGlobals.lists.media = [];
+								var newInd = powGlobals.lists.media.length;
+								powGlobals.lists.media[newInd] = {};
 								if (webData.value.directPath) {
-									powGlobals.lists.videos[newInd].local = 1;
-									powGlobals.lists.videos[newInd].path = webData.value.directPath.replace("file:///","");
-									if (webData.value.url.indexOf('\\') > -1) powGlobals.lists.videos[newInd].filename = webData.value.url.split('\\').pop();
-									else if (webData.value.directPath.indexOf('/') > -1) powGlobals.lists.videos[newInd].filename = webData.value.directPath.split('/').pop();
-									else powGlobals.lists.videos[newInd].filename = 'unknown';
-									if (fs.existsSync(powGlobals.lists.videos[newInd].path)) {
-										powGlobals.lists.videos[newInd].byteLength = fs.statSync(powGlobals.lists.videos[newInd].path).size;
-									} else powGlobals.lists.videos[newInd].path = 'unknown';
+									powGlobals.lists.media[newInd].local = 1;
+									powGlobals.lists.media[newInd].path = utils.parser(webData.value.directPath).deWebize();
+									if (webData.value.url) {
+										powGlobals.lists.media[newInd].filename = utils.parser(webData.value.url).filename();
+									} else {
+										powGlobals.lists.media[newInd].filename = utils.parser(webData.value.directPath).filename();
+									}
+									if (fs.existsSync(powGlobals.lists.media[newInd].path)) {
+										powGlobals.lists.media[newInd].byteLength = fs.statSync(powGlobals.lists.media[newInd].path).size;
+										if (playerApi.supportedVideos.indexOf(utils.parser(powGlobals.lists.media[newInd].path).extension()) > -1) {
+											powGlobals.lists.media[newInd].isVideo = true;
+										} else if (playerApi.supportedAudio.indexOf(utils.parser(powGlobals.lists.media[newInd].path).extension()) > -1) {
+											powGlobals.lists.media[newInd].isAudio = true;
+										}
+									} else powGlobals.lists.media[newInd].path = 'unknown';
 								} else if (webData.value.url.indexOf("file:///") == 0) {
-									powGlobals.lists.videos[newInd].local = 1;
-									powGlobals.lists.videos[newInd].path = webData.value.url.replace("file:///","");
-									if (webData.value.url.indexOf('\\') > -1) powGlobals.lists.videos[newInd].filename = webData.value.url.split('\\').pop();
-									else if (webData.value.url.indexOf('/') > -1) powGlobals.lists.videos[newInd].filename = webData.value.url.split('/').pop();
-									else powGlobals.lists.videos[newInd].filename = 'unknown';
-									if (fs.existsSync(powGlobals.lists.videos[newInd].path)) {
-										powGlobals.lists.videos[newInd].byteLength = fs.statSync(powGlobals.lists.videos[newInd].path).size;
-									} else powGlobals.lists.videos[newInd].path = 'unknown';
+									powGlobals.lists.media[newInd].local = 1;
+									powGlobals.lists.media[newInd].path = utils.parser(webData.value.url).deWebize();
+									if (webData.value.url) {
+										powGlobals.lists.media[newInd].filename = utils.parser(webData.value.url).filename();
+									} else powGlobals.lists.media[newInd].filename = 'unknown';
+									if (fs.existsSync(powGlobals.lists.media[newInd].path)) {
+										powGlobals.lists.media[newInd].byteLength = fs.statSync(powGlobals.lists.media[newInd].path).size;
+										if (playerApi.supportedVideos.indexOf(utils.parser(powGlobals.lists.media[newInd].path).extension()) > -1) {
+											powGlobals.lists.media[newInd].isVideo = true;
+										} else if (playerApi.supportedAudio.indexOf(utils.parser(powGlobals.lists.media[newInd].path).extension()) > -1) {
+											powGlobals.lists.media[newInd].isAudio = true;
+										}
+									} else powGlobals.lists.media[newInd].path = 'unknown';
 								} else {
-									powGlobals.lists.videos[newInd].local = 0;
-									powGlobals.lists.videos[newInd].path = 'unknown';
-									if (webData.value.url.indexOf('\\') > -1) powGlobals.lists.videos[newInd].filename = webData.value.url.split('\\').pop();
-									else if (webData.value.url.indexOf('/') > -1) powGlobals.lists.videos[newInd].filename = webData.value.url.split('/').pop();
-									else powGlobals.lists.videos[newInd].filename = 'unknown';
+									powGlobals.lists.media[newInd].local = 0;
+									powGlobals.lists.media[newInd].path = 'unknown';
+									if (webData.value.url) {
+										powGlobals.lists.media[newInd].filename = utils.parser(webData.value.url).filename();
+									}
+									else powGlobals.lists.media[newInd].filename = 'unknown';
 								}
 								if (webData.value.url.indexOf("pow://") == 0 || webData.value.url.indexOf("magnet:?xt=urn:btih:") == 0) {
 									if (!playerApi.savedPlaylists) playerApi.savedPlaylists = [];
@@ -84,12 +97,12 @@ var remote = {
 							}
 							returnObj = player[elem](webData.value);
 							if (elem == 'itemDesc') {
-								if (powGlobals.lists.videos[webData.value]) {
-									if (powGlobals.lists.videos[webData.value].filename) {
-										returnObj.filename = powGlobals.lists.videos[webData.value].filename;
+								if (powGlobals.lists.media[webData.value]) {
+									if (powGlobals.lists.media[webData.value].filename) {
+										returnObj.filename = powGlobals.lists.media[webData.value].filename;
 									}
-									if (powGlobals.lists.videos[webData.value].path) {
-										returnObj.path = powGlobals.lists.videos[webData.value].path;
+									if (powGlobals.lists.media[webData.value].path) {
+										returnObj.path = powGlobals.lists.media[webData.value].path;
 									}
 								}
 							}

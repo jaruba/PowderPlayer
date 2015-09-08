@@ -115,7 +115,7 @@ var utils = {
 			subtitles: {},
 			lists: {
 				files: [],
-				videos: [],
+				media: [],
 				indexes: []
 			}
 		};
@@ -331,6 +331,11 @@ var utils = {
 			return path;
 		}
 		
+		function extension() {
+			if (path.indexOf('.') > -1) return path.split('.').pop().toLowerCase();
+			else return false;
+		}
+		
 		function name() {
 			// parse filename to get title
 			path = this.filename();
@@ -436,7 +441,7 @@ var utils = {
 			return path.split("-").join(" ").split("[").join(" ").split("]").join(" ").split("(").join(" ").split(")").join(" ").split(",").join(" ").split("  ").join(" ").split("  ").join(" ").split("  ").join(" ").toLowerCase();
 		};
 
-		return Object.freeze({ name: name, showName: showName, shortSzEp: shortSzEp, season: season, episode: episode, cleanName: cleanName, filename: filename, webize: webize, deWebize: deWebize });
+		return Object.freeze({ name: name, showName: showName, shortSzEp: shortSzEp, season: season, episode: episode, cleanName: cleanName, filename: filename, extension: extension, webize: webize, deWebize: deWebize });
 	},
 	
 	register: {

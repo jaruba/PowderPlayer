@@ -18,8 +18,11 @@ var powGlobals = {
 		current: {},
 		torrent: {},
 		subtitles: {},
-		file: {},
-		lists: {}
+		lists: {
+			files: [],
+			media: [],
+			indexes: []
+		}
 	},
 	isWin = /^win/.test(process.platform),
 	player = false;

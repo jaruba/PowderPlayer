@@ -127,7 +127,7 @@ var load = {
 		
 		ranURL = false;
 		fileArray.forEach(function(el) {
-			if (el.split('.').pop().toLowerCase() == 'torrent') {
+			if (utils.parser(el).extension() == 'torrent') {
 				var readTorrent = require('read-torrent');
 					
 				readTorrent(el, function(err, data) {
@@ -143,15 +143,25 @@ var load = {
 				load.url(el);
 			}
 		});
-		powGlobals.lists.videos = [];
+		powGlobals.lists.media = [];
 		fileArray.forEach(function(e,ij) {
-			powGlobals.lists.videos[ij] = {};
-			if (e.split('.').pop().toLowerCase() == 'torrent') {
-				powGlobals.lists.videos[ij].filename = "unknown";
-				powGlobals.lists.videos[ij].path = "unknown";
+			powGlobals.lists.media[ij] = {};
+			if (utils.parser(e).extension() == 'torrent') {
+				powGlobals.lists.media[ij].filename = "unknown";
+				powGlobals.lists.media[ij].path = "unknown";
 			} else {
-				powGlobals.lists.videos[ij].filename = utils.parser(e).filename();
-				powGlobals.lists.videos[ij].path = e;
+				powGlobals.lists.media[ij].filename = utils.parser(e).filename();
+				powGlobals.lists.media[ij].path = e;
+				powGlobals.lists.media[ij].byteLength = utils.fs.size(e);
+				
+				if (e.indexOf("://") == -1) powGlobals.lists.media[ij].local = 1;
+						
+				if (playerApi.supportedVideos.indexOf(utils.parser(e).extension()) > -1) {
+					powGlobals.lists.media[ij].isVideo = true;
+				} else if (playerApi.supportedAudio.indexOf(utils.parser(e).extension()) > -1) {
+					powGlobals.lists.media[ij].isAudio = true;
+				}
+		
 			}
 		});
 		if (!ranURL) player.playItem(0);
@@ -186,7 +196,7 @@ var load = {
 		if (isHistory) {
 			targetHistory = torLink;
 			torLink = "magnet:?xt=urn:btih:"+torLink.infoHash;
-			powGlobals.lists.videos = [];
+			powGlobals.lists.media = [];
 			powGlobals.lists.indexes = [];
 			powGlobals.lists.files = [];
 		}
@@ -204,9 +214,9 @@ var load = {
 		$('#nrPeers').text("0");
 		// end reset values in Torrent Data mode
 		
-		if (typeof torLink !== 'undefined' && (typeof torLink === 'object' || Buffer.isBuffer(torLink) || torLink.toLowerCase().match(/magnet:\?xt=urn:sha1:[a-z0-9]{20,50}/i) != null || torLink.toLowerCase().match(/magnet:\?xt=urn:btih:[a-z0-9]{20,50}/i) != null || torLink.split('.').pop().toLowerCase() == "torrent")) {
+		if (typeof torLink !== 'undefined' && (typeof torLink === 'object' || Buffer.isBuffer(torLink) || torLink.toLowerCase().match(/magnet:\?xt=urn:sha1:[a-z0-9]{20,50}/i) != null || torLink.toLowerCase().match(/magnet:\?xt=urn:btih:[a-z0-9]{20,50}/i) != null || utils.parser(torLink).extension() == "torrent")) {
 		
-			if (typeof torLink !== 'object' && Buffer.isBuffer(torLink) === false && torLink.split('.').pop().toLowerCase() == "torrent") torLink = fs.readFileSync(torLink);
+			if (typeof torLink !== 'object' && Buffer.isBuffer(torLink) === false && utils.parser(torLink).extension() == "torrent") torLink = fs.readFileSync(torLink);
 			
 			// load the torrent with peerflix
 			var opts = { connections: localStorage.maxPeers, trackers: ['udp://tracker.openbittorrent.com:80', 'udp://tracker.publicbt.com:80', 'udp://tracker.istole.it:6969', 'udp://open.demonii.com:1337' ] };
@@ -269,9 +279,9 @@ var load = {
 		
 		if (targetHistory.infoHash) load.torrent(targetHistory,true);
 		else {
-			powGlobals.lists.videos = [];
+			powGlobals.lists.media = [];
 			
-			var thisVideoId = powGlobals.lists.videos.length;
+			var thisVideoId = powGlobals.lists.media.length;
 			load.playlistItem(targetHistory.mrl);
 	
 			for (oi = 0; targetHistory.playlist[oi.toString()]; oi++) {
@@ -291,20 +301,30 @@ var load = {
 	},
 	
 	playlistItem: function(torLink,videoId) {
-		videoId = typeof videoId === 'number' ? videoId : powGlobals.lists.videos.length;
+		videoId = typeof videoId === 'number' ? videoId : typeof powGlobals.lists.media !== 'undefined' ? powGlobals.lists.media.length : 0;
 
-		powGlobals.lists.videos[videoId] = {};
-		powGlobals.lists.videos[videoId].local = 1;
+		if (!powGlobals.lists) powGlobals.lists = {};
+		if (!powGlobals.lists.media) powGlobals.lists.media = [];
+
+		powGlobals.lists.media[videoId] = {};
+		powGlobals.lists.media[videoId].local = 1;
 		
-		powGlobals.lists.videos[videoId].filename = utils.parser(torLink).filename();
-		powGlobals.lists.videos[videoId].path = utils.parser(torLink).deWebize();
-		powGlobals.lists.videos[videoId].byteLength = utils.fs.size(powGlobals.lists.videos[videoId].path);
+		powGlobals.lists.media[videoId].filename = utils.parser(torLink).filename();
+		powGlobals.lists.media[videoId].path = utils.parser(torLink).deWebize();
+		powGlobals.lists.media[videoId].byteLength = utils.fs.size(powGlobals.lists.media[videoId].path);
+		
+		if (playerApi.supportedVideos.indexOf(utils.parser(torLink).extension()) > -1) {
+			powGlobals.lists.media[videoId].isVideo = true;
+		} else if (playerApi.supportedAudio.indexOf(utils.parser(torLink).extension()) > -1) {
+			powGlobals.lists.media[videoId].isAudio = true;
+		}
+		
 		torLink = utils.parser(torLink).webize();
 	
-		if (powGlobals.lists.videos[videoId].filename) {
+		if (powGlobals.lists.media[videoId].filename) {
 
 			var set = {
-				title: utils.parser(powGlobals.lists.videos[videoId].filename).name(),
+				title: utils.parser(powGlobals.lists.media[videoId].filename).name(),
 				url: torLink
 			};
 			

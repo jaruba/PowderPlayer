@@ -84,21 +84,27 @@ var torrent = {
 					if (piece >= el.pieces.first && piece <= el.pieces.last && piece >= 0) {
 						powGlobals.lists.files[ij].pieces.downloaded = el.pieces.downloaded = el.pieces.downloaded+1;
 						updDownload = Math.floor((el.pieces.downloaded / (el.pieces.last - el.pieces.first)) *100);
-						if (powGlobals.lists.videos[player.currentItem()] && ij == powGlobals.lists.videos[player.currentItem()].index && player.state() == "opening") {
+						if (powGlobals.lists.media[player.currentItem()] && ij == powGlobals.lists.media[player.currentItem()].index && player.state() == "opening") {
 							if (!playerApi.firstTime) {
 								tempPrebuf = Math.floor((el.pieces.downloaded / (el.pieces.last - el.pieces.first)) *100*45);
 								if (tempPrebuf <= 100 && tempPrebuf > torrent.prebuf) {
 									torrent.prebuf = tempPrebuf;
 									if (playerApi.loaded && !torrent.stopPrebuf) player.setOpeningText("Prebuffering "+torrent.prebuf+"%");
-								} else if (tempPrebuf > 100 && !torrent.stopPrebuf) player.setOpeningText("Opening Video");
+								} else if (tempPrebuf > 100 && !torrent.stopPrebuf) {
+									if (powGlobals.lists && powGlobals.lists.media && powGlobals.lists.media[player.currentItem()] && powGlobals.lists.media[player.currentItem()].isAudio) {
+										player.setOpeningText("Loading Audio");
+									} else {
+										player.setOpeningText("Opening Video");
+									}
+								}
 							}
 						}
 						
-						if (powGlobals.torrent.hasVideo > 0 && el.isVideo) {
-							if (powGlobals.lists.videos[player.currentItem()].index == ij) {
-								eli = powGlobals.lists.videos[el.vIndex];
+						if (powGlobals.torrent.hasVideo > 0 && el.isMedia) {
+							if (powGlobals.lists.media[player.currentItem()].index == ij) {
+								eli = powGlobals.lists.media[el.vIndex];
 								if ((el.pieces.downloaded / (el.pieces.last - el.pieces.first)) > eli.lastSent) {
-									powGlobals.lists.videos[player.currentItem()].lastSent = (el.pieces.downloaded / (el.pieces.last - el.pieces.first));
+									powGlobals.lists.media[player.currentItem()].lastSent = (el.pieces.downloaded / (el.pieces.last - el.pieces.first));
 									if (player && player.setDownloaded) {
 										clearTimeout(torrent.timers.setDownload);
 										torrent.timers.setDownload = setTimeout(utils.delayer(eli.lastSent,function(dln){ player.setDownloaded(dln) }),500);
@@ -124,9 +130,11 @@ var torrent = {
 								setTimeout(utils.delayer(ij,function(dln) {
 									if (powGlobals.lists.files && powGlobals.lists.files[dln]) {
 										powGlobals.lists.files[dln].finished = true;
-										if (localStorage.noSubs == "0") {
-											clearTimeout(subtitles.findHashTime);
-											subtitles.findHash();
+										if (powGlobals.lists.files[dln].isMedia && powGlobals.lists.media[powGlobals.lists.files[dln].vIndex].isVideo) {
+											if (localStorage.noSubs == "0") {
+												clearTimeout(subtitles.findHashTime);
+												subtitles.findHash();
+											}
 										}
 									}
 								}),20000);
@@ -263,9 +271,10 @@ var torrent = {
 				eli.index = ij;
 				eli.byteLength = el.length;
 				eli.name = el.name;
-				if (playerApi.supportedVideo.indexOf(eli.name.split('.').pop().toLowerCase()) > -1 && eli.name.toLowerCase().replace("sample","") == eli.name.toLowerCase() && eli.name != "ETRG.mp4" && eli.name.toLowerCase().substr(0,5) != "rarbg") {
-					eli.isVideo = true;
-				} else eli.isVideo = false;
+				if (playerApi.supportedTypes.indexOf(utils.parser(eli.name).extension()) > -1 && eli.name.toLowerCase().replace("sample","") == eli.name.toLowerCase() && eli.name != "ETRG.mp4" && eli.name.toLowerCase().substr(0,5) != "rarbg") {
+					eli.isMedia = true;
+				} else eli.isMedia = false;
+				
 				powGlobals.lists.indexes[ij] = ij;
 				powGlobals.lists.files[ij] = eli;
 			});
@@ -290,9 +299,9 @@ var torrent = {
 		
 						player.addPlaylist(set);
 						
-						powGlobals.lists.videos[kj] = {};
-						powGlobals.lists.videos[kj].path = "unknown";
-						powGlobals.lists.videos[kj].filename = "unknown";
+						powGlobals.lists.media[kj] = {};
+						powGlobals.lists.media[kj].path = "unknown";
+						powGlobals.lists.media[kj].filename = "unknown";
 						kj++;
 					}
 				}
@@ -302,29 +311,36 @@ var torrent = {
 		
 			if (localStorage.useVLC != "1") {
 				powGlobals.lists.files.forEach(function(el,ij) {
-					if (el.isVideo) {
+					if (el.isMedia) {
 						var thisName = el.name;
 						if (!load.argData.silent) powGlobals.torrent.hasVideo++;
 						if (typeof savedIj === 'undefined') savedIj = ij;
 		
-						powGlobals.lists.videos[kj] = {};
+						powGlobals.lists.media[kj] = {};
 		
 						powGlobals.lists.files[ij].vIndex = kj;
-						powGlobals.lists.videos[kj].checkHashes = [];
-						powGlobals.lists.videos[kj].lastSent = 0;
-						powGlobals.lists.videos[kj].index = ij;
-						powGlobals.lists.videos[kj].filename = thisName.split('/').pop().replace(/\{|\}/g, '');
+						powGlobals.lists.media[kj].checkHashes = [];
+						powGlobals.lists.media[kj].lastSent = 0;
+						powGlobals.lists.media[kj].index = ij;
+						powGlobals.lists.media[kj].filename = utils.parser(thisName).filename();
+
+						if (playerApi.supportedVideos.indexOf(utils.parser(thisName).extension()) > -1) {
+							powGlobals.lists.media[kj].isVideo = true;
+						} else if (playerApi.supportedAudio.indexOf(utils.parser(thisName).extension()) > -1) {
+							powGlobals.lists.media[kj].isAudio = true;
+						}
+
 						var fileStart = powGlobals.torrent.engine.files[el.index].offset;
 						var fileEnd = powGlobals.torrent.engine.files[el.index].offset + powGlobals.torrent.engine.files[el.index].length;
-						powGlobals.lists.videos[kj].path = "" + powGlobals.torrent.engine.path + pathBreak + powGlobals.torrent.engine.files[el.index].path;
-						powGlobals.lists.videos[kj].byteLength = powGlobals.torrent.engine.files[el.index].length;
+						powGlobals.lists.media[kj].path = "" + powGlobals.torrent.engine.path + pathBreak + powGlobals.torrent.engine.files[el.index].path;
+						powGlobals.lists.media[kj].byteLength = powGlobals.torrent.engine.files[el.index].length;
 						if (powGlobals.torrent.hasVideo == 1) {
-							var filename = thisName.split('/').pop().replace(/\{|\}/g, '')
+							var filename = utils.parser(thisName).filename();
 							powGlobals.current.filename = filename;
-							powGlobals.current.path = powGlobals.lists.videos[kj].path;
+							powGlobals.current.path = powGlobals.lists.media[kj].path;
 							powGlobals.current.firstPiece = powGlobals.lists.files[ij].pieces.first;
 							powGlobals.current.lastPiece = powGlobals.lists.files[ij].pieces.last;
-							if (powGlobals.lists.videos[kj].byteLength) powGlobals.current.byteLength = powGlobals.lists.videos[kj].byteLength;
+							if (powGlobals.lists.media[kj].byteLength) powGlobals.current.byteLength = powGlobals.lists.media[kj].byteLength;
 							else if (powGlobals.current.byteLength) delete powGlobals.current.byteLength;
 							
 		//					if (targetHistory == 0) win.gui.title = utils.parser(filename).name();
@@ -355,7 +371,7 @@ var torrent = {
 								var set = {
 									 url: localHref+el.index,
 									 title: utils.parser(el.name).name(),
-									 contentType: require('mime-types').lookup(powGlobals.lists.videos[el.vIndex].path)
+									 contentType: require('mime-types').lookup(powGlobals.lists.media[el.vIndex].path)
 								};
 							}
 							set = load.pushArgs(set);
@@ -370,7 +386,7 @@ var torrent = {
 				var newM3U = "#EXTM3U";
 				powGlobals.lists.files.forEach(function(el,ij) {
 					var thisName = el.name;
-					if (el.isVideo) {
+					if (el.isMedia) {
 						if (newM3U == "#EXTM3U") powGlobals.torrent.engine.files[el.index].select();
 						newM3U += os.EOL+"#EXTINF:0,"+utils.parser(el.name).name()+os.EOL+localHref+el.index;
 					}
@@ -400,9 +416,9 @@ var torrent = {
 						
 						player.addPlaylist(set);
 		
-						powGlobals.lists.videos[kj] = {};
-						powGlobals.lists.videos[kj].path = "unknown";
-						powGlobals.lists.videos[kj].filename = "unknown";
+						powGlobals.lists.media[kj] = {};
+						powGlobals.lists.media[kj].path = "unknown";
+						powGlobals.lists.media[kj].filename = "unknown";
 						kj++;
 					}
 				}

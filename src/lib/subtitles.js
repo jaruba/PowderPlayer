@@ -188,22 +188,22 @@ var subtitles = {
 					subtitles.os.computeHash(powGlobals.current.path, function(err, hash){
 						if (err) return;
 						powGlobals.lists.files.some(function(el,ij) {
-							if (ij == powGlobals.lists.videos[player.currentItem()].index) {
+							if (ij == powGlobals.lists.media[player.currentItem()].index) {
 								if (ij == powGlobals.lists.files.length || el.finished) {
 									powGlobals.current.fileHash = hash;
 									if (powGlobals.current.byteLength) subtitles.byExactHash(hash,powGlobals.current.byteLength,powGlobals.current.filename);
 								} else {
-									if (typeof powGlobals.lists.videos[player.currentItem()].checkHashes[hash] === 'undefined') {
-										powGlobals.lists.videos[player.currentItem()].checkHashes[hash] = 1;
+									if (typeof powGlobals.lists.media[player.currentItem()].checkHashes[hash] === 'undefined') {
+										powGlobals.lists.media[player.currentItem()].checkHashes[hash] = 1;
 									} else {
-										if (powGlobals.lists.videos[player.currentItem()].checkHashes[hash] == 4) {
-											powGlobals.lists.videos[player.currentItem()].checkHashes[hash]++;
+										if (powGlobals.lists.media[player.currentItem()].checkHashes[hash] == 4) {
+											powGlobals.lists.media[player.currentItem()].checkHashes[hash]++;
 											powGlobals.current.fileHash = hash;
 											if (powGlobals.current.byteLength) {
 												subtitles.byExactHash(powGlobals.current.fileHash,powGlobals.current.byteLength,powGlobals.current.filename);
 											}
 											
-										} else powGlobals.lists.videos[player.currentItem()].checkHashes[hash]++;
+										} else powGlobals.lists.media[player.currentItem()].checkHashes[hash]++;
 									}
 								}
 								return true;

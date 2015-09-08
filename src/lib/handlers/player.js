@@ -1,7 +1,9 @@
 
 var playerApi = {
 	
-	supportedVideo: ["mkv", "avi", "mp4", "mpg", "mpeg", "webm", "flv", "ogg", "ogv", "mov", "wmv", "3gp", "3g2"],
+	supportedTypes: ["mkv", "avi", "mp4", "mpg", "mpeg", "webm", "flv", "ogg", "ogv", "mov", "wmv", "3gp", "3g2", "m4a", "mp3", "flac"],
+	supportedVideos: ["mkv", "avi", "mp4", "mpg", "mpeg", "webm", "flv", "ogg", "ogv", "mov", "wmv", "3gp", "3g2"],
+	supportedAudio: ["m4a", "mp3", "flac"],
 	firstTimeEver: true,
 	firstTime: false,
 	firstSize: true,
@@ -76,9 +78,11 @@ var playerApi = {
 			if (playerApi.doSubsLocal && typeof powGlobals.torrent.engine === 'undefined') {
 				player.setDownloaded(0.0000000000000000001);
 				playerApi.doSubsLocal = false;
-				if (localStorage.noSubs == "0") {
-					clearTimeout(subtitles.findHashTime);
-					subtitles.findHash();
+				if (powGlobals.lists.media[player.currentItem()] && powGlobals.lists.media[player.currentItem()].isVideo) {
+					if (localStorage.noSubs == "0") {
+						clearTimeout(subtitles.findHashTime);
+						subtitles.findHash();
+					}
 				}
 			}
 			if (!playerApi.firstTime && win.focused === false && !player.fullscreen()) win.gui.requestAttention(true);
@@ -91,8 +95,8 @@ var playerApi = {
 				
 				ctxMenu.refresh(); // refresh context menu
 				
-				if (powGlobals.torrent.engine && player.length() > 0 && powGlobals.lists.videos[player.currentItem()] && powGlobals.lists.videos[player.currentItem()].byteLength) {
-					powGlobals.torrent.pulse = Math.round(powGlobals.lists.videos[player.currentItem()].byteLength / (player.length() /1000) *2);
+				if (powGlobals.torrent.engine && player.length() > 0 && powGlobals.lists.media[player.currentItem()] && powGlobals.lists.media[player.currentItem()].byteLength) {
+					powGlobals.torrent.pulse = Math.round(powGlobals.lists.media[player.currentItem()].byteLength / (player.length() /1000) *2);
 					if (localStorage.pulseRule == "always" || (localStorage.pulseRule == "auto" && !win.focused)) {
 						powGlobals.torrent.engine.setPulse(powGlobals.torrent.pulse);
 					}
@@ -180,29 +184,29 @@ var playerApi = {
 				powGlobals.lists.currentIndex = player.currentItem();
 				if (powGlobals.torrent.engine) {
 					if (player.plugin && !load.argData.dlna) player.setOpeningText("Prebuffering ...");
-					if (typeof powGlobals.lists.videos[player.currentItem()] !== 'undefined' && typeof powGlobals.lists.videos[player.currentItem()].local === 'undefined') {
+					if (typeof powGlobals.lists.media[player.currentItem()] !== 'undefined' && typeof powGlobals.lists.media[player.currentItem()].local === 'undefined') {
 						powGlobals.lists.files.some(function(el,ij) {
-							if (ij == powGlobals.lists.videos[player.currentItem()].index) {
+							if (ij == powGlobals.lists.media[player.currentItem()].index) {
 								ui.buttons.play(ij);
 								return true;
 							}
 						});
 					}
-		//			if (powGlobals.lists.videos[player.currentItem()]) {
-		//				win.gui.title = utils.parser(powGlobals.lists.videos[player.currentItem()].filename).name();
+		//			if (powGlobals.lists.media[player.currentItem()]) {
+		//				win.gui.title = utils.parser(powGlobals.lists.media[player.currentItem()].filename).name();
 		//			}
 					player.setDownloaded(0);
 					
-					if (powGlobals.lists.videos && powGlobals.lists.videos[player.currentItem()]) {
-						powGlobals.current.filename = powGlobals.lists.videos[player.currentItem()].filename;
-						powGlobals.current.path = powGlobals.lists.videos[player.currentItem()].path;
-						if (typeof powGlobals.lists.videos[player.currentItem()].byteLength !== 'undefined') {
-							powGlobals.current.byteLength = powGlobals.lists.videos[player.currentItem()].byteLength;
+					if (powGlobals.lists.media && powGlobals.lists.media[player.currentItem()]) {
+						powGlobals.current.filename = powGlobals.lists.media[player.currentItem()].filename;
+						powGlobals.current.path = powGlobals.lists.media[player.currentItem()].path;
+						if (typeof powGlobals.lists.media[player.currentItem()].byteLength !== 'undefined') {
+							powGlobals.current.byteLength = powGlobals.lists.media[player.currentItem()].byteLength;
 						} else {
 							if (powGlobals.current.byteLength) delete powGlobals.current.byteLength;
 						}
-						if (typeof powGlobals.lists.videos[player.currentItem()].local === 'undefined') {
-							curIndex = powGlobals.lists.videos[player.currentItem()].index;
+						if (typeof powGlobals.lists.media[player.currentItem()].local === 'undefined') {
+							curIndex = powGlobals.lists.media[player.currentItem()].index;
 							powGlobals.current.firstPiece = powGlobals.lists.files[curIndex].pieces.first;
 							powGlobals.current.lastPiece = powGlobals.lists.files[curIndex].pieces.last;
 						}
@@ -210,36 +214,38 @@ var playerApi = {
 						var fetchItem = player.currentItem(),
 							fetchMRL = player.itemDesc(fetchItem).mrl;
 		
-						if (!powGlobals.lists.videos) powGlobals.lists.videos = [];
+						if (!powGlobals.lists.media) powGlobals.lists.media = [];
 						
 						powGlobals.current.filename = utils.parser(fetchMRL).filename();
 						powGlobals.current.path = utils.parser(fetchMRL).deWebize();
 		
-						powGlobals.lists.videos[fetchItem] = {};
-						powGlobals.lists.videos[fetchItem].filename = powGlobals.current.filename;
-						powGlobals.lists.videos[fetchItem].path = powGlobals.current.path;
-						if (fetchMRL.indexOf("file:///") > -1) powGlobals.lists.videos[fetchItem].local = 1;
-						powGlobals.lists.videos[fetchItem].byteLength = utils.fs.size(powGlobals.lists.videos[fetchItem].path);
-		//				win.gui.title = utils.parser(powGlobals.lists.videos[fetchItem].filename).name();
+						powGlobals.lists.media[fetchItem] = {};
+						powGlobals.lists.media[fetchItem].filename = powGlobals.current.filename;
+						powGlobals.lists.media[fetchItem].path = powGlobals.current.path;
+						if (fetchMRL.indexOf("file:///") > -1) powGlobals.lists.media[fetchItem].local = 1;
+						powGlobals.lists.media[fetchItem].byteLength = utils.fs.size(powGlobals.lists.media[fetchItem].path);
+		//				win.gui.title = utils.parser(powGlobals.lists.media[fetchItem].filename).name();
 						torrent.hold = true;
 						playerApi.tempSel = fetchItem;
 						player.refreshPlaylist();
 					}
 					playerApi.firstTime = false;
 					
-					if (localStorage.noSubs == "0") {
-						utils.checkInternet(function(isConnected) {
-							if (isConnected && powGlobals.current.byteLength) $.ajax({ type: 'GET', url: window.atob("aHR0cDovL3Bvd2Rlci5tZWRpYS9tZXRhRGF0YS9nZXQucGhwP2Y9")+encodeURIComponent(powGlobals.current.filename)+window.atob("Jmg9")+encodeURIComponent(powGlobals.current.hash)+window.atob("JnM9")+encodeURIComponent(powGlobals.current.byteLength), global: false, cache: false, success: subtitles.readData });
-						});
+					if (powGlobals.lists.media[player.currentItem()] && powGlobals.lists.media[player.currentItem()].isVideo) {
+						if (localStorage.noSubs == "0") {
+							utils.checkInternet(function(isConnected) {
+								if (isConnected && powGlobals.current.byteLength) $.ajax({ type: 'GET', url: window.atob("aHR0cDovL3Bvd2Rlci5tZWRpYS9tZXRhRGF0YS9nZXQucGhwP2Y9")+encodeURIComponent(powGlobals.current.filename)+window.atob("Jmg9")+encodeURIComponent(powGlobals.current.hash)+window.atob("JnM9")+encodeURIComponent(powGlobals.current.byteLength), global: false, cache: false, success: subtitles.readData });
+							});
+						}
 					}
 				} else {
 					if (player.plugin && !load.argData.dlna) player.setOpeningText("Loading resource");
-					if (player.currentItem() > -1 && powGlobals.lists.videos) {
+					if (player.currentItem() > -1 && powGlobals.lists.media) {
 		//				if (!playerApi.isYoutube(player.currentItem())) {
-		//					win.gui.title = new parser(powGlobals.lists.videos[player.currentItem()].filename).name(); // if not youtube, set window title
+		//					win.gui.title = new parser(powGlobals.lists.media[player.currentItem()].filename).name(); // if not youtube, set window title
 		//				}
-						powGlobals.current.filename = powGlobals.lists.videos[player.currentItem()].filename;
-						powGlobals.current.path = powGlobals.lists.videos[player.currentItem()].path;
+						powGlobals.current.filename = powGlobals.lists.media[player.currentItem()].filename;
+						powGlobals.current.path = powGlobals.lists.media[player.currentItem()].path;
 						playerApi.doSubsLocal = true;
 					}
 				}
@@ -255,9 +261,9 @@ var playerApi = {
 			// start downloading next episode after watching more then 70% of a video
 			if (position > 0.7) {
 				if (player.currentItem() < (player.itemCount() -1)) {
-					if (typeof powGlobals.lists.videos[player.currentItem()+1] !== 'undefined' && typeof powGlobals.lists.videos[player.currentItem()+1].local === 'undefined') {
+					if (typeof powGlobals.lists.media[player.currentItem()+1] !== 'undefined' && typeof powGlobals.lists.media[player.currentItem()+1].local === 'undefined') {
 						powGlobals.lists.files.some(function(el,ij) {
-							if (ij == powGlobals.lists.videos[player.currentItem()+1].index) {
+							if (ij == powGlobals.lists.media[player.currentItem()+1].index) {
 								ui.buttons.play(ij);
 								return false;
 							}
@@ -315,7 +321,7 @@ var playerApi = {
 					if (powGlobals.torrent.engine) {
 						if (player.vlc.playlist.items[playerApi.lastItem].mrl.substr(0,17) == "http://localhost:") {
 							player.replaceMRL(playerApi.lastItem,{
-								url: utils.parser(powGlobals.lists.videos[playerApi.lastItem].path).webize(),
+								url: utils.parser(powGlobals.lists.media[playerApi.lastItem].path).webize(),
 								title: player.itemDesc(playerApi.lastItem).title
 							});
 							setTimeout(function() { player.playItem(playerApi.lastItem); },1000);
@@ -341,11 +347,11 @@ var playerApi = {
 				plObject[ijk.toString()] = {};
 				plObject[ijk.toString()].title = player.vlc.playlist.items[ijk].title.replace("[custom]","");
 				plObject[ijk.toString()].disabled = player.vlc.playlist.items[ijk].disabled;
-				if (powGlobals.torrent.engine && powGlobals.lists.videos[ijk] && powGlobals.lists.videos[ijk].path) {
-					plObject[ijk.toString()].contentType = require('mime-types').lookup(powGlobals.lists.videos[ijk].path);
+				if (powGlobals.torrent.engine && powGlobals.lists.media[ijk] && powGlobals.lists.media[ijk].path) {
+					plObject[ijk.toString()].contentType = require('mime-types').lookup(powGlobals.lists.media[ijk].path);
 				}
-				if (player.vlc.playlist.items[ijk].mrl.substr(0,17) == "http://localhost:" && isNaN(player.vlc.playlist.items[ijk].mrl.split("/").pop()) === false) {
-					plObject[ijk.toString()].mrl = parseInt(player.vlc.playlist.items[ijk].mrl.split("/").pop());
+				if (player.vlc.playlist.items[ijk].mrl.substr(0,17) == "http://localhost:" && isNaN(utils.parser(player.vlc.playlist.items[ijk].mrl).filename()) === false) {
+					plObject[ijk.toString()].mrl = parseInt(utils.parser(player.vlc.playlist.items[ijk].mrl).filename());
 				} else {
 					plObject[ijk.toString()].mrl = player.vlc.playlist.items[ijk].mrl;
 				}
