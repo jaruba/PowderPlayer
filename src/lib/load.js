@@ -321,6 +321,10 @@ var load = {
 		
 		torLink = utils.parser(torLink).webize();
 	
+		if (!powGlobals.lists.media[videoId].filename) {
+			powGlobals.lists.media[videoId].filename = "0";
+			powGlobals.lists.media[videoId].isVideo = true;
+		}
 		if (powGlobals.lists.media[videoId].filename) {
 
 			var set = {

@@ -63,7 +63,7 @@ var dlna = {
 		dlna.instance.clients = [];
 		dlna.instance.checks = 0;
 		dlna.instance.started = false;
-		if (dlna.castData.casting) resetDlnaData();
+		if (dlna.castData.casting) dlna.resetData();
 	},
 	
 	sendData: function(dlnaTime,dlnaLength) {
@@ -123,6 +123,8 @@ var dlna = {
 	
 	stop: function(noSubs) {
 		win.gui.setMinimumSize(372, 210);
+		if (dlna.notFoundTimer) clearTimeout(dlna.notFoundTimer);
+		if (dlna.bestMatches && dlna.bestMatches.length) dlna.bestMatches = [];
 		if (dlna.instance.controls) dlna.instance.controls.removeAllListeners();
 		if (dlna.castData.casting) dlna.resetData();
 	
@@ -136,10 +138,11 @@ var dlna = {
 		if (dlna.instance.controls) dlna.instance.controls.stop();
 		utils.sleep.allow();
 		dlna.instance.initiated = false;
+		dlna.castData.casting = 0;
 		player.find(".wcp-vol-button").show(0);
 		player.find(".wcp-pause").removeClass("wcp-pause").addClass("wcp-play");
 		if (typeof noSubs === 'undefined') {
-			newSettings = player.plugin.playlist.items[dlna.instance.lastIndex].setting;
+			newSettings = player.vlc.playlist.items[dlna.instance.lastIndex].setting;
 			if (utils.isJsonString(newSettings)) {
 				newSettings = JSON.parse(newSettings);
 			} else newSettings = {};
@@ -174,14 +177,14 @@ var dlna = {
 			dlna.instance.controls.on('playing', dlna.listeners.onPlaying);
 			dlna.instance.controls.on('paused', dlna.listeners.onPaused);
 		}
-		dlna.instance.casting = 0;
+		dlna.castData.casting = 0;
 		dlna.instance.checks = 0;
 		dlna.instance.paused = false;
 	
 		var options = {
 			autoplay: true,
 			metadata: {
-				title: player.plugin.playlist.items[dlna.instance.lastIndex].title.replace("[custom]","")
+				title: player.vlc.playlist.items[dlna.instance.lastIndex].title.replace("[custom]","")
 			}
 		};
 		
@@ -214,16 +217,16 @@ var dlna = {
 		if (dlna.instance.lastIndex == -1 && typeof playerApi.tempSel !== 'undefined' && playerApi.tempSel > -1) {
 			dlna.instance.lastIndex = playerApi.tempSel;
 		}
-		if (player.plugin.playlist.items[dlna.instance.lastIndex].mrl.indexOf("pow://") == 0 || player.plugin.playlist.items[dlna.instance.lastIndex].mrl.indexOf("magnet:?xt=urn:btih:") == 0) {
+		if (player.itemDesc(dlna.instance.lastIndex).mrl.indexOf("pow://") == 0 || player.itemDesc(dlna.instance.lastIndex).mrl.indexOf("magnet:?xt=urn:btih:") == 0) {
 			playerApi.waitForNext = true;
 			dlna.params.nextStartDlna = 1;
-			if (player.plugin.playlist.items[player.currentItem()].mrl.indexOf("pow://") == 0) {
-				nextTorrent = "magnet:?xt=urn:btih:"+player.plugin.playlist.items[dlna.instance.lastIndex].mrl.replace("pow://","");
+			if (player.itemDesc(player.currentItem()).mrl.indexOf("pow://") == 0) {
+				nextTorrent = "magnet:?xt=urn:btih:"+player.itemDesc(dlna.instance.lastIndex).mrl.replace("pow://","");
 				if (nextTorrent.indexOf("/") > -1 && isNaN(nextTorrent.split("/")[1]) === false) {
 					nextTorrent = nextTorrent.split("/")[0];
 				}
-			} else nextTorrent = player.plugin.playlist.items[dlna.instance.lastIndex].mrl;
-			win.title.left(player.plugin.playlist.items[dlna.instance.lastIndex].title.replace("[custom]",""));
+			} else nextTorrent = player.itemDesc(dlna.instance.lastIndex).mrl;
+			win.title.left(player.itemDesc(dlna.instance.lastIndex).title.replace("[custom]",""));
 			playerApi.playlist.saved = playerApi.playlist.retrieve();
 			for (ijk = 0; ijk < player.itemCount(); ijk++) {
 				if (isNaN(playerApi.playlist.saved[ijk.toString()].mrl) === false) {
@@ -241,16 +244,16 @@ var dlna = {
 				dlna.mimeType = require('mime-types').lookup(powGlobals.lists.media[dlna.instance.lastIndex].path);
 			}
 	
-			if (player.plugin.playlist.items[dlna.instance.lastIndex].mrl.indexOf("http://localhost") == 0) {
-				dlna.startServer(player.plugin.playlist.items[dlna.instance.lastIndex].mrl.replace('localhost',dlna.instance.localIp),dlnaReconnect);
+			if (player.itemDesc(dlna.instance.lastIndex).mrl.indexOf("http://localhost") == 0) {
+				dlna.startServer(player.itemDesc(dlna.instance.lastIndex).mrl.replace('localhost',dlna.instance.localIp),dlnaReconnect);
 			} else {
 	
-				if (player.plugin.playlist.items[dlna.instance.lastIndex].mrl.indexOf("file:///") == 0) {
+				if (player.itemDesc(dlna.instance.lastIndex).mrl.indexOf("file:///") == 0) {
 					if (dlna.instance.files && dlna.instance.files[0]) {
 						remIj = 0;
-						if (player.plugin.playlist.items[dlna.instance.lastIndex].mrl.indexOf("file:///") == 0) {
+						if (player.itemDesc(dlna.instance.lastIndex).mrl.indexOf("file:///") == 0) {
 							isLoaded = dlna.instance.files.some(function (el,ij) {
-								if (el.filename == utils.parser(player.vlc.playlist.items[dlna.instance.lastIndex].mrl).filename()) {
+								if (el.filename == utils.parser(player.itemDesc(dlna.instance.lastIndex).mrl).filename()) {
 									remIj = ij;
 									return true;
 								}
@@ -271,7 +274,7 @@ var dlna = {
 						  dlna.instance.files = [];
 						  uig = 0;
 						  for (i = 0; i < player.itemCount(); i++) {
-							  if (player.plugin.playlist.items[i].mrl.indexOf("file:///") == 0) {
+							  if (player.itemDesc(i).mrl.indexOf("file:///") == 0) {
 								  dlna.instance.files[uig] = {};
 								  dlna.instance.files[uig].filename = powGlobals.lists.media[i].filename;
 								  dlna.instance.files[uig].videoIndex = i;
@@ -354,7 +357,7 @@ var dlna = {
 						dlna.instance.server.on('listening',function() {
 							var remIj = 0;
 							dlna.instance.files.some(function(el,ij) {
-								if (el.filename == utils.parser(player.plugin.playlist.items[dlna.instance.lastIndex].mrl).filename()) {
+								if (el.filename == utils.parser(player.itemDesc(dlna.instance.lastIndex).mrl).filename()) {
 									remIj = ij;
 									return true;
 								}
@@ -387,17 +390,134 @@ var dlna = {
 	},
 	
 	findMyIp: function() {
-		require('dns').lookup(require('os').hostname(), function (err, add, fam) {
-			if (add) {
-				dlna.instance.localIp = add;
-				dlna.prepareServer();
+		
+		var ips = [],
+			ifaces = require('os').networkInterfaces();
+		
+		for (var dev in ifaces) {
+			ifaces[dev].forEach(function (details) {
+				if (!details.internal) {
+					ips.push(details.address);
+				}
+			});
+		}
+		
+		var bestIp,
+			bestRatio = 0;
+			
+		ips.forEach(function(el,ij) {
+			newRatio = dlna.compareIps('http://'+el,dlna.instance.clients[0]);
+			if (newRatio > bestRatio) {
+				bestIp = el;
+				bestRatio = newRatio;
 			}
+		});
+
+		if (bestIp) {
+			dlna.instance.localIp = bestIp;
+			dlna.prepareServer();
+		} else player.setOpeningText("Failed to Detect Local IP");
+	},
+
+	compareIps: function(strA,strB){
+		for(var result = 0, i = strA.length; i--;){
+			if(typeof strB[i] == 'undefined' || strA[i] == strB[i]);
+			else if(strA[i].toLowerCase() == strB[i].toLowerCase())
+				result++;
+			else
+				result += 4;
+		}
+		return 1 - (result + 4*Math.abs(strA.length - strB.length))/(2*(strA.length+strB.length));
+	},
+
+	tryKnown: function() {
+		if (dlna.bestMatches.length) {
+			
+			parsedUrl = require('url').parse(dlna.bestMatches[0]);
+			
+			if (!parsedUrl.port) parsedUrl.port = '80';
+			
+			dlna.checkPort(parsedUrl.hostname,parsedUrl.port,function(inUse) {
+				
+				if (inUse) {
+
+					var options = {
+					  hostname: parsedUrl.hostname,
+					  port: parsedUrl.port,
+					  path: parsedUrl.path
+					};
+					
+					var req = require('http').request(options, function(res) {
+//					  console.log('STATUS: ' + res.statusCode);
+//					  console.log('HEADERS: ' + JSON.stringify(res.headers));
+					  window.dlna.instance.clients[0] = dlna.bestMatches[0];
+					  window.dlna.findMyIp();
+					});
+					
+					req.on('socket', function (socket) {
+						socket.setTimeout(3000);
+						socket.on('timeout', function() {
+//							console.log("aborting");
+							req.abort();
+						});
+					});
+					
+					req.on('error', function(e) {
+					  if (!dlna.castData.casting) {
+//						  console.log('failed with: '+dlna.bestMatches[0]);
+//						  console.log('problem with request: ' + e.message);
+						  dlna.bestMatches.shift();
+//						  console.log("current array length: "+dlna.bestMatches.length);
+						  if (dlna.bestMatches.length) dlna.tryKnown();
+						  else player.setOpeningText("Error: Nothing Found");
+					  }
+					});
+					
+					req.end();
+					
+				} else if (!dlna.castData.casting) {
+//					console.log('failed with: '+dlna.bestMatches[0]);
+//					console.log('problem with request: port not open on dlna device');
+					dlna.bestMatches.shift();
+//				    console.log("current array length: "+dlna.bestMatches.length);
+				    if (dlna.bestMatches.length) dlna.tryKnown();
+				    else player.setOpeningText("Error: Nothing Found");
+				}
+				
+			});
+		}
+	},
+	
+	checkPort: function(devIp,devPort,cb) {
+		if (dlna.checkedPorts && dlna.checkedPorts.length) {
+			devResult = dlna.checkedPorts.some(function(el,ij) {
+				if (el[0] == devIp && el[1] == devPort) {
+//					console.log('Refound: '+devIp+' Port '+devPort+' usage: '+el[2]);
+					if (el[2]) cb(true);
+					else cb(false);
+					return true;
+				}
+			});
+			if (devResult) return;
+		}
+
+		if (!dlna.checkedPorts) dlna.checkedPorts = [];
+
+		require('tcp-port-used').check(parseInt(devPort), devIp)
+		.then(function(inUse) {
+//			console.log('Ip: '+devIp+' Port '+devPort+' usage: '+inUse);
+			dlna.checkedPorts.push([devIp,devPort,true]);
+			cb(true);
+		}, function(err) {
+//			console.log('Ip: '+devIp+' Port '+devPort+' Error: '+err.message);
+			dlna.checkedPorts.push([devIp,devPort,false]);
+			cb(false);
 		});
 	},
 	
 	findClient: function() {
 		win.gui.setMinimumSize(448, 348);
-		if (player.state() == "playing" || player.state() == "paused") dlna.instance.lastSecond = Math.floor(player.time()/1000);
+		if (['playing','paused'].indexOf(player.state()) > -1) dlna.instance.lastSecond = Math.floor(player.time()/1000);
 		else dlna.instance.lastSecond = 0;
 		dlna.instance.lastIndex = parseInt(player.currentItem());
 		dlna.instance.initiated = true;
@@ -411,7 +531,54 @@ var dlna = {
 		player.find(".wcp-splash-screen").show(0);
 		dlna.instance.clients = [];
 		clearTimeout(dlna.notFoundTimer);
-		dlna.notFoundTimer = setTimeout(function() { player.setOpeningText("Error: Nothing Found"); },12000);
+		dlna.notFoundTimer = setTimeout(function() {
+			if (!dlna.castData.casting) {
+//				console.log("starting search by known connections");
+
+				dlna.bestMatches = [];
+
+				if (localStorage.lastDlna) {
+			        dlna.bestMatches.push(localStorage.lastDlna);
+				}
+				
+				oldClients = JSON.parse(localStorage.dlnaClients);
+				var voteClients = [];
+				for (var k in oldClients) if (oldClients.hasOwnProperty(k)) {
+					if (!localStorage.lastDlna || k != localStorage.lastDlna) {
+						oldClients[k] = oldClients[k] +1;
+						voteClients.push([k,oldClients[k]]);
+					}
+				}
+    
+				if (voteClients.length > 0) {
+					var perfect = false;
+					while (!perfect) {
+						perfect = true;
+						for (ij = 0; voteClients[ij]; ij++) {
+							if (ij +1 < voteClients.length && voteClients[ij][1] < voteClients[ij+1][1]) {
+								perfect = false;
+								var tempClient = voteClients[ij];
+								voteClients[ij] = voteClients[ij+1];
+								voteClients[ij+1] = tempClient;
+							}
+						}
+					}
+				}
+				
+				voteClients.some(function(el,ij) {
+					if (el[0] != localStorage.lastDlna) {
+						dlna.bestMatches.push(el[0]);
+//						if (ij == 3) return true;
+					}
+				});
+				
+				if (dlna.bestMatches.length) {
+					dlna.checkedPorts = [];
+					dlna.tryKnown();
+				} else player.setOpeningText("Error: Nothing Found");
+
+			}
+		},10000);
 		$(".wcp-dlna-buttons").show(0);
 	
 		var Client = require('node-ssdp').Client
@@ -424,6 +591,7 @@ var dlna = {
 			}
 			if (dlna.instance.clients.length == 1){
 				if (headers["SERVER"]) dlna.instance.serverName = headers["SERVER"]; // remember the server name
+//				console.log(headers["SERVER"]);
 				dlna.findMyIp(); // remove this line for select device menu
 			}
 		});
@@ -474,8 +642,8 @@ var dlna = {
 					}
 					dlna.instance.prevIndex = dlna.instance.lastIndex
 					dlna.instance.lastIndex = remIndex;
-					if (player.plugin.playlist.items[dlna.instance.lastIndex]) {
-						win.title.left(player.plugin.playlist.items[dlna.instance.lastIndex].title.replace("[custom]",""));
+					if (player.vlc.playlist.items[dlna.instance.lastIndex]) {
+						win.title.left(player.vlc.playlist.items[dlna.instance.lastIndex].title.replace("[custom]",""));
 					}
 					if (powGlobals.torrent.engine) {
 						powGlobals.lists.files.some(function(el,ij) {
@@ -508,6 +676,7 @@ var dlna = {
 		player.wrapper.find(".wcp-button").click(function(e) {
 			buttonClass = this.className.replace("wcp-button","").replace("wcp-left","").replace("wcp-vol-button","").replace("wcp-right","").split(" ").join("");
 			if (dlna.castData.casting == 1 && ["wcp-play","wcp-pause","wcp-replay","wcp-prev","wcp-next"].indexOf(buttonClass) > -1) {
+//				console.log("dlna casting? "+dlna.castData.casting);
 				if (buttonClass == "wcp-play") {
 					$(this).removeClass("wcp-play").addClass("wcp-pause");
 					if (player.wrapper.find(".wcp-anim-basic").hasClass("wcp-anim-icon-pause")) {
@@ -522,7 +691,7 @@ var dlna = {
 						player.wrapper.find(".wcp-anim-basic").removeClass("wcp-anim-icon-play").addClass("wcp-anim-icon-pause");
 					}
 					player.animatePause();
-					dlna.controls.pause();
+					dlna.instance.controls.pause();
 					dlna.castData.castingPaused = 1;
 				} else if (buttonClass == "wcp-replay") {
 					$(this).removeClass("wcp-replay").addClass("wcp-pause");
@@ -651,7 +820,7 @@ var dlna = {
 					}
 					if (samsungDlna.timeout) clearTimeout(samsungDlna.timeout);
 					samsungDlna.timeout = setTimeout(function() {
-						resetDlnaData(function() {
+						dlna.resetData(function() {
 							dlna.instance.controls.stop();
 							if (dlna.instance.controls.server) dlna.instance.controls.server.close(function() {
 								if (dlna.instance.server) dlna.instance.server.files = [];

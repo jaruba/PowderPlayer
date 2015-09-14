@@ -40,6 +40,7 @@
         "request": "*",
         "upnp-mediarenderer-client": "*",
         "xmlrpc": "*",
+        "tcp-port-used": "*",
         "pw-wcjs-player": "jaruba/pw-wcjs-player",
         "computer-sleep": "jaruba/computer-sleep"
     },
