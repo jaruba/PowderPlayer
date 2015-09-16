@@ -7,37 +7,12 @@ var holder = document.getElementById('holder');
 holder.ondragover = function () { this.className = 'hover'; return false; };
 holder.ondragleave = function () { this.className = ''; return false; };
 holder.ondrop = function (e) {
-  e.preventDefault();
-  win.gui.focus();
-  utils.resetPowGlobals();
-  
-  if (e.dataTransfer.files.length == 1) {
-	  if (fs.lstatSync(e.dataTransfer.files[0].path).isDirectory()) {
-		 fs.readdir(e.dataTransfer.files[0].path,function(rootPath) {
-			return function(err,files){
-				if(err) throw err;
-				for (var i = 0; i < files.length; i++) files[i] = rootPath + pathBreak + files[i];
-				load.multiple(files);
-			}
-		  }(e.dataTransfer.files[0].path));
-	  } else load.url(e.dataTransfer.files[0].path);
-  } else {
-	  var newFiles = [];
-	  for (var i = 0; i < e.dataTransfer.files.length; ++i) {
-		  if (fs.lstatSync(e.dataTransfer.files[i].path).isDirectory()) {
-			 fs.readdir(e.dataTransfer.files[i].path,function(rootPath) {
-				return function(err,files){
-					if(err) throw err;
-					for (var i = 0; i < files.length; i++) files[i] = rootPath + pathBreak + files[i];
-					load.multiple(files);
-				}
-			  }(e.dataTransfer.files[i].path));
-		  } else newFiles[i] = e.dataTransfer.files[i].path;
-	  }
-	  if (newFiles.length) load.multiple(newFiles);
-  }
-  this.className = '';
-  return false;
+	e.preventDefault();
+	win.gui.focus();
+	utils.resetPowGlobals();
+	load.dropped(e.dataTransfer.files);
+	this.className = '';
+	return false;
 };
 // end drag and drop
 

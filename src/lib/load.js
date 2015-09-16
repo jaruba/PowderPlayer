@@ -179,6 +179,38 @@ var load = {
 		return false;
 	},
 	
+	directory: function(dir) {
+		fs.readdir(dir,function(rootPath) {
+			return function(err,files){
+				if(err) throw err;
+				for (var i = 0; i < files.length; i++) {
+					fullPath = rootPath + pathBreak + files[i];
+					if (fs.lstatSync(fullPath).isDirectory()) {
+						load.directory(fullPath);
+						files.splice(i,1);
+						i--;
+					} else if (playerApi.supportedTypes.indexOf(utils.parser(files[i]).extension()) > -1) {
+						files[i] = fullPath;
+					} else {
+						files.splice(i,1);
+						i--;
+					}
+				}
+				if (files.length) load.multiple(files);
+			}
+		}(dir));
+	},
+	
+	dropped: function(devFiles) {
+		var newFiles = [];
+		for (var i = 0; i < devFiles.length; ++i) {
+			if (fs.lstatSync(devFiles[i].path).isDirectory()) {
+				load.directory(devFiles[i].path);
+			} else newFiles.push(devFiles[i].path);
+		}
+		if (newFiles.length) load.multiple(newFiles);
+	},
+	
 	torrent: function(torLink,isHistory) {
 		
 		if ($('#main').css("display") == "table") {
