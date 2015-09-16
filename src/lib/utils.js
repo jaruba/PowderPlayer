@@ -179,7 +179,7 @@ var utils = {
 					}
 					if (remoteArgs.length) {
 						if (!agentName) agentName = "an Unknown Website";
-						r = confirm("Allow "+agentName+" to access Powder Player's data?");
+						r = confirm("Allow "+agentName+" access to Powder Player's data?");
 						if (r) uriArgs.concat(remoteArgs);
 					}
 					if (uriArgs.length) utils.processArgs(uriArgs);
