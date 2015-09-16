@@ -131,9 +131,9 @@ var utils = {
 				if (args[kn].startsWith("--controller-port=")) {
 					remote.port = parseInt(args[kn].replace("--controller-port=",""));
 				} else if (args[kn].startsWith("--controller-secret=")) {
-					remote.secret = args[kn].replace("--controller-secret=","");
+					remote.secret = utils.parser(args[kn].replace("--controller-secret=","")).decodeURI();
 				} else if (args[kn].startsWith("--sub-file=")) {
-					load.argData.subFile = args[kn].replace("--sub-file=","");
+					load.argData.subFile = utils.parser(args[kn].replace("--sub-file=","")).decodeURI();
 				} else if (args[kn].startsWith("--fs")) {
 					load.argData.fs = true;
 				} else if (args[kn].startsWith('--silent')) {
@@ -141,25 +141,48 @@ var utils = {
 				} else if (args[kn].startsWith('--dlna')) {
 					load.argData.dlna = true;
 				} else if (args[kn].startsWith("--title=")) {
-					load.argData.title = args[kn].replace("--title=","");
+					load.argData.title = utils.parser(args[kn].replace("--title=","")).decodeURI();
 				} else if (args[kn].startsWith("--agent")) {
 					if (!load.argData.agent) load.argData.agent = {};
 					if (args[kn].startsWith("--agent-name=")) {
-						load.argData.agent.name = args[kn].replace("--agent-name=","");
+						load.argData.agent.name = utils.parser(args[kn].replace("--agent-name=","")).decodeURI();
 					} else if (args[kn].startsWith("--agent-img=")) {
-						load.argData.agent.img = args[kn].replace("--agent-img=","");
+						load.argData.agent.img = utils.parser(args[kn].replace("--agent-img=","")).decodeURI();
 					} else if (args[kn].startsWith("--agent-pos=")) {
-						load.argData.agent.pos = args[kn].replace("--agent-pos=","");
+						load.argData.agent.pos = utils.parser(args[kn].replace("--agent-pos=","")).decodeURI();
 					} else if (args[kn].startsWith("--agent-url=")) {
-						load.argData.agent.url = args[kn].replace("--agent-url=","");
+						load.argData.agent.url = utils.parser(args[kn].replace("--agent-url=","")).decodeURI();
 					} else if (args[kn].startsWith("--agent-background=")) {
-						load.argData.agent.background = args[kn].replace("--agent-background=","");
+						load.argData.agent.background = utils.parser(args[kn].replace("--agent-background=","")).decodeURI();
 					}
 				}
 			} else {
 				if (!ranFirstArg) {
 					ranFirstArg = true;
 					load.argData.keepFirst = args[kn];
+				}
+				if ((args[kn].indexOf("magnet:") == 0 || args[kn].indexOf("pow:") == 0) && args[kn].indexOf("&") > -1) {
+					checkArgs = args[kn].split("&");
+					uriArgs = [];
+					remoteArgs = [];
+					for (ik = 1; checkArgs[ik]; ik++) {
+						if (checkArgs[ik].indexOf("dn=") == -1 && checkArgs[ik].indexOf("tr=") == -1) {
+							if (checkArgs[ik].indexOf("controller") == 0) {
+								remoteArgs.push('--'+checkArgs[ik]);
+							} else {
+								if (checkArgs[ik].indexOf("agent-name=") == 0) {
+									var agentName = utils.parser(checkArgs[ik].replace("agent-name=","")).decodeURI();
+								}
+								uriArgs.push('--'+checkArgs[ik]);
+							}
+						}
+					}
+					if (remoteArgs.length) {
+						if (!agentName) agentName = "an Unknown Website";
+						r = confirm("Allow "+agentName+" to access Powder Player's data?");
+						if (r) uriArgs.concat(remoteArgs);
+					}
+					if (uriArgs.length) utils.processArgs(uriArgs);
 				}
 			}
 		}
@@ -325,6 +348,11 @@ var utils = {
 			} else return path;
 		}
 		
+		function decodeURI() {
+			if (path.indexOf("%") > -1) return decodeURIComponent(path);
+			return path;
+		}
+		
 		function filename() {
 			if (path.indexOf("/") > -1) return path.split('/').pop();
 			else if (path.indexOf("\\") > -1) return path.split('\\').pop();
@@ -441,14 +469,14 @@ var utils = {
 			return path.split("-").join(" ").split("[").join(" ").split("]").join(" ").split("(").join(" ").split(")").join(" ").split(",").join(" ").split("  ").join(" ").split("  ").join(" ").split("  ").join(" ").toLowerCase();
 		};
 
-		return Object.freeze({ name: name, showName: showName, shortSzEp: shortSzEp, season: season, episode: episode, cleanName: cleanName, filename: filename, extension: extension, webize: webize, deWebize: deWebize });
+		return Object.freeze({ name: name, showName: showName, shortSzEp: shortSzEp, season: season, episode: episode, cleanName: cleanName, filename: filename, extension: extension, webize: webize, deWebize: deWebize, decodeURI: decodeURI });
 	},
 	
 	register: {
 		
 		_writeDesktopFile: function(cb) {
 			var powderPath = process.execPath.substr(0,process.execPath.lastIndexOf("/")+1);
-			fs.writeFile(gui.App.dataPath+'/powder.desktop', '[Desktop Entry]\nVersion=1.0\nName=Powder Player\nComment=Powder Player is a hybrid betwwn a Torrent Client and a Player (torrent streaming)\nExec='+process.execPath+' %U\nPath='+powderPath+'\nIcon='+powderPath+'icon.png\nTerminal=false\nType=Application\nMimeType=application/x-bittorrent;x-scheme-handler/magnet;video/avi;video/msvideo;video/x-msvideo;video/mp4;video/x-matroska;video/mpeg;\n', cb);
+			fs.writeFile(gui.App.dataPath+'/powder.desktop', '[Desktop Entry]\nVersion=1.0\nName=Powder Player\nComment=Powder Player is a hybrid between a Torrent Client and a Player (torrent streaming)\nExec='+process.execPath+' %U\nPath='+powderPath+'\nIcon='+powderPath+'icon.png\nTerminal=false\nType=Application\nMimeType=application/x-bittorrent;x-scheme-handler/magnet;video/avi;video/msvideo;video/x-msvideo;video/mp4;video/x-matroska;video/mpeg;\n', cb);
 		},
 		
 		torrent: function() {
