@@ -464,6 +464,7 @@ var torrent = {
 				if (localStorage.pulseRule == "always" || (localStorage.pulseRule == "auto" && !win.focused)) {
 					powGlobals.torrent.engine.setPulse(powGlobals.torrent.pulse);
 				}
+				remote.updateVal("mediaFiles",powGlobals.lists.media);
 			}
 						
 			$("#filesList").append($('<div style="width: 100%; height: 79px; text-align: center; line-height: 79px; font-family: \'Droid Sans Bold\'; font-size: 19px; border-bottom: 1px solid #353535; background: #4d4d4d">Scroll up to Start Video Mode</div>'));
