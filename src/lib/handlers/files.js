@@ -11,11 +11,30 @@ holder.ondrop = function (e) {
   win.gui.focus();
   utils.resetPowGlobals();
   
-  if (e.dataTransfer.files.length == 1) load.url(e.dataTransfer.files[0].path);
-  else {
+  if (e.dataTransfer.files.length == 1) {
+	  if (fs.lstatSync(e.dataTransfer.files[0].path).isDirectory()) {
+		 fs.readdir(e.dataTransfer.files[0].path,function(rootPath) {
+			return function(err,files){
+				if(err) throw err;
+				for (var i = 0; i < files.length; i++) files[i] = rootPath + pathBreak + files[i];
+				load.multiple(files);
+			}
+		  }(e.dataTransfer.files[0].path));
+	  } else load.url(e.dataTransfer.files[0].path);
+  } else {
 	  var newFiles = [];
-	  for (var i = 0; i < e.dataTransfer.files.length; ++i) newFiles[i] = e.dataTransfer.files[i].path;
-	  load.multiple(newFiles);
+	  for (var i = 0; i < e.dataTransfer.files.length; ++i) {
+		  if (fs.lstatSync(e.dataTransfer.files[i].path).isDirectory()) {
+			 fs.readdir(e.dataTransfer.files[i].path,function(rootPath) {
+				return function(err,files){
+					if(err) throw err;
+					for (var i = 0; i < files.length; i++) files[i] = rootPath + pathBreak + files[i];
+					load.multiple(files);
+				}
+			  }(e.dataTransfer.files[i].path));
+		  } else newFiles[i] = e.dataTransfer.files[i].path;
+	  }
+	  if (newFiles.length) load.multiple(newFiles);
   }
   this.className = '';
   return false;

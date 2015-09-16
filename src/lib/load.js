@@ -126,6 +126,8 @@ var load = {
 		else fileArray = utils.sorting.naturalSort(fileArray);
 		
 		ranURL = false;
+		if (!powGlobals.lists.media) powGlobals.lists.media = [];
+		keepMedia = powGlobals.lists.media;
 		fileArray.forEach(function(el) {
 			if (utils.parser(el).extension() == 'torrent') {
 				var readTorrent = require('read-torrent');
@@ -143,8 +145,9 @@ var load = {
 				load.url(el);
 			}
 		});
-		powGlobals.lists.media = [];
-		fileArray.forEach(function(e,ij) {
+		powGlobals.lists.media = keepMedia;
+		fileArray.forEach(function(e) {
+			ij = powGlobals.lists.length;
 			powGlobals.lists.media[ij] = {};
 			if (utils.parser(e).extension() == 'torrent') {
 				powGlobals.lists.media[ij].filename = "unknown";
