@@ -32,8 +32,7 @@
         "fs": "*",
         "mime-types": "*",
         "node-ssdp": "*",
-        "opensubtitles": "jaruba/node-opensubtitles-api",
-        "opensubtitles-client": "jaruba/node-opensubtitles-client",
+        "opensubtitles-api": "*",
         "peerflix": "jaruba/peerflix",
         "read-torrent": "*",
         "universal-analytics": "*",
@@ -41,6 +40,7 @@
         "upnp-mediarenderer-client": "*",
         "xmlrpc": "*",
         "tcp-port-used": "*",
+		"async": "*",
         "pw-wcjs-player": "jaruba/pw-wcjs-player",
         "computer-sleep": "jaruba/computer-sleep"
     },

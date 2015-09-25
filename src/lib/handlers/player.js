@@ -9,7 +9,6 @@ var playerApi = {
 	firstSize: true,
 	doSubsLocal: false,
 	loaded: false,
-	subVoteSent: false,
 	savedHistory: false,
 	lastItem: 0,
 	lastState: "",
@@ -162,7 +161,6 @@ var playerApi = {
 					
 					if (player.vlc.playlist.items[player.currentItem()].mrl.indexOf("pow://") == 0) {
 						nextTorrent = "magnet:?xt=urn:btih:"+player.vlc.playlist.items[player.currentItem()].mrl.replace("pow://","");
-		//				win.gui.title = player.vlc.playlist.items[player.currentItem()].title.replace("[custom]","");
 						if (nextTorrent.indexOf("/") > -1 && isNaN(nextTorrent.split("/")[1]) === false) {
 							nextTorrent = nextTorrent.split("/")[0];
 						}
@@ -176,14 +174,15 @@ var playerApi = {
 					player.setDownloaded(0);
 					ui.goto.mainMenu(nextTorrent);
 					return;
+				} else {
+					win.title.left(player.itemDesc(player.currentItem()).title);
 				}
 				delete powGlobals.current.duration;
 				delete powGlobals.current.fileHash;
 				playerApi.savedHistory = false;
-				playerApi.subVoteSent = false;
 				powGlobals.lists.currentIndex = player.currentItem();
 				if (powGlobals.torrent.engine) {
-					if (player.plugin && !load.argData.dlna) player.setOpeningText("Prebuffering ...");
+					if (player.vlc && !load.argData.dlna) player.setOpeningText("Prebuffering ...");
 					if (typeof powGlobals.lists.media[player.currentItem()] !== 'undefined' && typeof powGlobals.lists.media[player.currentItem()].local === 'undefined') {
 						powGlobals.lists.files.some(function(el,ij) {
 							if (ij == powGlobals.lists.media[player.currentItem()].index) {
@@ -239,7 +238,7 @@ var playerApi = {
 						}
 					}
 				} else {
-					if (player.plugin && !load.argData.dlna) player.setOpeningText("Loading resource");
+					if (player.vlc && !load.argData.dlna) player.setOpeningText("Loading resource");
 					if (player.currentItem() > -1 && powGlobals.lists.media) {
 		//				if (!playerApi.isYoutube(player.currentItem())) {
 		//					win.gui.title = new parser(powGlobals.lists.media[player.currentItem()].filename).name(); // if not youtube, set window title
@@ -271,20 +270,6 @@ var playerApi = {
 					}
 				}
 				
-				if (!playerApi.subVoteSent && player.subTrack() > 0) {
-					playerApi.subVoteSent = true;
-					if (player.subDesc(player.subTrack()).url.indexOf("http://dl.opensubtitles.org/en/download/subencoding-utf8/file/") == 0) {
-						var findSubId = player.subDesc(player.subTrack()).url.replace("http://dl.opensubtitles.org/en/download/subencoding-utf8/file/","");
-						if (findSubId.indexOf(".") > -1) {
-							findSubId = findSubId.substr(0,findSubId.indexOf("."));
-							var subjectUrl = window.atob("aHR0cDovL3Bvd2Rlci5tZWRpYS9tZXRhRGF0YS9zZXRvcmRlci5waHA/Zj0=")+encodeURIComponent(powGlobals.current.filename)+window.atob("JmloPQ==")+encodeURIComponent(powGlobals.current.fileHash)+window.atob("JnN0PQ==")+findSubId;
-							if (powGlobals.torrent.engine) {
-								subjectUrl += window.atob("Jmg9")+encodeURIComponent(powGlobals.torrent.engine.infoHash);
-							}
-							$.ajax({ type: 'GET', url: subjectUrl, global: false, cache: false });
-						}
-					}
-				}
 			}
 			if (position > 0.7 && !playerApi.savedHistory) {
 				playerApi.savedHistory = true;

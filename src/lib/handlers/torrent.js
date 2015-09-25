@@ -101,7 +101,7 @@ var torrent = {
 						}
 						
 						if (powGlobals.torrent.hasVideo > 0 && el.isMedia) {
-							if (powGlobals.lists.media[player.currentItem()].index == ij) {
+							if (powGlobals.lists.media[player.currentItem()] && powGlobals.lists.media[player.currentItem()].index == ij) {
 								eli = powGlobals.lists.media[el.vIndex];
 								if ((el.pieces.downloaded / (el.pieces.last - el.pieces.first)) > eli.lastSent) {
 									powGlobals.lists.media[player.currentItem()].lastSent = (el.pieces.downloaded / (el.pieces.last - el.pieces.first));

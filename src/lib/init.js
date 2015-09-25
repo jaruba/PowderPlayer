@@ -56,6 +56,7 @@ win.gui.on('loaded', function() {
 	}
 });
 
+var async = require('async');
 var wcp = require('pw-wcjs-player');
 
 gui.App.on("open",function(msg) {
