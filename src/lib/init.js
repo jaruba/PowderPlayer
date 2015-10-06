@@ -56,7 +56,6 @@ win.gui.on('loaded', function() {
 	}
 });
 
-var async = require('async');
 var wcp = require('pw-wcjs-player');
 
 gui.App.on("open",function(msg) {
@@ -65,7 +64,7 @@ gui.App.on("open",function(msg) {
 		if (torrent.timers.setDownload) clearTimeout(torrent.timers.setDownload);
 		clearTimeout(torrent.timers.down);
 		powGlobals.torrent.engine.swarm.removeListener('wire', onmagnet);
-		torrent.killEngine(powGlobals.torrent.engine);
+		torrent.engine.kill(powGlobals.torrent.engine);
 	}
 	utils.resetPowGlobals();
 	player.stop();

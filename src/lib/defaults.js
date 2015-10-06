@@ -14,6 +14,8 @@ if (!localStorage.history) {
 	delete dummyObject;
 }
 
+var async = require('async');
+
 var powGlobals = {
 		current: {},
 		torrent: {},

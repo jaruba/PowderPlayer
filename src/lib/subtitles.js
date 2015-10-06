@@ -84,8 +84,8 @@ var subtitles = {
 							}
 						});
 						newString = '{ ';
-						async.forEach(Object.keys(subData), function (item, callback){ 
-							newString += '"'+subData[item].langName+'": "http://dl.opensubtitles.org/en/download/subencoding-utf8/file/'+subData[item].url.split('/').pop()+'", ';
+						async.forEachOf(subData, function (item, ij, callback){
+							newString += '"'+item.langName+'": "http://dl.opensubtitles.org/en/download/subencoding-utf8/file/'+item.url.split('/').pop()+'", ';
 							callback();
 						}, function(err) {
 							newString = newString.substr(0,newString.length -2)+" }";

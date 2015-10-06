@@ -33,16 +33,19 @@ var playerApi = {
 			player.onFrameSetup(playerApi.listeners.gotVideoSize);
 			player.onMediaChanged(function() {
 				if (remote.port && remote.secret && remote.socket) remote.socket.emit('event', { name: 'MediaChanged', value: player.currentItem() });
+				if (powGlobals.current.playingPart) delete powGlobals.current.playingPart;
 				// reset checked items in context menu
 				ctxMenu.reset([4,5,6]);
 			});
 			
 			player.onEnded(function() {
 				if (remote.port && remote.secret && remote.socket) remote.socket.emit('event', { name: 'Ended' });
+				if (torrent.timers.setDownload) clearInterval(torrent.timers.setDownload);
 				ctxMenu.disable();
 			});
 			player.onStopped(function() {
 				if (remote.port && remote.secret && remote.socket) remote.socket.emit('event', { name: 'Stopped' });
+				if (torrent.timers.setDownload) clearInterval(torrent.timers.setDownload);
 				ctxMenu.disable();
 			});
 			
@@ -75,7 +78,7 @@ var playerApi = {
 			clearTimeout(frameTimer);
 			frameHidden = false;
 			if (playerApi.doSubsLocal && typeof powGlobals.torrent.engine === 'undefined') {
-				player.setDownloaded(0.0000000000000000001);
+				player.setDownloaded(0);
 				playerApi.doSubsLocal = false;
 				if (powGlobals.lists.media[player.currentItem()] && powGlobals.lists.media[player.currentItem()].isVideo) {
 					if (localStorage.noSubs == "0") {
@@ -136,6 +139,18 @@ var playerApi = {
 		},
 		
 		isOpening: function() {
+			if (torrent.timers.setDownload) clearInterval(torrent.timers.setDownload);
+			if (powGlobals.torrent.engine) {
+				if (powGlobals.lists.media[player.currentItem()] && powGlobals.lists.files[powGlobals.lists.media[player.currentItem()].index]) {
+					if (powGlobals.lists.files[powGlobals.lists.media[player.currentItem()].index].lastDownload) {
+						if (powGlobals.lists.files[powGlobals.lists.media[player.currentItem()].index].lastDownload < 100) {
+							torrent.timers.setDownload = setInterval(function() { torrent.showCache(); },3000);
+						}
+					} else {
+						torrent.timers.setDownload = setInterval(function() { torrent.showCache(); },3000);
+					}
+				}
+			}
 			if (remote.port && remote.secret && remote.socket) remote.socket.emit('event', { name: 'Opening' });
 			if (playerApi.waitForNext && playerApi.tempSel != player.currentItem()) {
 				player.stop(true);
@@ -256,6 +271,9 @@ var playerApi = {
 		},
 		
 		changedPosition: function(position) {
+			if (torrent.pauseCache) {
+				torrent.pauseCache = false;
+			}
 			if (remote.port && remote.secret && remote.socket) remote.socket.emit('event', { name: 'Position', value: position });
 			// start downloading next episode after watching more then 70% of a video
 			if (position > 0.7) {

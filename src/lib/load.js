@@ -265,7 +265,7 @@ var load = {
 			if (!isHistory) powGlobals.torrent.engine.server.on('listening', function(remSel,remPlaylist,remEngine) {
 				return function() {
 					if (playerApi.tempSel != remSel) {
-						torrent.killEngine(remEngine);
+						torrent.engine.kill(remEngine);
 						return;
 					}
 					powGlobals.torrent.engine = remEngine;
@@ -277,7 +277,7 @@ var load = {
 			else if (isHistory) powGlobals.torrent.engine.server.on('listening', function(remSel,remHistory,remEngine) {
 				return function() {
 					if (playerApi.tempSel != remSel) {
-						torrent.killEngine(remEngine);
+						torrent.engine.kill(remEngine);
 						return;
 					}
 					powGlobals.torrent.engine = remEngine;
@@ -286,7 +286,9 @@ var load = {
 				}
 			}(playerApi.tempSel,targetHistory,powGlobals.torrent.engine));
 					
-			powGlobals.torrent.engine.on('download',torrent.checkDownloaded);
+			powGlobals.torrent.engine.on('download',function(pc) {
+				torrent.checkDownloaded.push({ piece: pc });
+			});
 			
 			powGlobals.torrent.engine.on('ready', function () { torrent.isReady = true; });
 			
