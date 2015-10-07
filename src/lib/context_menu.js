@@ -68,6 +68,13 @@ var ctxMenu = {
 				if (powGlobals.torrent.engine) ui.settings.switchPulsing();
 			}
 		}));
+
+		this._torrentMenu.append(new gui.MenuItem({
+			label: 'Close + Keep Files',
+			click: function() {
+				if (powGlobals.torrent.engine) win.closeProcedure(false);
+			}
+		}));
 		
 		this.aspectRatios.forEach(function(el,i) {
 			mnOpts = {
