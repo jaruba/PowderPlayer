@@ -383,7 +383,7 @@ var torrent = {
 			$("#downAll").text(utils.fs.getReadableSize(Math.floor(powGlobals.torrent.engine.torrent.length)));
 		
 			powGlobals.torrent.hasVideo = 0;
-			$("#filesList").html("");
+			$("#filesList").empty();
 		
 			powGlobals.torrent.engine.files.forEach(function(el,ij) {
 				var fileStart = el.offset;
@@ -595,10 +595,11 @@ var torrent = {
 			$("#filesList").append($('<div style="width: 100%; height: 79px; text-align: center; line-height: 79px; font-family: \'Droid Sans Bold\'; font-size: 19px; border-bottom: 1px solid #353535; background: #4d4d4d">Scroll up to Start Video Mode</div>'));
 			
 			powGlobals.lists.files.forEach(function(el,ij) {
-				setPaused = '<i id="action'+ij+'" onClick="ui.buttons.play('+ij+')" class="glyphs play" style="background-color: #FF704A"></i>';
-				if (typeof savedIj !== 'undefined' && savedIj == ij) setPaused = '<i id="action'+ij+'" onClick="ui.buttons.pause('+ij+')" class="glyphs pause" style="background-color: #F6BC24"></i>';
+				
+				setPaused = '<i id="action'+ij+'" onClick="ui.buttons.play('+ij+')" class="glyphs play hf" style="background-color: #FF704A"></i>';
+				if (typeof savedIj !== 'undefined' && savedIj == ij) setPaused = '<i id="action'+ij+'" onClick="ui.buttons.pause('+ij+')" class="glyphs pause hf" style="background-color: #F6BC24"></i>';
 				if (powGlobals.torrent.hasVideo == 0 && localStorage.useVLC != "1") {
-					setPaused = '<i id="action'+ij+'" onClick="ui.buttons.pause('+ij+')" class="glyphs pause" style="background-color: #F6BC24"></i>';
+					setPaused = '<i id="action'+ij+'" onClick="ui.buttons.pause('+ij+')" class="glyphs pause hf" style="background-color: #F6BC24"></i>';
 					powGlobals.torrent.engine.swarm.paused = false;
 					ui.buttons.play(ij);
 				}
@@ -606,9 +607,16 @@ var torrent = {
 				if (ij%2 !== 0) backColor = '#3e3e3e';
 				else backColor = '#444';
 				
-				$("#filesList").append($('<div style="width: 70px; text-align: right; position: absolute; right: 0px; font-size: 240%; margin-top: 14px; margin-right: 19px;">'+setPaused+'</div><div onClick="ui.buttons.settings('+ij+')" id="file'+ij+'" class="files" data-index="'+ij+'" style="text-align: left; padding-bottom: 8px; padding-top: 8px; width: 100%; background-color: '+backColor+'" data-color="'+backColor+'"><div id="p-file'+ij+'" class="circle"><strong></strong></div><div style="width: calc(100% - 89px); text-align: left"><span class="filenames">'+powGlobals.torrent.engine.files[el.index].name+'</span><span class="infos">Downloaded: <span id="down-fl'+ij+'">0 kB</span> / '+utils.fs.getReadableSize(powGlobals.torrent.engine.files[el.index].length)+'</span><div style="clear: both"></div></div></center></div>'));
+				$("#filesList").append($('<div class="fileHolder hf" style="background-color: '+backColor+'"><div style="width: 70px; text-align: right; position: absolute; right: 0px; font-size: 240%; margin-top: 14px; margin-right: 19px;">'+setPaused+'</div><div onClick="ui.buttons.settings('+ij+')" id="file'+ij+'" class="files" data-index="'+ij+'" style="text-align: left; padding-bottom: 8px; padding-top: 8px; width: 100%" data-color="'+backColor+'"><div id="p-file'+ij+'" class="circle"><strong></strong></div><div style="width: calc(100% - 89px); text-align: left"><span class="filenames">'+powGlobals.torrent.engine.files[el.index].name+'</span><span class="infos">Downloaded: <span id="down-fl'+ij+'">0 kB</span> / '+utils.fs.getReadableSize(powGlobals.torrent.engine.files[el.index].length)+'</span><div style="clear: both"></div></div></center></div></div>'));
 		
 			});
+			
+			$('.hf').mouseenter(function() {
+				$(this).addClass('hover');
+			}).mouseleave(function() {
+				$(this).removeClass('hover');
+			});
+			
 			$('.circle').circleProgress({
 				value: 0,
 				size: 64,

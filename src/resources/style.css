@@ -72,7 +72,7 @@ body {
 	background: #00b850;
 	cursor: pointer
 }
-#torrentBut:hover {
+#torrentBut.hover {
 	-webkit-box-shadow: 0px 2px 0px 0px rgba(0,113,49,1);
 	-moz-box-shadow: 0px 2px 0px 0px rgba(0,113,49,1);
 	box-shadow: 0px 2px 0px 0px rgba(0,113,49,1);
@@ -85,7 +85,7 @@ body {
 	background: #1ca8ed;
 	cursor: pointer
 }
-#videoBut:hover {
+#videoBut.hover {
 	-webkit-box-shadow: 0px 2px 0px 0px rgba(2,89,131,1);
 	-moz-box-shadow: 0px 2px 0px 0px rgba(2,89,131,1);
 	box-shadow: 0px 2px 0px 0px rgba(2,89,131,1);
@@ -98,7 +98,7 @@ body {
 	background: #f1664f;
 	cursor: pointer
 }
-#linkBut:hover {
+#linkBut.hover {
 	-webkit-box-shadow: 0px 2px 0px 0px rgba(175,38,17,1);
 	-moz-box-shadow: 0px 2px 0px 0px rgba(175,38,17,1);
 	box-shadow: 0px 2px 0px 0px rgba(175,38,17,1);
@@ -129,7 +129,7 @@ body {
 #file-settings { padding: 5px; top: 22% !important }
 .third-easy-modal-animated { padding: 5px; top: 23% !important }
 a.mainLinks { color: #1ca8ed; text-decoration: underline }
-a.mainLinks:hover { text-decoration: none }
+a.mainLinks.hover { text-decoration: none }
 .progressbar-front-text { display: none !important }
 .progressbar-back-text { display: none !important }
 .progress-bar {
@@ -174,7 +174,7 @@ a.mainLinks:hover { text-decoration: none }
 }
 .progress .progressbar-back-text { right: 0 }
 .files { cursor: pointer }
-.files:hover { background: #3A3A3A !important }
+.fileHolder.hover { background: #3A3A3A !important }
 .progress { background: #ebebea }
 i.glyphs {
 	font-family: 'Glyphs';
@@ -191,7 +191,7 @@ i.glyphs {
 	-moz-box-shadow: 0px 1px 1px 0px rgba(0,0,0,0.2);
 	box-shadow: 0px 1px 1px 0px rgba(0,0,0,0.2);
 }
-i.glyphs:hover {
+i.glyphs.hover {
 	-webkit-box-shadow: none;
 	-moz-box-shadow: none;
 	box-shadow: none;
@@ -255,9 +255,9 @@ i.settings:before {
 }
 i.play { background: #e38318 !important }
 i.pause { background: #e3b618 !important }
-i.play:hover { background: #B2630B !important }
-i.pause:hover { background: #B28D0B !important }
-i.settings:hover { background: #088039 !important }
+i.play.hover { background: #B2630B !important }
+i.pause.hover { background: #B28D0B !important }
+i.settings.hover { background: #088039 !important }
 a.pl-settings {
 	color: #ccc;
 	font-size: 30px;
@@ -267,7 +267,7 @@ a.pl-settings {
 	margin-right: 12px;
 	margin-top: 5px;
 }
-a.pl-settings:hover { color: #FFA741 }
+a.pl-settings.hover { color: #FFA741 }
 i.player-settings:before {
 	font-family: 'Glyphs';
 	content: "\E801";
@@ -282,7 +282,7 @@ a.history-button {
 	margin-right: 12px;
 	margin-top: 8px;
 }
-a.history-button:hover { color: #FFA741 }
+a.history-button.hover { color: #FFA741 }
 i.history-icon:before { font-family: 'Glyphs'; content: "\E806"; font-style: normal }
 i.close-icon:before { font-family: 'Glyphs'; content: "\E896"; font-style: normal }
 .actionButton {
@@ -321,7 +321,7 @@ i.close-icon:before { font-family: 'Glyphs'; content: "\E896"; font-style: norma
 	-moz-box-shadow: 0px 1px 1px 0px rgba(0,0,0,0.2);
 	box-shadow: 0px 1px 1px 0px rgba(0,0,0,0.2);
 }
-#optionsBut:hover {
+#optionsBut.hover {
 	background: #04415B;
 	-webkit-box-shadow: none;
 	-moz-box-shadow: none;

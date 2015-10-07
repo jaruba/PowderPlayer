@@ -230,8 +230,8 @@ body {
         <div class="wrapper">
             <center>
 		        <div id="holder">
-                    <a class="pl-settings easy-modal-open" href="#player-settings"><i class="player-settings"></i></a>
-                    <a class="history-button easy-modal-open" href="#history-powder" onClick="ui.mechanics.printHistory()"><i class="history-icon"></i></a>
+                    <a class="pl-settings easy-modal-open h" href="#player-settings"><i class="player-settings"></i></a>
+                    <a class="history-button easy-modal-open h" href="#history-powder" onClick="ui.mechanics.printHistory()"><i class="history-icon"></i></a>
                     <img src="images/powder-logo.png" id="logoBig">
                     <br>
                     <b class="fl_dd droid-bold">Drag & Drop a File</b>
@@ -240,19 +240,19 @@ body {
                     <br><br>
                     <div id="mainButHold">
 						<a href="#" onClick="chooseFile('#torrentDialog'); return false">
-		                    <div id="torrentBut" class="mainButtons goLeft">
+		                    <div id="torrentBut" class="mainButtons goLeft h">
 								<img id="torIcon" src="images/torrent-icon.png">
 								<br>Add Torrent
 		                    </div>
 						</a>
                     	<a href="#" onClick="chooseFile('#fileDialog'); return false">
-                    		<div id="videoBut" class="mainButtons">
+                    		<div id="videoBut" class="mainButtons h">
                     			<img id="vidIcon" src="images/video-icon.png">
                     			<br>Add Video
                     		</div>
 						</a>
                     	<a class="main-add-url" href="#open-url">
-		                    <div id="linkBut" class="mainButtons goRight noMarginRight">
+		                    <div id="linkBut" class="mainButtons goRight noMarginRight h">
 			                    <img id="urlIcon" src="images/link-icon.png">
 			                    <br>Use a URL
 		                    </div>
@@ -260,7 +260,7 @@ body {
                     </div>
                     <br><br>
                     <span id="footer">
-                    	<b class="droid-bold">Supports:</b> Torrent Files / Links, Magnet Links, Youtube Links,<br>Youtube Playlist Links and all <a class="mainLinks" onClick="gui.Shell.openExternal('http://www.videolan.org/vlc/features.php?cat=video'); return false" href="http://www.videolan.org/vlc/features.php?cat=video" target="_blank">VLC Supported Media Formats</a>.
+                    	<b class="droid-bold">Supports:</b> Torrent Files / Links, Magnet Links, Youtube Links,<br>Youtube Playlist Links and all <a class="mainLinks h" onClick="gui.Shell.openExternal('http://www.videolan.org/vlc/features.php?cat=video'); return false" href="http://www.videolan.org/vlc/features.php?cat=video" target="_blank">VLC Supported Media Formats</a>.
                     </span>
 				</div>
 			</center>
@@ -284,7 +284,7 @@ body {
 
                 <div id="header_content">
                     <div id="header_text" class="wrap-text goLeft" style="display:none"><span id="headerText"></span></div>
-                    <div id="optHold" class="goRight"><a id="optionsBut" href="#" data-dropdown="#dropdown-1"><i class="tools"></i></a></div>
+                    <div id="optHold" class="goRight"><a id="optionsBut" class="h" href="#" data-dropdown="#dropdown-1"><i class="tools"></i></a></div>
                 </div>
             </div>
         </div>

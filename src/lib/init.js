@@ -82,3 +82,9 @@ ctxMenu.disable();
 if (!utils.fs.paths.vlc()) $("#but-vlc").hide(0);
 
 $(function() { ui.modals.init(); });
+
+$('.h').mouseenter(function() {
+	$(this).addClass('hover');
+}).mouseleave(function() {
+	$(this).removeClass('hover');
+});
