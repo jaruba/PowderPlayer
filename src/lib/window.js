@@ -72,89 +72,127 @@ var win = {
 		},countdown);
 	},
 	
+	findScreen: function() {
+		var winScreen = -1,
+			backupScreen = -1;
+
+		// find the screen where the window is
+		gui.Screen.screens.some(function(screen,i) {
+			
+			// check if the window is horizontally inside the bounds of this screen
+			if (win.gui.x >= screen.bounds.x && win.gui.x + win.gui.width <= screen.bounds.x + screen.work_area.width) {
+				// window is fully inside the screen
+				winScreen = i;
+			} else if (win.gui.x <= screen.bounds.x && win.gui.x + win.gui.width >= screen.bounds.x) {
+				// window is partially inside the left side of screen
+				if (win.gui.x + win.gui.width - screen.bounds.x >= win.gui.width /2) {
+					// more then half the window is in this screen
+					winScreen = i;
+				} else {
+					// less then half the window is in this screen
+					// should still search for a better match
+					backupScreen = i;
+				}
+				
+			} else if (win.gui.x >= screen.bounds.x && win.gui.x <= screen.bounds.x + screen.bounds.width && win.gui.x + win.gui.width >= screen.bounds.x + screen.bounds.width) {
+
+				// window is partially inside the right side of screen
+				if (screen.bounds.x + screen.bounds.width - win.gui.x >= win.gui.width /2) {
+					// more then half the window is in this screen
+					winScreen = i;
+				} else {
+					// less then half the window is in this screen
+					// should still search for a better match
+					backupScreen = i;
+				}
+
+			}
+
+			if (winScreen > -1) return true;
+			
+		});
+		
+		if (winScreen > -1) return gui.Screen.screens[winScreen];
+		else if (backupScreen > -1) return gui.Screen.screens[backupScreen];
+		else return false;
+	},
+	
 	position: {
 		center: function() {
-			// find the screen where the window is
-			gui.Screen.screens.some(function(screen,i) {
-				// check if the window is horizontally inside the bounds of this screen
-				var inTheScreen = 0;
-				if (parseInt(win.gui.x) > parseInt(screen.bounds.x) && parseInt(win.gui.x) < (parseInt(screen.bounds.x) + parseInt(screen.work_area.width))) {
-					inTheScreen = 1;
-				} else if (i == 0 && parseInt(win.gui.x) <= parseInt(screen.bounds.x)) inTheScreen = 1;
-				if (inTheScreen) {
-					// resize the window, but keep it in bounds
-					win.gui.moveTo((screen.work_area.width - win.gui.width)/2,(screen.work_area.height - win.gui.height)/2);
-					return false;
-				}
-			});
-			// end find the screen where the window is
+			// center the window in the screen
+
+			scr = win.findScreen();
+			
+			if (scr) {
+				win.gui.moveTo(scr.bounds.x + ((scr.work_area.width - win.gui.width)/2), scr.bounds.y + ((scr.work_area.height - win.gui.height)/2));
+			}
+
 		},
 		
 		resizeInBounds: function(newWidth,newHeight) {
-			// find the screen where the window is
-			gui.Screen.screens.some(function(screen,i) {
-				// check if the window is horizontally inside the bounds of this screen
-				var inTheScreen = 0;
-				if (parseInt(win.gui.x) > parseInt(screen.bounds.x) && parseInt(win.gui.x) < (parseInt(screen.bounds.x) + parseInt(screen.work_area.width))) {
-					inTheScreen = 1;
-				} else if (i == 0 && parseInt(win.gui.x) <= parseInt(screen.bounds.x)) inTheScreen = 1;
-				if (inTheScreen) {
-					if (parseInt(newWidth) >= parseInt(screen.work_area.width)) {
-						if (parseInt(newHeight) >= parseInt(screen.work_area.height)) {
-							win.gui.resizeTo(screen.work_area.width, screen.work_area.height);
-							win.gui.moveTo(0,0);
-						} else {
-							win.gui.resizeTo(screen.work_area.width, newHeight);
-							win.gui.moveTo(0,Math.floor((screen.work_area.height - newHeight)/2));
-						}
-						player.refreshSize(200).refreshSize(500).refreshSize(1000);
+			
+			scr = win.findScreen();
+			
+			if (scr) {
+
+				if (newWidth >= scr.work_area.width) {
+					if (newHeight >= scr.work_area.height) {
+						// width and height are larger then the screen
+						// resize to window screen size
+						win.gui.resizeTo(scr.work_area.width, scr.work_area.height);
+						win.gui.moveTo(scr.bounds.x, scr.bounds.y);
 					} else {
-						if (win.gui.x == (screen.work_area.width - win.gui.width)/2 && win.gui.y == (screen.work_area.height - win.gui.height)/2) {
-							// if perfectly centered, keep it centered
-							win.gui.moveTo((screen.work_area.width - newWidth)/2,(screen.work_area.height - newHeight)/2);
-							win.gui.resizeTo(newWidth, newHeight);
+						// width is larger then the screen width
+						// resize to window width size, vertically center height
+						win.gui.resizeTo(scr.work_area.width, newHeight);
+						win.gui.moveTo(scr.bounds.x, (scr.work_area.height - newHeight) /2);
+					}
+					player.refreshSize(200).refreshSize(500).refreshSize(1000);
+				} else {
+					if (win.gui.x == scr.bounds.x + ((scr.work_area.width - win.gui.width) /2) && win.gui.y == scr.bounds.y + ((scr.work_area.height - win.gui.height) /2)) {
+						// if perfectly centered, keep it centered
+						win.gui.moveTo(scr.bounds.x + ((scr.work_area.width - newWidth) /2), scr.bounds.y + (scr.work_area.height - newHeight)/2);
+						win.gui.resizeTo(newWidth, newHeight);
+					} else {
+						// resize the window, but keep it in bounds
+						if (newHeight >= scr.work_area.height) {
+							win.gui.resizeTo(newWidth, scr.work_area.height);
+							win.gui.moveTo(scr.bounds.x+((scr.work_area.width - newWidth)/2), scr.bounds.y);
 						} else {
-							// resize the window, but keep it in bounds
-							if (parseInt(newHeight) >= parseInt(screen.work_area.height)) {
-								win.gui.resizeTo(newWidth, screen.work_area.height);
-								win.gui.moveTo(Math.floor((screen.work_area.width - newWidth)/2),0);
+							win.gui.resizeTo(newWidth, newHeight);
+							if (win.gui.x + newWidth > scr.bounds.x + scr.work_area.width) {
+								if (win.gui.y + newHeight > scr.work_area.height) {
+									win.gui.moveTo((scr.bounds.x + scr.work_area.width - newWidth), (scr.work_area.height - newHeight));
+								} else if (win.gui.y < scr.bounds.y) {
+									win.gui.moveTo((scr.bounds.x + scr.work_area.width - newWidth), scr.bounds.y);
+								} else {
+									win.gui.moveTo((scr.bounds.x + scr.work_area.width - newWidth), win.gui.y);
+								}
 							} else {
-								win.gui.resizeTo(newWidth, newHeight);
-								if ((parseInt(win.gui.x) + parseInt(newWidth)) > parseInt(screen.work_area.width)) {
-									if ((parseInt(win.gui.y) + parseInt(newHeight)) > parseInt(screen.work_area.height)) {
-										win.gui.moveTo((screen.work_area.width - newWidth),(screen.work_area.height - newHeight));
-									} else if (parseInt(win.gui.y) < 0) {
-										win.gui.moveTo((screen.work_area.width - newWidth),0);
+								if ((win.gui.y + newHeight) > scr.work_area.height) {
+									if (win.gui.x < scr.bounds.x) {
+										win.gui.moveTo(scr.bounds.x, (scr.work_area.height - newHeight));
 									} else {
-										win.gui.moveTo((screen.work_area.width - newWidth),win.gui.y);
+										win.gui.moveTo(win.gui.x, (scr.work_area.height - newHeight));
+									}
+								} else if (win.gui.y < scr.bounds.y) {
+									if (win.gui.x < scr.bounds.x) {
+										win.gui.moveTo(scr.bounds.x, scr.bounds.y);
+									} else {
+										win.gui.moveTo(win.gui.x, scr.bounds.y);
 									}
 								} else {
-									if ((parseInt(win.gui.y) + parseInt(newHeight)) > parseInt(screen.work_area.height)) {
-										if (parseInt(win.gui.x) < 0) {
-											win.gui.moveTo(0,(screen.work_area.height - newHeight));
-										} else {
-											win.gui.moveTo(win.gui.x,(screen.work_area.height - newHeight));
-										}
-									} else if (parseInt(win.gui.y) < 0) {
-										if (parseInt(win.gui.x) < 0) {
-											win.gui.moveTo(0,0);
-										} else {
-											win.gui.moveTo(win.gui.x,0);
-										}
-									} else {
-										if (parseInt(win.gui.x) < 0) {
-											win.gui.moveTo(0,win.gui.y);
-										}
+									if (win.gui.x < scr.bounds.x) {
+										win.gui.moveTo(scr.bounds.x, win.gui.y);
 									}
 								}
 							}
 						}
-						$(player.canvas).css("width","100%").css("height","100%");
 					}
-					return false;
+					$(player.canvas).css('width','100%').css('height','100%');
 				}
-			});
-			// end find the screen where the window is
+				return false;
+			}
 		}
 
 	},
@@ -185,35 +223,29 @@ var win = {
 					  $('#inner-in-content').css('border-color','rgba(54,54,54,0)');
 				  }
 		
-				  // find the screen where the window is
-				  gui.Screen.screens.some(function(screen,i) {
-					  // check if the window is horizontally inside the bounds of this screen
-					  var inTheScreen = 0;
-					  if (parseInt(win.gui.x) > parseInt(screen.bounds.x) && parseInt(win.gui.x) < (parseInt(screen.bounds.x) + parseInt(screen.work_area.width))) {
-						  inTheScreen = 1;
-					  } else if (i == 0 && parseInt(win.gui.x) <= parseInt(screen.bounds.x)) inTheScreen = 1;
-					  if (inTheScreen) {
-						  if (win.gui.width > (parseInt(screen.bounds.width)/2)) return true;
-						  
-						  // if window is near a top corner of the screen
-						  // then stick the frameless window to that corner
-						  if (parseInt(screen.bounds.y) +10 > win.gui.y) {
-							  if ((parseInt(screen.bounds.x) + parseInt(screen.bounds.width)) -10 < (win.gui.width + win.gui.x)) {
-								  allowMouseMove = false;
-								  setTimeout(function() { allowMouseMove = true; },500);
-								  win.gui.x = (parseInt(screen.bounds.x) + parseInt(screen.bounds.width)) - win.gui.width +6;
-								  win.gui.y = parseInt(screen.bounds.y) -34;
-							  } else if (parseInt(screen.bounds.x) +10 > win.gui.x) {
-								  allowMouseMove = false;
-								  setTimeout(function() { allowMouseMove = true; },500);
-								  win.gui.x = parseInt(screen.bounds.x) -6;
-								  win.gui.y = parseInt(screen.bounds.y) -34;
-							  }
+				  scr = win.findScreen();
+				  
+				  if (scr) {
+
+					  if (win.gui.width > scr.bounds.width /2) return true;
+					  
+					  // if window is near a top corner of the screen
+					  // then stick the frameless window to that corner
+					  if (scr.bounds.y +10 > win.gui.y) {
+						  if (scr.bounds.x + scr.bounds.width -10 < win.gui.width + win.gui.x) {
+							  allowMouseMove = false;
+							  setTimeout(function() { allowMouseMove = true; },500);
+							  win.gui.x = scr.bounds.x + scr.bounds.width - win.gui.width +6;
+							  win.gui.y = scr.bounds.y -34;
+						  } else if (scr.bounds.x +10 > win.gui.x) {
+							  allowMouseMove = false;
+							  setTimeout(function() { allowMouseMove = true; },500);
+							  win.gui.x = scr.bounds.x -6;
+							  win.gui.y = scr.bounds.y -34;
 						  }
-						  return true;
 					  }
-				  });
-				  // end find the screen where the window is
+
+				  }
 		
 			  },101);
 			}
@@ -232,27 +264,21 @@ var win = {
 					$('#content').css('border-color','rgba(54,54,54,1)');
 					$('#inner-in-content').css('border-color','rgba(54,54,54,1)');
 					if (!maximized) {
-						// find the screen where the window is
-						gui.Screen.screens.some(function(screen,i) {
-							// check if the window is horizontally inside the bounds of this screen
-							var inTheScreen = 0;
-							if (parseInt(win.gui.x) > parseInt(screen.bounds.x) && parseInt(win.gui.x) < (parseInt(screen.bounds.x) + parseInt(screen.work_area.width))) {
-								inTheScreen = 1;
-							} else if (i == 0 && parseInt(win.gui.x) <= parseInt(screen.bounds.x)) inTheScreen = 1;
-							if (inTheScreen) {
-								// if frameless window is sticked to a corner
-								// then move it so the frame is visible
-								if (win.gui.y == parseInt(screen.bounds.y) -34) {
-									win.gui.y = win.gui.y +34;
-									if (win.gui.x == ((parseInt(screen.bounds.x) + parseInt(screen.bounds.width)) - win.gui.width +6)) {
-										win.gui.x = win.gui.x -6;
-									} else if (win.gui.x == parseInt(screen.bounds.x) -6) {
-										win.gui.x = win.gui.x +6;
-									}
+						
+						scr = win.findScreen();
+						
+						if (scr) {
+							// if frameless window is sticked to a corner
+							// then move it so the frame is visible
+							if (win.gui.y == scr.bounds.y -34) {
+								win.gui.y = win.gui.y +34;
+								if (win.gui.x == scr.bounds.x + scr.bounds.width - win.gui.width +6) {
+									win.gui.x = win.gui.x -6;
+								} else if (win.gui.x == scr.bounds.x -6) {
+									win.gui.x = win.gui.x +6;
 								}
-								return true;
 							}
-						});
+						}
 						// end find the screen where the window is
 					}
 				} else {
