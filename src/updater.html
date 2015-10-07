@@ -118,6 +118,10 @@
 	}
 	
 	function startDownload() {
+		
+		// save localStorage in case of a NW.js update
+		fs.writeFile(gui.App.dataPath+pathBreak+'user.conf', JSON.stringify(localStorage));
+		
 		var out = fs.createWriteStream(gui.App.dataPath+pathBreak+'updater'+appExt);
 		
 		$("#starter").css("display","none");
