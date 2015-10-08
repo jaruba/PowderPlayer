@@ -13,7 +13,7 @@
     "bugs": {
         "url": "https://github.com/jaruba/PowderPlayer/issues"
     },
-    "chromium-args": "--d3d9 --disable-d3d11 --gpu-no-context-lost",
+    "chromium-args": "--d3d9 --disable-d3d11 --gpu-no-context-lost --ignore-gpu-blacklist",
     "single-instance": false,
     "window": {
         "icon": "icon.png",
