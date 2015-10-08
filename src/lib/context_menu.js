@@ -141,6 +141,14 @@ var ctxMenu = {
 		this.playerMenu.append(new gui.MenuItem({ label: 'Crop', submenu: this._cropMenu }));
 		this.playerMenu.append(new gui.MenuItem({ label: 'Zoom', submenu: this._zoomMenu }));
 		this.playerMenu.append(new gui.MenuItem({ type: 'separator' }));
+		
+		this.playerMenu.append(new gui.MenuItem({
+			label: 'See Hotkeys',
+			click: function() {
+				gui.Shell.openExternal('https://github.com/jaruba/PowderPlayer/wiki/Hotkeys');
+			}
+		}));
+		
 		this.playerMenu.append(new gui.MenuItem({
 			label: 'Always on Top',
 			type: 'checkbox',
