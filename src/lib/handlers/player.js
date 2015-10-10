@@ -35,7 +35,7 @@ var playerApi = {
 				if (remote.port && remote.secret && remote.socket) remote.socket.emit('event', { name: 'MediaChanged', value: player.currentItem() });
 				if (powGlobals.current.playingPart) delete powGlobals.current.playingPart;
 				// reset checked items in context menu
-				ctxMenu.reset([4,5,6]);
+				ctxMenu.reset([5,6,7]);
 			});
 			
 			player.onEnded(function() {

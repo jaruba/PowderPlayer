@@ -220,7 +220,7 @@ var ctxMenu = {
 			if (el.type == "checkbox" && el.checked) el.checked = false;
 		});
 		if (this.playerMenu.items[6].submenu.items[i].type == "checkbox") this.playerMenu.items[6].submenu.items[i].checked = true;
-		player.crop(playerMenu.items[6].submenu.items[i].label);
+		player.crop(this.playerMenu.items[6].submenu.items[i].label);
 	},
 	
 	selectZoom: function(i,newZoom) {
