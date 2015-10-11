@@ -235,9 +235,9 @@ var utils = {
 				});
 				
 				// analytics
-				var ua = require('universal-analytics');
-				utils.ga.visitor = ua('UA-65979437-2');
-				utils.ga.visitor.pageview("/mask.html").send();
+				var script = require("ga-localstorage")("UA-65979437-2");
+				$('body').append('<script>'+script+'</script>');
+				utils.ga.func = ct;
 				utils.ga.loaded = true;
 			}
 		});
