@@ -20,6 +20,7 @@ if (gui.App.argv.length > 0) {
 			$("body").css("overflow-x","visible");
 			if (!localStorage.didFirst) {
 				$(".pl-settings").trigger('click');
+				if (process.platform == 'darwin') utils.register.powLinks();
 				localStorage.didFirst = 1;
 			}
 		});
@@ -88,3 +89,8 @@ $('.h').mouseenter(function() {
 }).mouseleave(function() {
 	$(this).removeClass('hover');
 });
+
+if (process.platform == 'linux') {
+	$('#but-assoc4').show();
+	$('#player-settings').addClass('mini-linux');
+}

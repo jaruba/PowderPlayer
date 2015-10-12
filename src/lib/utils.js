@@ -337,7 +337,9 @@ var utils = {
 	parser: function(path) {
 		
 		function webize() {
-			if (path.substr(0,4) != "http" && path.substr(0,8) != "file:///") return "file:///"+path.split("\\").join("/");
+			if (['http','pow:'].indexOf(path.substr(0,4)) == -1 && ['file:///','magnet:?'].indexOf(path.substr(0,8)) == -1) {
+				return "file:///"+path.split("\\").join("/");
+			}
 			else return path;
 		}
 		
@@ -476,7 +478,7 @@ var utils = {
 		
 		_writeDesktopFile: function(cb) {
 			var powderPath = process.execPath.substr(0,process.execPath.lastIndexOf("/")+1);
-			fs.writeFile(gui.App.dataPath+'/powder.desktop', '[Desktop Entry]\nVersion=1.0\nName=Powder Player\nComment=Powder Player is a hybrid between a Torrent Client and a Player (torrent streaming)\nExec='+process.execPath+' %U\nPath='+powderPath+'\nIcon='+powderPath+'icon.png\nTerminal=false\nType=Application\nMimeType=application/x-bittorrent;x-scheme-handler/magnet;video/avi;video/msvideo;video/x-msvideo;video/mp4;video/x-matroska;video/mpeg;\n', cb);
+			fs.writeFile(gui.App.dataPath+'/powder.desktop', '[Desktop Entry]\nVersion=1.0\nName=Powder Player\nComment=Powder Player is a hybrid between a Torrent Client and a Player (torrent streaming)\nExec='+process.execPath+' %U\nPath='+powderPath+'\nIcon='+powderPath+'icon.png\nTerminal=false\nType=Application\nMimeType=application/x-bittorrent;x-scheme-handler/magnet;x-scheme-handler/pow;video/avi;video/msvideo;video/x-msvideo;video/mp4;video/x-matroska;video/mpeg;\n', cb);
 		},
 		
 		torrent: function() {
@@ -544,6 +546,20 @@ var utils = {
 					if (err) throw err;
 					gui.Shell.openExternal(gui.App.dataPath+'\\register-magnet.reg'); 
 				});
+			}
+		},
+		
+		powLinks: function() {
+			if (process.platform == 'linux') {
+				this._writeDesktopFile(function(err) {
+					if (err) throw err;
+					var desktopFile = gui.App.dataPath+'/powder.desktop';
+					var tempMime = 'x-scheme-handler/pow';
+					require('child_process').exec('gnome-terminal -x bash -c "echo \'Associating Files or URls with Applications requires Admin Rights\'; echo; sudo echo; sudo echo \'Authentication Successful\'; sudo echo; sudo mv -f '+desktopFile+' /usr/share/applications; sudo xdg-mime default powder.desktop '+tempMime+'; sudo gvfs-mime --set '+tempMime+' powder.desktop; echo; echo \'Association Complete! Press any key to close ...\'; read" & disown');
+				});
+			} else if (process.platform == 'darwin') {
+				var powderPath = process.execPath.substr(0,process.execPath.lastIndexOf("/")+1)+"../../../../Resources/app.nw/";
+				require('child_process').exec('"'+powderPath+'src/duti/duti" -s media.powder.player pow');
 			}
 		}
 	}

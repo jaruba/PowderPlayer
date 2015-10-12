@@ -31,6 +31,12 @@ SetupIconFile=powder.ico
 Compression=lzma
 SolidCompression=yes
 
+[Registry]
+Root: HKCR; Subkey: "pow"; ValueType: "string"; ValueData: "URL:Custom Protocol"; Flags: uninsdeletekey
+Root: HKCR; Subkey: "pow"; ValueType: "string"; ValueName: "URL Protocol"; ValueData: ""
+Root: HKCR; Subkey: "pow\DefaultIcon"; ValueType: "string"; ValueData: "{app}\powder.exe,0"
+Root: HKCR; Subkey: "pow\shell\open\command"; ValueType: "string"; ValueData: """{app}\powder.exe"" ""%1"""
+
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "brazilianportuguese"; MessagesFile: "compiler:Languages\BrazilianPortuguese.isl"
