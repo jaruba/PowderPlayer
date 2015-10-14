@@ -363,6 +363,9 @@ win.gui.on('close', function() {
 $.fn.scrollEnd = function(callback, timeout) {          
   $(this).scroll(function(){
     var $this = $(this);
+	if (powGlobals.torrent.hasVideo && !$("#dropdown-1").is(":hidden") && $('#inner-in-content').scrollTop() < player.wrapper.height() - 56) {
+		$("#optionsBut").trigger("click");
+	}
     if ($this.data('scrollTimeout')) {
       clearTimeout($this.data('scrollTimeout'));
     }
