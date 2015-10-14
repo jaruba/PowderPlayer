@@ -320,6 +320,7 @@ i.close-icon:before { font-family: 'Glyphs'; content: "\E896"; font-style: norma
 	-webkit-box-shadow: 0px 1px 1px 0px rgba(0,0,0,0.2);
 	-moz-box-shadow: 0px 1px 1px 0px rgba(0,0,0,0.2);
 	box-shadow: 0px 1px 1px 0px rgba(0,0,0,0.2);
+	outline: 0;
 }
 #optionsBut.hover {
 	background: #04415B;
