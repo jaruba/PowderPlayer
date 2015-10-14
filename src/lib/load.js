@@ -293,6 +293,7 @@ var load = {
 			}(playerApi.tempSel,targetHistory,powGlobals.torrent.engine));
 					
 			powGlobals.torrent.engine.on('download',function(pc) {
+				torrent.queues.uiUpdate++;
 				torrent.checkDownloaded.push({ piece: pc });
 			});
 			

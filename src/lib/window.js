@@ -377,7 +377,11 @@ $("#inner-in-content").scrollEnd(function(){
 		}
 		win.gui.setMinimumSize(372, 210);
 		if (!player.isPlaying() && !dlna.castData.casting && player.state() != "stopping") player.togglePause();
-		if (win.gui.title != player.itemDesc(player.currentItem()).title) {
+		if (dlna.instance.initiated && playerApi.tempSel > -1) {
+			if (win.gui.title != player.itemDesc(playerApi.tempSel).title) {
+				win.title.left(player.itemDesc(playerApi.tempSel).title);
+			}
+		} else if (win.gui.title != player.itemDesc(player.currentItem()).title) {
 			win.title.left(player.itemDesc(player.currentItem()).title);
 		}
 	}

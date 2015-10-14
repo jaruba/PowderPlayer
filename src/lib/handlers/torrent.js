@@ -9,6 +9,11 @@ var torrent = {
 	updatePeers: -1,
 	lastPeerUpdate: 0,
 	
+	queues: {
+		pieces: 0,
+		uiUpdate: 0
+	},
+	
 	timers: {
 		peers: false,
 		down: false,
@@ -40,18 +45,28 @@ var torrent = {
 	
 	cachePiece: async.queue(function(task, cb) {
 		
-		if (powGlobals.lists.files[task.index].lastDownload && powGlobals.lists.files[task.index].lastDownload >= 100) {
-			if (powGlobals.lists.files[task.index].parts.length > 1) {
-				powGlobals.lists.files[task.index].parts = [powGlobals.lists.files[task.index].pieces.first,powGlobals.lists.files[task.index].pieces.last];
-				if (typeof powGlobals.lists.files[task.index].vIndex !== 'undefined' && powGlobals.lists.files[task.index].vIndex == player.currentItem()) {
-					powGlobals.current.playingPart = 0;
-				}
-			}
+		if (!powGlobals.torrent.engine) {
+			torrent.queues.pieces--;
 			cb();
 			return;
 		}
 		
-		async.someOf(powGlobals.lists.files[task.index].parts,function(ind,spc) {
+		if (playerApi.tempSel > -1) _currentItem = playerApi.tempSel;
+		else _currentItem = player.currentItem();
+		
+		if (powGlobals.lists.files[task.index].lastDownload && powGlobals.lists.files[task.index].lastDownload >= 100) {
+			if (powGlobals.lists.files[task.index].parts.length > 1) {
+				powGlobals.lists.files[task.index].parts = [powGlobals.lists.files[task.index].pieces.first,powGlobals.lists.files[task.index].pieces.last];
+				if (typeof powGlobals.lists.files[task.index].vIndex !== 'undefined' && powGlobals.lists.files[task.index].vIndex == _currentItem) {
+					powGlobals.current.playingPart = 0;
+				}
+			}
+			torrent.queues.pieces--;
+			cb();
+			return;
+		}
+		
+		async.someOf(powGlobals.lists.files[task.index].parts,function(ind,spc,curItem) {
 			return function(el,ij,callback) {
 				if (el[0] -1 == spc) {
 					if (powGlobals.lists.files[ind].parts[ij-1] && powGlobals.lists.files[ind].parts[ij-1][1] +1 == spc) {
@@ -68,8 +83,15 @@ var torrent = {
 					return;
 				}
 
-				if (typeof powGlobals.lists.files[ind].vIndex !== 'undefined' && powGlobals.lists.files[ind].vIndex == player.currentItem()) {
-					targetPos = Math.floor(((powGlobals.current.lastPiece - powGlobals.current.firstPiece) * player.position()) + powGlobals.current.firstPiece);
+				if (typeof powGlobals.lists.files[ind].vIndex !== 'undefined' && powGlobals.lists.files[ind].vIndex == curItem) {
+			
+					if (player.state() == 'stopping' && dlna.castData.casting == 1) {
+						playerPos = $(".wcp-progress-seen").width()/100;
+					} else {
+						playerPos = player.position();
+					}
+
+					targetPos = Math.floor(((powGlobals.current.lastPiece - powGlobals.current.firstPiece) * playerPos) + powGlobals.current.firstPiece);
 					if ((targetPos >= el[0] && targetPos <= el[1]) || (powGlobals.lists.files[ind].parts[ij-1] && targetPos > powGlobals.lists.files[ind].parts[ij-1][1] && targetPos < el[0])) {
 						powGlobals.current.playingPart = ij;
 					}
@@ -77,26 +99,36 @@ var torrent = {
 				
 				callback(true);
 			}
-		}(task.index,task.piece),function(ind,spc,queueCb) {
+		}(task.index, task.piece, _currentItem),function(ind,spc,queueCb) {
 			return function(truthy) {
 				if (!truthy) {
 					powGlobals.lists.files[ind].parts.push([spc,spc]);
 				}
-				queueCb();
+				setTimeout(function() {
+					torrent.queues.pieces--;
+					queueCb();
+				}, powGlobals.torrent.hasVideo > 0 ? torrent.queues.pieces * 30 : 0);
 			}
 		}(task.index,task.piece,cb));
 
 	}, 1),
 	
 	showCache: function() {
-		if (this.pauseCache) return;
-		if (['error','ended','idle'].indexOf(player.state()) > -1) {
-			player.setDownloaded(0);
-			clearInterval(torrent.timers.setDownload);
-			return;
-		}
-		if (powGlobals.lists.media[player.currentItem()] && powGlobals.lists.files[powGlobals.lists.media[player.currentItem()].index]) {
-			target = powGlobals.lists.files[powGlobals.lists.media[player.currentItem()].index];
+		
+		if (!dlna.instance.initiated) {
+			if (this.pauseCache) return;
+			if (['error','ended','idle'].indexOf(player.state()) > -1) {
+				player.setDownloaded(0);
+				clearInterval(torrent.timers.setDownload);
+				return;
+			}
+		} else if (this.pauseCache) this.pauseCache = false;
+
+		if (playerApi.tempSel > -1) _currentItem = playerApi.tempSel;
+		else _currentItem = player.currentItem();
+		
+		if (powGlobals.lists.media[_currentItem] && powGlobals.lists.files[powGlobals.lists.media[_currentItem].index]) {
+			target = powGlobals.lists.files[powGlobals.lists.media[_currentItem].index];
 			
 			if (target.lastDownload && target.lastDownload >= 100) {
 				player.setDownloaded(1);
@@ -133,8 +165,12 @@ var torrent = {
 	},
 	
 	hideCache: function(targetPos,newPos) {
-		if (['playing','paused','buffering'].indexOf(player.state()) > -1 && powGlobals.lists.media[player.currentItem()] && powGlobals.lists.files[powGlobals.lists.media[player.currentItem()].index]) {
-			target = powGlobals.lists.files[powGlobals.lists.media[player.currentItem()].index];
+		
+		if (playerApi.tempSel > -1) _currentItem = playerApi.tempSel;
+		else _currentItem = player.currentItem();
+		
+		if ((dlna.instance.initiated || ['playing','paused','buffering'].indexOf(player.state()) > -1) && powGlobals.lists.media[_currentItem] && powGlobals.lists.files[powGlobals.lists.media[_currentItem].index]) {
+			target = powGlobals.lists.files[powGlobals.lists.media[_currentItem].index];
 			
 			if (target.lastDownload && target.lastDownload >= 100) {
 				return;
@@ -169,8 +205,15 @@ var torrent = {
 	},
 	
 	checkDownloaded: async.queue(function(task, cb) {
+		
+		if (!powGlobals.torrent.engine) {
+			torrent.queues.uiUpdate--;
+			cb();
+			return;
+		}
+
 		piece = task.piece;
-		if (powGlobals.torrent.engine && powGlobals.torrent.engine.torrent) {
+		if (powGlobals.torrent.engine.torrent) {
 			_TS = powGlobals.torrent.engine.torrent;
 			powGlobals.torrent.lastDownloadTime = Math.floor(Date.now() / 1000);
 			powGlobals.torrent.allPieces++;
@@ -179,7 +222,13 @@ var torrent = {
 			} else {
 				_downSize = _TS.length;
 			}
-			$("#downPart").text(utils.fs.getReadableSize(Math.floor(_downSize)));
+
+			setTimeout(function(downSizeSaved) {
+				return function() {
+					$("#downPart").text(utils.fs.getReadableSize(Math.floor(downSizeSaved)));
+				}
+			}(_downSize),0);
+
 			updDownload = Math.floor((powGlobals.torrent.allPieces / (((_TS.length - _TS.lastPieceLength) / _TS.pieceLength) +1)) *100);
 			if (updDownload != powGlobals.torrent.lastDownload) {
 				powGlobals.torrent.lastDownload = updDownload;
@@ -225,6 +274,7 @@ var torrent = {
 								powGlobals.lists.files[ij].parts = [];
 								powGlobals.lists.files[ij].parts.push([pc,pc]);
 							} else {
+								torrent.queues.pieces++;
 								torrent.cachePiece.push({ index: ij, piece: pc });
 							}
 						}
@@ -239,7 +289,12 @@ var torrent = {
 							} else {
 								_downSize = el.byteLength * (updDownload /100);
 							}
-							$("#down-fl"+ij).text(utils.fs.getReadableSize(Math.floor(_downSize)));
+
+							setTimeout(function(ijSaved,downSizeSaved) {
+								return function() {
+									$("#down-fl"+ijSaved).text(utils.fs.getReadableSize(Math.floor(downSizeSaved)));
+								}
+							}(ij,_downSize),0);
 							powGlobals.lists.files[ij].lastDownload = el.lastDownload = updDownload;
 							if (updDownload >= 100) {
 								
@@ -256,19 +311,31 @@ var torrent = {
 									}
 								}),20000);
 								
-								if ($("#action"+ij).hasClass("pause")) {
-									$("#action"+ij).removeClass("pause").addClass("settings").attr("onClick","ui.buttons.settings("+ij+")");
-								} else if ($("#action"+ij).hasClass("play")) {
-									$("#action"+ij).removeClass("play").addClass("settings").attr("onClick","ui.buttons.settings("+ij+")");
-								}
-								$('#p-file'+ij).circleProgress('value', 1);
+								setTimeout(function(ijSaved) {
+									return function() {
+										if ($("#action"+ijSaved).hasClass("pause")) {
+											$("#action"+ijSaved).removeClass("pause").addClass("settings").attr("onClick","ui.buttons.settings("+ijSaved+")");
+										} else if ($("#action"+ijSaved).hasClass("play")) {
+											$("#action"+ijSaved).removeClass("play").addClass("settings").attr("onClick","ui.buttons.settings("+ijSaved+")");
+										}
+										$('#p-file'+ijSaved).circleProgress('value', 1);
+									}
+								}(ij),0);
 							} else {
-								$('#p-file'+ij).circleProgress('value', updDownload/100);
+								setTimeout(function(ijSaved,updDownloadSaved) {
+									return function() {
+										$('#p-file'+ijSaved).circleProgress('value', updDownloadSaved/100);
+									}
+								}(ij,updDownload),0);
 								if (localStorage.useVLC == "1") {
 									if (updDownload >= 5 && !powGlobals.torrent.engine.files[el.index].selected) {
 										ui.buttons.play(ij);
 									} else if (updDownload < 5 && powGlobals.torrent.engine.files[el.index].selected && $("#action"+ij).hasClass("play")) {
-										$("#action"+ij).removeClass("play").addClass("pause").css("background-color","#F6BC24").attr("onClick","ui.buttons.pause("+ij+")");
+										setTimeout(function(ijSaved) {
+											return function() {
+												$("#action"+ijSaved).removeClass("play").addClass("pause").css("background-color","#F6BC24").attr("onClick","ui.buttons.pause("+ijSaved+")");
+											}
+										}(ij),0);
 									}
 								}
 							}
@@ -278,19 +345,20 @@ var torrent = {
 				}
 			}(piece),function() {
 				setTimeout(function() {
+					torrent.queues.uiUpdate--;
 					cb();
-				},500);
+				}, powGlobals.torrent.hasVideo > 0 ? torrent.queues.uiUpdate * 30 : 0);
 			});
 		} else {
+			torrent.queues.uiUpdate--;
 			cb();
 		}
-	}, 1),
+	}, powGlobals.torrent.hasVideo > 0 ? 1 : 4),
 	
 	checkSpeed: function() {
 		if ($('#all-download .progress-bar').attr('data-transitiongoal') < 100) {
 			if (powGlobals.torrent.speedPiece < powGlobals.torrent.allPieces) {
-				tempText = (powGlobals.torrent.allPieces - powGlobals.torrent.speedPiece) /3;
-				$("#speed").text(utils.fs.getReadableSize(Math.floor(tempText * powGlobals.torrent.engine.torrent.pieceLength))+"/s");
+				$("#speed").text(utils.fs.getReadableSize(powGlobals.torrent.engine.swarm.downloadSpeed())+"/s");
 				powGlobals.torrent.speedUpdate = Math.floor(Date.now() / 1000);
 			} else if (Math.floor(Date.now() / 1000) - powGlobals.torrent.speedUpdate > 9) {
 				$("#speed").text("0.0 kB/s");
