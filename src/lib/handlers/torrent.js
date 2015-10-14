@@ -643,6 +643,7 @@ var torrent = {
 			},1000);
 			
 			if (powGlobals.torrent.hasVideo == 0) {
+				$("#menu-back-video").hide();
 				if (playerApi.loaded) {
 					player.fullscreen(false);
 					player.clearPlaylist();
@@ -658,7 +659,7 @@ var torrent = {
 					powGlobals.torrent.engine.setPulse(powGlobals.torrent.pulse);
 				}
 				remote.updateVal("mediaFiles",powGlobals.lists.media);
-			}
+			} else $("#menu-back-video").show();
 						
 			$("#filesList").append($('<div style="width: 100%; height: 79px; text-align: center; line-height: 79px; font-family: \'Droid Sans Bold\'; font-size: 19px; border-bottom: 1px solid #353535; background: #4d4d4d">Scroll up to Start Video Mode</div>'));
 			

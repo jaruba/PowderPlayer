@@ -391,7 +391,7 @@ body {
             <li><a onClick="for (ij = 0; typeof powGlobals.lists.files[ij] !== 'undefined'; ij++) ui.buttons.play(ij); return false" href="#">Start All</a></li>
             <li><a onClick="for (ij = 0; typeof powGlobals.lists.files[ij] !== 'undefined'; ij++) ui.buttons.pause(ij); return false" href="#">Pause All</a></li>
             <li class="dropdown-divider"></li>
-            <li><a onClick="$('#inner-in-content').animate({ scrollTop: 0 }, 'slow'); return false" href="#">Back to Video</a></li>
+            <li><a onClick="$('#inner-in-content').animate({ scrollTop: 0 }, 'slow'); return false" id="menu-back-video" href="#">Back to Video</a></li>
             <li><a onClick="ui.goto.mainMenu(); return false" href="#">Remove Torrent</a></li>
         </ul>
     </div>
