@@ -152,7 +152,11 @@
 	}
 	function runUpdate() {
 		localStorage.doUpdate = "1";
-		gui.Shell.openExternal(gui.App.dataPath+pathBreak+'updater'+appExt);
+		if (process.platform == "linux") {
+			require('child_process').exec('gnome-terminal -x bash -c "echo \'Updating Powder Player requires Admin Rights\'; echo; sudo echo; sudo echo \'Authentication Successful\'; sudo echo; sudo tar -xvf '+gui.App.dataPath+pathBreak+'updater'+appExt+' -C '+process.execPath.split('/').slice(0, -1).join('/')+'; echo; echo \'Update Complete! Press any key to close ...\'; read" & disown');
+		} else {
+			gui.Shell.openExternal(gui.App.dataPath+pathBreak+'updater'+appExt);
+		}
 		win.close();
 	}
     </script>
