@@ -211,6 +211,12 @@ var dlna = {
 	},
 	
 	prepareServer: function(dlnaReconnect) {
+
+		if (torrent.timers.setDownload) clearInterval(torrent.timers.setDownload);
+		if (powGlobals.torrent.engine) {
+			torrent.timers.setDownload = setInterval(function() { torrent.showCache(); },3000);
+		}
+
 		player.refreshPlaylist();
 		dlna.instance.lastPos = 0;
 		dlnaReconnect = typeof dlnaReconnect !== 'undefined' ? dlnaReconnect : false;
@@ -516,10 +522,11 @@ var dlna = {
 	},
 	
 	findClient: function() {
+
 		win.gui.setMinimumSize(448, 348);
 		if (['playing','paused'].indexOf(player.state()) > -1) dlna.instance.lastSecond = Math.floor(player.time()/1000);
 		else dlna.instance.lastSecond = 0;
-		dlna.instance.lastIndex = parseInt(player.currentItem());
+		dlna.instance.lastIndex = playerApi.tempSel > -1 ? playerApi.tempSel : parseInt(player.currentItem());
 		dlna.instance.initiated = true;
 	
 		player.find(".wcp-vol-button").hide(0);
@@ -666,7 +673,7 @@ var dlna = {
 	// this is a bit faster but it's highly unstable
 	//				prepareDlnaServer(true);
 					dlna.prepareServer();
-					
+
 				});
 			} else dlna.instance.controls.play();
 		}
@@ -674,7 +681,7 @@ var dlna = {
 	
 	attachHandlers: function() {
 		player.wrapper.find(".wcp-button").click(function(e) {
-			buttonClass = this.className.replace("wcp-button","").replace("wcp-left","").replace("wcp-vol-button","").replace("wcp-right","").split(" ").join("");
+			buttonClass = this.className.replace("wcp-button","").replace("hp","").replace("hover","").replace("wcp-left","").replace("wcp-vol-button","").replace("wcp-right","").split(" ").join("");
 			if (dlna.castData.casting == 1 && ["wcp-play","wcp-pause","wcp-replay","wcp-prev","wcp-next"].indexOf(buttonClass) > -1) {
 //				console.log("dlna casting? "+dlna.castData.casting);
 				if (buttonClass == "wcp-play") {

@@ -40,12 +40,10 @@ var playerApi = {
 			
 			player.onEnded(function() {
 				if (remote.port && remote.secret && remote.socket) remote.socket.emit('event', { name: 'Ended' });
-				if (torrent.timers.setDownload) clearInterval(torrent.timers.setDownload);
 				ctxMenu.disable();
 			});
 			player.onStopped(function() {
 				if (remote.port && remote.secret && remote.socket) remote.socket.emit('event', { name: 'Stopped' });
-				if (torrent.timers.setDownload) clearInterval(torrent.timers.setDownload);
 				ctxMenu.disable();
 			});
 			
