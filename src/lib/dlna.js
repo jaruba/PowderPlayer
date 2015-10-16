@@ -250,8 +250,13 @@ var dlna = {
 				dlna.mimeType = require('mime-types').lookup(powGlobals.lists.media[dlna.instance.lastIndex].path);
 			}
 	
-			if (player.itemDesc(dlna.instance.lastIndex).mrl.indexOf("http://localhost") == 0) {
-				dlna.startServer(player.itemDesc(dlna.instance.lastIndex).mrl.replace('localhost',dlna.instance.localIp),dlnaReconnect);
+			if (player.itemDesc(dlna.instance.lastIndex).mrl.indexOf("http://") == 0 || player.itemDesc(dlna.instance.lastIndex).mrl.indexOf("https://") == 0) {
+				if (player.itemDesc(dlna.instance.lastIndex).URL) {
+					targetURL = player.itemDesc(dlna.instance.lastIndex).URL;
+				} else {
+					targetURL = player.itemDesc(dlna.instance.lastIndex).mrl.replace('localhost',dlna.instance.localIp);
+				}
+				dlna.startServer(targetURL,dlnaReconnect);
 			} else {
 	
 				if (player.itemDesc(dlna.instance.lastIndex).mrl.indexOf("file:///") == 0) {
