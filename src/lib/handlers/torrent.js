@@ -107,7 +107,7 @@ var torrent = {
 				setTimeout(function() {
 					torrent.queues.pieces--;
 					queueCb();
-				}, powGlobals.torrent.hasVideo > 0 ? torrent.queues.pieces * 30 : 0);
+				}, powGlobals.torrent.hasVideo > 0 ? torrent.queues.pieces > 100 ? 50 : torrent.queues.pieces * 30 > 200 ? 200 : torrent.queues.pieces * 30 : 0);
 			}
 		}(task.index,task.piece,cb));
 
@@ -319,6 +319,18 @@ var torrent = {
 											$("#action"+ijSaved).removeClass("play").addClass("settings").attr("onClick","ui.buttons.settings("+ijSaved+")");
 										}
 										$('#p-file'+ijSaved).circleProgress('value', 1);
+										if (powGlobals.lists.files[ijSaved].isMedia && player.itemDesc(powGlobals.lists.files[ijSaved].vIndex).mrl.indexOf('http://localhost') == 0 && !(dlna.instance && dlna.instance.initiated)) {
+											
+											if (powGlobals.lists.files[ijSaved].vIndex != player.currentItem()) {
+												cloneData = {
+													url: utils.parser(powGlobals.lists.media[powGlobals.lists.files[ijSaved].vIndex].path).webize(),
+													title: player.itemDesc(powGlobals.lists.files[ijSaved].vIndex).title,
+													streamLink: player.itemDesc(powGlobals.lists.files[ijSaved].vIndex).mrl
+												};
+												player.replaceMRL(powGlobals.lists.files[ijSaved].vIndex, cloneData);
+											}
+
+										}
 									}
 								}(ij),0);
 							} else {
@@ -347,7 +359,7 @@ var torrent = {
 				setTimeout(function() {
 					torrent.queues.uiUpdate--;
 					cb();
-				}, powGlobals.torrent.hasVideo > 0 ? torrent.queues.uiUpdate * 30 : 0);
+				}, powGlobals.torrent.hasVideo > 0 ? torrent.queues.uiUpdate * 30 > 200 ? 200 : torrent.queues.uiUpdate * 30 : 0);
 			});
 		} else {
 			torrent.queues.uiUpdate--;

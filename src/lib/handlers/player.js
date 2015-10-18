@@ -32,10 +32,12 @@ var playerApi = {
 			player.onError(playerApi.listeners.handleErrors);
 			player.onFrameSetup(playerApi.listeners.gotVideoSize);
 			player.onMediaChanged(function() {
-				if (remote.port && remote.secret && remote.socket) remote.socket.emit('event', { name: 'MediaChanged', value: player.currentItem() });
-				if (powGlobals.current.playingPart) delete powGlobals.current.playingPart;
-				// reset checked items in context menu
-				ctxMenu.reset([5,6,7]);
+				if (!player.keepFrame()) {
+					if (remote.port && remote.secret && remote.socket) remote.socket.emit('event', { name: 'MediaChanged', value: player.currentItem() });
+					if (powGlobals.current.playingPart) delete powGlobals.current.playingPart;
+					// reset checked items in context menu
+					ctxMenu.reset([5,6,7]);
+				}
 			});
 			
 			player.onEnded(function() {
@@ -43,8 +45,10 @@ var playerApi = {
 				ctxMenu.disable();
 			});
 			player.onStopped(function() {
-				if (remote.port && remote.secret && remote.socket) remote.socket.emit('event', { name: 'Stopped' });
-				ctxMenu.disable();
+				if (!player.keepFrame) {
+					if (remote.port && remote.secret && remote.socket) remote.socket.emit('event', { name: 'Stopped' });
+					ctxMenu.disable();
+				}
 			});
 			
 			dlna.attachHandlers();
@@ -197,12 +201,10 @@ var playerApi = {
 				if (powGlobals.torrent.engine) {
 					if (player.vlc && !load.argData.dlna) player.setOpeningText("Prebuffering ...");
 					if (typeof powGlobals.lists.media[player.currentItem()] !== 'undefined' && typeof powGlobals.lists.media[player.currentItem()].local === 'undefined') {
-						powGlobals.lists.files.some(function(el,ij) {
-							if (ij == powGlobals.lists.media[player.currentItem()].index) {
-								ui.buttons.play(ij);
-								return true;
-							}
-						});
+						ij = powGlobals.lists.media[player.currentItem()].index;
+						if (!powGlobals.torrent.engine.files[powGlobals.lists.files[ij].index].selected) {
+							ui.buttons.play(ij);
+						}
 					}
 		//			if (powGlobals.lists.media[player.currentItem()]) {
 		//				win.gui.title = utils.parser(powGlobals.lists.media[player.currentItem()].filename).name();
@@ -277,12 +279,10 @@ var playerApi = {
 			if (position > 0.7) {
 				if (player.currentItem() < (player.itemCount() -1)) {
 					if (typeof powGlobals.lists.media[player.currentItem()+1] !== 'undefined' && typeof powGlobals.lists.media[player.currentItem()+1].local === 'undefined') {
-						powGlobals.lists.files.some(function(el,ij) {
-							if (ij == powGlobals.lists.media[player.currentItem()+1].index) {
-								ui.buttons.play(ij);
-								return false;
-							}
-						});
+						ij = powGlobals.lists.media[player.currentItem()+1].index;
+						if (!powGlobals.torrent.engine.files[powGlobals.lists.files[ij].index].selected) {
+							ui.buttons.play(ij);
+						}
 					}
 				}
 				
@@ -325,7 +325,7 @@ var playerApi = {
 								url: utils.parser(powGlobals.lists.media[playerApi.lastItem].path).webize(),
 								title: player.itemDesc(playerApi.lastItem).title
 							});
-							setTimeout(function() { player.playItem(playerApi.lastItem); },1000);
+//							setTimeout(function() { player.playItem(playerApi.lastItem); },1000);
 						}
 					}
 				}
