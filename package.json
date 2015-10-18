@@ -42,7 +42,8 @@
         "tcp-port-used": "*",
         "async": "jaruba/async",
         "pw-wcjs-player": "jaruba/pw-wcjs-player",
-        "computer-sleep": "jaruba/computer-sleep"
+        "computer-sleep": "jaruba/computer-sleep",
+        "http-proxy": "*"
     },
     "optionalDependencies": {
         "node-windows": "*",
