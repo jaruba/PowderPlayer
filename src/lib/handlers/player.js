@@ -90,7 +90,26 @@ var playerApi = {
 				}
 			}
 			if (!playerApi.firstTime && win.focused === false && !player.fullscreen()) win.gui.requestAttention(true);
+
 			if (!playerApi.firstTime) {
+
+				if (load.argData.parseThenDlna) {
+					setTimeout(function() {
+						delete load.argData.parseThenDlna;
+						dlna.prepareServer();
+						player.stop();
+						if (player.itemCount() > 0) {
+							player.find(".wcp-prev").show(0);
+							player.find(".wcp-next").show(0);
+						}
+						player.find(".wcp-status").hide(0);
+						$('.wcp-splash-screen').show(0);
+					},500);
+					// ^ this timeout might be too short
+					// should also experiment with 1000 if issues are found
+					return;
+				}
+
 				player.vlc.playlist.mode = 1;
 				if (playerApi.tempSel > -1) playerApi.tempSel = -1;
 				if (typeof powGlobals.current.duration !== 'undefined') player.setTotalLength(powGlobals.current.duration);

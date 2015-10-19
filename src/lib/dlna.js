@@ -239,6 +239,9 @@ var dlna = {
 		
 		dlna.instance.server = http.createServer(function (req, res) {
 
+			res.setHeader('transferMode.dlna.org', 'Streaming');
+			res.setHeader('contentFeatures.dlna.org', 'DLNA.ORG_OP=01;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=017000 00000000000000000000000000');
+
 			dlna.instance.proxy.web(req, res, configProxy);
 
 		}).listen();
@@ -764,7 +767,17 @@ var dlna = {
 	
 	// this is a bit faster but it's highly unstable
 	//				prepareDlnaServer(true);
-					dlna.prepareServer();
+
+					mrl = player.itemDesc(remIndex).mrl;
+					dlna.resetInstance();
+					if (mrl.indexOf('https://www.youtube.') == 0 || mrl.indexOf('https://youtube.') == 0 || mrl.indexOf('http://www.youtube.') == 0 || mrl.indexOf('http://youtube.') == 0) {
+						if (!load.argData) load.argData = {};
+						if (!load.argData.parseThenDlna) load.argData.parseThenDlna = true;
+						playerApi.firstTime = false;
+						player.playItem(remIndex);
+					} else {
+						dlna.prepareServer();
+					}
 
 				});
 			} else dlna.instance.controls.play();
