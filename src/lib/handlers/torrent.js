@@ -130,6 +130,8 @@ var torrent = {
 		if (powGlobals.lists.media[_currentItem] && powGlobals.lists.files[powGlobals.lists.media[_currentItem].index]) {
 			target = powGlobals.lists.files[powGlobals.lists.media[_currentItem].index];
 			
+			if (!target.parts) return;
+			
 			if (target.lastDownload && target.lastDownload >= 100) {
 				player.setDownloaded(1);
 				clearInterval(torrent.timers.setDownload);
