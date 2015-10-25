@@ -1,17 +1,29 @@
 // drag and drop
-// prevent default behavior from changing page on ped file
+
+// prevent default behavior from changing page on file drop
 window.ondragover = function(e) { e.preventDefault(); return false };
 window.ondrop = function(e) { e.preventDefault(); return false };
 
+// drag and drop over main menu
 var holder = document.getElementById('holder');
 holder.ondragover = function () { this.className = 'hover'; return false; };
 holder.ondragleave = function () { this.className = ''; return false; };
-holder.ondrop = function (e) {
-	e.preventDefault();
+holder.ondrop = function(e) {
 	win.gui.focus();
-	utils.resetPowGlobals();
-	load.dropped(e.dataTransfer.files);
 	this.className = '';
+	e.preventDefault();
+	if (e.dataTransfer.files.length > 0) {
+		utils.resetPowGlobals();
+		load.dropped(e.dataTransfer.files);
+	} else {
+		// drag and drop links
+		// thanks @vankasteelj and @luigiplr
+		droppedLink = e.dataTransfer.getData("text/plain");
+		if (droppedLink) {
+			utils.resetPowGlobals();
+			load.url(droppedLink);
+		}
+	}
 	return false;
 };
 // end drag and drop
