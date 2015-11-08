@@ -1,19 +1,15 @@
-node_modules/
-locales/
-player/
-plugins/
-cache/
-build/
-nwjs.app/
-credits.html
-d3dcompiler_47.dll
-ffmpegsumo.dll
-icudtl.dat
-libEGL.dll
-libGLESv2.dll
-nw.exe
-nw.pak
-nwjc.exe
-pdf.dll
-powder.exe
-nwjc
+.DS_Store
+.swp
+build
+dist
+node_modules
+npm-debug.log
+
+# Cache
+cache
+
+# Tests
+.test
+
+# IDEs
+.idea
