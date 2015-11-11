@@ -2,7 +2,8 @@ import notifier from 'node-notifier';
 import path from 'path';
 import _ from 'lodash';
 
-module.exports = {
+export
+default {
     notify: function(notifyparams, clickFunction) {
         notifyparams = _.defaults(notifyparams, {
             icon: path.join(__dirname, '../../', 'images/icons/logo.png'),
@@ -14,5 +15,4 @@ module.exports = {
         if (clickFunction)
             notifier.on('click', clickFunction);
     }
-
 };

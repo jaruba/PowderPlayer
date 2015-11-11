@@ -6,8 +6,8 @@ import _ from 'lodash';
 import shell from 'shell';
 
 
-
-module.exports = {
+export
+default {
     openUrl: function(url) {
         return shell.openExternal(url);
     },

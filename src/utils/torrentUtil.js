@@ -1,5 +1,4 @@
-export
-default {
+var WebUtil = {
     addLiveReload: function() {
         var head = document.getElementsByTagName('head')[0];
         var script = document.createElement('script');
@@ -27,3 +26,5 @@ default {
         };
     },
 };
+
+module.exports = WebUtil;

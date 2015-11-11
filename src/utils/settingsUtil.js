@@ -1,12 +1,12 @@
 import util from './util';
 
 
-var defaultSettings = {
+let defaultSettings = {
 
 };
 
-module.exports = {
-   
+export
+default {
     get: function(item) {
         var haveDefault = null,
             value = localStorage.getItem('settings.' + item);
