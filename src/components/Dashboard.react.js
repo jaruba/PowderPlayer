@@ -31,7 +31,10 @@ default React.createClass({
         return (
             <div className="wrapper">
                <center>
-
+                    <div id="holder">
+                        <i className="player-settings"/>
+                        <i className="history-icon"/>
+                    </div>
                </center>
             </div>
         );
