@@ -165,7 +165,8 @@ module.exports = function(grunt) {
             },
             dist: {
                 files: {
-                    'build/css/main.css': 'styles/main.less'
+                    'build/css/main.css': 'styles/src/**/*.less',
+                    'build/css/vender.css': 'styles/vender/**/*.less'
                 }
             }
         },
