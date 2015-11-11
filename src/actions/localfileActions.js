@@ -4,7 +4,7 @@ class localActions {
 
     constructor() {
         this.generateActions(
-            'stream',
+            'stream'
         );
     }
 
@@ -17,7 +17,6 @@ class localActions {
 
     }
 }
-
 
 export
 default alt.createActions(localActions);
