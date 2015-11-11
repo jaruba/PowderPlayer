@@ -16,8 +16,8 @@ default {
                     tracker: true,
                     port: port,
                     tmp: App.settings.tmpLocation,
-                    buffer: (1.5 * 1024 * 1024).toString(), // create a buffer on torrent-stream
-                    index: torrent.file_index
+                    buffer: (1.5 * 1024 * 1024).toString(),
+                    index: 1 //change this to a dynamic index later 
                 });
             })
             .catch((error) => {
@@ -26,6 +26,11 @@ default {
     },
     preload: function(torrent) {
 
+    },
+    getIndex: function(files) {
+        return new Promise((resolve, reject) => {
+
+        });
     },
     destroy: function(infoHash) {
         if (this.streams[infoHash]) {
