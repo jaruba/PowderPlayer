@@ -23,7 +23,7 @@ module.exports = function(grunt) {
             os = process.platform;
     }
 
-    var BASENAME = 'PowderPlayer';
+    var BASENAME = 'Powder Player';
     var APPNAME = BASENAME;
 
     var OSX_OUT = './dist';
@@ -140,7 +140,7 @@ module.exports = function(grunt) {
                     expand: true,
                     cwd: 'util/images/',
                     src: ['icon.ico', 'icon.png'],
-                    dest: 'dist/ΛLΞXΛNDRIΛ Librarian-win32-ia32/resources/'
+                    dest: 'dist/<%= BASENAME %>-win32-ia32/resources/'
                 }]
             },
             releaseOSX: {
@@ -148,7 +148,7 @@ module.exports = function(grunt) {
                     expand: true,
                     cwd: 'util/images/',
                     src: ['icon.png'],
-                    dest: 'dist/ΛLΞXΛNDRIΛ Librarian-win32-ia32/resources/'
+                    dest: 'dist/<%= OSX_FILENAME %>-win32-ia32/resources/'
                 }, {
                     src: 'util/images/icon.icns',
                     dest: '<%= OSX_FILENAME %>/Contents/Resources/atom.icns'
@@ -202,7 +202,7 @@ module.exports = function(grunt) {
             }
         },
         clean: {
-            unusedWin: ['dist/ΛLΞXΛNDRIΛ Librarian-win32-ia32/resources/default_app'],
+            unusedWin: ['dist/<%= BASENAME %>-win32-ia32/resources/default_app'],
             release: ['build/', 'dist/'],
         },
         compress: {
@@ -214,19 +214,19 @@ module.exports = function(grunt) {
                 files: [{
                     expand: true,
                     dot: true,
-                    cwd: './dist/ΛLΞXΛNDRIΛ Librarian-win32-ia32',
+                    cwd: './dist/<%= BASENAME %>-win32-ia32',
                     src: '**/*'
                 }]
             },
             linux: {
                 options: {
-                    archive: './dist/' + BASENAME + '-' + packagejson.version + '-Linux-' + process.arch + '-Alpha.zip',
+                    archive: './dist/<%= BASENAME %>-' + packagejson.version + '-Linux-' + process.arch + '-Alpha.zip',
                     mode: 'zip'
                 },
                 files: [{
                     expand: true,
                     dot: true,
-                    cwd: './dist/ΛLΞXΛNDRIΛ Librarian-linux-' + process.arch,
+                    cwd: './dist/<%= BASENAME %>-linux-' + process.arch,
                     src: '**/*'
                 }]
             },
