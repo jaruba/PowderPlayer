@@ -192,7 +192,6 @@ module.exports = function(grunt) {
                 options: {
                     async: true,
                     execOptions: {
-                        env: env,
                         cwd: 'build'
                     }
                 }
