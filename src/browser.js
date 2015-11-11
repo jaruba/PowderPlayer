@@ -1,10 +1,25 @@
 import app from 'app';
 import BrowserWindow from 'browser-window';
 import path from 'path';
+import ipc from 'ipc';
 import util from './utils/util';
 import yargs from 'yargs';
+let startupTime = new Date().getTime();
 
 var args = yargs(process.argv.slice(1)).wrap(100).argv;
+
+function msToTime(s) {
+    var ms = s % 1000;
+    s = (s - ms) / 1000;
+    var secs = s % 60;
+    s = (s - secs) / 60;
+    var mins = s % 60;
+    return mins + ' minutes ' + secs + '.' + ms + ' seconds';
+}
+
+ipc.on('app:startup', function(event, time) {
+    console.log('App Startup Time:', msToTime(Math.floor(time - startupTime)));
+});
 
 app.on('ready', function() {
     var screenSize = require('screen').getPrimaryDisplay().workAreaSize;
