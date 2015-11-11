@@ -43,7 +43,7 @@ default {
     parse: function(torrent) {
         return new Promise((resolve, reject) => {
             readTorrent(torrent, (err, torrent) => {
-                return (err) ? reject(err) : resolve(torrent);
+                return (err || !torrent) ? reject(err) : resolve(torrent);
             });
         });
     },
