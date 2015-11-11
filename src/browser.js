@@ -25,10 +25,8 @@ app.on('ready', function() {
         mainWindow.show();
         mainWindow.toggleDevTools();
         mainWindow.focus();
-        console.info('Dev Mode Active: Developer Tools Enabled.')
+        console.info('Dev Mode Active: Developer Tools Enabled.');
     }
-
-    mainWindow.setMenu(null);
 
     mainWindow.loadUrl(path.normalize('file://' + path.join(__dirname, '../index.html')));
 
