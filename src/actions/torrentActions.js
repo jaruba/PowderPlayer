@@ -10,15 +10,15 @@ class torrentActions {
         );
     }
 
-    addTorrent() {
+    addTorrent(torrent) {
         this.dispatch();
     }
 
-    removeTorrent() {
+    removeTorrent(infohash) {
         this.dispatch();
     }
 
-    changeTorrent() {
+    changeTorrent(change) {
         this.dispatch();
     }
 }
