@@ -31,9 +31,14 @@ default React.createClass({
         return (
             <div className="wrapper">
                <center>
-                    <div id="holder">
+                    <div className="holder">
                         <i className="player-settings"/>
                         <i className="history-icon"/>
+                        <img src="images/powder-logo.png" className="logoBig"/>
+                        <br/>
+                        <b className="fl_dd droid-bold">Drag &amp; Drop a File</b>
+                        <br/>
+                        <span className="fl_sl">or select an option below</span>
                     </div>
                </center>
             </div>
