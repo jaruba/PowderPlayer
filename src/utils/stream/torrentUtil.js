@@ -8,7 +8,6 @@ import getPort from 'get-port';
 export
 default {
     streams: [],
-
     init: function(torrent) {
         Promise.all([this.parse(torrent), getPort()])
             .spread((torrentInfo, port) => {
@@ -23,6 +22,9 @@ default {
             .catch((error) => {
                 console.log(error);
             });
+    },
+    getStats: function(infoHash) {
+        return streams[infoHash];
     },
     preload: function(torrent) {
 
