@@ -29,7 +29,7 @@ default React.createClass({
     },
     render() {
         return (
-            <div >
+            <div className="wrapper">
                
             </div>
         );
