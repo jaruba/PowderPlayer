@@ -7,6 +7,7 @@ module.exports = function(grunt) {
     require('load-grunt-tasks')(grunt);
     var target = grunt.option('target') || 'development';
 
+
     var os;
     switch (process.platform) {
         case 'win32':
@@ -22,8 +23,7 @@ module.exports = function(grunt) {
             os = process.platform;
     }
 
-
-    var BASENAME = 'Powder Player';
+    var BASENAME = 'PowderPlayer';
     var APPNAME = BASENAME;
 
     var OSX_OUT = './dist';
@@ -33,7 +33,6 @@ module.exports = function(grunt) {
     var OSX_DIST_X64 = OSX_OUT + '/' + APPNAME + '-' + packagejson.version + '.pkg';
 
     grunt.initConfig({
-        IDENTITY: 'Developer ID Application: Luigi Poole',
         APPNAME: APPNAME,
         APPNAME_ESCAPED: APPNAME.replace(/ /g, '\\ ').replace(/\(/g, '\\(').replace(/\)/g, '\\)'),
         OSX_OUT: OSX_OUT,
@@ -79,13 +78,11 @@ module.exports = function(grunt) {
                     arch: 'x64',
                     asar: true,
                     prune: true,
-                    'app-bundle-id': 'io.ΛLΞXΛNDRIΛ.Librarian',
+                    'app-bundle-id': 'media.PowderPlayer',
                     'app-version': packagejson.version
                 }
             }
         },
-
-
         // images
         copy: {
             dev: {
@@ -143,18 +140,24 @@ module.exports = function(grunt) {
                     expand: true,
                     cwd: 'util/images/',
                     src: ['icon.ico', 'icon.png'],
-                    dest: 'dist/<%= BASENAME %>-win32-ia32/resources/'
+                    dest: 'dist/ΛLΞXΛNDRIΛ Librarian-win32-ia32/resources/'
                 }]
-
             },
             releaseOSX: {
                 files: [{
+                    expand: true,
+                    cwd: 'util/images/',
+                    src: ['icon.png'],
+                    dest: 'dist/ΛLΞXΛNDRIΛ Librarian-win32-ia32/resources/'
+                }, {
                     src: 'util/images/icon.icns',
                     dest: '<%= OSX_FILENAME %>/Contents/Resources/atom.icns'
-                }]
+                }],
+                options: {
+                    mode: true
+                }
             },
         },
-
         // styles
         less: {
             options: {
@@ -162,11 +165,10 @@ module.exports = function(grunt) {
             },
             dist: {
                 files: {
-                    'build/css/main.css': 'styles/**/*.less'
+                    'build/css/main.css': 'styles/main.less'
                 }
             }
         },
-
         // javascript
         babel: {
             options: {
@@ -183,13 +185,13 @@ module.exports = function(grunt) {
                 }]
             }
         },
-
         shell: {
             electron: {
                 command: electron + ' . ' + (grunt.option('dev') ? '--dev' : ''),
                 options: {
                     async: true,
                     execOptions: {
+                        env: env,
                         cwd: 'build'
                     }
                 }
@@ -198,12 +200,10 @@ module.exports = function(grunt) {
                 command: 'ditto -c -k --sequesterRsrc --keepParent <%= OSX_FILENAME_ESCAPED %> dist/' + BASENAME + '-' + packagejson.version + '-Mac.zip',
             }
         },
-
         clean: {
-            unusedWin: ['dist/<%= BASENAME %>-win32-ia32/resources/default_app'],
+            unusedWin: ['dist/ΛLΞXΛNDRIΛ Librarian-win32-ia32/resources/default_app'],
             release: ['build/', 'dist/'],
         },
-
         compress: {
             windows: {
                 options: {
@@ -213,7 +213,7 @@ module.exports = function(grunt) {
                 files: [{
                     expand: true,
                     dot: true,
-                    cwd: './dist/<%= BASENAME %>-win32-ia32',
+                    cwd: './dist/ΛLΞXΛNDRIΛ Librarian-win32-ia32',
                     src: '**/*'
                 }]
             },
@@ -225,12 +225,11 @@ module.exports = function(grunt) {
                 files: [{
                     expand: true,
                     dot: true,
-                    cwd: './dist/<%= BASENAME %>-linux-' + process.arch,
+                    cwd: './dist/ΛLΞXΛNDRIΛ Librarian-linux-' + process.arch,
                     src: '**/*'
                 }]
             },
         },
-
         // livereload
         watchChokidar: {
             options: {

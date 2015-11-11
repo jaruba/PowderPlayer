@@ -1,30 +1,34 @@
 import app from 'app';
 import BrowserWindow from 'browser-window';
-import ipc from 'ipc';
 import path from 'path';
+import util from './utils/util';
+import yargs from 'yargs';
 
+var args = yargs(process.argv.slice(1)).wrap(100).argv;
 
 app.on('ready', function() {
-
-    var size = require('screen').getPrimaryDisplay().workAreaSize;
-
-    var windowSize = {
-        width: 800,
-        height: 600
-    }
+    var screenSize = require('screen').getPrimaryDisplay().workAreaSize;
 
     var mainWindow = new BrowserWindow({
-        width: windowSize.width,
-        height: windowSize.height,
+        width: screenSize.width * 0.7,
+        height: screenSize.height * 0.7,
         'standard-window': true,
         'auto-hide-menu-bar': true,
         resizable: true,
-        title: 'Slackie Desktop',
+        title: 'Powder Player',
         center: true,
         frame: true,
-        show: true
+        show: false
     });
-    mainWindow.toggleDevTools()
+
+    if (args.dev) {
+        mainWindow.show();
+        mainWindow.toggleDevTools();
+        mainWindow.focus();
+        console.info('Dev Mode Active: Developer Tools Enabled.')
+    }
+
+    mainWindow.setMenu(null);
 
     mainWindow.loadUrl(path.normalize('file://' + path.join(__dirname, '../index.html')));
 
@@ -40,20 +44,15 @@ app.on('ready', function() {
     });
 
     mainWindow.webContents.on('did-finish-load', function() {
-        mainWindow.setTitle('Slackie');
-    });
-
-    mainWindow.on('close', function(event) {
-        app.quit();
-    });
-
-    ipc.on('application:show', () => {
+        mainWindow.setTitle('Powder Player');
         mainWindow.show();
         mainWindow.focus();
     });
 
+    mainWindow.on('close', function() {
+        app.quit();
+    });
 });
-
 
 app.on('window-all-closed', function() {
     app.quit();

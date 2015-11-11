@@ -1,32 +1,20 @@
 import React from 'react';
-import Reflux from 'reflux';
-import Framework from './components/Framework.react';
 import {
     Router, Route, IndexRoute
 }
 from 'react-router';
 
-var App = React.createClass({
+import Framework from './components/Framework.react';
+import Dashboard from './components/Dashboard.react';
+import Preferences from './components/Preferences.react';
+import About from './components/About.react';
 
-    mixins: [Reflux.ListenerMixin],
-
-    componentWillMount() {
-        console.log('About to mount App');
-    },
-
-    render() {
-        return (
-            <div>
-              {React.cloneElement(this.props.children, {query: this.props.query})}
-            </div>
-        );
-    }
-
-});
 
 export
 default (
-    <Route component={App} path='/'>
-        <IndexRoute component={Framework} />
+    <Route path="/" component={Framework}>
+      <IndexRoute component={Dashboard}/>
+      <Route path="/preferences" component={Preferences}/>
+      <Route path="/about" component={About}/>
     </Route>
 );
