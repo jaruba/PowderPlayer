@@ -1,7 +1,10 @@
 {
   "name": "Powder-Player",
   "version": "0.0.1",
-  "authors": ["Luigi Poole", "Branza Victor-Alexandru"],
+  "authors": [
+    "Luigi Poole",
+    "Branza Victor-Alexandru"
+  ],
   "description": "Powder is the future of all torrent requirements, it's a hybrid between a Torrent Client (Peerflix) and a Customized Player (WebChimera.js).",
   "homepage": "http://powder.media/",
   "main": "js/browser.js",
@@ -24,6 +27,7 @@
     "node-notifier": "^4.3.1",
     "react": "^0.14.2",
     "react-dom": "^0.14.2",
+    "react-modal": "^0.6.1",
     "react-router": "^1.0.0",
     "request": "^2.65.0",
     "yargs": "^3.29.0"
