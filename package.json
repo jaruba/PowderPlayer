@@ -1,15 +1,15 @@
 {
   "name": "Powder-Player",
   "version": "0.0.1",
-  "author": "",
-  "description": "",
-  "homepage": "",
+  "authors": ["Luigi Poole", "Branza Victor-Alexandru"],
+  "description": "Powder is the future of all torrent requirements, it's a hybrid between a Torrent Client (Peerflix) and a Customized Player (WebChimera.js).",
+  "homepage": "http://powder.media/",
   "main": "js/browser.js",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/jaruba/PowderPlayer.git"
   },
-  "bugs": "",
+  "bugs": "https://github.com/jaruba/PowderPlayer/issues",
   "scripts": {
     "start": "grunt",
     "release": "grunt release"
