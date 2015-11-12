@@ -7,8 +7,17 @@ default React.createClass({
 
     handelURLAdd() {
         if (this.refs.urlInput.value.length > 0) {
-            console.log('value:', this.refs.urlInput.value)
-            console.log('detected:', utils.parseURL(this.refs.urlInput.value))
+            var type = utils.parseURL(this.refs.urlInput.value);
+            console.log('Detected:', type);
+
+            switch (type) {
+                case 'torrent':
+                    break;
+                case 'http link':
+                    break;
+                default:
+                    console.log('sorry we dont understand:', this.refs.urlInput.value)
+            }
         }
     },
 
@@ -16,13 +25,9 @@ default React.createClass({
         return (
             <div className="holdCenter">
  				<div id="formHolder">
-                    <form className="pure-form pure-form-aligned" onSubmit={this.handelURLAdd} >
-                        <fieldset>
-                            <div className="pure-control-group">
-                                <input ref="urlInput" type="text" placeholder="Magnet/Torrent URI or Video URL" />
-                                <button type="submit" className="pure-button pure-button-primary">Stream</button>
-                            </div>
-                        </fieldset>
+                    <form onSubmit={this.handelURLAdd} >
+                        <input ref="urlInput" type="text" placeholder="Magnet/Torrent URI or Video URL" />
+                        <button type="submit" >Stream</button>
                     </form>
                 </div>
       		</div>
