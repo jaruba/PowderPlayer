@@ -11,7 +11,7 @@ default {
     parseURL: function(url) {
         if (url.substring(0, 8) === 'magnet:?' || this.endsWith(url, '.torrent'))
             return 'torrent';
-        if (url.substring(0, 7) === 'http://' || 'https://')
+        if (url.substring(0, 7) === ('http://' || 'https://'))
             return 'http link';
         return 'unknown';
     },
