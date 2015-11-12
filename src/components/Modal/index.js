@@ -8,7 +8,8 @@ export
 default React.createClass({
     getInitialState() {
         return {
-            modalIsOpen: false
+            modalIsOpen: ModalStore.getState().open,
+            data: ModalStore.getState().data
         };
     },
 
@@ -16,8 +17,11 @@ default React.createClass({
         this.listenTo(LoginModalStore, this.update);
     },
 
-    update(data) {
-        this.setState(data);
+    update() {
+        this.setState({
+            modalIsOpen: ModalStore.getState().open,
+            data: ModalStore.getState().data
+        });
     },
 
     openModal() {

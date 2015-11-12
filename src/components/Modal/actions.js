@@ -1,18 +1,13 @@
-import alt from '../alt'
+import alt from '../../alt'
 
 class modalActions {
-
     constructor() {
         this.generateActions(
-            'stream',
-            'close'
+            'data',
+            'close',
+            'open'
         );
     }
-
-    stream() {
-        this.dispatch();
-    }
-
 }
 
 

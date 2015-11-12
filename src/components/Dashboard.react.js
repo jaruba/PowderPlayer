@@ -1,6 +1,7 @@
 import React from 'react';
 
 import utils from '../utils/util';
+import ModalActions from './Modal/actions';
 
 let If = React.createClass({
     render() {
@@ -29,9 +30,9 @@ default React.createClass({
 
     addSource(source) {
         switch (source) {
+            case 'torrent':
             case 'magnet':
-
-
+                ModalActions.open('sourceAdd', source);
                 break;
 
             default:

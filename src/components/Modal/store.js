@@ -1,4 +1,4 @@
-import alt from '../alt';
+import alt from '../../alt';
 import modalActions from './actions';
 
 
@@ -6,18 +6,15 @@ class modalStore {
     constructor() {
         this.bindActions(modalActions);
 
-        this.magnet = false;
         this.open = false;
-        this.filePath = false;
-    }
-
-    onStream(data) {
+        this.data = null;
 
     }
 
-    onOpen() {
+    onOpen(type, data) {
         this.setState({
-            open: false
+            open: true,
+            data: data
         });
     }
 
