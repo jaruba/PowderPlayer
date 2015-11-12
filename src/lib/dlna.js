@@ -245,6 +245,10 @@ var dlna = {
 			dlna.instance.proxy.web(req, res, configProxy);
 
 		}).listen();
+
+		dlna.instance.server.on('connection', function(socket) {
+			socket.setTimeout(Number.MAX_SAFE_INTEGER);
+		});
 		
 		dlna.instance.server.on('listening',function() {
 			if (typeof dlnaReconnect === 'undefined') dlnaReconnect = false;
@@ -269,7 +273,7 @@ var dlna = {
 		if (player.itemDesc(dlna.instance.lastIndex).mrl.indexOf("pow://") == 0 || player.itemDesc(dlna.instance.lastIndex).mrl.indexOf("magnet:?xt=urn:btih:") == 0) {
 			playerApi.waitForNext = true;
 			dlna.params.nextStartDlna = 1;
-			if (player.itemDesc(player.currentItem()).mrl.indexOf("pow://") == 0) {
+			if (player.itemDesc(dlna.instance.lastIndex).mrl.indexOf("pow://") == 0) {
 				nextTorrent = "magnet:?xt=urn:btih:"+player.itemDesc(dlna.instance.lastIndex).mrl.replace("pow://","");
 				if (nextTorrent.indexOf("/") > -1 && isNaN(nextTorrent.split("/")[1]) === false) {
 					nextTorrent = nextTorrent.split("/")[0];
@@ -454,6 +458,10 @@ var dlna = {
 						  }
 						  
 						}).listen();
+
+						dlna.instance.server.on('connection', function(socket) {
+							socket.setTimeout(Number.MAX_SAFE_INTEGER);
+						});
 						
 						dlna.instance.server.on('listening',function() {
 							var remIj = 0;
@@ -912,7 +920,7 @@ var dlna = {
 					if (dlna.instance.lastIndex +1 < player.itemCount()) {
 						player.setOpeningText("Starting Next Video ...");
 						dlna.castData.castingPaused = 1;
-						dlna.play(dlna.instance.lastIndex+1);
+						dlna.play(parseInt(dlna.instance.lastIndex)+1);
 						// implement change video in playlist
 					} else {
 						// remove this line when adding playlist support
