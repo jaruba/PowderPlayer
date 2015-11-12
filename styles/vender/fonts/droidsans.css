@@ -1,8 +1,8 @@
 @font-face {
   font-family: 'Droid Sans';
-  src: url('fonts/DroidSans/DroidSans.ttf');
+  src: url('../fonts/DroidSans/DroidSans.ttf');
 }
 @font-face {
   font-family: 'Droid Sans Bold';
-  src: url('fonts/DroidSans/DroidSans-Bold.ttf');
+  src: url('../fonts/DroidSans/DroidSans-Bold.ttf');
 }
