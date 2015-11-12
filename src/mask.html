@@ -18,6 +18,16 @@ Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
 <!DOCTYPE html>
 <html>
 <head>
+
+	<script>
+    // yet another awesome NW.js hack
+	if (process.uptime() > 60) {
+		var gui = require('nw.gui');
+		var win = gui.Window.get();
+		win.close(true);
+	}
+    </script>
+    
     <meta charset="UTF-8">
     <title>Powder Player</title>
 
