@@ -7,7 +7,7 @@ class modalStore {
         this.bindActions(modalActions);
 
         this.open = false;
-        this.data = null;
+        this.data = false;
 
     }
 
@@ -21,7 +21,7 @@ class modalStore {
     onClose() {
         this.setState({
             open: false,
-            data: null
+            data: false
         });
     }
 }

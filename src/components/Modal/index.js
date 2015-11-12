@@ -4,6 +4,8 @@ import Modal from 'react-modal';
 import ModalStore from './store';
 import ModalActions from './actions';
 
+import URLContents from './components/URLadd'
+
 export
 default React.createClass({
     getInitialState() {
@@ -40,6 +42,16 @@ default React.createClass({
         });
     },
 
+    getContents() {
+        if (this.state.data) {
+            switch (this.state.data.type) {
+                case 'URLAdd':
+                    return <URLContents/>;
+            }
+        } else
+            return false;
+    },
+
     render() {
         const customStyles = {
             content: {
@@ -51,12 +63,14 @@ default React.createClass({
                 transform: 'translate(-50%, -50%)'
             }
         };
+
         return (
             <div>
  				<Modal
           			isOpen={this.state.modalIsOpen}
           			onRequestClose={this.closeModal}
           			style={customStyles} >
+                    {this.getContents()}
         		</Modal>
       		</div>
         );

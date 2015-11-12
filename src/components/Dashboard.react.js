@@ -24,11 +24,9 @@ default React.createClass({
 
     addSource(source) {
         switch (source) {
-            case 'torrent':
-            case 'magnet':
+            case 'url':
                 ModalActions.open({
-                    type: 'sourceAdd',
-                    source: source
+                    type: 'URLAdd'
                 });
                 break;
             default:
@@ -50,7 +48,7 @@ default React.createClass({
                         <br/>
                         <br/>
                         <div className="mainButHold">
-                        	<div onClick={this.addSource.bind(this, 'torrent')} className="mainButtons goLeft torrentBut">
+                        	<div onClick={this.addSource.bind(this, 'localTorrent')} className="mainButtons goLeft torrentBut">
 								<img className="torIcon" src="images/icons/torrent-icon.png"/>
 								<br/>
 								<p>Add Torrent</p>
@@ -60,7 +58,7 @@ default React.createClass({
                     			<br/>
                     			<p>Add Video</p>
                     		</div>
-                    		<div onClick={this.addSource.bind(this, 'magnet')} className="mainButtons goRight noMarginRight linkBut">
+                    		<div onClick={this.addSource.bind(this, 'url')} className="mainButtons goRight noMarginRight linkBut">
 			                    <img className="urlIcon" src="images/icons/link-icon.png"/>
 			                    <br/>
 			                    <p>Use a URL</p>
