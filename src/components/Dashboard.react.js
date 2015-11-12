@@ -32,13 +32,32 @@ default React.createClass({
             <div className="wrapper">
                <center>
                     <div className="holder">
-                        <i className="player-settings"/>
-                        <i className="history-icon"/>
+                        <i className="ion-android-settings player-settings"/>
+                        <i className="ion-android-time history-icon"/>
                         <img src="images/powder-logo.png" className="logoBig"/>
                         <br/>
                         <b className="fl_dd droid-bold">Drag &amp; Drop a File</b>
                         <br/>
                         <span className="fl_sl">or select an option below</span>
+                        <br/>
+                        <br/>
+                        <div className="mainButHold">
+                        	<div className="mainButtons goLeft torrentBut">
+								<img className="torIcon" src="images/icons/torrent-icon.png"/>
+								<br/>
+								<p>Add Torrent</p>
+		                    </div>
+		                    <div className="mainButtons videoBut">
+                    			<img className="vidIcon" src="images/icons/video-icon.png"/>
+                    			<br/>
+                    			<p>Add Video</p>
+                    		</div>
+                    		<div className="mainButtons goRight noMarginRight linkBut">
+			                    <img className="urlIcon" src="images/icons/link-icon.png"/>
+			                    <br/>
+			                    <p>Use a URL</p>
+		                    </div>
+                        </div>
                     </div>
                </center>
             </div>
