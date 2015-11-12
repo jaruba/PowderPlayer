@@ -8,6 +8,16 @@ import shell from 'shell';
 
 export
 default {
+    parseURL: function(url) {
+        if (url.substring(0, 8) === 'magnet:?' || this.endsWith(url, '.torrent'))
+            return 'torrent';
+        if (url.substring(0, 7) === 'http://' || 'https://')
+            return 'http link';
+        return 'unknown';
+    },
+    endsWith: function(string, suffix) {
+        return string.indexOf(suffix, string.length - suffix.length) !== -1;
+    },
     openUrl: function(url) {
         return shell.openExternal(url);
     },
