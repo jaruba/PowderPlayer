@@ -11,7 +11,7 @@ class modalStore {
 
     }
 
-    onOpen(type, data) {
+    onOpen(data) {
         this.setState({
             open: true,
             data: data
@@ -20,7 +20,8 @@ class modalStore {
 
     onClose() {
         this.setState({
-            open: false
+            open: false,
+            data: null
         });
     }
 }

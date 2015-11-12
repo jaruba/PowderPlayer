@@ -3,12 +3,6 @@ import React from 'react';
 import utils from '../utils/util';
 import ModalActions from './Modal/actions';
 
-let If = React.createClass({
-    render() {
-        return this.props.test ? this.props.children : false;
-    }
-});
-
 export
 default React.createClass({
     getInitialState() {
@@ -32,11 +26,12 @@ default React.createClass({
         switch (source) {
             case 'torrent':
             case 'magnet':
-                ModalActions.open('sourceAdd', source);
+                ModalActions.open({
+                    type: 'sourceAdd',
+                    source: source
+                });
                 break;
-
             default:
-
         }
     },
 

@@ -1,5 +1,7 @@
 import React from 'react';
 import ipc from 'ipc';
+import Modal from './Modal';
+
 
 export
 default React.createClass({
@@ -10,6 +12,7 @@ default React.createClass({
         return (
             <div id="main">
               {React.cloneElement(this.props.children, {query: this.props.query})}
+              <Modal/>
             </div>
         );
     }

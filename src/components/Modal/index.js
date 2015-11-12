@@ -14,7 +14,11 @@ default React.createClass({
     },
 
     componentDidMount() {
-        this.listenTo(LoginModalStore, this.update);
+        ModalStore.listen(this.update);
+    },
+
+    componentWillUnmount() {
+        ModalStore.unlisten(this.update);
     },
 
     update() {
