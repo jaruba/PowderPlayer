@@ -6,6 +6,7 @@
     "Branza Victor-Alexandru"
   ],
   "description": "Powder is the future of all torrent requirements, it's a hybrid between a Torrent Client (Peerflix) and a Customized Player (WebChimera.js).",
+  "relese-name": "Hello World",
   "homepage": "http://powder.media/",
   "main": "js/browser.js",
   "repository": {
