@@ -10,11 +10,15 @@ import Preferences from './components/Preferences.react';
 import About from './components/About.react';
 import Player from './components/Player';
 
+import TorrentDashboard from './components/TorrentDashboard.react';
+
 
 export
 default (
     <Route path="/" component={Framework}>
       <IndexRoute component={Dashboard}/>
+
+      <Route path="/torrentDashboard" component={TorrentDashboard}/>
       
       <Route path="/preferences" component={Preferences}/>
       <Route path="/about" component={About}/>
