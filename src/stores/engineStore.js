@@ -1,19 +1,20 @@
 import alt from '../alt';
-import torrentActions from '../torrentActions';
-import localFilesActions from '../localfileActions';
+import torrentActions from '../actions/torrentActions';
+import localFilesActions from '../actions/localfileActions';
 
 
 class engineStore {
     constructor() {
-        this.bindActions(torrentActions);
-        this.bindActions(localFilesActions);
+        this.bindAction(torrentActions.add, this.onNewTorrent);
 
-        this.torrents = [];
+
+        this.torrents = {};
         this.localFiles = [];
         this.hosted = [];
     }
 
-    onNewTorrent(torrent) {
+    onNewTorrent(instance) {
+        console.log(instance);
         this.setState({
             torrents: torrent.concat(this.torrents)
         });

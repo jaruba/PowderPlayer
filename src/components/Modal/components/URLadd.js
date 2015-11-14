@@ -1,6 +1,9 @@
 import React from 'react';
 
 import utils from '../../../utils/util';
+import torrentActions from '../../../actions/torrentActions';
+
+
 
 export
 default React.createClass({
@@ -12,6 +15,7 @@ default React.createClass({
 
             switch (type) {
                 case 'torrent':
+                    torrentActions.addTorrent(this.refs.urlInput.value);
                     break;
                 case 'http link':
                     break;

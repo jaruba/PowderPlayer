@@ -1,5 +1,6 @@
 import alt from '../alt'
 
+
 class torrentActions {
 
     constructor() {
@@ -12,15 +13,9 @@ class torrentActions {
 
     addTorrent(torrent) {
         this.dispatch();
+        require('../utils/stream/torrentUtil').init(torrent);
     }
 
-    removeTorrent(infohash) {
-        this.dispatch();
-    }
-
-    changeTorrent(change) {
-        this.dispatch();
-    }
 }
 
 
