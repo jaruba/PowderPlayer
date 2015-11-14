@@ -1,12 +1,19 @@
 import React from 'react';
+import {
+    History
+}
+from 'react-router';
 
 import utils from '../../../utils/util';
 import torrentActions from '../../../actions/torrentActions';
 
 
 
+
 export
 default React.createClass({
+
+    mixins: [History],
 
     handelURLAdd() {
         if (this.refs.urlInput.value.length > 0) {
@@ -22,6 +29,9 @@ default React.createClass({
                 default:
                     console.log('sorry we dont understand:', this.refs.urlInput.value)
             }
+
+            this.history.replaceState(null, 'player');
+
         }
     },
 

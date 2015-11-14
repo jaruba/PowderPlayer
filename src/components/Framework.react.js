@@ -1,10 +1,16 @@
 import React from 'react';
 import ipc from 'ipc';
 import Modal from './Modal';
-
+import {
+    RouteContext
+}
+from 'react-router';
 
 export
 default React.createClass({
+
+    mixins: [RouteContext],
+
     componentWillMount() {
         ipc.send('app:startup', new Date().getTime());
     },

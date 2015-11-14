@@ -18,7 +18,6 @@ class engineStore {
         this.setState({
             torrents: this.torrents
         });
-        location.hash = '#player'; //hack as i dont want to use router history to change route programmatically 
     }
 
 }
