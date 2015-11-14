@@ -27,11 +27,10 @@ default React.createClass({
                 case 'http link':
                     break;
                 default:
-                    console.log('sorry we dont understand:', this.refs.urlInput.value)
+                    console.log('sorry we dont understand:', this.refs.urlInput.value);
             }
 
             this.history.replaceState(null, 'player');
-
         }
     },
 
