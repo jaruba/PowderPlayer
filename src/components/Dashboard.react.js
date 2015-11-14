@@ -16,9 +16,11 @@ default React.createClass({
     componentWillUnmount() {
 
     },
-    update(state) {
+    update() {
         if (this.isMounted()) {
-            this.setState(state);
+            this.setState({
+
+            });
         }
     },
 
