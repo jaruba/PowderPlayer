@@ -18,10 +18,10 @@ default (
     <Route path="/" component={Framework}>
       <IndexRoute component={Dashboard}/>
 
-      <Route path="/torrentDashboard" component={TorrentDashboard}/>
+      <Route path="torrentDashboard" component={TorrentDashboard}/>
       
-      <Route path="/preferences" component={Preferences}/>
-      <Route path="/about" component={About}/>
-      <Route path="/player" component={Player}/>
+      <Route path="preferences" component={Preferences}/>
+      <Route path="about" component={About}/>
+      <Route path="player" component={Player}/>
     </Route>
 );

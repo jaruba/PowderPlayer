@@ -14,10 +14,11 @@ class engineStore {
     }
 
     onNewTorrent(instance) {
-        console.log(instance);
+        this.torrents[instance.infoHash] = instance;
         this.setState({
-            torrents: torrent.concat(this.torrents)
+            torrents: this.torrents
         });
+        location.hash = '#player'; //hack as i dont want to use router history to change route programmatically 
     }
 
 }

@@ -1,4 +1,8 @@
 import React from 'react';
+import {
+    Lifecycle
+}
+from 'react-router';
 import Modal from 'react-modal';
 
 import ModalStore from './store';
@@ -8,6 +12,9 @@ import URLContents from './components/URLadd'
 
 export
 default React.createClass({
+
+    mixins: [Lifecycle],
+
     getInitialState() {
         return {
             modalIsOpen: ModalStore.getState().open,
@@ -21,6 +28,11 @@ default React.createClass({
 
     componentWillUnmount() {
         ModalStore.unlisten(this.update);
+    },
+
+    routerWillLeave(nextLocation) {
+        if (!this.state.confirmLeave)
+            return console.log('Are you sure.');
     },
 
     update() {

@@ -6,13 +6,11 @@ import Promise from 'bluebird';
 import getPort from 'get-port';
 import torrentActions from '../../actions/torrentActions';
 
-
 let temp = path.join(remote.require('app').getPath('temp'), 'Powder-Player');
 
 
 module.exports = {
     init(torrent) {
-        console.log(torrent)
         Promise.all([this.parse(torrent), getPort()])
             .spread((torrentInfo, port) => {
                 torrentActions.add(peerflix(torrentInfo, {
