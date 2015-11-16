@@ -45,7 +45,7 @@ var torrent = {
 	
 	cachePiece: async.queue(function(task, cb) {
 		
-		if (!powGlobals.torrent.engine) {
+		if (!powGlobals.torrent.engine || !powGlobals.lists.files[task.index]) {
 			torrent.queues.pieces--;
 			cb();
 			return;
