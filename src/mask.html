@@ -365,6 +365,8 @@ body {
             <h2 class="headButs">Torrent Settings</h2><div class="clear"></div>
             <div id="max-peers-hov" onClick="ui.mechanics.openPeerSelector(); return false" class="actionButton"><span class="droid-bold">Maximum Peers:</span> <span id="max-peers">100</span><input id="spinner" value="100" />
             </div>
+            <div id="peer-port-hov" onClick="ui.mechanics.openPeerPortSelector(); return false" class="actionButton"><span class="droid-bold">Peer Listening Port:</span> <span id="peer-port">6881</span><input id="peer-spinner" value="6881" />
+            </div>
             <div onClick="chooseFile('#folderDialog'); return false" class="actionButton wrap-text"><span class="droid-bold">Download Folder:</span> <span id="def-folder">Temp</span></div>
             <div onClick="ui.settings.changePulseSetting(); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold">Speed Pulsing:</span> <span id="click-pulse">auto</span></div>
             <div id="closeAction" class="forth-animated-close actionButton" style="font-family: 'Droid Sans Bold' !important;font-weight: bold">Close Menu</div>

@@ -3,9 +3,13 @@ var ui = {
 
 	mechanics: {
 		openPeerSelector: function() {
-			if($('#max-peers').is(':visible')) $('#max-peers').hide(0,function() { $('.ui-spinner').show(0); })
+			if($('#max-peers').is(':visible')) $('#max-peers').hide(0,function() { $('#spinner').parent().show(0); })
 		},
 		
+		openPeerPortSelector: function() {
+			if($('#peer-port').is(':visible')) $('#peer-port').hide(0,function() { $('#peer-spinner').parent().show(0); })
+		},
+				
 		addMainButton: function(pluginId, buttonName, buttonTitle, pluginFunc, extraHtml) {
 			if (!extraHtml) extraHtml = '';
 			$('#main-buttons-small').append('<a class="'+buttonName+'-button easy-modal-open" href="#'+buttonName+'-powder" onClick="window.plugins[\''+pluginId+'\'][\''+pluginFunc+'\'](); return false" title="'+buttonTitle+'">'+extraHtml+'<i class="'+buttonName+'-icon"></i></a>');
@@ -450,6 +454,8 @@ var ui = {
 
 $("#max-peers").text(localStorage.maxPeers);
 $("#spinner").val(localStorage.maxPeers);
+$("#peer-port").text(localStorage.peerPort);
+$("#peer-spinner").val(localStorage.peerPort);
 $("#def-folder").text(localStorage.tmpDir);
 if (localStorage.libDir == "Temp") {
 	$("#lib-folder").text("same as Download Folder");
@@ -487,15 +493,34 @@ $(document).ready(function() {
 		max: 10000,
 		step: 10
 	});
-	$('.ui-spinner').css("display","none");
+	$('#spinner').parent().css("display","none");
+	
+	// initiate peer port selector (settings)
+	$('#peer-spinner').spinner({
+		min: 1,
+		max: 65535,
+		step: 1
+	});
+	$('#peer-spinner').parent().css("display","none");
 
 });
 
 $('#max-peers-hov').hover(function() { }, function() {
-	if ($('.ui-spinner').is(":hover") === false) if ($('.ui-spinner').is(':visible')) $('.ui-spinner').hide(0,function() {
-		$('#max-peers').text($('#spinner').val()).show(0);
-		localStorage.maxPeers = parseInt($('#spinner').val());
-	})
+	if ($('#spinner').parent().is(":hover") === false && $('#spinner').parent().is(':visible')) {
+		$('#spinner').parent().hide(0,function() {
+			$('#max-peers').text($('#spinner').val()).show(0);
+			localStorage.maxPeers = parseInt($('#spinner').val());
+		})
+	}
+});
+
+$('#peer-port-hov').hover(function() { }, function() {
+	if ($('#peer-spinner').parent().is(":hover") === false && $('#peer-spinner').parent().is(':visible')) {
+		$('#peer-spinner').parent().hide(0,function() {
+			$('#peer-port').text($('#peer-spinner').val()).show(0);
+			localStorage.peerPort = parseInt($('#peer-spinner').val());
+		})
+	}
 });
 
 $('#use-player').on('change', function() {

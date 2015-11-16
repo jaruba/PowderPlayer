@@ -138,6 +138,11 @@ body {
 	box-shadow: 1px 1px 3px rgba(0,0,0,0.35);
 	background: #fff;
 }
+.third-easy-modal-animated,
+.forth-easy-modal-animated,
+.fifth-easy-modal-animated {
+	font-size: 15px
+}
 .unsupported-easy-modal-animated { padding: 5px; top: 35% !important }
 .forth-easy-modal-animated,
 .fifth-easy-modal-animated,

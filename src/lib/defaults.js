@@ -47,5 +47,6 @@ if (!localStorage.history) {
 	localStorage.history = JSON.stringify(dummyObject);
 	delete dummyObject;
 }
+if (!localStorage.peerPort) localStorage.peerPort = 6881;
 
 var async = require('async');

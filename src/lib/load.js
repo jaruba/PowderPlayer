@@ -308,6 +308,7 @@ var load = {
 			
 			// load the torrent with peerflix
 			var opts = { connections: localStorage.maxPeers, trackers: ['udp://tracker.openbittorrent.com:80', 'udp://tracker.publicbt.com:80', 'udp://tracker.istole.it:6969', 'udp://open.demonii.com:1337' ] };
+			if (localStorage.peerPort != 6881) opts.port = localStorage.peerPort;
 			if (localStorage.tmpDir != 'Temp') opts.path = localStorage.tmpDir;
 			
 			powGlobals.torrent.engine = this._peerflix(torLink,opts);
