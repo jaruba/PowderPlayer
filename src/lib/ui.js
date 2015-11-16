@@ -9,6 +9,10 @@ var ui = {
 		openPeerPortSelector: function() {
 			if($('#peer-port').is(':visible')) $('#peer-port').hide(0,function() { $('#peer-spinner').parent().show(0); })
 		},
+		
+		openBufferSelector: function() {
+			if($('#buffer-sel').is(':visible')) $('#buffer-sel').hide(0,function() { $('#buffer-spinner').parent().show(0); })
+		},
 				
 		addMainButton: function(pluginId, buttonName, buttonTitle, pluginFunc, extraHtml) {
 			if (!extraHtml) extraHtml = '';
@@ -502,6 +506,14 @@ $(document).ready(function() {
 		step: 1
 	});
 	$('#peer-spinner').parent().css("display","none");
+	
+	// initiate buffer size selector (settings)
+	$('#buffer-spinner').spinner({
+		min: 0,
+		max: 60,
+		step: 0.5
+	});
+	$('#buffer-spinner').parent().css("display","none");
 
 });
 
@@ -519,6 +531,15 @@ $('#peer-port-hov').hover(function() { }, function() {
 		$('#peer-spinner').parent().hide(0,function() {
 			$('#peer-port').text($('#peer-spinner').val()).show(0);
 			localStorage.peerPort = parseInt($('#peer-spinner').val());
+		})
+	}
+});
+
+$('#buffer-sel-hov').hover(function() { }, function() {
+	if ($('#buffer-spinner').parent().is(":hover") === false && $('#buffer-spinner').parent().is(':visible')) {
+		$('#buffer-spinner').parent().hide(0,function() {
+			$('#buffer-sel').text($('#buffer-spinner').val()).show(0);
+			localStorage.bufferSize = parseFloat($('#buffer-spinner').val());
 		})
 	}
 });

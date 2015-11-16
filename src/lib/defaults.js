@@ -48,5 +48,6 @@ if (!localStorage.history) {
 	delete dummyObject;
 }
 if (!localStorage.peerPort) localStorage.peerPort = 6881;
+if (!localStorage.bufferSize) localStorage.bufferSize = 10;
 
 var async = require('async');
