@@ -48,7 +48,6 @@
         "socket.io-client": "*",
         "needle": "*",
         "net": "*",
-        "node-metainspector": "*",
         "valid-url": "*",
         "rimraf": "*",
         "adm-zip": "*"
