@@ -43,7 +43,15 @@
         "async": "jaruba/async",
         "pw-wcjs-player": "jaruba/pw-wcjs-player",
         "computer-sleep": "jaruba/computer-sleep",
-        "http-proxy": "*"
+        "http-proxy": "*",
+        "socket.io": "*",
+        "socket.io-client": "*",
+        "needle": "*",
+        "net": "*",
+        "node-metainspector": "*",
+        "valid-url": "*",
+        "rimraf": "*",
+        "adm-zip": "*"
     },
     "optionalDependencies": {
         "node-windows": "*",

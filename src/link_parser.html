@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Powder Player - Link Parser</title>
+    <link rel="stylesheet" href="resources/updater.css" />
+    <link rel="stylesheet" href="resources/bootstrap-progressbar/css/bootstrap-progressbar-3.3.0.min.css">
+    <link rel="stylesheet" href="resources/style.css" />
+
+    <script src="resources/jquery-2.1.3.min.js"></script>
+    <script src="resources/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+    <link rel="stylesheet" href="resources/bootstrap-tooltip/css/bootstrap.min.css">
+    <script src="resources/bootstrap-tooltip/js/bootstrap.js"></script>
+    <script src="resources/bootstrap-tooltip/js/bootstrap-tooltip-extension.js"></script>
+    <style>
+	body {
+		overflow-y: visible;
+	}
+	.actionButton {
+		padding-left: 10px;
+		padding-right: 10px;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		font-size: 14px;
+		width: calc(100% - 20px);
+		overflow: hidden;
+		border-bottom: 1px solid #cfcfcf;
+	}
+	.actionButton:hover {
+		background: #4a8cf7
+	}
+	.actionButton-holder:hover .actionButton {
+		background: #4a8cf7;
+		color: #fff
+	}
+	h2 {
+		background: #404040;
+		font-family: 'Droid Sans';
+		font-size: 15px;
+		position: fixed;
+		width: calc(100% - 18px);
+		height: 18px;
+		z-index: 1000;
+	}
+	h2 a {
+		color: #FFF
+	}
+	h2 a:hover {
+		text-decoration: none
+	}
+	.actionSelected {
+		opacity: 0.7
+	}
+	.tooltip-inner {
+		white-space:nowrap;
+		max-width:none;
+	}
+	body {
+		-webkit-user-select: none;
+	}
+	h2 span {
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		overflow: hidden;
+		display: inherit;
+	}
+	h2 span span {
+		display: inline;
+	}
+	</style>
+</head>
+
+<body>
+<h2><i class='glyphs saveBookmark' onClick="saveBookmark(this)" title="Bookmark this page"></i><i class='glyphs trackLink' onClick="trackLink(this)" title="Track changes"></i><span id='parserTitle'>Parsing Link for Torrents ... <span id='percent'>0</span>%</span></h2>
+<div style='height: 36px'></div>
+    
+	<script>
+	
+	$("#parseTitle").html("Parsing Link for Torrents ... <span id='percent'>0</span>%");
+	
+	port = window.location.href.split('#').pop();
+
+	var io = require('socket.io-client'),
+		socket = io.connect('http://localhost:'+port, {reconnect: true}),
+		parseLink,
+		lastTorrentTime = 0,
+		finishedScan = false,
+		invalidChars = ['\\', '/', ':', '*', '?', '&', '%', "#", "@", "!", "^", "(", ")", "[", "]", "{", "}", ";", '"', '<', '>', '|', '.', "'" , "=", "+"],
+		multipass,
+		gui = require('nw.gui'),
+		win = gui.Window.get(),
+		exceptions = [],
+		childWindows= [];
+		
+		function humanFileSize(bytes, si) {
+			var thresh = si ? 1000 : 1024;
+			if(Math.abs(bytes) < thresh) {
+				return bytes + ' B';
+			}
+			var units = si
+				? ['kB','MB','GB','TB','PB','EB','ZB','YB']
+				: ['KiB','MiB','GiB','TiB','PiB','EiB','ZiB','YiB'];
+			var u = -1;
+			do {
+				bytes /= thresh;
+				++u;
+			} while(Math.abs(bytes) >= thresh && u < units.length - 1);
+			return bytes.toFixed(1)+' '+units[u];
+		}
+		
+		function dbName(str) {
+			for (i = 0; invalidChars[i]; i++) str = str.split(invalidChars[i]).join('');
+			return str;
+		}
+		
+		function toTitleCase(str) {
+			return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+		}
+		
+		function addLink(elem,name,infoHash) {
+			if (!$(elem).hasClass('actionSelected')) {
+				socket.emit('newItem',{ url: 'pow://'+infoHash, title: name });
+				$(elem).addClass('actionSelected');
+			} else {
+				alert('Item already added, it can be disabled from the player\'s playlist menu.');
+			}
+		}
+		
+		function restartMultipass(torLink) {
+			if (!torLink) torLink = parseLink;
+			lastTorrentTime = 0;
+			finishedScan = false;
+			
+			$('#parserTitle').html("Parsing Link for Torrents ... <span id='percent'>0</span>%");
+			multipass.import(torLink);
+			return false;
+		}
+		
+		function fetchTitle(cb) {
+			var MetaInspector = require('node-metainspector');
+			var client = new MetaInspector(parseLink, { timeout: 5000 });
+			
+			client.on("fetch", function(){
+				cb(client.title);
+			});
+			
+			client.on("error", function(err){
+				cb();
+			});
+			
+			client.fetch();
+		}
+		
+		function fetchIMDB(title) {
+			var MetaInspector = require('node-metainspector');
+			var client = new MetaInspector('http://m.imdb.com/find?q='+title.replace(' ','+'), { timeout: 5000 });
+			
+			client.on("fetch", function(){
+				if (client && client.links && client.links.relative && client.links.relative.length) {
+					for (i = 0; client.links.relative[i]; i++) {
+						if (client.links.relative[i].startsWith('/title/tt')) {
+							childWindows.push(gui.Window.open('http://m.imdb.com'+client.links.relative[i],{ width: 447, height: 597, icon: "icon.png", toolbar: false }));
+							childWindows[childWindows.length-1].on('close', function() {
+								childWindows[childWindows.length-1].close(true);
+							});
+							return;
+						}
+					}
+				}
+				alert("Powder is sorry.. it couldn't connect to IMDB.\n\nPretty please try later and don't be a hater.");
+			});
+			
+			client.on("error", function(err){
+				alert("Powder is sorry.. it couldn't connect to IMDB.\n\nPretty please try later and don't be a hater.");
+			});
+			
+			client.fetch();
+		}
+		
+		function showLinks(elem) {
+			trueTitle = $(elem).attr('data-true-title');
+			if ($('[data-show-title="'+trueTitle+'"]').css('display') == 'none') {
+				$(elem).find('.rightDir').removeClass('rightDir').addClass('downDir');
+				$('[data-show-title="'+trueTitle+'"]').show();
+			} else {
+				$(elem).find('.downDir').removeClass('downDir').addClass('rightDir');
+				$('[data-show-title="'+trueTitle+'"]').hide();
+			}
+		}
+		
+		function saveBookmark(elem,setTracked) {
+			if ($(elem).hasClass('saveBookmark')) {
+				
+				if (win.title && win.title.length > 0 && win.title != 'Powder Player - Link Parser') {
+					bTitle = win.title;
+				} else bTitle = '';
+				
+				var bookmarkTitle = prompt("Bookmark name:", bTitle);
+	
+				if (bookmarkTitle == null) return;
+	
+				$(elem).removeClass('saveBookmark').addClass('savedBookmark').attr('title','Remove bookmark');
+	
+				bookmarksObject = JSON.parse(window.localStorage.bookmarks);
+				isSafe = 1;
+				for (oi = 0; bookmarksObject[oi.toString()]; oi++) {
+					if (bookmarksObject[oi.toString()].link == parseLink) {
+						isSafe = 0;
+						break;
+					}
+				}
+				if (isSafe == 1) {
+					for (oii = oi; oii > 0; oii--) {
+						if (bookmarksObject[(oii -1).toString()]) {
+							bookmarksObject[oii.toString()] = bookmarksObject[(oii -1).toString()];
+						}
+					}
+					bookmarksObject["0"] = {};
+					bookmarksObject["0"].link = parseLink;
+					bookmarksObject["0"].title = bookmarkTitle;
+					
+					if (setTracked) bookmarksObject["0"].tracked = true;
+					else bookmarksObject["0"].tracked = false;
+					
+					if (finishedScan) {
+						bookmarksObject["0"].lastTorrentTime = lastTorrentTime;
+						bookmarksObject["0"].lastScan = Math.floor(Date.now() / 1000);
+						bookmarksObject["0"].new = false;
+					} else {
+						bookmarksObject["0"].lastTorrentTime = 0;
+						bookmarksObject["0"].lastScan = 0;
+					}
+					window.localStorage.bookmarks = JSON.stringify(bookmarksObject);
+				}
+	
+			} else {
+				
+				bookmarksObject = JSON.parse(window.localStorage.bookmarks);
+				
+				startFixing = false;
+				
+				for (oi = 0; bookmarksObject[oi.toString()]; oi++) {
+					if (bookmarksObject[oi.toString()].link == parseLink) startFixing = true;
+					if (startFixing) {
+						if (bookmarksObject[(oi+1).toString()]) {
+							bookmarksObject[oi.toString()] = bookmarksObject[(oi+1).toString()];
+						} else {
+							delete bookmarksObject[oi.toString()];
+						}
+					}
+				}
+				
+				window.localStorage.bookmarks = JSON.stringify(bookmarksObject);
+				
+				$(elem).removeClass('savedBookmark').addClass('saveBookmark').attr('title','Bookmark this page');
+				if ($('.trackedLink').length) {
+					$('.trackedLink').removeClass('trackedLink').addClass('trackLink').attr('title','Track changes');
+				}
+			}
+			return false;
+		}
+		
+		function trackLink(elem) {
+			if ($(elem).hasClass('trackLink')) {
+				if ($('.saveBookmark').length) saveBookmark($('.saveBookmark')[0],true);
+				else {
+					
+					bookmarksObject = JSON.parse(window.localStorage.bookmarks);
+					
+					for (oi = 0; bookmarksObject[oi.toString()]; oi++) {
+						if (bookmarksObject[oi.toString()].link == parseLink) {
+							bookmarksObject[oi.toString()].tracked = true;
+							break;
+						}
+					}
+					
+					window.localStorage.bookmarks = JSON.stringify(bookmarksObject);
+	
+				}
+				$(elem).removeClass('trackLink').addClass('trackedLink').attr('title','Stop tracking');
+			} else {
+	
+				bookmarksObject = JSON.parse(window.localStorage.bookmarks);
+				
+				for (oi = 0; bookmarksObject[oi.toString()]; oi++) {
+					if (bookmarksObject[oi.toString()].link == parseLink) {
+						bookmarksObject[oi.toString()].tracked = false;
+						break;
+					}
+				}
+				
+				window.localStorage.bookmarks = JSON.stringify(bookmarksObject);
+	
+				$(elem).removeClass('trackedLink').addClass('trackLink').attr('title','Track changes');
+			}
+			return false;
+		}
+		
+		function injectInfo(source,torrent) {
+//console.log(torrent);
+			if (torrent && source == parseLink) {
+//						console.log("Found Torrent:");
+//						console.log(torrent);
+				var title, created, seeds, peers, size, preInjected, preActivated;
+;
+
+				if (torrent.created) created = torrent.created;
+				else if (torrent.pubDate) created = torrent.pubDate;
+				
+				if (created) {
+//							console.log(created.toString());
+					newTorrentTime = Math.round(new Date(created.toString()).getTime()/1000);
+					if (newTorrentTime > lastTorrentTime) lastTorrentTime = newTorrentTime;
+				}
+//						console.log(newTorrentTime);
+
+				if (torrent.name) title = torrent.name;
+				else if (torrent.title) title = torrent.title;
+				
+				if (typeof torrent.seeds !== 'undefined' && typeof torrent.peers !== 'undefined') {
+					seeds = torrent.seeds;
+					peers = torrent.peers;
+					if (torrent.size) size = humanFileSize(torrent.size,true);
+				} else {
+					seeds = 0;
+					peers = 0;
+					
+					if (torrent.length) size = humanFileSize(torrent.length,true);
+
+					if (torrent.popularity) {
+						for (var key in torrent.popularity) {
+						   if (torrent.popularity.hasOwnProperty(key)) {
+							   seeds += torrent.popularity[key][0];
+							   peers += torrent.popularity[key][1];
+						   }
+						}
+					}
+				}
+
+				if (torrent.infoHash) hash = torrent.infoHash;
+				else if (torrent.hash) hash = torrent.hash;
+				
+				if (!created) exceptions.push(hash.toLowerCase());
+				else if (exceptions.indexOf(hash.toLowerCase()) > -1) {
+					exceptions.splice(exceptions.indexOf(hash.toLowerCase()), 1);
+				}
+				
+				if ($('[data-item-id="'+hash.toLowerCase()+'"]').length) {
+					preInjected = true;
+					if ($('[data-item-id="'+hash.toLowerCase()+'"]').attr('data-original-title')) {
+						preActivated = true;
+					}
+				}
+				
+				tooltipText = '';
+				if (seeds || peers || size) {
+					if (size) {
+						tooltipText += 'Size: '+size;
+					}
+					if (seeds) {
+						if (tooltipText) tooltipText += '; ';
+						tooltipText += 'Seeds: '+seeds;
+					}
+					if (peers) {
+						if (tooltipText) tooltipText += '; ';
+						tooltipText += 'Peers: '+peers;
+					}
+				}
+
+//console.log(title);
+				if (title) {
+					
+					multipass.nameParser(title.replace(':','')+'.avi',function(err,data) {
+						if (err) {
+							if (!preInjected) {
+								$('body').append('<div class="actionButton-holder"><div onClick="addLink(this,\''+title+'\',\''+hash+'\')" data-item-id="'+hash.toLowerCase()+'" class="actionButton droid-bold" data-toggle="tooltip" data-placement="top-right" data-original-title="'+tooltipText+'"><span class="vertTitle">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+title.split('.').join(' ')+'</span></div></div>');
+							}
+						} else {
+							
+							if (data.name && data.year) {
+								trueTitle = toTitleCase(data.name)+' ('+data.year+')';
+							} else if (data.name) {
+								trueTitle = toTitleCase(data.name);
+							}
+							
+							if (data.season) {
+								movName = 'S'+data.season;
+								if (data.episode && data.episode.length) {
+									if (data.episode.length == 1) {
+										if (data.episode[0].toString().length == 1) {
+											movName += 'E0'+data.episode[0];
+										} else movName += 'E'+data.episode[0];
+									} else {
+										movName += 'E'+data.episode.join(',');
+									}
+								}
+								if (data.tag && data.tag.length) {
+									movName += ' '+data.tag.join(' ').toUpperCase();
+								}
+							} else if (data.tag && data.tag.length) {
+								movName = data.tag.join(' ').toUpperCase();
+							} else {
+								movName = title.split('.').join(' ').split('_').join(' ').split('[').join('').split(']').join('').split('(').join('').split(')').join('').split('{').join('').split('}').join('').toLowerCase();
+								if (data.name) movName = movName.replace(data.name,'');
+								if (data.year) movName = movName.replace(data.year,'');
+								movName = toTitleCase(movName.trim());
+							}
+							
+							if (trueTitle) {
+
+								if (!$('[data-show-title="'+trueTitle+'"]').length) {
+									$('body').append('<div onClick="if (!$(this).find(\'.infoBut-small\').is(\':hover\')) showLinks(this)" data-true-title="'+trueTitle+'" class="actionButton droid-bold"><i class="glyphs rightDir"></i><span class="vertTitle">'+trueTitle+'<div style="display: inline-block; float: right" onclick="fetchIMDB(\''+trueTitle.replace('(','').replace(')','')+'\')"><i class="glyphs infoBut-small" title="IMDB Link"></i></div></span></div><div data-show-title="'+trueTitle+'" style="display: none"></div>');
+								}
+								
+								if (!preInjected) {
+									$('[data-show-title="'+trueTitle+'"]').append('<div class="actionButton-holder"><div onClick="addLink(this,\''+title+'\',\''+hash+'\')" data-item-id="'+hash.toLowerCase()+'" class="actionButton droid-bold" data-toggle="tooltip" data-placement="top-right" data-original-title="'+tooltipText+'"><span class="vertTitle">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+movName+'</span></div></div>');
+								}
+
+							} else {
+								if (!preInjected) {
+									$('body').append('<div class="actionButton-holder"><div onClick="addLink(this,\''+title+'\',\''+hash+'\')" data-item-id="'+hash.toLowerCase()+'" class="actionButton droid-bold" data-toggle="tooltip" data-placement="top-right" data-original-title="'+tooltipText+'"><span class="vertTitle">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+title.split('.').join(' ')+'</span></div></div>');
+								}
+							}
+							
+						}
+
+						if (preInjected && tooltipText) {
+							if ($('[data-item-id="'+hash.toLowerCase()+'"]').attr('data-original-title') != tooltipText) {
+								$('[data-item-id="'+hash.toLowerCase()+'"]').attr('data-original-title',tooltipText);
+							}
+						}
+						if (tooltipText && !preActivated) {
+							$('[data-item-id="'+hash.toLowerCase()+'"]').tooltip({ animation: false, trigger: 'manual' });
+							$('[data-item-id="'+hash.toLowerCase()+'"]').parent().hover(function(e){
+								$(this).children().tooltip('toggle');
+							});
+						}
+//								console.log('err');
+//								console.log(err);
+//								console.log('data');
+//								console.log(data);
+					})
+					
+				}
+			}
+		}
+
+
+	$( document ).ready(function() {
+		
+		socket.on('parseLink', function(webData) {
+			
+			if (!parseLink && webData.parseLink) {
+				
+				parseLink = webData.parseLink;
+				
+				try {
+					bookmarksObject = JSON.parse(window.localStorage.bookmarks);
+					for (oi = 0; bookmarksObject[oi.toString()]; oi++) {
+						if (bookmarksObject[oi.toString()].link == parseLink) {
+							$('.saveBookmark').removeClass('saveBookmark').addClass('savedBookmark').attr('title','Remove bookmark');
+							if (bookmarksObject[oi.toString()].tracked) {
+								$('.trackLink').removeClass('trackLink').addClass('trackedLink').attr('title','Stop tracking');
+							}
+							if (bookmarksObject[oi.toString()].title) {
+								win.title = bookmarksObject[oi.toString()].title;
+							}
+							break;
+						}
+					}
+				} catch(e) { }
+				
+				multipass = require('multipass-torrent/cli/multipass');
+				
+//				console.log(parseLink);
+				
+				fetchTitle(function(bTitle) {
+					if (bTitle && bTitle.length > 0 && win.title == 'Powder Player - Link Parser') {
+						win.title = bTitle;
+					}
+				});
+				
+				isLocked = require('lockfile').checkSync(require("path").join(require("os").tmpdir(), dbName(parseLink)));
+				if (isLocked) {
+					newDbName = new Date().getTime();
+					newDbName = newDbName.toString();
+				} else {
+					newDbName = dbName(parseLink);
+				}
+
+//				console.log('db name: '+newDbName);
+
+				multipass.init({
+					dbPath: require("path").join(require("os").tmpdir(), newDbName),
+					replicate: false,
+					minSeedImportant: 5
+				});
+				
+				multipass.on("starterInfo", injectInfo);
+				
+				multipass.on("minimalInfo", injectInfo);
+				
+				multipass.on("found", injectInfo);
+	
+				multipass.on("buffering",function(source,perc) {
+					if (source == parseLink) {
+//						console.log("Source: "+source);
+//						console.log("Percent: "+perc);
+						$('#percent').text(Math.round(perc*100));
+						if (perc == 1) {
+							setTimeout(function() {
+								if (!finishedScan) multipass.emit("finished", source);
+							},1000);
+						}
+					}
+				});
+	
+				multipass.on("finished",function(source) {
+	
+					finishedScan = true;
+					
+					try {
+						bookmarksObject = JSON.parse(window.localStorage.bookmarks);
+						
+						for (oi = 0; bookmarksObject[oi.toString()]; oi++) {
+							if (bookmarksObject[oi.toString()].link == source) {
+								if (lastTorrentTime > bookmarksObject[oi.toString()].lastTorrentTime) {
+									bookmarksObject[oi.toString()].lastTorrentTime = lastTorrentTime;
+									bookmarksObject[oi.toString()].lastScan = Math.floor(Date.now() / 1000);
+									bookmarksObject[oi.toString()].new = false;
+
+								}
+//								console.log("EXCEPTIONS:");
+//								console.log(exceptions);
+								if (exceptions.length > 0) {
+									bookmarksObject[oi.toString()].exceptions = exceptions;
+								} else bookmarksObject[oi.toString()].exceptions = [];
+								break;
+							}
+						}
+						
+						window.localStorage.bookmarks = JSON.stringify(bookmarksObject);
+					} catch(e) {
+//						console.log("FAILED!");
+					}
+					
+//					console.log("Finished with Source: "+source);
+					if (!$('.actionButton').length) {
+						$('#parserTitle').html('No torrents found. <a onClick="restartMultipass(\''+source+'\')" href="#">try again</a>');
+					} else if ($('.actionButton').length == 1) {
+						$('.actionButton').trigger('click');
+						win.close();
+					} else {
+						$('#parserTitle').text('DONE! Click to add items to playlist.');
+					}
+				});
+				
+				multipass.import(parseLink);
+			}
+		});
+		
+	
+//		win.showDevTools();
+		win.on('close',function() {
+			if (childWindows.length) childWindows.forEach(function(el) {
+				try {
+					el.close(true);
+				} catch(e) { }
+			});
+			win.close(true);
+		});
+	});
+	
+    </script>
+</body>
+</html>

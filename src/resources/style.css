@@ -19,6 +19,15 @@ body {
 	overflow-x:hidden;
 	height: 100%
 }
+#main-buttons-hold {
+	float: right;
+	position: relative;
+	width: 100%
+}
+#main-buttons-small {
+	position: absolute;
+	width: 100%
+}
 #player_wrapper {
     min-height: 100%;
     height: 1px;
@@ -40,7 +49,12 @@ body {
 }
 #main { height: 100%; width: 100%; display: table }
 .wrapper { display: table-cell; height: 100%; vertical-align: middle }
-#logoBig { margin-top: 47px; margin-bottom: 13px; margin-left: 58px }
+#logoBig {
+	width: 357px;
+	margin-left: 0;
+	margin-top: 46px;
+	margin-bottom: 11px
+}
 #formHolder {
 	display: block;
 	padding: 6px 10px;
@@ -116,8 +130,9 @@ body {
 .second-easy-modal-animated,
 .third-easy-modal-animated,
 .forth-easy-modal-animated,
+.fifth-easy-modal-animated,
 .unsupported-easy-modal-animated,
-.history-easy-modal-animated {
+.modal-holder {
 	width: 438px;
 	padding: 2em;
 	box-shadow: 1px 1px 3px rgba(0,0,0,0.35);
@@ -125,7 +140,8 @@ body {
 }
 .unsupported-easy-modal-animated { padding: 5px; top: 35% !important }
 .forth-easy-modal-animated,
-.history-easy-modal-animated,
+.fifth-easy-modal-animated,
+.modal-holder,
 #file-settings { padding: 5px; top: 22% !important }
 .third-easy-modal-animated { padding: 5px; top: 23% !important }
 a.mainLinks { color: #1ca8ed; text-decoration: underline }
@@ -265,7 +281,7 @@ a.pl-settings {
 	float: right;
 	font-style: normal;
 	margin-right: 12px;
-	margin-top: 5px;
+	margin-top: 9px;
 }
 a.pl-settings.hover { color: #FFA741 }
 i.player-settings:before {
@@ -280,7 +296,7 @@ a.history-button {
 	float: right;
 	font-style: normal;
 	margin-right: 12px;
-	margin-top: 8px;
+	margin-top: 12px;
 }
 a.history-button.hover { color: #FFA741 }
 i.history-icon:before { font-family: 'Glyphs'; content: "\E806"; font-style: normal }
@@ -292,6 +308,20 @@ i.close-icon:before { font-family: 'Glyphs'; content: "\E896"; font-style: norma
 	cursor: pointer
 }
 .actionButton:hover { background: #0088cc; color: #fff }
+.action-selected {
+	background: #fcfb76
+}
+.action-selected:hover {
+	background: #0087cb
+}
+.actionMessage {
+	background: #fd8571 !important;
+    color: #fff !important;
+    cursor: default !important;
+}
+.actionMessage span {
+	font-size: 14px !important;
+}
 .dropdown.dropdown-tip:before { left: 138px !important }
 .dropdown.dropdown-tip:after { left: 139px !important }
 #dropdown-1 {
@@ -414,9 +444,9 @@ input[type="file"] { display: none }
 #header_content { width: calc(100% - 250px); float: right }
 #header_text { width: 70%; color: #fff; text-align: left }
 #optHold { width: 30% }
-.headButs { margin-bottom: 10px; width: 45.5%; background: #1C728A }
+.headButs { margin-bottom: 5px; font-size: 15px; width: 28.4%; background: #1C728A; margin-right: 0; }
 .fl_dd {
-	font-size: 36px;
+	font-size: 33px;
 	color: #767a7b;
 	display: inline-block;
 	margin-bottom: 2px
@@ -442,26 +472,26 @@ input[type="file"] { display: none }
 }
 .pure-margin { margin-top: 10px !important }
 .spBottom { margin-bottom: 10px }
-#history-title {
+.modal-title {
 	width: 82%;
 	background: #1C728A;
 	text-align: left;
 	padding-left: 12px
 }
-.history-close {
+.modal-close {
 	width: 8%;
 	background: #549AAE;
 	cursor: pointer;
 	text-align: center
 }
-#history-list {
+.modal-list {
 	text-align: left;
 	margin-top: 5px;
 	max-height: 259px;
 	overflow-y: scroll;
 	overflow-x: hidden
 }
-.history-item {
+.modal-item {
 	padding-left: 10px;
 	width: 100%;
 	font-family: 'Droid Sans Bold';
@@ -470,7 +500,7 @@ input[type="file"] { display: none }
 	text-overflow: ellipsis;
 	box-sizing: border-box
 }
-.history-empty {
+.modal-empty {
 	width: 100%;
 	text-align: center;
 	font-family: 'Droid Sans Bold';

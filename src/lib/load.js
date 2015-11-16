@@ -64,64 +64,99 @@ var load = {
 		}
 	},
 	
-	url: function(torLink,noAutoStart) {
-
-		if (torLink.toLowerCase().match(/pow:\?xt=urn:btih:[a-z0-9]{20,50}/i) != null) {
-			torLink = torLink.replace('pow:','magnet:');
-		} else if (torLink.toLowerCase().substr(0,6) == 'pow://') {
-			torLink = torLink.replace('pow://','magnet:?xt=urn:btih:');
-		}
+	url: function(torLink,noAutoStart,direct) {
 		
-		if ($('#main').css("display") == "table") {
-			if (torLink.toLowerCase().replace(".torrent","") != torLink.toLowerCase()) {
-				var readTorrent = require('read-torrent');
-				readTorrent(torLink, function(err, torrent) { load.torrent(torrent); });
-			} else if (torLink.toLowerCase().match(/magnet:\?xt=urn:btih:[a-z0-9]{20,50}/i) != null || torLink.toLowerCase().match(/magnet:\?xt=urn:sha1:[a-z0-9]{20,50}/i) != null) {									
-				load.torrent(torLink);
-			} else {
-				$("#filesList").css("display","none");
-				$('#main').css("display","none");
-				$('#player_wrapper').css("min-height","100%").css("height","100%").css("width","auto");
-	
-				if (!$("#open-url").hasClass("dark-add-url")) {
-					$("#magnetSubmit").text("Add");
-					$("#open-url").addClass("dark-add-url");
-				}
-	
-				if (player) {
-					player.showSplashScreen();
-					player.wrapper.find(".wcp-subtitle-text").text("");
-					player.wrapper.find(".wcp-subtitle-but").hide(0);
-				}
-			
-				load.playlistItem(torLink);
+		// let's find out what type of link we're dealing with
+		if (typeof direct === 'undefined') {
 
-				if (this._setOnlyFirst == 2) this._setOnlyFirst = 1;
+			// convert pow protocol to magnet link
+			if (torLink.toLowerCase().match(/pow:\?xt=urn:btih:[a-z0-9]{20,50}/i) != null) {
+				torLink = torLink.replace('pow:','magnet:');
+			} else if (torLink.toLowerCase().substr(0,6) == 'pow://') {
+				torLink = torLink.replace('pow://','magnet:?xt=urn:btih:');
 			}
-		
-			if (playerApi.loaded) {
-				player.setOpeningText("Loading resource");
-				if (typeof noAutoStart === 'undefined') player.playItem(0);
-			} else playerApi.playlist.async.loadLocal = true;
-		
-			win.gui.setMinimumSize(372, 210);
-			
-			$("#header_container").show();
-			
-		} else {
-			if (torLink.toLowerCase().replace(".torrent","") != torLink.toLowerCase() || torLink.toLowerCase().match(/magnet:\?xt=urn:btih:[a-z0-9]{20,50}/i) != null || torLink.toLowerCase().match(/magnet:\?xt=urn:sha1:[a-z0-9]{20,50}/i) != null) {
-				var readTorrent = require('read-torrent');
-				readTorrent(torLink, function(err, data) {
-					
-					var set = {
-						url: "pow://"+data.infoHash,
-						title: utils.parser(data.name).name()
-					};
 
-					player.addPlaylist(set);
+			if (torLink.toLowerCase().replace(".torrent","") != torLink.toLowerCase()) {
+				// torrent file
+				load.url(torLink,undefined,'torrent');
+			} else if (torLink.toLowerCase().match(/magnet:\?xt=urn:btih:[a-z0-9]{20,50}/i) != null || torLink.toLowerCase().match(/magnet:\?xt=urn:sha1:[a-z0-9]{20,50}/i) != null) {
+				// magnet link
+				load.url(torLink,undefined,'magnet');
+			} else {
+				// not a torrent, let's find out what you are
+				if (torLink.startsWith('http') && new RegExp(playerApi.supportedLinks.join("|")).test(torLink)) {
+					// a VLC supported external link
+					load.url(torLink,undefined,'media');
+				} else if (torLink.indexOf('.') > -1 && playerApi.supportedTypes.indexOf(torLink.split('.').pop().toLowerCase()) > -1) {
+					// a known video or audio file
+					load.url(torLink,undefined,'media');
+				} else {
+					// we got no idea what it is
+					// so we're gonna read the headers
+					if (!plugins['powder-multipass']) load.url(torLink,undefined,'media');
+					else plugins['powder-multipass'].load(torLink);
+				}
+			}
+			return;
+
+		} else {
+		
+			if ($('#main').css("display") == "table") {
+					
+				if (direct == 'torrent') {
+					var readTorrent = require('read-torrent');
+					
+					readTorrent(utils.validateUrl(torLink), function(err, torrent) { load.torrent(torrent); });
+				} else if (direct == 'magnet') {				
+					load.torrent(utils.validateUrl(torLink));
+				} else if (direct == 'media') {
+					
+					$("#filesList").css("display","none");
+					$('#main').css("display","none");
+					$('#player_wrapper').css("min-height","100%").css("height","100%").css("width","auto");
+		
+					if (!$("#open-url").hasClass("dark-add-url")) {
+						$("#magnetSubmit").text("Add");
+						$("#open-url").addClass("dark-add-url");
+					}
+		
+					if (player) {
+						player.showSplashScreen();
+						player.wrapper.find(".wcp-subtitle-text").text("");
+						player.wrapper.find(".wcp-subtitle-but").hide(0);
+					}
+				
+					load.playlistItem(torLink);
 	
-				});
-			} else load.playlistItem(torLink);
+					if (this._setOnlyFirst == 2) this._setOnlyFirst = 1;
+				}
+			
+				if (playerApi.loaded) {
+					player.setOpeningText("Loading resource");
+					if (typeof noAutoStart === 'undefined') player.playItem(0);
+				} else playerApi.playlist.async.loadLocal = true;
+			
+				win.gui.setMinimumSize(372, 210);
+				
+				$("#header_container").show();
+				
+			} else {
+				if (['torrent','magnet'].indexOf(direct) > -1) {
+
+					var readTorrent = require('read-torrent');
+					
+					readTorrent(utils.validateUrl(torLink), function(err, data) {
+						
+						var set = {
+							url: "pow://"+data.infoHash,
+							title: utils.parser(data.name).name()
+						};
+	
+						player.addPlaylist(set);
+		
+					});
+				} else if (direct == 'media') load.playlistItem(torLink);
+			}
 		}
 		
 	},
@@ -219,10 +254,22 @@ var load = {
 	
 	torrent: function(torLink,isHistory) {
 		
+		// convert pow protocol to magnet link
+		if (torLink.toLowerCase().match(/pow:\?xt=urn:btih:[a-z0-9]{20,50}/i) != null) {
+			torLink = torLink.replace('pow:','magnet:');
+		} else if (torLink.toLowerCase().substr(0,6) == 'pow://') {
+			torLink = torLink.replace('pow://','magnet:?xt=urn:btih:');
+		}
+
 		if ($('#main').css("display") == "table") {
 			$('#filesList').css("display","none");
 			$('#main').css("display","none");
 			$('#player_wrapper').css("min-height","100%").css("height","100%").css("width","auto");
+			
+			if (!$("#open-url").hasClass("dark-add-url")) {
+				$("#magnetSubmit").text("Add");
+				$("#open-url").addClass("dark-add-url");
+			}
 			
 			if (player) {
 				player.showSplashScreen();
@@ -344,7 +391,7 @@ var load = {
 		return this;
 	},
 	
-	playlistItem: function(torLink,videoId) {
+	playlistItem: function(torLink,videoId,torName) {
 		videoId = typeof videoId === 'number' ? videoId : typeof powGlobals.lists.media !== 'undefined' ? powGlobals.lists.media.length : 0;
 
 		if (!powGlobals.lists) powGlobals.lists = {};
@@ -353,7 +400,8 @@ var load = {
 		powGlobals.lists.media[videoId] = {};
 		powGlobals.lists.media[videoId].local = 1;
 		
-		powGlobals.lists.media[videoId].filename = utils.parser(torLink).filename();
+		if (torName) powGlobals.lists.media[videoId].filename = utils.parser(torName).filename();
+		else powGlobals.lists.media[videoId].filename = utils.parser(torLink).filename();
 		powGlobals.lists.media[videoId].path = utils.parser(torLink).deWebize();
 		powGlobals.lists.media[videoId].byteLength = utils.fs.size(powGlobals.lists.media[videoId].path);
 		

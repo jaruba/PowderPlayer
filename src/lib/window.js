@@ -5,8 +5,15 @@ var win = {
 	onTop: false,
 	focused: true,
 	gui: gui.Window.get(),
+	childWindows: [],
 	
 	closeProcedure: function(doCheck) {
+		if (win.childWindows.length) win.childWindows.forEach(function(el) {
+			try {
+				el.close();
+			} catch(e) { }
+		});
+		if (win.parser) win.parser.close(true);
 		if ($('#main').css("display") != "table") {
 			if (dlna.castData.casting) dlna.stop();
 			if (powGlobals.torrent.engine && powGlobals.torrent.hasVideo == 0 && typeof doCheck === 'undefined' && !load.argData.silent) {
@@ -398,9 +405,9 @@ $("#inner-in-content").scrollEnd(function(){
 
 $(window).resize(function() {
 	if ($('#main').css("display") == "table") {
-		if ($(window).height() < $("#main").height() && !$("body").hasClass("mini")) {
+		if (($(window).height() -40) < $("#main").height() && !$("body").hasClass("mini")) {
 			$("body").addClass("mini");
-		} else if ($(window).width() < $("#main").width() && !$("body").hasClass("mini")) {
+		} else if (($(window).width() - 12) < $("#main").width() && !$("body").hasClass("mini")) {
 			$("body").addClass("mini");
 		} else if ($(window).width() > 730 && $(window).height() > 650 && $("body").hasClass("mini")) {
 			 $("body").removeClass("mini");
@@ -451,6 +458,7 @@ var firstBlur = true,
 
 window.onfocus = function() { win.frame.show(); };
 window.onblur = function() { win.frame.hide(); };
+//window.onerror = function() { return true; };
 win.gui.on('restore',function() {
 	if (remHeight > 0) {
 		// i know what this looks like, i'm not crazy..
@@ -513,6 +521,7 @@ if (gui.App.argv.length > 0) {
 
 // end specific to window frame
 
+//win.gui.showDevTools();
 win.title.helpers.init();
 
 if (process.platform == 'linux') $("#top-titlebar").css("borderRadius","0");

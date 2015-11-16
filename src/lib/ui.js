@@ -6,6 +6,43 @@ var ui = {
 			if($('#max-peers').is(':visible')) $('#max-peers').hide(0,function() { $('.ui-spinner').show(0); })
 		},
 		
+		addMainButton: function(pluginId, buttonName, buttonTitle, pluginFunc, extraHtml) {
+			if (!extraHtml) extraHtml = '';
+			$('#main-buttons-small').append('<a class="'+buttonName+'-button easy-modal-open" href="#'+buttonName+'-powder" onClick="window.plugins[\''+pluginId+'\'][\''+pluginFunc+'\'](); return false" title="'+buttonTitle+'">'+extraHtml+'<i class="'+buttonName+'-icon"></i></a>');
+			$('.'+buttonName+'-button').mouseenter(function() {
+				$(this).addClass('hover');
+			}).mouseleave(function() {
+				$(this).removeClass('hover');
+			});
+			$('.'+buttonName+'-button').click(function(e) {
+				var target = $(this).attr('href');
+				$(target).trigger('openModal');
+				e.preventDefault();
+			});
+		},
+		
+		injectFont: function(pluginId, fontName) {
+			window.document.styleSheets[0].addRule('@font-face','font-family: \''+pluginId+'\'; src: url(\'file:///'+gui.App.dataPath.split('\\').join('/')+'/plugins/'+pluginId+'/'+fontName+'\');');
+		},
+		
+		injectCSS: function(pluginId, styleName) {
+			$('<link href="file:///'+gui.App.dataPath.split('\\').join('/')+'/plugins/'+pluginId+'/'+styleName+'" rel="stylesheet">').appendTo("head");
+		},
+		
+		createModal: function(modalName,modalTitle) {
+			$('#inner-in-in-content').append('<div class="'+modalName+'-easy-modal-animated modal-holder" id="'+modalName+'-powder"><h2 id="'+modalName+'-title" class="goLeft modal-title">'+modalTitle+'</h2><h2 class="change-set '+modalName+'-animated-close goRight bookmarks-close modal-close"><i class="close-icon"></i></h2><div class="clear"></div><div id="'+modalName+'-list" class="modal-list"></div></div>');
+			
+			modalSettings = {
+				top: 200,
+				overlay: 0.2,
+				transitionIn: 'animated bounceInLeft',
+				transitionOut: 'animated bounceOutRight',
+				closeButtonClass: '.'+modalName+'-animated-close'
+			};
+
+			$('.'+modalName+'-easy-modal-animated').easyModal(modalSettings);
+		},
+		
 		printHistory: function() {
 			$("#history-list").html("");
 			historyObject = JSON.parse(localStorage.history);
@@ -13,16 +50,47 @@ var ui = {
 			if (historyObject[oi.toString()]) {
 				generateHistory = "";
 				for (oi = 0; historyObject[oi.toString()]; oi++) {
-					generateHistory += '<div onClick="load.history(JSON.parse(localStorage.history)['+oi.toString()+']); return false" class="actionButton history-item">'+historyObject[oi.toString()].title+'</div>';
+					generateHistory += '<div onClick="load.history(JSON.parse(localStorage.history)['+oi.toString()+']); return false" class="actionButton history-item modal-item">'+historyObject[oi.toString()].title+'</div>';
 				}
 				if (oi < 7) $("#history-list").css('overflowY', 'auto');
 				else $("#history-list").css('overflowY', 'scroll');
 				$("#history-list").html(generateHistory);
 			} else {
-				generateHistory = "<div class=\"history-empty\">Your history is empty, watch something first.</span>";
+				generateHistory = "<div class=\"history-empty modal-empty\">Your history is empty, watch something first.</span>";
 				$("#history-list").css('overflowY', 'auto');
 				$("#history-list").html(generateHistory);
 			}
+		},
+
+		showPluginPage: function(pluginHref) {
+
+			utils.createWindow(null, 'plugin_page.html', {
+				width: 500,
+				height: 500
+			}, function(socket, newWindow) {
+
+				socket.emit('href', { href: pluginHref, allPlugins: utils.availPlugins, installed: (typeof plugins[pluginHref.split('/')[1]] !== 'undefined') });
+				socket.on('pluginStart', function(webData) {
+					if (webData.repo) {
+						plugins[webData.repo] = require(gui.App.dataPath+pathBreak+'plugins'+pathBreak+webData.repo+pathBreak+'index.js');
+						if (plugins[webData.repo].init) plugins[webData.repo].init();
+						if ($('#plugin-'+webData.repo).length) {
+							$('#plugin-'+webData.repo).addClass('action-selected');
+						}
+					}
+				});
+				socket.on('pluginStop', function(webData) {
+					if (webData.repo) {
+						if (plugins[webData.repo]) {
+							if (plugins[webData.repo].deInit) plugins[webData.repo].deInit();
+							delete plugins[webData.repo];
+						}
+						if ($('#plugin-'+webData.repo).length) {
+							$('#plugin-'+webData.repo).removeClass('action-selected');
+						}
+					}
+				});
+			});
 		}
 	},
 
@@ -76,6 +144,41 @@ var ui = {
 				$("#click-no-sub").text("True");
 				localStorage.noSubs = "0";
 			}
+		},
+
+
+		loadPluginList: function() {
+			require('http').get('http://jaruba.github.io/powder-plugins/plugins.json', function(res){
+			    var body = '';
+			    res.on('data', function(chunk){ body += chunk; });
+			    res.on('end', function(){
+			    	try {
+				        utils.availPlugins = JSON.parse(body);
+						if (utils.availPlugins.length == 0) {
+					    	$('#select-plugin-list').empty().html('<div onClick="ui.settings.loadPluginList(); return false" class="actionButton wrap-text"><span class="droid-bold">Couldn\'t connect. Press to try again.</span></div>');
+						} else {
+//					        console.log("Got a response: ", utils.availPlugins);
+							$('#select-plugin-list').empty();
+							utils.availPlugins.forEach(function(el) {
+								if (el.repo && el.author && el.title) {
+	
+									generateHTML = '<div id="plugin-'+el.repo+'" onClick="ui.mechanics.showPluginPage(\''+el.author+'/'+el.repo+'\'); return false" class="actionButton wrap-text';
+	
+									if (plugins[el.repo]) generateHTML += ' action-selected';
+	
+									generateHTML += '"><span class="droid-bold">'+el.title+'</span></div>';
+	
+									$('#select-plugin-list').append(generateHTML);
+								}
+							});
+						}
+				    } catch(e) {
+				    	$('#select-plugin-list').empty().html('<div onClick="ui.settings.loadPluginList(); return false" class="actionButton wrap-text"><span class="droid-bold">Couldn\'t connect. Press to try again.</span></div>');
+				    }
+			    });
+			}).on('error', function(e){
+			      $('#select-plugin-list').empty().html('<div onClick="ui.settings.loadPluginList(); return false" class="actionButton wrap-text"><span class="droid-bold">Couldn\'t connect. Press to try again.</span></div>');
+			});
 		}
 		
 	},
@@ -173,6 +276,9 @@ var ui = {
 			
 			modalSettings.closeButtonClass = '.forth-animated-close';
 			$('.ask-remove-files').easyModal(modalSettings);
+
+			modalSettings.closeButtonClass = '.fifth-animated-close';
+			$('.fifth-easy-modal-animated').easyModal(modalSettings);
 			
 			modalSettings.closeButtonClass = '.history-animated-close';
 			$('.history-easy-modal-animated').easyModal(modalSettings);

@@ -240,8 +240,12 @@ body {
         <div class="wrapper">
             <center>
 		        <div id="holder">
-                    <a class="pl-settings easy-modal-open h" href="#player-settings"><i class="player-settings"></i></a>
-                    <a class="history-button easy-modal-open h" href="#history-powder" onClick="ui.mechanics.printHistory()"><i class="history-icon"></i></a>
+                	<div id="main-buttons-hold">
+                        <div id="main-buttons-small">
+                            <a class="pl-settings easy-modal-open h" href="#player-settings" title="Settings"><i class="player-settings"></i></a>
+                            <a class="history-button easy-modal-open h" href="#history-powder" onClick="ui.mechanics.printHistory()" title="History"><i class="history-icon"></i></a>
+                        </div>
+                    </div>
                     <img src="images/powder-logo.png" id="logoBig">
                     <br>
                     <b class="fl_dd droid-bold">Drag & Drop a File</b>
@@ -339,7 +343,8 @@ body {
     <div class="third-easy-modal-animated" id="player-settings">
         <center>
             <h2 class="headButs goLeft">Player Settings</h2>
-            <h2 class="headButs change-set goRight" onClick="$('.third-animated-close').trigger('click'); setTimeout(function() { $('#tr-settings').trigger('click'); },1000); return false">Torrent Settings</h2>
+            <h2 class="headButs change-set goRight" onClick="$('.third-animated-close').trigger('click'); setTimeout(function() { $('#plugin-list').trigger('click'); },1000); return false">Extensions</h2>
+            <h2 class="headButs change-set" onClick="$('.third-animated-close').trigger('click'); setTimeout(function() { $('#tr-settings').trigger('click'); },1000); return false">Torrent Settings</h2>
             <div class="clear"></div>
             <div id="but-assoc4" onClick="utils.register.powLinks(); return false" class="actionButton droid-bold" style="display: none">Associate with Powder Links</div>
             <div id="but-assoc1" onClick="utils.register.magnet(); return false" class="actionButton droid-bold">Associate with Magnet Links</div>
@@ -356,12 +361,26 @@ body {
     <div class="forth-easy-modal-animated" id="torrent-settings">
         <center>
             <h2 class="headButs change-set goLeft" onClick="$('.forth-animated-close').trigger('click'); setTimeout(function() { $('.pl-settings').trigger('click'); },1000); return false">Player Settings</h2>
-            <h2 class="headButs goRight">Torrent Settings</h2><div class="clear"></div>
+            <h2 class="headButs change-set goRight" onClick="$('.forth-animated-close').trigger('click'); setTimeout(function() { $('#plugin-list').trigger('click'); },1000); return false">Extensions</h2>
+            <h2 class="headButs">Torrent Settings</h2><div class="clear"></div>
             <div id="max-peers-hov" onClick="ui.mechanics.openPeerSelector(); return false" class="actionButton"><span class="droid-bold">Maximum Peers:</span> <span id="max-peers">100</span><input id="spinner" value="100" />
             </div>
             <div onClick="chooseFile('#folderDialog'); return false" class="actionButton wrap-text"><span class="droid-bold">Download Folder:</span> <span id="def-folder">Temp</span></div>
             <div onClick="ui.settings.changePulseSetting(); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold">Speed Pulsing:</span> <span id="click-pulse">auto</span></div>
             <div id="closeAction" class="forth-animated-close actionButton" style="font-family: 'Droid Sans Bold' !important;font-weight: bold">Close Menu</div>
+        </center>
+    </div>
+
+    <div class="fifth-easy-modal-animated" id="plugins-settings">
+        <center>
+            <h2 class="headButs change-set goLeft" onClick="$('.fifth-animated-close').trigger('click'); setTimeout(function() { $('.pl-settings').trigger('click'); },1000); return false">Player Settings</h2>
+            <h2 class="headButs goRight">Extensions</h2>
+            <h2 class="headButs change-set" onClick="$('.fifth-animated-close').trigger('click'); setTimeout(function() { $('#tr-settings').trigger('click'); },1000); return false">Torrent Settings</h2>
+            <div class="internal-opt actionButton actionMessage"><span class="droid">Click titles for details. Installed plugins have a yellow background.</span></div>
+            <div id="select-plugin-list">
+
+            </div>
+            <div id="closeAction" class="fifth-animated-close actionButton" style="font-family: 'Droid Sans Bold' !important;font-weight: bold">Close Menu</div>
         </center>
     </div>
     
@@ -372,11 +391,11 @@ body {
         </center>
     </div>
 
-    <div class="history-easy-modal-animated" id="history-powder">
-        <h2 id="history-title" class="goLeft">History</h2>
-        <h2 class="change-set history-animated-close goRight history-close"><i class="close-icon"></i></h2>
+    <div class="history-easy-modal-animated modal-holder" id="history-powder">
+        <h2 id="history-title" class="goLeft modal-title">History</h2>
+        <h2 class="change-set history-animated-close goRight history-close modal-close"><i class="close-icon"></i></h2>
         <div class="clear"></div>
-        <div id="history-list"></div>
+        <div id="history-list" class="modal-list"></div>
     </div>
     
     <div class="unsupported-easy-modal-animated" id="unsupported">
@@ -415,6 +434,7 @@ body {
     <input id="export_file" type="file" nwsaveas="snapshot.jpg" style="display:none" nwworkingdir=""/>
     
     <a id="tr-settings" class="easy-modal-open" href="#torrent-settings">Torrent Settings</a>
+    <a id="plugin-list" class="easy-modal-open" href="#plugins-settings">Torrent Settings</a>
     <a id="open-file-settings" class="easy-modal-open" href="#file-settings">File Settings</a>
     <a id="open-unsupported" class="easy-modal-open" href="#unsupported">Unsupported Media Error</a>
     
@@ -436,6 +456,7 @@ body {
     <script src="lib/ui.js"></script>
     <script src="lib/load.js"></script>
     <script src="lib/remote.js"></script>
+    <script src="lib/plugins.js"></script>
     <script src="lib/init.js"></script>
 </body>
 </html>

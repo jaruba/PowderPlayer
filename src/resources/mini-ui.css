@@ -17,8 +17,8 @@
 
 .mini #logoBig {
   width: 357px;
-  margin-left: 55px;
-  margin-top: 31px;
+  margin-left: 0;
+  margin-top: 28px;
   margin-bottom: 6px;
 }
 
@@ -102,12 +102,7 @@
   margin-bottom: 11px;
 }
 
-.mini .headButs {
-  font-size: 17px;
-  margin-bottom: 5px;
-}
-
-.mini #history-title {
+.mini .modal-title {
   font-size: 17px;
   margin-bottom: 0;
   width: 85%;
@@ -115,7 +110,7 @@
   padding-bottom: 6px;
 }
 
-.mini .history-close {
+.mini .modal-close {
   font-size: 17px;
   margin-bottom: 0;
   padding-top: 6px;
@@ -135,8 +130,12 @@
   margin-top: -58px !important;
 }
 
-.mini .history-easy-modal-animated {
+.mini .modal-holder {
   margin-top: -20px !important;
+}
+
+.mini .forth-easy-modal-animated {
+  margin-top: 53px !important;
 }
 
 .mini .forth-easy-modal-animated {
@@ -147,4 +146,12 @@
   font-size: 14px;
   height: 38px;
   line-height: 38px;
+}
+
+.mini a.pl-settings {
+  margin-top: 4px
+}
+
+.mini a.history-button {
+  margin-top: 7px
 }

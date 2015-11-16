@@ -1,7 +1,84 @@
 
 var utils = {
 	
+	portrange: 45032,
+	
+	_supportedProtocols: ['magnet','http','https'],
+	
 	ga: { loaded: false },
+	
+	checkUrl: require('valid-url'),
+
+	availPlugins: {},
+	
+	validateUrl: function(torLink) {
+		
+		if (torLink.indexOf(':') > -1 && this._supportedProtocols.indexOf(torLink.substr(0,torLink.indexOf(':'))) > -1) {
+
+			if (this.checkUrl.isUri(torLink)){
+				return torLink;
+			} else {
+				// let's try to fix it
+				if (torLink.indexOf('&') > -1) {
+					procLink = torLink.substr(0,torLink.lastIndexOf('&'));
+					if (this.checkUrl.isUri(procLink)) return procLink;
+				}
+				if (torLink.indexOf('?') > -1) {
+					procLink = torLink.substr(0,torLink.indexOf('?'));
+					if (this.checkUrl.isUri(procLink)) return procLink;
+				}
+			}
+			
+		}
+
+		return torLink;
+
+	},
+	
+	getContentType: function(torLink,cb) {
+		require('needle').get(torLink, {
+			follow_max: 4, open_timeout: 3500,
+			headers: { "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.99 Safari/537.36" }
+		}).on('headers', function(headers) {
+			if (headers['content-type']) {
+				cb(null,headers['content-type'])
+			} else cb(true);
+		}).on("error", function(e) {
+			cb(true);
+		}).on("end", function() { 
+			// no headers
+			cb(true);
+		});
+	},
+	
+	createWindow: function(pluginId, pluginPage, winSettings, cb) {
+		
+		utils.unusedPort(function(port) {
+
+			var io = require('socket.io').listen(port);
+			
+			if (!winSettings) winSettings = {};
+			if (!winSettings.icon) winSettings.icon = 'icon.png';
+			if (!winSettings.toolbar) winSettings.toolbar = false;
+
+			if (pluginId) newURL = 'file://'+gui.App.dataPath+pathBreak+'plugins'+pathBreak+pluginId+pathBreak+pluginPage+'#'+port;
+			else newURL = 'app://powder/src/'+pluginPage;
+			
+			newWindow = gui.Window.open(newURL+'#'+port, winSettings);
+			
+			win.childWindows.push(newWindow);
+	
+			io.on('connection', function(socket){
+				cb(socket, newWindow);
+			});
+	
+			newWindow.on('close', function() {
+				io.close();
+			});
+			
+		});
+
+	},
 	
 	fs: {
 			
@@ -61,6 +138,17 @@ var utils = {
 			return Math.max(fileSizeInBytes, 0.1).toFixed(1) + byteUnits[i];
 		}
 
+	},
+	
+	unusedPort: function(cb) {
+		var port = utils.portrange
+		utils.portrange += 1
+		var server = require('net').createServer()
+		server.listen(port, function (err) {
+			server.once('close', function () { cb(port) })
+			server.close()
+		})
+		server.on('error', function (err) { utils.unusedPort(cb) })
 	},
 	
 	delayer: function(trg,cb) {
@@ -234,12 +322,14 @@ var utils = {
 					}
 				});
 				
+				ui.settings.loadPluginList();
+
 				// analytics
 				var script = require("ga-localstorage")("UA-65979437-2");
 				$('body').append('<script>'+script+'</script>');
 				utils.ga.func = ct;
 				utils.ga.loaded = true;
-			}
+			} else $('#select-plugin-list').empty().html('<div onClick="ui.settings.loadPluginList(); return false" class="actionButton wrap-text"><span class="droid-bold">Couldn\'t connect. Press to try again.</span></div>');
 		});
 	},
 	
