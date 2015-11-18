@@ -1,7 +1,7 @@
 import peerflix from 'peerflix';
 import path from 'path';
 import remote from 'remote';
-import readTorrent from 'read-torrent';
+import parseTorrent from 'parse-torrent';
 import Promise from 'bluebird';
 import getPort from 'get-port';
 import torrentActions from '../../actions/torrentActions';
@@ -13,12 +13,16 @@ module.exports = {
     init(torrent) {
         Promise.all([this.parse(torrent), getPort()])
             .spread((torrentInfo, port) => {
-                torrentActions.add(peerflix(torrentInfo, {
-                    tracker: true,
-                    port: port,
-                    tmp: temp,
-                    buffer: (1.5 * 1024 * 1024).toString()
-                }));
+                console.log(torrentInfo)
+                this.getIndex(torrentInfo).then((index) => {
+                    torrentActions.add(peerflix(torrentInfo, {
+                        tracker: true,
+                        port: port,
+                        tmp: temp,
+                        index: index,
+                        buffer: (1.5 * 1024 * 1024).toString()
+                    }));
+                });
             })
             .catch((error) => {
                 console.log(error);
@@ -42,7 +46,7 @@ module.exports = {
     },
     parse(torrent) {
         return new Promise((resolve, reject) => {
-            readTorrent(torrent, (err, torrent) => {
+            parseTorrent(torrent, (err, torrent) => {
                 return (err || !torrent) ? reject(err) : resolve(torrent);
             });
         });
