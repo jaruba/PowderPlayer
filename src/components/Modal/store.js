@@ -8,7 +8,7 @@ class modalStore {
 
         this.open = false;
         this.data = false;
-
+        this.thinking = false;
     }
 
     onOpen(data) {
@@ -18,10 +18,17 @@ class modalStore {
         });
     }
 
+    onThinking(think) {
+        this.setState({
+            thinking: think
+        });
+    }
+
     onClose() {
         this.setState({
             open: false,
-            data: false
+            data: false,
+            thinking: false
         });
     }
 }

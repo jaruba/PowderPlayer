@@ -1,8 +1,8 @@
 import alt from '../alt';
+import ipc from 'ipc';
 import torrentActions from '../actions/torrentActions';
 import localFilesActions from '../actions/localfileActions';
 import PlayerActions from '../components/Player/actions';
-
 
 class engineStore {
     constructor() {
@@ -19,19 +19,8 @@ class engineStore {
         this.setState({
             torrents: this.torrents
         });
-        this.initPlay(instance.infoHash);
-    }
-
-    initPlay(infohash) {
-        console.log(this.torrents[infohash])
-        var uri = '127.0.0.1:' + this.torrents[infohash].port;
-        var meta = {
-            title: 'Not yet'
-        };
-        
-        PlayerActions.play({
-            uri: uri,
-            data: meta
+        ipc.send('modal:close', {
+            init: 'player'
         });
     }
 

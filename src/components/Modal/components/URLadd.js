@@ -20,7 +20,7 @@ default React.createClass({
     mixins: [History],
 
     handelURLAdd() {
-        ModalActions.close();
+        ModalActions.thinking(true);
         var inputvalue = this.refs.urlInput.getValue();
         if (inputvalue.length > 0) {
             var type = utils.parseURL(inputvalue);
@@ -35,8 +35,12 @@ default React.createClass({
                 default:
                     console.log('sorry we dont understand:', inputvalue);
             }
-            this.history.replaceState(null, 'player');
         }
+    },
+
+    handelPlayerInit() {
+        ModalActions.close();
+        this.history.replaceState(null, 'player');
     },
 
     render() {

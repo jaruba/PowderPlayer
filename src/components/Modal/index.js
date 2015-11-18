@@ -1,4 +1,5 @@
 import React from 'react';
+import ipc from 'ipc';
 import {
     Lifecycle
 }
@@ -11,7 +12,8 @@ from 'material-ui';
 import ModalStore from './store';
 import ModalActions from './actions';
 
-import URLContents from './components/URLadd'
+import URLContents from './components/URLadd';
+import Thinking from './components/Thinking';
 
 export
 default React.createClass({
@@ -20,6 +22,7 @@ default React.createClass({
 
     getInitialState() {
         return {
+            Thinking: ModalStore.getState().thinking,
             modalIsOpen: ModalStore.getState().open,
             data: ModalStore.getState().data
         };
@@ -27,6 +30,9 @@ default React.createClass({
 
     componentDidMount() {
         ModalStore.listen(this.update);
+        ipc.on('modal:close', function(event, params) {
+            console.log(params);
+        });
     },
 
     componentWillUnmount() {
@@ -41,7 +47,8 @@ default React.createClass({
     update() {
         this.setState({
             modalIsOpen: ModalStore.getState().open,
-            data: ModalStore.getState().data
+            data: ModalStore.getState().data,
+            Thinking: ModalStore.getState().thinking
         });
     },
 
@@ -70,6 +77,9 @@ default React.createClass({
     },
 
     getContents() {
+        if (this.state.Thinking) //loading thing
+            return <Thinking />;
+
         if (this.state.data) {
             switch (this.state.data.type) {
                 case 'URLAdd':
