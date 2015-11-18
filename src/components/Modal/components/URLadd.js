@@ -8,6 +8,8 @@ import utils from '../../../utils/util';
 import torrentActions from '../../../actions/torrentActions';
 
 
+import TextField from 'material-ui/lib/text-field';
+import RaisedButton from 'material-ui/lib/raised-button';
 
 
 export
@@ -36,14 +38,11 @@ default React.createClass({
 
     render() {
         return (
-            <div className="holdCenter">
- 				<div id="formHolder">
-                    <form onSubmit={this.handelURLAdd} >
-                        <input ref="urlInput" type="text" placeholder="Magnet/Torrent URI or Video URL" />
-                        <button type="submit" >Stream</button>
-                    </form>
-                </div>
-      		</div>
+            <form onSubmit={this.handelURLAdd} >
+                <TextField fullWidth="true" floatingLabelText="Magnet/Torrent URI or Video URL" />
+                <RaisedButton style={{float: 'right', }} label="Stream" />
+                <RaisedButton style={{float: 'right', }} label="Cancel" />
+            </form>
         );
     }
 });

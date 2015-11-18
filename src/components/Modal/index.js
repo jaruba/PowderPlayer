@@ -3,7 +3,8 @@ import {
     Lifecycle
 }
 from 'react-router';
-import Modal from 'react-modal';
+
+import Dialog from 'material-ui/lib/dialog';
 
 import ModalStore from './store';
 import ModalActions from './actions';
@@ -54,6 +55,18 @@ default React.createClass({
         });
     },
 
+    getStyle() {
+        if (this.state.data) {
+            switch (this.state.data.type) {
+                case 'URLAdd':
+                    return {
+                        height: '200px'
+                    };
+            }
+        } else
+            return {};
+    },
+
     getContents() {
         if (this.state.data) {
             switch (this.state.data.type) {
@@ -65,26 +78,14 @@ default React.createClass({
     },
 
     render() {
-        const customStyles = {
-            content: {
-                top: '50%',
-                left: '50%',
-                right: 'auto',
-                bottom: 'auto',
-                marginRight: '-50%',
-                transform: 'translate(-50%, -50%)'
-            }
-        };
-
         return (
-            <div>
- 				<Modal
-          			isOpen={this.state.modalIsOpen}
-          			onRequestClose={this.closeModal}
-          			style={customStyles} >
-                    {this.getContents()}
-        		</Modal>
-      		</div>
+            <Dialog
+                style={this.getStyle()}
+          		open={this.state.modalIsOpen}
+                contentStyle={{padding: '0px'}}
+                onRequestClose={this.closeModal}>
+                {this.getContents()}
+        	</Dialog>
         );
     }
 });
