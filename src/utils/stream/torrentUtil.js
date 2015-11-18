@@ -1,11 +1,11 @@
 import peerflix from 'peerflix';
 import path from 'path';
 import remote from 'remote';
-import parseTorrent from 'parse-torrent';
 import readTorrent from 'read-torrent';
 import Promise from 'bluebird';
 import getPort from 'get-port';
 import torrentActions from '../../actions/torrentActions';
+
 
 let temp = path.join(remote.require('app').getPath('temp'), 'Powder-Player');
 
