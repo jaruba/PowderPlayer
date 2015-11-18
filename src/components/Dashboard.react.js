@@ -46,7 +46,7 @@ default React.createClass({
         return (
             <div className="wrapper">
                <center>
-                    <Dropzone className="holder" onDrop={this.onDrop}>
+                    <div className="holder">
                         <i className="ion-android-settings player-settings"/>
                         <i className="ion-android-time history-icon"/>
                         <img src="images/powder-logo.png" className="logoBig"/>
@@ -61,7 +61,7 @@ default React.createClass({
                             <RaisedButton style={{width: '130px'}} onClick={this.addSource.bind(this, 'local-video')} label="Add Video" />
                             <RaisedButton style={{float: 'right', width: '130px'}} onClick={this.addSource.bind(this, 'url')} label="Use a URL" />
                         </div>
-                    </Dropzone>
+                    </div>
                </center>
             </div>
         );
