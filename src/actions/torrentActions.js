@@ -39,7 +39,7 @@ class torrentActions {
     generatePlayerObject(instance) {
         this.dispatch();
         require('../utils/stream/torrentUtil')
-            .getFileIndex(instance.infoHash, instance.torrent.files)
+            .getStreamableFiles(instance.infoHash, instance.torrent.files)
     }
 }
 

@@ -47,13 +47,10 @@ module.exports = {
             });
         });
     },
-    getFileIndex(infoHash, files) {
-        console.log(infoHash, files)
-
-
-
-
-
-        return new Promise((resolve, reject) => {});
+    getStreamableFiles(files) {
+        return _.pluck(files, 'name').filter((name) => {
+            if (new RegExp(supported.all.join('|')).test(name))
+                return name;
+        });
     }
 };
