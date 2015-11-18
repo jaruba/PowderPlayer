@@ -1,5 +1,6 @@
 import React from 'react';
 import remote from 'remote';
+import Dropzone from 'react-dropzone';
 import {
     RaisedButton
 }
@@ -38,11 +39,14 @@ default React.createClass({
                     });
         }
     },
+    onDrop(file) {
+        console.log('Received file:', file);
+    },
     render() {
         return (
             <div className="wrapper">
                <center>
-                    <div className="holder">
+                    <Dropzone className="holder" onDrop={this.onDrop}>
                         <i className="ion-android-settings player-settings"/>
                         <i className="ion-android-time history-icon"/>
                         <img src="images/powder-logo.png" className="logoBig"/>
@@ -57,7 +61,7 @@ default React.createClass({
                             <RaisedButton style={{width: '130px'}} onClick={this.addSource.bind(this, 'local-video')} label="Add Video" />
                             <RaisedButton style={{float: 'right', width: '130px'}} onClick={this.addSource.bind(this, 'url')} label="Use a URL" />
                         </div>
-                    </div>
+                    </Dropzone>
                </center>
             </div>
         );
