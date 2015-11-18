@@ -1,9 +1,4 @@
 import React from 'react';
-import ipc from 'ipc';
-import {
-    Lifecycle
-}
-from 'react-router';
 import {
     Dialog
 }
@@ -18,8 +13,6 @@ import Thinking from './components/Thinking';
 export
 default React.createClass({
 
-    mixins: [Lifecycle],
-
     getInitialState() {
         return {
             Thinking: ModalStore.getState().thinking,
@@ -30,18 +23,10 @@ default React.createClass({
 
     componentDidMount() {
         ModalStore.listen(this.update);
-        ipc.on('modal:close', function(event, params) {
-            console.log(params);
-        });
     },
 
     componentWillUnmount() {
         ModalStore.unlisten(this.update);
-    },
-
-    routerWillLeave(nextLocation) {
-        if (!this.state.confirmLeave)
-            return console.log('Are you sure.');
     },
 
     update() {

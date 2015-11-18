@@ -1,3 +1,4 @@
+import ipc from 'ipc';
 import alt from '../../alt';
 import modalActions from './actions';
 
@@ -9,6 +10,14 @@ class modalStore {
         this.open = false;
         this.data = false;
         this.thinking = false;
+
+        ipc.on('modal:close', function() {
+            this.setState({
+                open: false,
+                data: false,
+                thinking: false
+            });
+        });
     }
 
     onOpen(data) {
