@@ -1,5 +1,4 @@
 ﻿import React from 'react';
-import PlayerHeader from './Header.react';
 
 
 export
@@ -22,7 +21,6 @@ default React.createClass({
     render() {
         return (
             <div >
-               <PlayerHeader/>
                
             </div>
         );
