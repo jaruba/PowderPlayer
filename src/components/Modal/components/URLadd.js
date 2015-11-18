@@ -20,9 +20,9 @@ default React.createClass({
     mixins: [History],
 
     handelURLAdd() {
+        ModalActions.close();
         var inputvalue = this.refs.urlInput.getValue();
-
-        if (inputvalue > 0) {
+        if (inputvalue.length > 0) {
             var type = utils.parseURL(inputvalue);
             console.log('Detected:', type);
 
