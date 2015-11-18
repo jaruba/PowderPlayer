@@ -1,7 +1,7 @@
 ﻿import React from 'react';
 import PlayerHeader from './Header.react';
 import PlayerControls from './Controls.react';
-import PlayerRender from './Render.react';
+import PlayerRender from './Renderer.react';
 
 
 
