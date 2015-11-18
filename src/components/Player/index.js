@@ -1,17 +1,24 @@
 ﻿import React from 'react';
-import PlayerHeader from './Header.react';
-import PlayerControls from './Controls.react';
-import PlayerRender from './Renderer.react';
+import PlayerHeader from './components/Header.react';
+import PlayerControls from './components/Controls.react';
+import PlayerRender from './components/Renderer.react';
 
 import PlayerStore from './store';
 import PlayerActions from './actions';
 
+let If = React.createClass({
+    render() {
+        return this.props.test ? this.props.children : false;
+    }
+});
 
 export
 default React.createClass({
     getInitialState() {
         return {
-            streamURI: PlayerStore.getState().uri,
+            data: PlayerStore.getState().data,
+            type: PlayerStore.getState().type,
+            uri: PlayerStore.getState().uri
         }
     },
     componentDidMount() {
@@ -21,17 +28,22 @@ default React.createClass({
         PlayerStore.unlisten(this.update);
     },
     update() {
-        this.setState({
-            streamURI: PlayerStore.getState().uri,
-            data: PlayerStore.getState().data
-        });
+        if (this.isMounted()) {
+            this.setState({
+                data: PlayerStore.getState().data,
+                type: PlayerStore.getState().type,
+                uri: PlayerStore.getState().uri
+            });
+        }
     },
     render() {
-        console.log(this.state.streamURI)
+        console.log(this.state.uri);
         return (
             <div className="wcjs-player" >
                 <PlayerHeader title="PlaceHolder Title"/>
-                <PlayerRender uri={this.state.streamURI}/>
+                <If test={this.state.uri}>
+                    <PlayerRender uri={this.state.uri}/>
+                </If>
                 <PlayerControls />
             </div>
         );

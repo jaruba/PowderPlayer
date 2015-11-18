@@ -7,14 +7,15 @@ class playerStore {
         this.bindActions(playerActions);
 
         this.uri = '';
+
         this.data = false;
+        
+        this.type = false;
+        this.infoHash = false;
     }
 
     onPlay(data) {
-        this.setState({
-            data: data.data,
-            uri: data.uri
-        });
+        this.setState(data);
     }
 }
 

@@ -1,6 +1,6 @@
 ﻿import React from 'react';
 import path from 'path';
-import wcjsRenderer from './utils/wcjs-renderer';
+import wcjsRenderer from '../utils/wcjs-renderer';
 
 try {
     var wcjs = require(path.join(process.cwd(), 'resources/bin/', 'WebChimera.js.node'));
