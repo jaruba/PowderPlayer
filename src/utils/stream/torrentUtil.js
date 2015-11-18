@@ -9,8 +9,13 @@ import torrentActions from '../../actions/torrentActions';
 
 
 
-let temp = path.join(remote.require('app').getPath('temp'), 'Powder-Player');
+const temp = path.join(remote.require('app').getPath('temp'), 'Powder-Player');
 
+const supported = {
+    all: ["mkv", "avi", "mp4", "mpg", "mpeg", "webm", "flv", "ogg", "ogv", "mov", "wmv", "3gp", "3g2", "m4a", "mp3", "flac"],
+    video: ["mkv", "avi", "mp4", "mpg", "mpeg", "webm", "flv", "ogg", "ogv", "mov", "wmv", "3gp", "3g2"],
+    audio: ["m4a", "mp3", "flac"]
+};
 
 module.exports = {
     init(torrent) {
