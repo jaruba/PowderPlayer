@@ -3,8 +3,10 @@ import {
     Lifecycle
 }
 from 'react-router';
-
-import Dialog from 'material-ui/lib/dialog';
+import {
+    Dialog
+}
+from 'material-ui';
 
 import ModalStore from './store';
 import ModalActions from './actions';
@@ -71,7 +73,7 @@ default React.createClass({
         if (this.state.data) {
             switch (this.state.data.type) {
                 case 'URLAdd':
-                    return <URLContents/>;
+                    return <URLContents />;
             }
         } else
             return false;
@@ -82,7 +84,7 @@ default React.createClass({
             <Dialog
                 style={this.getStyle()}
           		open={this.state.modalIsOpen}
-                contentStyle={{padding: '0px'}}
+                contentClassName='.material-dialog-content'
                 onRequestClose={this.closeModal}>
                 {this.getContents()}
         	</Dialog>
