@@ -17,13 +17,16 @@ class torrentActions {
         require('../utils/stream/torrentUtil')
             .init(torrent)
             .then((instance) => {
+                ModalActions.metaUpdate({
+                    type: 'torrent',
+                    data: instance
+                });
+                return instance;
+            })
+            .then((instance) => {
                 this.actions.add(instance);
                 return new Promise((resolve) => {
                     instance.on('ready', function() {
-                        PlayerActions.play({
-                            type: 'torrent',
-                            infohash: instance.infoHash
-                        });
                         resolve(instance)
                     });
                 });
@@ -36,10 +39,16 @@ class torrentActions {
             });
     }
 
-    generatePlayerObject(instance) {
-        this.dispatch();
-        require('../utils/stream/torrentUtil')
-            .getStreamableFiles(instance.infoHash, instance.torrent.files)
+    generatePlayerObject(instance, PlayerObject = {}) {
+        var TorrentUtil = require('../utils/stream/torrentUtil');
+        return new Promise((resolve, reject) => {
+            TorrentUtil.getStreamableFiles(instance.torrent.files)
+                .then((files) => {
+                    PlayerObject['StreamableFiles'] = files;
+
+                    console.log(PlayerObject)
+                })
+        });
     }
 }
 

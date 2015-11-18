@@ -10,6 +10,7 @@ class modalStore {
         this.open = false;
         this.data = false;
         this.thinking = false;
+        this.meta = false;
 
         ipc.on('modal:close', function() {
             this.setState({
@@ -24,6 +25,12 @@ class modalStore {
         this.setState({
             open: true,
             data: data
+        });
+    }
+
+    onMetaUpdate(meta) {
+        this.setState({
+            meta: meta
         });
     }
 

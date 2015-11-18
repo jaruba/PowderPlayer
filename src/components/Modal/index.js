@@ -30,11 +30,13 @@ default React.createClass({
     },
 
     update() {
-        this.setState({
-            modalIsOpen: ModalStore.getState().open,
-            data: ModalStore.getState().data,
-            Thinking: ModalStore.getState().thinking
-        });
+        if (this.isMounted()) {
+            this.setState({
+                modalIsOpen: ModalStore.getState().open,
+                data: ModalStore.getState().data,
+                Thinking: ModalStore.getState().thinking
+            });
+        }
     },
 
     openModal() {
