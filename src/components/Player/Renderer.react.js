@@ -27,12 +27,16 @@ export
 default React.createClass({
     getInitialState() {
         return {
-            uri: (this.props.uri) ? this.props.uri : ''
+            mounted: false,
+            paused: false,
+            playing false,
+            buffering: true,
+            scrobbling: false
         }
     },
     componentDidMount() {
         this.player = wcjsRenderer.init(wcjs, this.refs['wcjs-render'], wcjsVlcArgs);
-        this.player.play("http://archive.org/download/CartoonClassics/Krazy_Kat_-_Keeping_Up_With_Krazy.mp4");
+        this.player.play((this.props.uri) ? this.props.uri : 'http://archive.org/download/CartoonClassics/Krazy_Kat_-_Keeping_Up_With_Krazy.mp4');
         window.addEventListener('resize', this.handleResize);
         this.handleResize();
     },
