@@ -1,4 +1,5 @@
 import React from 'react';
+import remote from 'remote';
 import {
     RaisedButton
 }
@@ -37,6 +38,18 @@ default React.createClass({
                     type: 'URLAdd'
                 });
                 break;
+            case 'local-torrent':
+                remote.require('dialog')
+                    .showOpenDialog({
+                        title: 'Select file',
+                        properties: ['openFile', 'createDirectory'],
+                        filters: [{
+                            name: 'Torrents',
+                            extensions: ['torrent', 'magnet']
+                        }]
+                    }, (filename) => {
+                        console.log(filename)
+                    });
             default:
         }
     },
@@ -56,7 +69,7 @@ default React.createClass({
                         <br/>
                         <br/>
                         <div className="mainButHold">
-                            <RaisedButton style={{float: 'left', width: '130px'}} label="Add Torrent" />
+                            <RaisedButton style={{float: 'left', width: '130px'}} onClick={this.addSource.bind(this, 'local-torrent')} label="Add Torrent" />
                             <RaisedButton style={{width: '130px'}} label="Add Video" />
                             <RaisedButton style={{float: 'right', width: '130px'}} onClick={this.addSource.bind(this, 'url')} label="Use a URL" />
                         </div>
