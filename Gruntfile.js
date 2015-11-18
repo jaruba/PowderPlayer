@@ -23,6 +23,14 @@ module.exports = function(grunt) {
             os = process.platform;
     }
 
+
+    var arch = (process.arch === 'ia32') ? '32' : '64';
+
+    console.log(' ');
+    console.log('Compiling For:', (os === 'win') ? 'Windows' : 'Mac', arch + 'bit');
+    console.log(' ');
+
+
     var BASENAME = 'Powder Player';
     var APPNAME = BASENAME;
 
@@ -83,7 +91,6 @@ module.exports = function(grunt) {
                 }
             }
         },
-        // images
         copy: {
             dev: {
                 files: [{
@@ -96,6 +103,11 @@ module.exports = function(grunt) {
                     cwd: 'images/',
                     src: ['**/*'],
                     dest: 'build/images/'
+                }, {
+                    expand: true,
+                    cwd: 'bin/' + os + arch + '/',
+                    src: ['**/*'],
+                    dest: 'build/resources/bin/',
                 }, {
                     expand: true,
                     cwd: 'fonts/',
