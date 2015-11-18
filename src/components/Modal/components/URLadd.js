@@ -10,7 +10,6 @@ from 'material-ui';
 
 import utils from '../../../utils/util';
 import torrentActions from '../../../actions/torrentActions';
-
 import ModalActions from '../actions';
 
 
@@ -21,22 +20,21 @@ default React.createClass({
     mixins: [History],
 
     handelURLAdd() {
-        console.log(this.refs.urlInput.getValue())
+        var inputvalue = this.refs.urlInput.getValue();
 
-        if (this.refs.urlInput.getValue() > 0) {
-            var type = utils.parseURL(this.refs.urlInput.getValue());
+        if (inputvalue > 0) {
+            var type = utils.parseURL(inputvalue);
             console.log('Detected:', type);
 
             switch (type) {
                 case 'torrent':
-                    torrentActions.addTorrent(this.refs.urlInput.getValue());
+                    torrentActions.addTorrent(inputvalue);
                     break;
                 case 'http link':
                     break;
                 default:
-                    console.log('sorry we dont understand:', this.refs.urlInput.getValue());
+                    console.log('sorry we dont understand:', inputvalue);
             }
-
             this.history.replaceState(null, 'player');
         }
     },
