@@ -252,7 +252,7 @@ module.exports = function(grunt) {
                 options: {
                     livereload: true
                 },
-                files: ['build/**/*']
+                files: ['build/**/*', '!build/resources/bin/plugins/**/*']
             },
             js: {
                 files: ['src/**/*.js'],
