@@ -1,5 +1,8 @@
 import React from 'react';
 
+import RaisedButton from 'material-ui/lib/raised-button';
+
+
 import utils from '../utils/util';
 import ModalActions from './Modal/actions';
 
@@ -50,11 +53,7 @@ default React.createClass({
                         <br/>
                         <br/>
                         <div className="mainButHold">
-                        	<div onClick={this.addSource.bind(this, 'localTorrent')} className="mainButtons goLeft torrentBut">
-								<img className="torIcon" src="images/icons/torrent-icon.png"/>
-								<br/>
-								<p>Add Torrent</p>
-		                    </div>
+                            <RaisedButton label="Add Torrent" />
 		                    <div onClick={this.addSource.bind(this, 'localFile')} className="mainButtons videoBut">
                     			<img className="vidIcon" src="images/icons/video-icon.png"/>
                     			<br/>
