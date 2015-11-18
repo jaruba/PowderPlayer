@@ -31,6 +31,7 @@ default React.createClass({
         switch (source) {
             case 'url':
                 ModalActions.open({
+                    title: 'Add URL',
                     type: 'URLAdd'
                 });
                 break;
@@ -53,17 +54,9 @@ default React.createClass({
                         <br/>
                         <br/>
                         <div className="mainButHold">
-                            <RaisedButton label="Add Torrent" />
-		                    <div onClick={this.addSource.bind(this, 'localFile')} className="mainButtons videoBut">
-                    			<img className="vidIcon" src="images/icons/video-icon.png"/>
-                    			<br/>
-                    			<p>Add Video</p>
-                    		</div>
-                    		<div onClick={this.addSource.bind(this, 'url')} className="mainButtons goRight noMarginRight linkBut">
-			                    <img className="urlIcon" src="images/icons/link-icon.png"/>
-			                    <br/>
-			                    <p>Use a URL</p>
-		                    </div>
+                            <RaisedButton style={{float: 'left', width: '130px'}} label="Add Torrent" />
+                            <RaisedButton style={{width: '130px'}} label="Add Video" />
+                            <RaisedButton style={{float: 'right', width: '130px'}} onClick={this.addSource.bind(this, 'url')} label="Use a URL" />
                         </div>
                     </div>
                </center>
