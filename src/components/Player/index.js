@@ -27,10 +27,11 @@ default React.createClass({
         });
     },
     render() {
+        console.log(this.state.streamURI)
         return (
             <div className="wcjs-player" >
                 <PlayerHeader title="PlaceHolder Title"/>
-                <PlayerRender uri=""/>
+                <PlayerRender uri={this.state.streamURI}/>
                 <PlayerControls />
             </div>
         );
