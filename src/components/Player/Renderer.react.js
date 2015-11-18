@@ -29,7 +29,7 @@ default React.createClass({
         return {
             mounted: false,
             paused: false,
-            playing false,
+            playing: false,
             buffering: true,
             scrobbling: false
         }
