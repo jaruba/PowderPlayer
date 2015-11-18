@@ -1,8 +1,6 @@
 import alt from '../alt';
-import ipc from 'ipc';
 import torrentActions from '../actions/torrentActions';
 import localFilesActions from '../actions/localfileActions';
-import PlayerActions from '../components/Player/actions';
 
 class engineStore {
     constructor() {
@@ -19,9 +17,7 @@ class engineStore {
         this.setState({
             torrents: this.torrents
         });
-        ipc.send('modal:close', {
-            init: 'player'
-        });
+
     }
 
 }

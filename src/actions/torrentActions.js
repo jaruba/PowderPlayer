@@ -1,3 +1,4 @@
+import ModalActions from '../components/Modal/actions';
 import alt from '../alt'
 
 class torrentActions {
@@ -14,8 +15,11 @@ class torrentActions {
         this.dispatch();
         require('../utils/stream/torrentUtil')
             .init(torrent)
+            .then(ModalActions.close)
             .then(this.actions.add)
-            .catch(console.error);
+        .catch((err) => {
+            ModalActions.close();
+        });
     }
 
 }
