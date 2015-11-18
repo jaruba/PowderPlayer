@@ -17,9 +17,10 @@ class torrentActions {
             .init(torrent)
             .then(ModalActions.close)
             .then(this.actions.add)
-        .catch((err) => {
-            ModalActions.close();
-        });
+            .catch((err) => {
+                ModalActions.close();
+                console.error(err);
+            });
     }
 
 }
