@@ -25,15 +25,14 @@ default React.createClass({
                     extensions: ['MP4', 'MKV', 'MOV', 'AVI', 'WMV', 'WMA', 'ASF', '3GP', 'OGM', 'OGG', 'WAV', 'Real']
                 }];
             case 'local-torrent':
-                var filters = filters ? filters : [{
-                    name: 'Torrents',
-                    extensions: ['TORRENT', 'MAGNET']
-                }];
                 remote.require('dialog')
                     .showOpenDialog({
                         title: 'Select file',
                         properties: ['openFile', 'createDirectory'],
-                        filters: filters
+                        filters: filters ? filters : [{
+                            name: 'Torrents',
+                            extensions: ['TORRENT', 'MAGNET']
+                        }]
                     }, (filename) => {
                         console.log(filename)
                     });
