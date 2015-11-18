@@ -17,7 +17,6 @@ class engineStore {
         this.setState({
             torrents: this.torrents
         });
-
     }
 
 }
