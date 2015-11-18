@@ -4,7 +4,9 @@ import remote from 'remote';
 import readTorrent from 'read-torrent';
 import Promise from 'bluebird';
 import getPort from 'get-port';
+import _ from 'lodash';
 import torrentActions from '../../actions/torrentActions';
+
 
 
 let temp = path.join(remote.require('app').getPath('temp'), 'Powder-Player');
@@ -39,5 +41,14 @@ module.exports = {
                 return (err || !parsedTorrent) ? reject(err) : resolve(parsedTorrent);
             });
         });
+    },
+    getFileIndex(infoHash, files) {
+        console.log(infoHash, files)
+
+
+
+
+
+        return new Promise((resolve, reject) => {});
     }
 };

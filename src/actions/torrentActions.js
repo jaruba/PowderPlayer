@@ -18,16 +18,28 @@ class torrentActions {
             .init(torrent)
             .then((instance) => {
                 this.actions.add(instance);
-                return PlayerActions.play({
-                    type: 'torrent',
-                    infohash: instance.infoHash
+                return new Promise((resolve) => {
+                    instance.on('ready', function() {
+                        PlayerActions.play({
+                            type: 'torrent',
+                            infohash: instance.infoHash
+                        });
+                        resolve(instance)
+                    });
                 });
             })
+            .then(this.actions.generatePlayerObject)
             .then(ModalActions.close)
             .catch((err) => {
                 ModalActions.close();
                 console.error(err);
             });
+    }
+
+    generatePlayerObject(instance) {
+        this.dispatch();
+        require('../utils/stream/torrentUtil')
+            .getFileIndex(instance.infoHash, instance.torrent.files)
     }
 }
 
