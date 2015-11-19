@@ -12,6 +12,8 @@ import utils from '../../../utils/util';
 import torrentActions from '../../../actions/torrentActions';
 import ModalActions from '../actions';
 
+import MessageActions from '../../Message/actions';
+
 
 
 export
@@ -33,8 +35,13 @@ default React.createClass({
                 case 'http link':
                     break;
                 default:
+                    ModalActions.thinking(false);
+                    MessageActions.open('Error: ' + inputvalue + ' is not a valid URL.');
                     console.log('sorry we dont understand:', inputvalue);
             }
+        } else {
+            ModalActions.thinking(false);
+            MessageActions.open('Enter a URL to stream.');
         }
     },
 

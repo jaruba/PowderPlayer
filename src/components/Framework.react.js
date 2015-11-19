@@ -1,6 +1,7 @@
 import React from 'react';
 import ipc from 'ipc';
 import Modal from './Modal';
+import Message from './Message';
 import {
     RouteContext
 }
@@ -18,7 +19,8 @@ default React.createClass({
         return (
             <div id="main">
               {React.cloneElement(this.props.children, {query: this.props.query})}
-              <Modal/>
+              <Modal />
+              <Message />
             </div>
         );
     }
