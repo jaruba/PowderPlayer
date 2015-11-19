@@ -11,21 +11,6 @@ try {
     console.error('WCJS Load Error:', e);
 }
 
-const wcjsVlcArgs = [
-    "--no-media-library",
-    "--no-sub-autodetect-file",
-    "--no-spu",
-    "--no-stats",
-    "--no-osd",
-    "--network-caching", "3500",
-    "--file-caching", "3000",
-    "--no-skip-frames",
-    "--no-video-title-show",
-    "--disable-screensaver",
-    "--no-autoscale",
-    "--ipv4-timeout=86400000"
-];
-
 export
 default React.createClass({
     getInitialState() {
@@ -47,7 +32,20 @@ default React.createClass({
     },
 
     initPlayer() {
-        PlayerActions.wcjsInit(wcjsRenderer.init(wcjs, this.refs['wcjs-render'], wcjsVlcArgs));
+        PlayerActions.wcjsInit(wcjsRenderer.init(wcjs, this.refs['wcjs-render'], [
+            "--no-media-library",
+            "--no-sub-autodetect-file",
+            "--no-spu",
+            "--no-stats",
+            "--no-osd",
+            "--network-caching", "3500",
+            "--file-caching", "3000",
+            "--no-skip-frames",
+            "--no-video-title-show",
+            "--disable-screensaver",
+            "--no-autoscale",
+            "--ipv4-timeout=86400000"
+        ]));
 
         this.player = PlayerStore.getState().wcjs;
 

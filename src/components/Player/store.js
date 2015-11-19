@@ -7,13 +7,16 @@ class playerStore {
         this.bindActions(playerActions);
 
         this.uri = false;
-
         this.data = false;
-
-        this.type = false;
-        this.infoHash = false;
-
         this.wcjs = false;
+
+        this.playing = false;
+        this.paused = false;
+        this.position = 0;
+        this.buffering = false;
+        this.time = 0;
+        this.fullscreen = false;
+        this.uiShown = true;
     }
 
     onWcjsInit(wcjs) {

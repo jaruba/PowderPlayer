@@ -17,8 +17,15 @@ default React.createClass({
     getInitialState() {
         return {
             data: PlayerStore.getState().data,
-            type: PlayerStore.getState().type,
-            uri: PlayerStore.getState().uri
+            uri: PlayerStore.getState().uri,
+
+            playing: PlayerStore.getState().playing,
+            paused: PlayerStore.getState().paused,
+            position: PlayerStore.getState().position,
+            buffering: PlayerStore.getState().buffering,
+            time: PlayerStore.getState().time,
+            fullscreen: PlayerStore.getState().fullscreen,
+            uiShown: PlayerStore.getState().uiShown
         }
     },
     componentWillMount() {
@@ -31,16 +38,37 @@ default React.createClass({
         this.setState({
             data: PlayerStore.getState().data,
             type: PlayerStore.getState().type,
-            uri: PlayerStore.getState().uri
+
+            playing: PlayerStore.getState().playing,
+            paused: PlayerStore.getState().paused,
+            position: PlayerStore.getState().position,
+            buffering: PlayerStore.getState().buffering,
+            time: PlayerStore.getState().time,
+            fullscreen: PlayerStore.getState().fullscreen,
+            uiShown: PlayerStore.getState().uiShown
         });
+    },
+    hover() {
+        this.hoverTimeout && clearTimeout(this.hoverTimeout);
+        this.state.uiShown || this.setState({
+            uiShown: true
+        });
+        this.hoverTimeout = setTimeout(() => {
+            this.setState({
+                uiShown: false
+            })
+        }, 1000);
     },
     render() {
         var playerContent = this.state.uri ? (<PlayerRender uri={this.state.uri}/>) : '';
+        var cursorStyle = {
+            cursor: this.state.uiShown ? 'pointer' : 'none'
+        };
         return (
-            <div className="wcjs-player" >
-                <PlayerHeader title="PlaceHolder Title"/>
+            <div onMouseMove={this.hover} className="wcjs-player" style={cursorStyle}> >
+                <PlayerHeader show={this.state.uiShown} title="PlaceHolder Title"/>
                 {playerContent}
-                <PlayerControls />
+                <PlayerControls show={this.state.uiShown} />
             </div>
         );
     }
