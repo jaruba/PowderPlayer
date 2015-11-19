@@ -36,7 +36,8 @@ default React.createClass({
     },
     componentDidMount() {
         this.player = wcjsRenderer.init(wcjs, this.refs['wcjs-render'], wcjsVlcArgs);
-        this.player.play((this.props.uri) ? this.props.uri : 'http://archive.org/download/CartoonClassics/Krazy_Kat_-_Keeping_Up_With_Krazy.mp4');
+        console.log(this.props.uri)
+        this.player.play(this.props.uri ? this.props.uri : 'http://archive.org/download/CartoonClassics/Krazy_Kat_-_Keeping_Up_With_Krazy.mp4');
         window.addEventListener('resize', this.handleResize);
         this.handleResize();
     },

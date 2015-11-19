@@ -6,7 +6,7 @@ import PlayerRender from './components/Renderer.react';
 import PlayerStore from './store';
 import PlayerActions from './actions';
 
-let If = React.createClass({
+var If = React.createClass({
     render() {
         return this.props.test ? this.props.children : false;
     }
@@ -35,14 +35,12 @@ default React.createClass({
         });
     },
     render() {
-        console.log(this.state.uri);
+        var playerContent = this.state.uri ? (<PlayerRender uri={this.state.uri}/>) : '';
         return (
             <div className="wcjs-player" >
                 <PlayerHeader title="PlaceHolder Title"/>
-                <If test={this.state.uri}>
-                    <PlayerRender uri={this.state.uri}/>
-                    <PlayerControls />
-                </If>
+                {playerContent}
+                <PlayerControls />
             </div>
         );
     }
