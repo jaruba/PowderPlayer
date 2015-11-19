@@ -6,10 +6,10 @@ class playerStore {
     constructor() {
         this.bindActions(playerActions);
 
-        this.uri = '';
+        this.uri = false;
 
         this.data = false;
-        
+
         this.type = false;
         this.infoHash = false;
     }

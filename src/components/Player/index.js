@@ -43,8 +43,8 @@ default React.createClass({
                 <PlayerHeader title="PlaceHolder Title"/>
                 <If test={this.state.uri}>
                     <PlayerRender uri={this.state.uri}/>
+                    <PlayerControls />
                 </If>
-                <PlayerControls />
             </div>
         );
     }

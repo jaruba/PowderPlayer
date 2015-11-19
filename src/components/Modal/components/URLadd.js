@@ -13,7 +13,7 @@ import torrentActions from '../../../actions/torrentActions';
 import ModalActions from '../actions';
 
 import MessageActions from '../../Message/actions';
-
+import PlayerActions from '../../Player/actions';
 
 
 export
@@ -26,30 +26,23 @@ default React.createClass({
         var inputvalue = this.refs.urlInput.getValue();
         if (inputvalue.length > 0) {
             var type = utils.parseURL(inputvalue);
-            console.log('Detected:', type);
-
             switch (type) {
                 case 'torrent':
                     torrentActions.addTorrent(inputvalue);
                     break;
-                case 'http link':
-                    break;
                 default:
-                    ModalActions.thinking(false);
-                    MessageActions.open('Error: ' + inputvalue + ' is not a valid URL.');
-                    console.log('sorry we dont understand:', inputvalue);
+                    ModalActions.close();
+                    PlayerActions.play({
+                        type: 'other',
+                        uri: inputvalue
+                    });
+                    this.history.replaceState(null, 'player');
             }
         } else {
             ModalActions.thinking(false);
             MessageActions.open('Enter a URL to stream.');
         }
     },
-
-    handelPlayerInit() {
-        ModalActions.close();
-        this.history.replaceState(null, 'player');
-    },
-
     render() {
         return (
             <div>
