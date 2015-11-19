@@ -11,6 +11,8 @@ var utils = {
 
 	availPlugins: {},
 	
+	eventMod: require('events'),
+	
 	validateUrl: function(torLink) {
 		
 		if (torLink.indexOf(':') > -1 && this._supportedProtocols.indexOf(torLink.substr(0,torLink.indexOf(':'))) > -1) {

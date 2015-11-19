@@ -6,8 +6,10 @@ var win = {
 	focused: true,
 	gui: gui.Window.get(),
 	childWindows: [],
+	events: new utils.eventMod.EventEmitter(),
 	
 	closeProcedure: function(doCheck) {
+		win.events.emit('close');
 		if (win.childWindows.length) win.childWindows.forEach(function(el) {
 			try {
 				el.close();

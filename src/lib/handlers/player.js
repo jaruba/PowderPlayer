@@ -16,7 +16,7 @@ var playerApi = {
 	waitForNext: false,
 	nextPlay: 0,
 	tempSel: -1,
-	eventMod: require('events'),
+	events: new utils.eventMod.EventEmitter(),
 	
 	init: function() {
 		setTimeout(function() {
@@ -426,6 +426,3 @@ var playerApi = {
 	}
 
 }
-
-playerApi.events = new playerApi.eventMod.EventEmitter();
-
