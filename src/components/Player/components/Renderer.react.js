@@ -106,12 +106,12 @@ default React.createClass({
         }
 
         this.player.onEndReached = () => {
-            this.stop()
+            this.player.stop();
         }
 
         this.player.onEncounteredError = (error) => {
             console.error(error);
-            this.stop();
+            this.player.stop();
         }
 
         this.player.playlist.add(this.state.uri)

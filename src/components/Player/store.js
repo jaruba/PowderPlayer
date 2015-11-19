@@ -33,11 +33,28 @@ class playerStore {
 
     onPlay(data) {
         this.setState({
+            title: data.title,
+            uri: data.uri,
             playing: true,
             paused: false,
             buffering: false
         });
     }
+
+    onClose() {
+        this.setState({
+            playing: false,
+            paused: false,
+            buffering: false,
+            title: '',
+            time: 0,
+            position: 0,
+            fullscreen: false,
+            uiShown: true,
+            uri: false
+        });
+    }
+    
 }
 
 export
