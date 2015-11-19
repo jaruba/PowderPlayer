@@ -65,19 +65,18 @@ default React.createClass({
         console.log(content)
         return (
             <div>
-            <List>
-                <ListItem
-                primaryText="/folder"
-                initiallyOpen={true}
-                nestedItems={[
-                    <ListItem primaryText="FileName.mp4" secondaryText={<p>381 MB</p>} secondaryTextLines={1} />,
-                    <ListItem primaryText="FileName.mp4" secondaryText={<p>381 MB</p>} secondaryTextLines={1} />
-                ]}
-                />
-                {content.map(function(file, i){
-                    return file;
-                })}
-            </List>
+                <List>
+                    <ListItem
+                    primaryText="/folder"
+                    initiallyOpen={true}
+                    nestedItems={[
+                        <ListItem key="1" primaryText="FileName.mp4" secondaryText={<p>381 MB</p>} secondaryTextLines={1} />,
+                        <ListItem key="2" primaryText="FileName.mp4" secondaryText={<p>381 MB</p>} secondaryTextLines={1} />
+                    ]} />
+                    {content.map(function(file, i){
+                        return file;
+                    })}
+                </List>
                 <RaisedButton onClick={this.handelCancel} disabled={playDisabled} style={{float: 'right', 'marginTop': '15px', 'marginLeft': '15px' }} label="Play Selected File" />
                 <RaisedButton onClick={this.handelCancel} style={{float: 'right', 'marginTop': '15px' }} label="Cancel" />
             </div>
