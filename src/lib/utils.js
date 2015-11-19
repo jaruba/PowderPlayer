@@ -55,7 +55,7 @@ var utils = {
 		
 		utils.unusedPort(function(port) {
 
-			var io = require('socket.io').listen(port);
+			if (cb) var io = require('socket.io').listen(port);
 			
 			if (!winSettings) winSettings = {};
 			if (!winSettings.icon) winSettings.icon = 'icon.png';
@@ -64,15 +64,16 @@ var utils = {
 			if (pluginId) newURL = 'file://'+gui.App.dataPath+pathBreak+'plugins'+pathBreak+pluginId+pathBreak+pluginPage+'#'+port;
 			else newURL = 'app://powder/src/'+pluginPage;
 			
-			newWindow = gui.Window.open(newURL+'#'+port, winSettings);
+			if (cb) newWindow = gui.Window.open(newURL+'#'+port, winSettings);
+			else newWindow = gui.Window.open(newURL, winSettings);
 			
 			win.childWindows.push(newWindow);
 	
-			io.on('connection', function(socket){
+			if (cb) io.on('connection', function(socket){
 				cb(socket, newWindow);
 			});
 	
-			newWindow.on('close', function() {
+			if (cb) newWindow.on('close', function() {
 				io.close();
 			});
 			

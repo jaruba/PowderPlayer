@@ -146,25 +146,13 @@ var ctxMenu = {
 			label: 'See Hotkeys',
 			click: function() {
 				try {
-					window.hotkeys = gui.Window.open('https://github.com/jaruba/PowderPlayer/wiki/Hotkeys', {
+					utils.createWindow(null, 'hotkeys.html', {
 						position: 'center',
 						focus: true,
-						icon: 'icon.png',
-						toolbar: false,
 						resizable: false,
 						width: 600,
-						height: 640,
-						show: false
-					});
-
-					window.hotkeys.on('loaded', function () {
-						window.hotkeys.title = 'Powder Hotkeys';
-						window.hotkeys.window.document.body.innerHTML = window.hotkeys.window.document.getElementById('wiki-body').innerHTML;
-						window.hotkeys.window.document.body.style.padding = "10px 15px";
-						window.hotkeys.window.document.body.style.background = "#f4f4f4";
-						window.hotkeys.window.document.body.style.fontFamily = "'Droid Sans', sans-serif";
-						window.hotkeys.show();
-					});
+						height: 640
+					}, null);
 				} catch (e) {
 					gui.Shell.openExternal('https://github.com/jaruba/PowderPlayer/wiki/Hotkeys');
 				}
