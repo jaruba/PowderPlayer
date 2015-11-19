@@ -15,6 +15,8 @@ export
 default React.createClass({
     getInitialState() {
         return {
+            uri: PlayerStore.getState().uri,
+
             playing: false,
             paused: false,
             position: 0,
@@ -112,7 +114,7 @@ default React.createClass({
             this.stop();
         }
 
-        this.props.uri && this.player.playlist.add(this.props.uri)
+        this.player.playlist.add(this.state.uri)
         this.player.play()
         this.player.subtitles.track = 0;
     },

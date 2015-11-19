@@ -6,12 +6,6 @@ import PlayerRender from './components/Renderer.react';
 import PlayerStore from './store';
 import PlayerActions from './actions';
 
-var If = React.createClass({
-    render() {
-        return this.props.test ? this.props.children : false;
-    }
-});
-
 export
 default React.createClass({
     getInitialState() {
@@ -49,15 +43,15 @@ default React.createClass({
         }, 1000);
     },
     render() {
-        var playerContent = this.state.uri ? (<PlayerRender uri={this.state.uri}/>) : '';
+        var playerContent = this.state.uri ? <PlayerRender /> : '';
         var cursorStyle = {
             cursor: this.state.uiShown ? 'pointer' : 'none'
         };
         return (
             <div onMouseMove={this.hover} className="wcjs-player" style={cursorStyle}> >
-                <PlayerHeader show={this.state.uiShown} title="PlaceHolder Title"/>
+                <PlayerHeader />
                 {playerContent}
-                <PlayerControls show={this.state.uiShown} />
+                <PlayerControls />
             </div>
         );
     }
