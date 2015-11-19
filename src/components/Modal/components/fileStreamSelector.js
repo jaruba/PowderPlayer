@@ -11,7 +11,8 @@ export
 default React.createClass({
     getInitialState() {
         return {
-            files: ModalStore.getState().files,
+            files: ModalStore.getState().fileSelector.files,
+            folders: ModalStore.getState().fileSelector.folders
         };
     },
 
@@ -29,7 +30,8 @@ default React.createClass({
 
     update() {
         this.setState({
-            files: ModalStore.getState().files,
+            files: ModalStore.getState().fileSelector.files,
+            folders: ModalStore.getState().fileSelector.folders
         });
     },
 
@@ -42,7 +44,6 @@ default React.createClass({
     },
 
     render() {
-        console.log('fileselector render')
         return (
             <div>
             <List>

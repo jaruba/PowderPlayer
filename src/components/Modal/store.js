@@ -11,7 +11,10 @@ class modalStore {
         this.data = false;
         this.thinking = false;
         this.meta = false;
-        this.files = {};
+        this.fileSelector = {
+            files: {},
+            folders: {}
+        };
 
         ipc.on('modal:close', function() {
             this.setState({
