@@ -19,12 +19,8 @@ default React.createClass({
             data: PlayerStore.getState().data,
             uri: PlayerStore.getState().uri,
 
-            playing: PlayerStore.getState().playing,
-            paused: PlayerStore.getState().paused,
             position: PlayerStore.getState().position,
             buffering: PlayerStore.getState().buffering,
-            time: PlayerStore.getState().time,
-            fullscreen: PlayerStore.getState().fullscreen,
             uiShown: PlayerStore.getState().uiShown
         }
     },
@@ -39,24 +35,17 @@ default React.createClass({
             data: PlayerStore.getState().data,
             type: PlayerStore.getState().type,
 
-            playing: PlayerStore.getState().playing,
-            paused: PlayerStore.getState().paused,
             position: PlayerStore.getState().position,
             buffering: PlayerStore.getState().buffering,
-            time: PlayerStore.getState().time,
-            fullscreen: PlayerStore.getState().fullscreen,
             uiShown: PlayerStore.getState().uiShown
         });
     },
     hover() {
         this.hoverTimeout && clearTimeout(this.hoverTimeout);
-        this.state.uiShown || this.setState({
-            uiShown: true
-        });
+
+        this.state.uiShown || PlayerActions.uiShown(true);
         this.hoverTimeout = setTimeout(() => {
-            this.setState({
-                uiShown: false
-            })
+            PlayerActions.uiShown(false);
         }, 1000);
     },
     render() {

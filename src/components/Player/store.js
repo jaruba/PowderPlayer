@@ -25,8 +25,18 @@ class playerStore {
         });
     }
 
+    onUiShown(toggle) {
+        this.setState({
+            uiShown: toggle
+        });
+    }
+
     onPlay(data) {
-        this.setState(data);
+        this.setState({
+            playing: true,
+            paused: false,
+            buffering: false
+        });
     }
 }
 
