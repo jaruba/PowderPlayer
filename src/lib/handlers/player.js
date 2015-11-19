@@ -16,10 +16,14 @@ var playerApi = {
 	waitForNext: false,
 	nextPlay: 0,
 	tempSel: -1,
+	eventMod: require('events'),
 	
 	init: function() {
 		setTimeout(function() {
 			player = new wcp("#player_wrapper").addPlayer({ autoplay: 1, progressCache: 1, pausePolicy: localStorage.clickPause });
+			
+			playerApi.events.emit('loaded');
+			
 			player.onPlaying(playerApi.listeners.isPlaying);
 			player.onOpening(playerApi.listeners.isOpening);
 			player.onPosition(playerApi.listeners.changedPosition);
@@ -422,3 +426,6 @@ var playerApi = {
 	}
 
 }
+
+playerApi.events = new playerApi.eventMod.EventEmitter();
+
