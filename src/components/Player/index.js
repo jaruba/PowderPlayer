@@ -21,20 +21,18 @@ default React.createClass({
             uri: PlayerStore.getState().uri
         }
     },
-    componentDidMount() {
+    componentWillMount() {
         PlayerStore.listen(this.update);
     },
     componentWillUnmount() {
         PlayerStore.unlisten(this.update);
     },
     update() {
-        if (this.isMounted()) {
-            this.setState({
-                data: PlayerStore.getState().data,
-                type: PlayerStore.getState().type,
-                uri: PlayerStore.getState().uri
-            });
-        }
+        this.setState({
+            data: PlayerStore.getState().data,
+            type: PlayerStore.getState().type,
+            uri: PlayerStore.getState().uri
+        });
     },
     render() {
         console.log(this.state.uri);
