@@ -33,6 +33,22 @@ default React.createClass({
             files: ModalStore.getState().fileSelector.files,
             folders: ModalStore.getState().fileSelector.folders
         });
+
+
+    },
+
+    getContent() {
+        var content = [];
+        /*
+        for (var folder in this.state.folders) {
+            var attr = this.state.folders[folder];
+        }
+        */
+        for (var file in this.state.files) {
+            content.push(this.generateFile(this.state.files[file]));
+        }
+
+        return content;
     },
 
     generateFolder(folder, files) {
@@ -44,6 +60,9 @@ default React.createClass({
     },
 
     render() {
+        let playDisabled = true;
+        let content = this.getContent();
+        console.log(content)
         return (
             <div>
             <List>
@@ -55,12 +74,11 @@ default React.createClass({
                     <ListItem primaryText="FileName.mp4" secondaryText={<p>381 MB</p>} secondaryTextLines={1} />
                 ]}
                 />
-                <ListItem primaryText="FileName.mp4" secondaryText={<p>381 MB</p>} secondaryTextLines={1} />
-                <ListItem primaryText="FileName.mp4" secondaryText={<p>381 MB</p>} secondaryTextLines={1} />
-                <ListItem primaryText="FileName.mp4" secondaryText={<p>381 MB</p>} secondaryTextLines={1} />
-                <ListItem primaryText="FileName.mp4" secondaryText={<p>381 MB</p>} secondaryTextLines={1} />
+                {content.map(function(file, i){
+                    return file;
+                })}
             </List>
-
+                <RaisedButton onClick={this.handelCancel} disabled={playDisabled} style={{float: 'right', 'marginTop': '15px', 'marginLeft': '15px' }} label="Play Selected File" />
                 <RaisedButton onClick={this.handelCancel} style={{float: 'right', 'marginTop': '15px' }} label="Cancel" />
             </div>
         );
