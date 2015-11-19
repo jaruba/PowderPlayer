@@ -2,6 +2,9 @@
 import path from 'path';
 import wcjsRenderer from '../utils/wcjs-renderer';
 
+import PlayerActions from '../actions';
+import PlayerStore from '../store';
+
 try {
     var wcjs = require(path.join(process.cwd(), 'resources/bin/', 'WebChimera.js.node'));
 } catch (e) {
@@ -27,28 +30,95 @@ export
 default React.createClass({
     getInitialState() {
         return {
-            mounted: false,
-            paused: false,
             playing: false,
-            buffering: true,
-            scrobbling: false
+            paused: false,
+            position: 0,
+            buffering: false,
+            time: 0,
+            fullscreen: false
         }
     },
     componentDidMount() {
-        this.player = wcjsRenderer.init(wcjs, this.refs['wcjs-render'], wcjsVlcArgs);
-        console.log(this.props.uri)
-        this.player.play(this.props.uri ? this.props.uri : 'http://archive.org/download/CartoonClassics/Krazy_Kat_-_Keeping_Up_With_Krazy.mp4');
         window.addEventListener('resize', this.handleResize);
-        this.handleResize();
+        this.initPlayer();
     },
     componentWillUnmount() {
         window.removeEventListener('resize', this.handleResize);
     },
-    update() {
 
+    initPlayer() {
+        PlayerActions.wcjsInit(wcjsRenderer.init(wcjs, this.refs['wcjs-render'], wcjsVlcArgs));
+
+        this.player = PlayerStore.getState().wcjs;
+
+        this.player.onPositionChanged = (pos) => {
+            this.setState({
+                position: pos
+            })
+        }
+
+        this.player.onTimeChanged = (time) => {
+            this.setState({
+                time: time
+            })
+        }
+
+        this.player.onOpening = () => {
+            this.setState({
+                buffering: 0,
+                playing: false,
+                paused: false
+            })
+        }
+
+        this.player.onBuffering = (perc) => {
+            if (perc === 100)
+                return this.setState({
+                    buffering: false
+                });
+            return this.setState({
+                buffering: perc
+            })
+        }
+
+        this.player.onPlaying = () => {
+            this.setState({
+                buffering: false,
+                playing: true,
+                paused: false
+            })
+        }
+
+        this.player.onPaused = () => {
+            this.setState({
+                buffering: false,
+                playing: false,
+                paused: true
+            })
+        }
+
+        this.player.onStopped = () => {
+            this.setState({
+                buffering: false,
+                playing: false,
+                paused: false
+            })
+        }
+
+        this.player.onEndReached = () => {
+            this.stop()
+        }
+
+        this.player.onEncounteredError = (error) => {
+            console.error(error);
+            this.stop();
+        }
+
+        this.props.uri && this.player.playlist.add(this.props.uri)
+        this.player.play()
+        this.player.subtitles.track = 0;
     },
     handleResize() {
-
         var canvas = this.refs['wcjs-render'];
         var container = document.body;
         var sourceAspect = canvas.width / canvas.height;
@@ -62,16 +132,15 @@ default React.createClass({
             canvas.style.height = ((container.clientWidth / sourceAspect) / container.clientHeight) * 100 + "%";
             canvas.style.width = "100%";
         };
-
     },
-    handleTogglePlay(toggle) {
-        if (!this.player && (typeof(state) !== undefined && ((this.player.state === 4) == state))) return;
-        this.player.togglePause(toggle ? true : false);
+    handleTogglePlay() {
+        if (!this.state.buffering)
+            this.player.togglePause(this.state.playing ? false : true);
     },
     render() {
         return (
             <div>
-               <canvas ref="wcjs-render"/>
+               <canvas onClick={this.handleTogglePlay} ref="wcjs-render"/>
             </div>
         );
     }

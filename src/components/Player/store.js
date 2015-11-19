@@ -12,6 +12,14 @@ class playerStore {
 
         this.type = false;
         this.infoHash = false;
+
+        this.wcjs = false;
+    }
+
+    onWcjsInit(wcjs) {
+        this.setState({
+            wcjs: wcjs
+        });
     }
 
     onPlay(data) {
