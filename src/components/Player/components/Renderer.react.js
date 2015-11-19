@@ -17,38 +17,54 @@ default React.createClass({
         return {
             uri: PlayerStore.getState().uri,
 
-            playing: false,
-            paused: false,
-            position: 0,
-            buffering: false,
-            time: 0,
-            fullscreen: false
+            playing: PlayerStore.getState().playing,
+            paused: PlayerStore.getState().paused,
+            position: PlayerStore.getState().position,
+            buffering: PlayerStore.getState().buffering,
+            time: PlayerStore.getState().time,
+            fullscreen: PlayerStore.getState().fullscreen
+        }
+    },
+    componentWillMount() {
+        if (!PlayerStore.getState().wcjs) {
+            PlayerActions.wcjsInit(wcjsRenderer.init(wcjs, this.refs['wcjs-render'], [
+                "--no-media-library",
+                "--no-sub-autodetect-file",
+                "--no-spu",
+                "--no-stats",
+                "--no-osd",
+                "--network-caching", "3500",
+                "--file-caching", "3000",
+                "--no-skip-frames",
+                "--no-video-title-show",
+                "--disable-screensaver",
+                "--no-autoscale",
+                "--ipv4-timeout=86400000"
+            ]));
         }
     },
     componentDidMount() {
+        PlayerStore.listen(this.update);
         window.addEventListener('resize', this.handleResize);
         this.initPlayer();
     },
     componentWillUnmount() {
+        PlayerStore.unlisten(this.update);
         window.removeEventListener('resize', this.handleResize);
     },
+    update() {
+        this.setState({
+            uri: PlayerStore.getState().uri,
 
+            playing: PlayerStore.getState().playing,
+            paused: PlayerStore.getState().paused,
+            position: PlayerStore.getState().position,
+            buffering: PlayerStore.getState().buffering,
+            time: PlayerStore.getState().time,
+            fullscreen: PlayerStore.getState().fullscreen
+        });
+    },
     initPlayer() {
-        PlayerActions.wcjsInit(wcjsRenderer.init(wcjs, this.refs['wcjs-render'], [
-            "--no-media-library",
-            "--no-sub-autodetect-file",
-            "--no-spu",
-            "--no-stats",
-            "--no-osd",
-            "--network-caching", "3500",
-            "--file-caching", "3000",
-            "--no-skip-frames",
-            "--no-video-title-show",
-            "--disable-screensaver",
-            "--no-autoscale",
-            "--ipv4-timeout=86400000"
-        ]));
-
         this.player = PlayerStore.getState().wcjs;
 
         this.player.onPositionChanged = (pos) => {
