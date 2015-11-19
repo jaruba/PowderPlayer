@@ -33,7 +33,7 @@ class playerStore {
 
     onPlay(data) {
         this.setState({
-            title: data.title,
+            title: data.uri,
             uri: data.uri,
             playing: true,
             paused: false,

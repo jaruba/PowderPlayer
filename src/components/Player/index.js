@@ -46,7 +46,7 @@ default React.createClass({
             cursor: this.state.uiShown ? 'pointer' : 'none'
         };
         return (
-            <div onMouseMove={this.hover} className="wcjs-player" style={cursorStyle}> >
+            <div onMouseMove={this.hover} className="wcjs-player" style={cursorStyle}>
                 <PlayerHeader />
                 {playerContent}
                 <PlayerControls />
