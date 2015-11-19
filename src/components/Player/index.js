@@ -10,7 +10,6 @@ export
 default React.createClass({
     getInitialState() {
         return {
-            data: PlayerStore.getState().data,
             uri: PlayerStore.getState().uri,
 
             position: PlayerStore.getState().position,
@@ -26,8 +25,7 @@ default React.createClass({
     },
     update() {
         this.setState({
-            data: PlayerStore.getState().data,
-            type: PlayerStore.getState().type,
+            uri: PlayerStore.getState().uri,
 
             position: PlayerStore.getState().position,
             buffering: PlayerStore.getState().buffering,

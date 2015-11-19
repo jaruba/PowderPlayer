@@ -7,7 +7,7 @@ class playerStore {
         this.bindActions(playerActions);
 
         this.uri = false;
-        this.data = false;
+        this.title = '';
         this.wcjs = false;
 
         this.playing = false;
