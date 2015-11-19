@@ -51,10 +51,11 @@ class playerStore {
             position: 0,
             fullscreen: false,
             uiShown: true,
-            uri: false
+            uri: false,
+            wcjs: false
         });
     }
-    
+
 }
 
 export
