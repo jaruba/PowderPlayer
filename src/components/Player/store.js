@@ -51,8 +51,7 @@ class playerStore {
             position: 0,
             fullscreen: false,
             uiShown: true,
-            uri: false,
-            wcjs: false
+            uri: false
         });
     }
 
