@@ -51,8 +51,8 @@ var subtitles = {
 		if (player.itemCount() > 0) {
 			torrent.flood.pause();
 			setTimeout(function() { torrent.flood.start(); },3000); // to ensure it's started again even if errors arise
-			subtitles.os.login().then(function(response){
-				powGlobals.subtitles.osToken = response.token;
+			subtitles.os.login().then(function(token){
+				powGlobals.subtitles.osToken = token;
 				
 				searcher = {
 					sublanguageid: 'all',
