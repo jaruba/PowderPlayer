@@ -48,9 +48,11 @@ module.exports = {
         });
     },
     getStreamableFiles(files) {
-        return _.pluck(files, 'name').filter((name) => {
-            if (new RegExp(supported.all.join('|')).test(name))
-                return name;
+        return new Promise((resolve) => {
+            resolve(_.pluck(files, 'name').filter((name) => {
+                if (new RegExp(supported.all.join('|')).test(name))
+                    return name;
+            }));
         });
     }
 };

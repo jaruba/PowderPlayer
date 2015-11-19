@@ -11,6 +11,7 @@ class modalStore {
         this.data = false;
         this.thinking = false;
         this.meta = false;
+        this.files = {};
 
         ipc.on('modal:close', function() {
             this.setState({
