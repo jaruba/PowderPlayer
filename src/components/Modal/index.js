@@ -81,7 +81,7 @@ default React.createClass({
             <Dialog
                 style={this.getStyle()}
           		open={this.state.modalIsOpen}
-                contentClassName='.material-dialog-content'
+                contentClassName='material-dialog'
                 onRequestClose={this.closeModal}>
                 {this.getContents()}
         	</Dialog>

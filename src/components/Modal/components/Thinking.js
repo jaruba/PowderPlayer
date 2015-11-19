@@ -1,5 +1,7 @@
 import React from 'react';
 import ModalActions from '../actions';
+import ModalStore from '../store';
+import _ from 'lodash';
 import {
     LinearProgress, RaisedButton
 }
@@ -10,7 +12,15 @@ export
 default React.createClass({
     getInitialState() {
         return {
-            meta: ModalStore.getState().meta
+            meta: ModalStore.getState().meta,
+            stats: {
+                uploadSpeed: 0,
+                downloadSpeed: 0,
+                peers: {
+                    active: 0,
+                    total: 0
+                }
+            }
         };
     },
 
@@ -44,17 +54,20 @@ default React.createClass({
     },
 
     updateStats(swarm) {
-        var stats = {
-            uploadSpeed: swarm.uploadSpeed(),
-            downloadSpeed: swarm.downloadSpeed(),
-            peers: {
-                active: swarm.wires.filter((wire) => {
-                    return !wire.peerChoking;
-                }).length,
-                total: swarm.wires.length
+        this.setState({
+            stats: {
+                uploadSpeed: swarm.uploadSpeed(),
+                downloadSpeed: swarm.downloadSpeed(),
+                peers: {
+                    active: swarm.wires.filter((wire) => {
+                        return !wire.peerChoking;
+                    }).length,
+                    total: swarm.wires.length
+                }
             }
-        }
-        return stats;
+        });
+        if (this.isMounted())
+            _.defer(this.updateStats, this.state.meta.data.swarm);
     },
 
     render() {
@@ -65,7 +78,7 @@ default React.createClass({
                 </div>
                 <LinearProgress mode="indeterminate"  />
                 <RaisedButton onClick={this.handelCancel} style={{float: 'right', 'marginTop': '15px' }} label="Cancel" />
-                <p className="peers" />
+                <p className="peers" >Connected to {this.state.stats.peers.total} Peers</p>
 
             </div>
         );

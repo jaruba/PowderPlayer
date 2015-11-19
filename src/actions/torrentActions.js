@@ -32,9 +32,8 @@ class torrentActions {
                 });
             })
             .then(this.actions.generatePlayerObject)
-            .then(ModalActions.close)
             .catch((err) => {
-                ModalActions.close();
+                //ModalActions.close();
                 console.error(err);
             });
     }
