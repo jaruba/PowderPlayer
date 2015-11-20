@@ -26,6 +26,10 @@ default React.createClass({
         }
     },
     componentWillMount() {
+        PlayerStore.listen(this.update);
+        window.addEventListener('resize', this.handleResize);
+    },
+    componentDidMount() {
         if (!PlayerStore.getState().wcjs) {
             PlayerActions.wcjsInit(wcjsRenderer.init(wcjs, this.refs['wcjs-render'], [
                 "--no-media-library",
@@ -42,10 +46,6 @@ default React.createClass({
                 "--ipv4-timeout=86400000"
             ]));
         }
-    },
-    componentDidMount() {
-        PlayerStore.listen(this.update);
-        window.addEventListener('resize', this.handleResize);
         this.initPlayer();
     },
     componentWillUnmount() {
@@ -98,19 +98,11 @@ default React.createClass({
         }
 
         this.player.onPlaying = () => {
-            this.setState({
-                buffering: false,
-                playing: true,
-                paused: false
-            })
+            PlayerActions.playing();
         }
 
         this.player.onPaused = () => {
-            this.setState({
-                buffering: false,
-                playing: false,
-                paused: true
-            })
+            PlayerActions.paused();
         }
 
         this.player.onStopped = () => {
@@ -130,8 +122,8 @@ default React.createClass({
             this.player.stop();
         }
 
-        this.player.playlist.add(this.state.uri)
-        this.player.play()
+        this.player.playlist.add(this.state.uri);
+        this.player.play();
         this.player.subtitles.track = 0;
     },
     handleResize() {
