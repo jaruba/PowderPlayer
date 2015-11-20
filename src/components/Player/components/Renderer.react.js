@@ -1,6 +1,6 @@
 ﻿import React from 'react';
 import path from 'path';
-import wcjsRenderer from '../utils/wcjs-renderer';
+import wcjsRenderer from 'wcjs-renderer';
 
 import PlayerActions from '../actions';
 import PlayerStore from '../store';
@@ -31,7 +31,7 @@ default React.createClass({
     },
     componentDidMount() {
         if (!PlayerStore.getState().wcjs) {
-            PlayerActions.wcjsInit(wcjsRenderer.init(wcjs, this.refs['wcjs-render'], [
+            PlayerActions.wcjsInit(wcjsRenderer.init(this.refs['wcjs-render'], [
                 "--no-media-library",
                 "--no-sub-autodetect-file",
                 "--no-spu",
@@ -44,7 +44,7 @@ default React.createClass({
                 "--disable-screensaver",
                 "--no-autoscale",
                 "--ipv4-timeout=86400000"
-            ]));
+            ], false, wcjs));
         }
         this.initPlayer();
     },
