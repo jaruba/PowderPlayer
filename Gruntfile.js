@@ -213,6 +213,21 @@ module.exports = function(grunt) {
                 command: 'ditto -c -k --sequesterRsrc --keepParent <%= OSX_FILENAME_ESCAPED %> dist/' + BASENAME + '-' + packagejson.version + '-Mac.zip',
             }
         },
+
+        wcjs: {
+            options: {
+                version: 'latest',
+                dir: 'bin/wcjs',
+                force: true,
+                runtime: {
+                    type: 'electron',
+                    version: 'latest',
+                    arch: 'x64',
+                    platform: 'win'
+                }
+            }
+        },
+
         clean: {
             unusedWin: ['dist/<%= BASENAME %>-win32-ia32/resources/default_app'],
             release: ['build/', 'dist/'],
@@ -272,6 +287,8 @@ module.exports = function(grunt) {
     grunt.registerTask('default', ['newer:babel', 'less', 'newer:copy:dev', 'shell:electron', 'watchChokidar']);
 
     grunt.registerTask('run', ['shell:electron', 'watchChokidar']);
+
+    grunt.registerTask('deps', ['wcjs']);
 
     if (process.platform === 'win32') {
         grunt.registerTask('release', ['clean:release', 'babel', 'less', 'copy:release', 'electron:windows', 'clean:unusedWin', 'copy:releaseWin', 'compress:windows']);
