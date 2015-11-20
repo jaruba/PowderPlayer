@@ -32,7 +32,7 @@ default React.createClass({
                     break;
                 default:
                     ModalActions.close();
-                    PlayerActions.play({
+                    PlayerActions.open({
                         type: 'other',
                         uri: inputvalue
                     });

@@ -31,14 +31,27 @@ class playerStore {
         });
     }
 
-    onPlay(data) {
+    onOpen(data) {
         this.setState({
             title: data.uri,
-            uri: data.uri,
-            playing: true,
-            paused: false,
-            buffering: false
+            uri: data.uri
         });
+    }
+
+    onPlay() {
+        this.setState({
+            buffering: false,
+            playing: true,
+            paused: false
+        })
+    }
+
+    onPause() {
+        this.setState({
+            buffering: false,
+            playing: false,
+            paused: true
+        })
     }
 
     onClose() {

@@ -12,6 +12,6 @@ default alt.generateActions(
 
     'metaUpdate',
     'wcjsInit',
-    'destroy',
-    'close'
+    'close',
+    'open'
 );

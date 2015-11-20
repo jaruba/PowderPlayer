@@ -24,13 +24,15 @@ default React.createClass({
         PlayerStore.unlisten(this.update);
     },
     update() {
-        this.setState({
-            uri: PlayerStore.getState().uri,
+        if (this.isMounted()) {
+            this.setState({
+                uri: PlayerStore.getState().uri,
 
-            position: PlayerStore.getState().position,
-            buffering: PlayerStore.getState().buffering,
-            uiShown: PlayerStore.getState().uiShown
-        });
+                position: PlayerStore.getState().position,
+                buffering: PlayerStore.getState().buffering,
+                uiShown: PlayerStore.getState().uiShown
+            });
+        }
     },
     hover() {
         this.hoverTimeout && clearTimeout(this.hoverTimeout);
