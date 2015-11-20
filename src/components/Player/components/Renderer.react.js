@@ -146,10 +146,9 @@ default React.createClass({
             this.player.togglePause(this.state.playing ? false : true);
     },
     render() {
-        return (
-            <div>
-               <canvas onClick={this.handleTogglePlay} ref="wcjs-render"/>
-            </div>
-        );
+        return React.createElement('canvas', {
+            onClick: this.handleTogglePlay,
+            ref: 'wcjs-render'
+        });
     }
 });
