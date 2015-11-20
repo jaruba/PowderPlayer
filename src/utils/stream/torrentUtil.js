@@ -75,6 +75,6 @@ module.exports = {
             });
             files_organized['folder_status'] = (directorys.length > 1);
             resolve(files_organized);
-        });
+        })
     }
 };
