@@ -11,8 +11,7 @@ export
 default React.createClass({
     getInitialState() {
         return {
-            files: ModalStore.getState().fileSelector.files,
-            folders: ModalStore.getState().fileSelector.folders
+            files: ModalStore.getState().fileSelectorFiles
         };
     },
 
@@ -30,51 +29,63 @@ default React.createClass({
 
     update() {
         this.setState({
-            files: ModalStore.getState().fileSelector.files,
-            folders: ModalStore.getState().fileSelector.folders
+            files: ModalStore.getState().fileSelectorFiles
         });
-
-
     },
 
     getContent() {
+        var fileSelectorData = this.state.files;
         var content = [];
-        /*
-        for (var folder in this.state.folders) {
-            var attr = this.state.folders[folder];
-        }
-        */
-        for (var file in this.state.files) {
-            content.push(this.generateFile(this.state.files[file]));
-        }
+
+        _.forEach(fileSelectorData, (folder, key) => {
+            if (key === 'folder_status') return;
+            if (fileSelectorData.folder_status) {
+                content.push(this.generateFolder(folder, key))
+            } else {
+                _.forEach(folder, (file) => {
+                    content.push(this.generateFile(file))
+                });
+            }
+        });
 
         return content;
     },
 
-    generateFolder(folder, files) {
-        return (<ListItem primaryText="folder.name" initiallyOpen="true" nestedItems="files" />);
+    generateFolder(files, name) {
+        var content = [];
+
+        _.forEach(files, (file) => {
+            content.push(this.generateFile(file))
+        });
+
+        return React.createElement(ListItem, {
+            primaryText: name,
+            initiallyOpen: true,
+            key: name,
+            nestedItems: content
+        });
     },
 
     generateFile(file) {
-        return (<ListItem primaryText="file.name" secondaryText={<p>"file.size"</p>} secondaryTextLines={1} />);
+        return React.createElement(ListItem, {
+            primaryText: file.name,
+            secondaryText: file.size,
+            secondaryTextLines: 1,
+            key: file.id,
+            disabled: !file.streamable
+        });
     },
 
     render() {
         let playDisabled = true;
-        let content = this.getContent();
-        console.log(content)
+        let folders_enabled = this.state.files.folders;
+        let content = this.state.files ? this.getContent() : [];
+        console.log(content);
         return (
             <div>
                 <List>
-                    <ListItem
-                    primaryText="/folder"
-                    initiallyOpen={true}
-                    nestedItems={[
-                        <ListItem key="1" primaryText="FileName.mp4" secondaryText={<p>381 MB</p>} secondaryTextLines={1} />,
-                        <ListItem key="2" primaryText="FileName.mp4" secondaryText={<p>381 MB</p>} secondaryTextLines={1} />
-                    ]} />
-                    {content.map(function(file, i){
-                        return file;
+                    {content.map(function(content_item) {
+                        return content_item;
                     })}
                 </List>
                 <RaisedButton onClick={this.handelCancel} disabled={playDisabled} style={{float: 'right', 'marginTop': '15px', 'marginLeft': '15px' }} label="Play Selected File" />

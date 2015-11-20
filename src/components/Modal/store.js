@@ -8,13 +8,10 @@ class modalStore {
         this.bindActions(modalActions);
 
         this.open = false;
-        this.data = false;
+        this.type = false;
         this.thinking = false;
         this.meta = false;
-        this.fileSelector = {
-            files: {},
-            folders: {}
-        };
+        this.fileSelectorFiles = {};
 
         ipc.on('modal:close', function() {
             this.setState({
@@ -28,7 +25,8 @@ class modalStore {
     onOpen(data) {
         this.setState({
             open: true,
-            data: data
+            data: data,
+            type: data.type
         });
     }
 
@@ -40,7 +38,15 @@ class modalStore {
 
     onThinking(think) {
         this.setState({
-            thinking: think
+            thinking: think,
+            type: 'thinking'
+        });
+    }
+
+    onFileSelector(files) {
+        this.setState({
+            fileSelectorFiles: files,
+            type: 'fileSelctor'
         });
     }
 
@@ -48,7 +54,8 @@ class modalStore {
         this.setState({
             open: false,
             data: false,
-            thinking: false
+            thinking: false,
+            type: false
         });
     }
 }

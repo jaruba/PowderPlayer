@@ -7,6 +7,7 @@ from 'material-ui';
 import ModalStore from './store';
 import ModalActions from './actions';
 
+import FileStreamSelector from './components/fileStreamSelector';
 import URLContents from './components/URLadd';
 import Thinking from './components/Thinking';
 
@@ -17,6 +18,7 @@ default React.createClass({
         return {
             Thinking: ModalStore.getState().thinking,
             modalIsOpen: ModalStore.getState().open,
+            type: ModalStore.getState().type,
             data: ModalStore.getState().data
         };
     },
@@ -34,6 +36,7 @@ default React.createClass({
             this.setState({
                 modalIsOpen: ModalStore.getState().open,
                 data: ModalStore.getState().data,
+                type: ModalStore.getState().type,
                 Thinking: ModalStore.getState().thinking
             });
         }
@@ -64,16 +67,16 @@ default React.createClass({
     },
 
     getContents() {
-        if (this.state.Thinking) //loading thing
-            return <Thinking />;
-
-        if (this.state.data) {
-            switch (this.state.data.type) {
-                case 'URLAdd':
-                    return <URLContents />;
-            }
-        } else
-            return false;
+        switch (this.state.type) {
+            case 'URLAdd':
+                return <URLContents />;
+                break;
+            case 'fileSelctor':
+                return <FileStreamSelector />;
+                break;
+            case 'thinking':
+                return <Thinking />;
+        }
     },
 
     render() {
@@ -81,6 +84,7 @@ default React.createClass({
             <Dialog
                 style={this.getStyle()}
           		open={this.state.modalIsOpen}
+                autoScrollBodyContent={true}
                 contentClassName='material-dialog'
                 onRequestClose={this.closeModal}>
                 {this.getContents()}

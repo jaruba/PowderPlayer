@@ -12,7 +12,7 @@ import torrentActions from '../../actions/torrentActions';
 const temp = path.join(remote.require('app').getPath('temp'), 'Powder-Player');
 
 const supported = {
-    all: ["mkv", "avi", "mp4", "mpg", "mpeg", "webm", "flv", "ogg", "ogv", "mov", "wmv", "3gp", "3g2", "m4a", "mp3", "flac"],
+    all: [".mkv", ".avi", ".mp4", ".mpg", ".mpeg", ".webm", ".flv", ".ogg", ".ogv", ".mov", ".wmv", ".3gp", ".3g2", ".m4a", ".mp3", ".flac"],
     video: ["mkv", "avi", "mp4", "mpg", "mpeg", "webm", "flv", "ogg", "ogv", "mov", "wmv", "3gp", "3g2"],
     audio: ["m4a", "mp3", "flac"]
 };
@@ -47,12 +47,34 @@ module.exports = {
             });
         });
     },
-    getStreamableFiles(files) {
+    getContents(files) {
         return new Promise((resolve) => {
-            resolve(_.pluck(files, 'name').filter((name) => {
-                if (new RegExp(supported.all.join('|')).test(name))
-                    return name;
-            }));
+            var seen = new Set();
+            var directorys = [];
+            var files_organized = {};
+            for (var fileID in files) {
+                var file = files[fileID];
+                var fileParams = path.parse(file.path);
+                var streamable = (supported.all.indexOf(fileParams.ext) > -1);
+
+                if (streamable) {
+                    if (!files_organized[fileParams.dir])
+                        files_organized[fileParams.dir] = {};
+
+                    files_organized[fileParams.dir][fileID] = {
+                        size: file.length,
+                        id: fileID,
+                        name: file.name,
+                        streamable: true
+                    };
+                    directorys.push(fileParams.dir);
+                }
+            }
+            directorys = directorys.filter(function(dir) {
+                return !seen.has(dir) && seen.add(dir);
+            });
+            files_organized['folder_status'] = (directorys.length > 1);
+            resolve(files_organized);
         });
     }
 };
