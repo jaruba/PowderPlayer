@@ -1,5 +1,6 @@
 ﻿import React from 'react';
 import moment from 'moment';
+import _ from 'lodash';
 import {
     IconButton
 }
@@ -16,6 +17,7 @@ default React.createClass({
             fullscreen: PlayerStore.getState().fullscreen,
             uiShown: PlayerStore.getState().uiShown,
 
+            scrobbling: false,
             playing: PlayerStore.getState().playing,
             position: PlayerStore.getState().position,
             buffering: PlayerStore.getState().buffering,
@@ -66,9 +68,20 @@ default React.createClass({
         PlayerActions.scrobble(this.state.length * percent_done);
     },
     handleDragStart() {
-        this.refs['scrobbler-handle'].style.opacity = 1;
+
+        this.setState({
+            scrobbling: true
+        });
+
+        _.delay((still) => {
+            if (still)
+                this.refs['scrobbler-handle'].style.opacity = 1;
+        }, 100, this.state.scrobbling)
     },
     handleDragEnd() {
+        this.setState({
+            scrobbling: false
+        });
         this.refs['scrobbler-handle'].style.opacity = 0;
     },
     render() {
