@@ -29,7 +29,7 @@ default React.createClass({
     render() {
         return (
             <div className="header windows">
-                <i className="material-icons close">clear</i>
+                <i onClick={HeaderActions.close} className="material-icons close">clear</i>
                 <i onClick={HeaderActions.toggleMaximize} className="material-icons maximize off">crop_3_2</i>
                 <i onClick={HeaderActions.toggleMinimize} className="material-icons minimize">remove</i>
             </div>

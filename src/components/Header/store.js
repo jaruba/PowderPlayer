@@ -21,10 +21,6 @@ class HeaderStore {
             minimized: toggle,
         });
     }
-
-    onClose() {
-
-    }
 }
 
 export

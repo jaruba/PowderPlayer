@@ -8,9 +8,12 @@ class HeaderActions {
     constructor() {
         this.generateActions(
             'maximize',
-            'minimize',
-            'close'
+            'minimize'
         );
+    }
+
+    close(){
+    	ipcRenderer.send('app:close');
     }
 
     toggleMaximize() {
@@ -22,6 +25,7 @@ class HeaderActions {
 
     toggleMinimize() {
         this.dispatch();
+        console.log('toggleMinimize')
         ipcRenderer.send('app:minimize');
         this.actions.minimize();
     }
