@@ -37,10 +37,10 @@ default React.createClass({
     },
 
     update() {
-        this.setState({
-            meta: ModalStore.getState().meta,
-        });
         if (this.isMounted()) {
+            this.setState({
+                meta: ModalStore.getState().meta,
+            });
             this.updateUI(this.state.meta.type)
         }
     },

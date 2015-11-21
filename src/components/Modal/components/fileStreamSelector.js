@@ -4,6 +4,10 @@ import {
     RaisedButton, List, ListItem
 }
 from 'material-ui';
+import {
+    History
+}
+from 'react-router';
 
 import ModalActions from '../actions';
 import ModalStore from '../store';
@@ -12,6 +16,9 @@ import TorrentActions from '../../../actions/torrentActions'
 
 export
 default React.createClass({
+
+    mixins: [History],
+
     getInitialState() {
         return {
             selectedFile: false,
@@ -32,9 +39,11 @@ default React.createClass({
     },
 
     update() {
-        this.setState({
-            files: ModalStore.getState().fileSelectorFiles
-        });
+        if (this.isMounted()) {
+            this.setState({
+                files: ModalStore.getState().fileSelectorFiles
+            });
+        }
     },
 
     getContent() {
@@ -77,7 +86,8 @@ default React.createClass({
     },
 
     handleStreamFile(file) {
-        TorrentActions.selectFile(file || this.state.selectedFile)
+        TorrentActions.selectFile(file || this.state.selectedFile);
+        this.history.replaceState(null, 'player');
     },
 
     generateFile(file) {

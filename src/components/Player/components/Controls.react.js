@@ -32,17 +32,19 @@ default React.createClass({
         PlayerStore.unlisten(this.update);
     },
     update() {
-        this.setState({
-            fullscreen: PlayerStore.getState().fullscreen,
-            uiShown: PlayerStore.getState().uiShown,
+        if (this.isMounted()) {
+            this.setState({
+                fullscreen: PlayerStore.getState().fullscreen,
+                uiShown: PlayerStore.getState().uiShown,
 
-            playing: PlayerStore.getState().playing,
-            position: PlayerStore.getState().position,
-            buffering: PlayerStore.getState().buffering,
-            seekable: PlayerStore.getState().seekable,
-            time: PlayerStore.getState().time,
-            length: PlayerStore.getState().length
-        });
+                playing: PlayerStore.getState().playing,
+                position: PlayerStore.getState().position,
+                buffering: PlayerStore.getState().buffering,
+                seekable: PlayerStore.getState().seekable,
+                time: PlayerStore.getState().time,
+                length: PlayerStore.getState().length
+            });
+        }
     },
     handlePausePlay() {
         if (!this.state.buffering)

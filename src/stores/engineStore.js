@@ -2,6 +2,10 @@ import alt from '../alt';
 import torrentActions from '../actions/torrentActions';
 import localFilesActions from '../actions/localfileActions';
 
+import ModalActions from '../components/Modal/actions';
+import PlayerActions from '../components/Player/actions';
+
+
 class engineStore {
     constructor() {
         this.bindAction(torrentActions.add, this.onNewTorrent);
@@ -21,19 +25,11 @@ class engineStore {
     }
 
     onSelectTorrent(file) {
-        console.log(file)
-
-        console.log(this.torrents[file.infoHash])
-
-        this.torrents[file.infoHash].files.createReadStream();
-
-        var player_object = {
-            title: file.name
-            url: '127.0.0.1:' + this.torrents[file.infoHash]['stream-port'] + '/' + file.id
-        };
-        console.log(player_object);
-
-
+        ModalActions.close();
+        PlayerActions.open({
+            title: file.name,
+            url: 'http://127.0.0.1:' + this.torrents[file.infoHash]['stream-port'] + '/' + file.id
+        });
     }
 
 }

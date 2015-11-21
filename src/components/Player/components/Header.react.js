@@ -30,10 +30,12 @@ default React.createClass({
         PlayerStore.unlisten(this.update);
     },
     update() {
-        this.setState({
-            title: PlayerStore.getState().title,
-            uiShown: PlayerStore.getState().uiShown
-        });
+        if (this.isMounted()) {
+            this.setState({
+                title: PlayerStore.getState().title,
+                uiShown: PlayerStore.getState().uiShown
+            });
+        }
     },
     handleClose() {
         PlayerActions.close();

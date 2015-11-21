@@ -60,11 +60,13 @@ default React.createClass({
         window.removeEventListener('resize', this.handleResize);
     },
     update() {
-        this.setState({
-            uri: PlayerStore.getState().uri,
-            playing: PlayerStore.getState().playing,
-            fullscreen: PlayerStore.getState().fullscreen
-        });
+        if (this.isMounted()) {
+            this.setState({
+                uri: PlayerStore.getState().uri,
+                playing: PlayerStore.getState().playing,
+                fullscreen: PlayerStore.getState().fullscreen
+            });
+        }
     },
     initPlayer() {
         this.player = PlayerStore.getState().wcjs;
