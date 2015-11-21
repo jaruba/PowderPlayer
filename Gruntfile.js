@@ -24,10 +24,10 @@ module.exports = function(grunt) {
     }
 
 
-    var arch = (process.arch === 'ia32') ? '32' : '64';
+    var arch = process.arch;
 
     console.log(' ');
-    console.log('Compiling For:', (os === 'win') ? 'Windows' : 'Mac', arch + 'bit');
+    console.log('Compiling For:', (os === 'win') ? 'Windows' : 'Mac', arch);
     console.log(' ');
 
 
@@ -59,7 +59,7 @@ module.exports = function(grunt) {
                     out: 'dist',
                     version: packagejson['electron-version'],
                     platform: 'win32',
-                    arch: 'ia32',
+                    arch: arch,
                     prune: true,
                     asar: true
                 }
@@ -71,7 +71,7 @@ module.exports = function(grunt) {
                     out: 'dist',
                     version: packagejson['electron-version'],
                     platform: 'linux',
-                    arch: process.arch,
+                    arch: arch,
                     asar: true,
                     prune: true
                 }
@@ -83,7 +83,7 @@ module.exports = function(grunt) {
                     out: 'dist',
                     version: packagejson['electron-version'],
                     platform: 'darwin',
-                    arch: 'x64',
+                    arch: arch,
                     asar: true,
                     prune: true,
                     'app-bundle-id': 'media.PowderPlayer',
@@ -103,11 +103,6 @@ module.exports = function(grunt) {
                     cwd: 'images/',
                     src: ['**/*'],
                     dest: 'build/images/'
-                }, {
-                    expand: true,
-                    cwd: 'bin/' + os + arch + '/',
-                    src: ['**/*'],
-                    dest: 'build/resources/bin/',
                 }, {
                     expand: true,
                     cwd: 'fonts/',
@@ -213,7 +208,14 @@ module.exports = function(grunt) {
                 command: 'ditto -c -k --sequesterRsrc --keepParent <%= OSX_FILENAME_ESCAPED %> dist/' + BASENAME + '-' + packagejson.version + '-Mac.zip',
             }
         },
-
+        vlc_libs: {
+            options: {
+                dir: 'bin/vlc',
+                force: true,
+                arch: arch,
+                platform: os
+            }
+        },
         wcjs: {
             options: {
                 version: 'latest',
@@ -222,8 +224,8 @@ module.exports = function(grunt) {
                 runtime: {
                     type: 'electron',
                     version: 'latest',
-                    arch: 'x64',
-                    platform: 'win'
+                    arch: arch,
+                    platform: os
                 }
             }
         },
@@ -247,13 +249,13 @@ module.exports = function(grunt) {
             },
             linux: {
                 options: {
-                    archive: './dist/<%= BASENAME %>-' + packagejson.version + '-Linux-' + process.arch + '-Alpha.zip',
+                    archive: './dist/<%= BASENAME %>-' + packagejson.version + '-Linux-' + arch + '-Alpha.zip',
                     mode: 'zip'
                 },
                 files: [{
                     expand: true,
                     dot: true,
-                    cwd: './dist/<%= BASENAME %>-linux-' + process.arch,
+                    cwd: './dist/<%= BASENAME %>-linux-' + arch,
                     src: '**/*'
                 }]
             },
@@ -288,7 +290,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask('run', ['shell:electron', 'watchChokidar']);
 
-    grunt.registerTask('deps', ['wcjs']);
+    grunt.registerTask('deps', ['wcjs', 'vlc_libs']);
 
     if (process.platform === 'win32') {
         grunt.registerTask('release', ['clean:release', 'babel', 'less', 'copy:release', 'electron:windows', 'clean:unusedWin', 'copy:releaseWin', 'compress:windows']);

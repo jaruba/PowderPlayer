@@ -58,6 +58,7 @@
     "grunt-newer": "^1.1.1",
     "grunt-shell": "^1.1.2",
     "grunt-shell-spawn": "^0.3.10",
+    "grunt-vlc-libs": "0.0.1",
     "load-grunt-tasks": "^3.3.0"
   },
   "optionalDependencies": {
