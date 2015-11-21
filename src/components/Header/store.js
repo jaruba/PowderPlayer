@@ -6,7 +6,7 @@ class HeaderStore {
     constructor() {
         this.bindActions(MessageActions);
 
-        this.maximized: false;
+        this.maximized = false;
         this.minimized = false;
     }
 
