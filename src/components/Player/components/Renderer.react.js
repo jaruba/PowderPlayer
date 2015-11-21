@@ -1,6 +1,6 @@
 ﻿import React from 'react';
 import path from 'path';
-import wcjsRenderer from 'wcjs-renderer';
+import wcjsRenderer from '../utils/wcjs-renderer';
 
 import PlayerActions from '../actions';
 import PlayerStore from '../store';
@@ -42,11 +42,20 @@ default React.createClass({
                 "--disable-screensaver",
                 "--no-autoscale",
                 "--ipv4-timeout=86400000"
-            ], false, wcjs));
+            ], {
+                fallbackRenderer: false,
+                preserveDrawingBuffer: true
+            }, wcjs));
+        } else {
+            wcjsRenderer.reinit(this.refs['wcjs-render'], PlayerStore.getState().wcjs, {
+                fallbackRenderer: false,
+                preserveDrawingBuffer: true
+            });
         }
         this.initPlayer();
     },
     componentWillUnmount() {
+        wcjsRenderer.clearCanvas();
         PlayerStore.unlisten(this.update);
         window.removeEventListener('resize', this.handleResize);
     },
@@ -68,6 +77,7 @@ default React.createClass({
                 });
                 this.handleResize();
             }
+
         }
 
         this.player.onTimeChanged = (time) => {

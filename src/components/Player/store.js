@@ -26,6 +26,7 @@ class playerStore {
     }
 
     onWcjsInit(wcjs) {
+        console.log('WCJS Initing');
         this.setState({
             wcjs: wcjs
         });
@@ -96,8 +97,6 @@ class playerStore {
             playing: false,
             paused: false
         });
-        this.wcjs.stop();
-        this.wcjs.playlist.clear();
     }
 
     onPlaying() {
@@ -139,6 +138,10 @@ class playerStore {
             uiShown: true,
             uri: false
         });
+        if (this.wcjs) {
+            this.wcjs.stop();
+            this.wcjs.playlist.clear();
+        }
     }
 
 }
