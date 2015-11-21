@@ -3,7 +3,6 @@ import path from 'path';
 import mime from 'mime';
 import request from 'request';
 import nodeURL from 'url';
-import MetaInspector from 'node-metainspector';
 import _ from 'lodash';
 
 const supported = {
@@ -18,23 +17,25 @@ default {
         return new Promise((resolve, reject) => {
             this.getHeaders(url)
                 .then((headers) => {
-                    if (headers.catagory === 'direct')
-                        return resolve(headers); //its streamable -- send to player direct
+                    switch (headers.catagory) {
+                        case 'direct':
+                            resolve(headers); //its streamable -- send to player direct
+                            break;
+                        case 'magnet':
+                            resolve({
+                                catagory: 'torrent'
+                            });
+                            break;
+                        default:
+                            if (headers.type.parsed === 'torrent')
+                                return resolve({
+                                    catagory: 'torrent'
+                                });
 
-                    if (headers.status === 200) {
-
-
-                        if (headers.type.parsed === 'html') {
-
-
-                        } else {
-
-                        }
-
-                    } else {
-                        resolve({
-                            catagory: 'error'
-                        });
+                            resolve({
+                                catagory: 'error'
+                            });
+                            break;
                     }
                 }).catch((error) => {
                     resolve({
@@ -44,8 +45,13 @@ default {
         });
     },
     getHeaders(url) {
-        var headers = {};
+        if (nodeURL.parse(url).protocol === 'magnet:')
+            var magnet = true;
         return new Promise((resolve, reject) => {
+            if (magnet)
+                return resolve({
+                    catagory: 'magnet'
+                });
             request
                 .get(url)
                 .on('response', function(response) {
@@ -63,28 +69,5 @@ default {
                 })
                 .on('error', reject);
         });
-    },
-    getWebTitle(url) {
-        console.log(url);
-
-        var client = new MetaInspector(url, {
-            timeout: 3000
-        });
-        return new Promise((resolve, reject) => {
-
-            client.on("fetch", function() {
-                console.log("Description: " + client.description);
-
-                console.log("Links: " + client.links.join(","));
-            });
-
-            client.on("error", function(err) {
-                console.log(error);
-            });
-
-            client.fetch();
-        });
-
-
-    }
+    }   
 };
