@@ -3,7 +3,10 @@ import {
     History
 }
 from 'react-router';
-
+import {
+    IconButton
+}
+from 'material-ui';
 
 import PlayerStore from '../store';
 import PlayerActions from '../actions';
@@ -36,11 +39,16 @@ default React.createClass({
         PlayerActions.close();
         this.history.replaceState(null, '');
     },
+    handleOpenPlaylist() {
+
+
+    },
     render() {
         return (
             <div className={this.state.uiShown ? 'header show' : 'header'}>
-                <i onClick={this.handleClose} className="material-icons player-close">arrow_back</i>
+                <IconButton onClick={this.handleClose} iconClassName="material-icons" iconStyle={{color: 'white', fontSize: '40px'}} className="player-close" >arrow_back</IconButton>
                 <p className="title">{this.state.title}</p> 
+                <IconButton onClick={this.handleOpenPlaylist} iconClassName="material-icons" className="player-playlist" iconStyle={{color: 'white', fontSize: '30px'}} tooltipPosition="bottom-center" tooltip="Playlist">playlist_add</IconButton>
             </div>
         );
     }

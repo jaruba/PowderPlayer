@@ -4,6 +4,7 @@ export
 default alt.generateActions(
     'play',
     'pause',
+    'playing',
     'uiShown',
     'position',
     'buffering',

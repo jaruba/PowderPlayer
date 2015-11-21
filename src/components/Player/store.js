@@ -38,6 +38,15 @@ class playerStore {
         });
     }
 
+
+    onPlaying() {
+        this.setState({
+            buffering: false,
+            playing: true,
+            paused: false
+        })
+    }
+
     onPlay() {
         this.setState({
             buffering: false,

@@ -5,8 +5,10 @@
 }
 
 .wcjs-player .header {
-	opacity: 0;
+	opacity: 1;
 	position: absolute;
+    width: 100vw;
+    transition: opacity 300ms ease-in-out;
 }
 
 .wcjs-player .header.show{
@@ -15,18 +17,29 @@
 
 .wcjs-player .header .player-close {
 	font-size: 40px;
-    margin-top: 20px;
+    margin-top: 10px;
     margin-left: 20px;
-    cursor: pointer;
-    color: white;
+    width: 65px !important;
+    height: 65px !important;
     float: left;
+}
+
+.wcjs-player .header .player-playlist {
+    font-size: 30px;
+    margin-top: 20px;
+    margin-right: 20px;
+    width: 55px;
+    height: 55px;
+    cursor: pointer;
+    color: white !important;
+    float: right;
 }
 
 .wcjs-player .header .title {
 	float: left;
-    font-size: 30px;
+    font-size: 25px;
     color: white;
-    margin-top: 22px;
+    margin-top: 28px;
     margin-left: 15px;
     max-width: 80vw;
     white-space: nowrap;
