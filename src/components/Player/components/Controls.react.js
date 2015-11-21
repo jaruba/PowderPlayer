@@ -12,9 +12,13 @@ export
 default React.createClass({
     getInitialState() {
         return {
-            playing: PlayerStore.getState().playing,
             fullscreen: PlayerStore.getState().fullscreen,
-            uiShown: PlayerStore.getState().uiShown
+            uiShown: PlayerStore.getState().uiShown,
+
+            playing: PlayerStore.getState().playing,
+            position: PlayerStore.getState().position,
+            buffering: PlayerStore.getState().buffering,
+            time: PlayerStore.getState().time
         }
     },
     componentWillMount() {
@@ -25,9 +29,13 @@ default React.createClass({
     },
     update() {
         this.setState({
-            playing: PlayerStore.getState().playing,
             fullscreen: PlayerStore.getState().fullscreen,
-            uiShown: PlayerStore.getState().uiShown
+            uiShown: PlayerStore.getState().uiShown,
+
+            playing: PlayerStore.getState().playing,
+            position: PlayerStore.getState().position,
+            buffering: PlayerStore.getState().buffering,
+            time: PlayerStore.getState().time
         });
     },
     handlePausePlay() {
@@ -37,11 +45,17 @@ default React.createClass({
         PlayerActions.toggleFullscreen(!this.state.fullscreen);
     },
     render() {
+        var scrobblerStyles = {
+            time: {
+                width: this.state.position * 100 + '%'
+            }
+        };
+
         return (
             <div className={this.state.uiShown ? 'control-bar show' : 'control-bar'}>
                 <div className="scrobbler">    
                     <div className="buffer"/>
-                    <div className="time"/>
+                    <div style={scrobblerStyles.time} className="time"/>
                     <div className="handle"/>
                 </div>
                 <IconButton onClick={this.handlePausePlay} iconClassName="material-icons" iconStyle={{color: 'white', fontSize: '35px', top: '-5px', left: '-1px'}} className="play-toggle">{this.state.playing ? 'pause' : 'play_arrow'}</IconButton>

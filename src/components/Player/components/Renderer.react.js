@@ -20,9 +20,6 @@ default React.createClass({
 
             playing: PlayerStore.getState().playing,
             paused: PlayerStore.getState().paused,
-            position: PlayerStore.getState().position,
-            buffering: PlayerStore.getState().buffering,
-            time: PlayerStore.getState().time,
             fullscreen: PlayerStore.getState().fullscreen
         }
     },
@@ -56,12 +53,7 @@ default React.createClass({
     update() {
         this.setState({
             uri: PlayerStore.getState().uri,
-
             playing: PlayerStore.getState().playing,
-            paused: PlayerStore.getState().paused,
-            position: PlayerStore.getState().position,
-            buffering: PlayerStore.getState().buffering,
-            time: PlayerStore.getState().time,
             fullscreen: PlayerStore.getState().fullscreen
         });
     },

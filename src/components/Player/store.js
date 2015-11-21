@@ -38,10 +38,9 @@ class playerStore {
     }
 
     onPosition(pos) {
-        console.log(pos)
         this.setState({
             position: pos
-        })
+        });
     }
 
     onTime(time) {
