@@ -5,6 +5,7 @@ import {
 from 'electron';
 import Modal from './Modal';
 import Message from './Message';
+import Header from './Header';
 import {
     RouteContext
 }
@@ -21,6 +22,7 @@ default React.createClass({
     render() {
         return (
             <div id="main">
+              <Header/>
               {React.cloneElement(this.props.children, {query: this.props.query})}
               <Modal />
               <Message />

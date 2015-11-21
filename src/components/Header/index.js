@@ -23,10 +23,12 @@ default React.createClass({
         HeaderStore.unlisten(this.update);
     },
     update() {
-        this.setState({
-            maximized: HeaderStore.getState().maximized,
-            minimized: HeaderStore.getState().minimized
-        });
+        if (this.isMounted()) {
+            this.setState({
+                maximized: HeaderStore.getState().maximized,
+                minimized: HeaderStore.getState().minimized
+            });
+        }
     },
 
     toggleMaximize() {
