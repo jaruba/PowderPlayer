@@ -11,8 +11,9 @@ from 'react-router';
 
 import ModalActions from '../actions';
 import ModalStore from '../store';
+import EngineStore from '../../../stores/engineStore';
 import TorrentActions from '../../../actions/torrentActions'
-
+import PlayerActions from '../../Player/actions';
 
 export
 default React.createClass({
@@ -49,7 +50,6 @@ default React.createClass({
     getContent() {
         var fileSelectorData = this.state.files;
         var content = [];
-
         _.forEach(fileSelectorData, (folder, key) => {
             if (key === 'folder_status') return;
             if (fileSelectorData.folder_status) {
@@ -60,7 +60,6 @@ default React.createClass({
                 });
             }
         });
-
         return content;
     },
 
@@ -85,8 +84,12 @@ default React.createClass({
         });
     },
 
-    handleStreamFile(file) {
-        TorrentActions.selectFile(file || this.state.selectedFile);
+    handleStreamFile(file = this.state.selectedFile) {
+        ModalActions.close();
+        PlayerActions.open({
+            title: file.name,
+            url: 'http://127.0.0.1:' + EngineStore.getState().torrents[file.infoHash]['stream-port'] + '/' + file.id
+        });
         this.history.replaceState(null, 'player');
     },
 
