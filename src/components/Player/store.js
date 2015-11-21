@@ -31,6 +31,12 @@ class playerStore {
         });
     }
 
+    onFullscreen(state) {
+        this.setState({
+            fullscreen: state
+        });
+    }
+
     onOpen(data) {
         this.setState({
             title: data.uri,
