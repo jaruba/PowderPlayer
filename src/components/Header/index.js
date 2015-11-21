@@ -1,8 +1,4 @@
 import React from 'react';
-import {
-    Snackbar
-}
-from 'material-ui';
 import HeaderStore from './store';
 import HeaderActions from './actions';
 
@@ -41,17 +37,14 @@ default React.createClass({
     },
 
 
-    
+
 
     render() {
         return (
             <div className="header windows">
-
                 <i className="material-icons close">clear</i>
                 <i className="material-icons maximize off">crop_3_2</i>
                 <i className="material-icons minimize">remove</i>
-                
-                
             </div>
         );
     }
