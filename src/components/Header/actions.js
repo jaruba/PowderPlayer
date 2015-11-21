@@ -13,8 +13,9 @@ class HeaderActions {
         );
     }
 
-    toggleMaximize(state) {
+    toggleMaximize() {
         this.dispatch();
+        let state = !ipcRenderer.send('app:get:maximized');
         ipcRenderer.send('app:maximize', state);
         this.actions.maximize(state);
     }

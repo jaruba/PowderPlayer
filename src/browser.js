@@ -85,6 +85,8 @@ app.on('ready', function() {
 
     ipcMain.on('app:minimize', mainWindow.minimize);
 
+    ipcMain.on('app:close', mainWindow.close);
+
 });
 
 app.on('window-all-closed', function() {
