@@ -1,7 +1,10 @@
 import app from 'app';
 import BrowserWindow from 'browser-window';
 import path from 'path';
-import ipc from 'ipc';
+import {
+    ipcMain
+}
+from 'electron';
 import util from './utils/util';
 import yargs from 'yargs';
 let startupTime = new Date().getTime();
@@ -17,7 +20,7 @@ function msToTime(s) {
     return mins + ' minutes ' + secs + '.' + ms + ' seconds';
 }
 
-ipc.on('app:startup', function(event, time) {
+ipcMain.on('app:startup', function(event, time) {
     console.log('App Startup Time:', msToTime(Math.floor(time - startupTime)));
 });
 
@@ -43,7 +46,7 @@ app.on('ready', function() {
         console.info('Dev Mode Active: Developer Tools Enabled.');
     }
 
-    mainWindow.loadUrl(path.normalize('file://' + path.join(__dirname, '../index.html')));
+    mainWindow.loadURL(path.normalize('file://' + path.join(__dirname, '../index.html')));
 
 
     mainWindow.webContents.on('new-window', function(e) {
@@ -66,11 +69,11 @@ app.on('ready', function() {
         app.quit();
     });
 
-    ipc.on('app:get:fullscreen', function(event) {
+    ipcMain.on('app:get:fullscreen', function(event) {
         event.sender.send('app:get:fullscreen', mainWindow.isFullScreen());
     });
 
-    ipc.on('app:fullscreen', function(event, state) {
+    ipcMain.on('app:fullscreen', function(event, state) {
         mainWindow.setFullScreen(state);
     });
 });

@@ -1,5 +1,8 @@
 import alt from '../../alt'
-import ipc from 'ipc';
+import {
+    ipcRenderer
+}
+from 'electron';
 
 class PlayerActions {
     constructor() {
@@ -29,7 +32,7 @@ class PlayerActions {
     }
 
     toggleFullscreen(state) {
-        ipc.send('app:fullscreen', state);
+        ipcRenderer.send('app:fullscreen', state);
         this.actions.fullscreen(state);
     }
 }

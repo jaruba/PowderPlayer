@@ -1,5 +1,8 @@
 import React from 'react';
-import ipc from 'ipc';
+import {
+    ipcRenderer
+}
+from 'electron';
 import Modal from './Modal';
 import Message from './Message';
 import {
@@ -13,7 +16,7 @@ default React.createClass({
     mixins: [RouteContext],
 
     componentWillMount() {
-        ipc.send('app:startup', new Date().getTime());
+        ipcRenderer.send('app:startup', new Date().getTime());
     },
     render() {
         return (
