@@ -65,6 +65,14 @@ app.on('ready', function() {
     mainWindow.on('close', function() {
         app.quit();
     });
+
+    ipc.on('app:get:fullscreen', function(event) {
+        event.sender.send('app:get:fullscreen', mainWindow.isFullScreen());
+    });
+
+    ipc.on('app:fullscreen', function(event, state) {
+        mainWindow.setFullScreen(state);
+    });
 });
 
 app.on('window-all-closed', function() {
