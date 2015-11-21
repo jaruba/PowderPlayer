@@ -40,7 +40,7 @@ default React.createClass({
         this.state.uiShown || PlayerActions.uiShown(true);
         this.hoverTimeout = setTimeout(() => {
             PlayerActions.uiShown(false);
-        }, 1000);
+        }, 3000);
     },
     render() {
         var playerContent = this.state.uri ? <PlayerRender /> : '';

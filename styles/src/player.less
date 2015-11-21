@@ -7,7 +7,7 @@
 }
 
 .wcjs-player .header {
-	opacity: 1;
+	opacity: 0;
 	position: absolute;
     width: 100vw;
     transition: opacity 300ms ease-in-out;
@@ -54,15 +54,17 @@
     text-overflow: ellipsis;
 }
 
-
-
 .wcjs-player .control-bar{
-    opacity: 1;
+    opacity: 0;
     background-color: rgba(29, 31, 35, 0.82);
     width: 100vw;
     position: absolute;
     bottom: 0;
     height: 50px;
+    transition: opacity 300ms ease-in-out;
+}
+.wcjs-player .control-bar.show{
+    opacity: 1;
 }
 
 .wcjs-player .control-bar .scrobbler:hover {
