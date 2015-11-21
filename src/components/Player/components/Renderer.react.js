@@ -83,6 +83,7 @@ default React.createClass({
                     initialResize: true
                 });
                 this.handleResize();
+                PlayerActions.length(this.player.length);
             }
         }
 

@@ -15,6 +15,7 @@ class PlayerActions {
             'position',
             'buffering',
             'time',
+            'length',
 
             'fullscreen',
 

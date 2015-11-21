@@ -43,6 +43,13 @@ class playerStore {
         });
     }
 
+    onLength(length) {
+        console.log(length);
+        this.setState({
+            length: length
+        });
+    }
+
     onTime(time) {
         this.setState({
             time: time
@@ -81,7 +88,7 @@ class playerStore {
             buffering: false,
             playing: true,
             paused: false
-        })
+        });
     }
 
     onPlay() {

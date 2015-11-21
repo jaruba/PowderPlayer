@@ -1,4 +1,5 @@
 ﻿import React from 'react';
+import moment from 'moment';
 import {
     IconButton
 }
@@ -18,7 +19,8 @@ default React.createClass({
             playing: PlayerStore.getState().playing,
             position: PlayerStore.getState().position,
             buffering: PlayerStore.getState().buffering,
-            time: PlayerStore.getState().time
+            time: PlayerStore.getState().time,
+            length: PlayerStore.getState().length
         }
     },
     componentWillMount() {
@@ -35,14 +37,22 @@ default React.createClass({
             playing: PlayerStore.getState().playing,
             position: PlayerStore.getState().position,
             buffering: PlayerStore.getState().buffering,
-            time: PlayerStore.getState().time
+            time: PlayerStore.getState().time,
+            length: PlayerStore.getState().length
         });
     },
     handlePausePlay() {
-        this.state.playing ? PlayerActions.pause() : PlayerActions.play();
+        if (!this.state.buffering)
+            this.state.playing ? PlayerActions.pause() : PlayerActions.play();
     },
     handleFullscreen() {
         PlayerActions.toggleFullscreen(!this.state.fullscreen);
+    },
+    handleScrobblerHover(event) {
+        var scrobbler_percent = document.body.clientWidth / event.pageX;
+        var total_time = this.state.time;
+
+
     },
     render() {
         var scrobblerStyles = {
@@ -50,10 +60,9 @@ default React.createClass({
                 width: this.state.position * 100 + '%'
             }
         };
-
         return (
             <div className={this.state.uiShown ? 'control-bar show' : 'control-bar'}>
-                <div className="scrobbler">    
+                <div onMouseMove={this.handleScrobblerHover} className="scrobbler">    
                     <div className="buffer"/>
                     <div style={scrobblerStyles.time} className="time"/>
                     <div className="handle"/>
