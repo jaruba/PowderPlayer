@@ -1,4 +1,3 @@
-import ipc from 'ipc';
 import alt from '../../alt';
 import modalActions from './actions';
 
@@ -12,14 +11,8 @@ class modalStore {
         this.thinking = false;
         this.meta = false;
         this.fileSelectorFiles = {};
-
-        ipc.on('modal:close', function() {
-            this.setState({
-                open: false,
-                data: false,
-                thinking: false
-            });
-        });
+        this.data = false;
+  
     }
 
     onOpen(data) {
@@ -36,9 +29,8 @@ class modalStore {
         });
     }
 
-    onThinking(think) {
+    onThinking() {
         this.setState({
-            thinking: think,
             type: 'thinking'
         });
     }

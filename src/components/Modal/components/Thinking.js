@@ -24,7 +24,7 @@ default React.createClass({
         };
     },
 
-    componentDidMount() {
+    componentWillMount() {
         ModalStore.listen(this.update);
     },
 
@@ -68,16 +68,13 @@ default React.createClass({
                 }
             });
         if (this.isMounted())
-            _.delay(this.updateStats, 500, this.state.meta.data.swarm);
+            _.delay(this.updateStats, 100, this.state.meta.data.swarm);
     },
 
     render() {
         var statusText = this.state.stats.peers.total ? <p className="peers" >Connected to {this.state.stats.peers.total} Peers</p> : <p className="peers">Processing URL</p>;
         return (
             <div>
-                <div className="meta" >
-                    <div className="cover-image" />
-                </div>
                 <LinearProgress mode="indeterminate"  />
                 <RaisedButton onClick={this.handelCancel} style={{float: 'right', 'marginTop': '15px' }} label="Cancel" />
                 {statusText}

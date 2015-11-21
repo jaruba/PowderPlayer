@@ -41,7 +41,10 @@ default React.createClass({
                         this.history.replaceState(null, 'player');
                         break;
                     case 'error':
-                        ModalActions.thinking(false);
+                        ModalActions.open({
+                            title: 'Add URL',
+                            type: 'URLAdd'
+                        });
                         MessageActions.open('There was a error parsing that URL');
                         break;
                 }
