@@ -20,8 +20,12 @@ default React.createClass({
 
     render() {
         return (
-            <div >
-               
+            <div className="control-bar">
+                <div className="scrobbler" >    
+                    <div className="buffer"/>
+                    <div className="time"/>
+                    <div className="handle"/>
+                </div>
             </div>
         );
     }

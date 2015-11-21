@@ -1,7 +1,9 @@
 .wcjs-player {
 	height: 100vh;
 	width: 100vw;
-	background-color: black;
+	background-image: url("https://i.ytimg.com/vi/ZSzeFFsKEt4/maxresdefault.jpg");
+    background-position: center;
+    background-size: cover;
 }
 
 .wcjs-player .header {
@@ -46,3 +48,49 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+
+
+.wcjs-player .control-bar{
+    opacity: 1;
+    background-color: rgba(29, 31, 35, 0.82);
+    width: 100vw;
+    position: absolute;
+    bottom: 0;
+    height: 50px;
+}
+
+.wcjs-player .scrobbler:hover {
+    top: -6px;
+    height: 6px;
+}
+
+.wcjs-player .scrobbler {
+    top: -4px;
+    height: 4px;
+    width: 100vw;
+    position: absolute; 
+    transition: 100ms ease-in-out;
+}
+
+.wcjs-player .scrobbler .handle {
+    position: absolute;
+}
+
+.wcjs-player .scrobbler .time {
+    width: 50%;
+    height: 100%;
+    position: absolute;
+    bottom: 0;
+    background-color: rgba(0, 144, 255, 0.7);
+}
+
+.wcjs-player .scrobbler .buffer {
+    width: 76%;
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.23);
+    height: 50%;
+    min-height: 3px;
+    bottom: 0;
+}
+

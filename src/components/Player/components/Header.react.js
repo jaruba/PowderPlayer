@@ -48,7 +48,7 @@ default React.createClass({
             <div className={this.state.uiShown ? 'header show' : 'header'}>
                 <IconButton onClick={this.handleClose} iconClassName="material-icons" iconStyle={{color: 'white', fontSize: '40px'}} className="player-close" >arrow_back</IconButton>
                 <p className="title">{this.state.title}</p> 
-                <IconButton onClick={this.handleOpenPlaylist} iconClassName="material-icons" className="player-playlist" iconStyle={{color: 'white', fontSize: '30px'}} tooltipPosition="bottom-center" tooltip="Playlist">playlist_add</IconButton>
+                <IconButton onClick={this.handleOpenPlaylist} iconClassName="material-icons" className="player-playlist" iconStyle={{color: 'white', fontSize: '30px'}} tooltipPosition="bottom-center" tooltip="Playlist">playlist_add_check</IconButton>
             </div>
         );
     }
