@@ -23,16 +23,19 @@ default React.createClass({
     getInitialState() {
         return {
             selectedFile: false,
-            files: ModalStore.getState().fileSelectorFiles
+            files: ModalStore.getState().fileSelectorFiles,
+            torrents: EngineStore.getState().torrents
         };
     },
 
     componentWillMount() {
         ModalStore.listen(this.update);
+        EngineStore.listen(this.update);
     },
 
     componentWillUnmount() {
-        ModalStore.listen(this.update);
+        ModalStore.unlisten(this.update);
+        EngineStore.unlisten(this.update);
     },
 
     handelCancel() {
@@ -42,7 +45,8 @@ default React.createClass({
     update() {
         if (this.isMounted()) {
             this.setState({
-                files: ModalStore.getState().fileSelectorFiles
+                files: ModalStore.getState().fileSelectorFiles,
+                torrents: EngineStore.getState().torrents
             });
         }
     },
@@ -86,10 +90,13 @@ default React.createClass({
 
     handleStreamFile(file = this.state.selectedFile) {
         ModalActions.close();
-        PlayerActions.open({
+
+        let player_object = {
             title: file.name,
-            url: 'http://127.0.0.1:' + EngineStore.getState().torrents[file.infoHash]['stream-port'] + '/' + file.id
-        });
+            uri: 'http://127.0.0.1:' + this.state.torrents[file.infoHash]['stream-port'] + '/' + file.id
+        };
+        console.log(player_object)
+        PlayerActions.open(player_object);
         this.history.replaceState(null, 'player');
     },
 

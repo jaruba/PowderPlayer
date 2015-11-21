@@ -29,7 +29,7 @@ default React.createClass({
     },
 
     componentWillUnmount() {
-        ModalStore.listen(this.update);
+        ModalStore.unlisten(this.update);
     },
 
     handelCancel() {
