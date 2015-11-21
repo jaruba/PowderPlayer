@@ -35,7 +35,7 @@ app.on('ready', function() {
         resizable: true,
         title: 'Powder Player',
         center: true,
-        frame: true,
+        frame: false,
         show: false
     });
 

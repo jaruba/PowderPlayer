@@ -4,7 +4,7 @@ import HeaderActions from './actions';
 
 class HeaderStore {
     constructor() {
-        this.bindActions(MessageActions);
+        this.bindActions(HeaderActions);
 
         this.maximized = false;
         this.minimized = false;
