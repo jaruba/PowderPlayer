@@ -39,7 +39,7 @@ class playerStore {
 
     onOpen(data) {
         this.setState({
-            title: data.uri,
+            title: data.title,
             uri: data.uri
         });
     }

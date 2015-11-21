@@ -8,7 +8,7 @@ import {
 }
 from 'material-ui';
 
-import utils from '../../../utils/util';
+import MimeUtil from '../../../utils/mimeDetectorUtil';
 import torrentActions from '../../../actions/torrentActions';
 import ModalActions from '../actions';
 
@@ -25,19 +25,27 @@ default React.createClass({
         ModalActions.thinking(true);
         var inputvalue = this.refs.urlInput.getValue();
         if (inputvalue.length > 0) {
-            var type = utils.parseURL(inputvalue);
-            switch (type) {
-                case 'torrent':
-                    torrentActions.addTorrent(inputvalue);
-                    break;
-                default:
-                    ModalActions.close();
-                    PlayerActions.open({
-                        type: 'other',
-                        uri: inputvalue
-                    });
-                    this.history.replaceState(null, 'player');
-            }
+            MimeUtil.parseURL(inputvalue).then((parsed) => {
+                console.log(parsed)
+                switch (parsed.catagory) {
+                    case 'torrent':
+                        torrentActions.addTorrent(inputvalue);
+                        break;
+                    case 'direct':
+                        ModalActions.close();
+                        PlayerActions.open({
+                            type: 'direct',
+                            uri: parsed.url,
+                            title: parsed.title
+                        });
+                        this.history.replaceState(null, 'player');
+                        break;
+                    case 'error':
+                        ModalActions.thinking(false);
+                        MessageActions.open('There was a error parsing that URL');
+                        break;
+                }
+            })
         } else {
             ModalActions.thinking(false);
             MessageActions.open('Enter a URL to stream.');
