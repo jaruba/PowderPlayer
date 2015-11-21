@@ -37,6 +37,19 @@ class playerStore {
         });
     }
 
+    onPosition(pos) {
+        console.log(pos)
+        this.setState({
+            position: pos
+        })
+    }
+
+    onTime(time) {
+        this.setState({
+            time: time
+        });
+    }
+
     onOpen(data) {
         this.setState({
             title: data.title,
@@ -44,6 +57,25 @@ class playerStore {
         });
     }
 
+    onBuffering(perc) {
+        if (perc === 100) {
+            this.setState({
+                buffering: false
+            });
+        } else {
+            this.setState({
+                buffering: perc
+            })
+        }
+    }
+
+    onStopped() {
+        this.setState({
+            buffering: false,
+            playing: false,
+            paused: false
+        })
+    }
 
     onPlaying() {
         this.setState({
@@ -59,6 +91,7 @@ class playerStore {
             playing: true,
             paused: false
         })
+        this.wcjs.play();
     }
 
     onPause() {
@@ -67,6 +100,7 @@ class playerStore {
             playing: false,
             paused: true
         })
+        this.wcjs.pause();
     }
 
     onClose() {

@@ -6,6 +6,10 @@ class PlayerActions {
         this.generateActions(
             'play',
             'pause',
+            'stop',
+            'stopped',
+
+
             'playing',
             'uiShown',
             'position',

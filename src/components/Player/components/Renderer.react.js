@@ -16,6 +16,7 @@ default React.createClass({
     getInitialState() {
         return {
             uri: PlayerStore.getState().uri,
+            initialResize: false,
 
             playing: PlayerStore.getState().playing,
             paused: PlayerStore.getState().paused,
@@ -68,49 +69,37 @@ default React.createClass({
         this.player = PlayerStore.getState().wcjs;
 
         this.player.onPositionChanged = (pos) => {
-            this.setState({
-                position: pos
-            })
+            PlayerActions.position(pos);
         }
 
         this.player.onTimeChanged = (time) => {
-            this.setState({
-                time: time
-            })
+            PlayerActions.time(time);
         }
 
         this.player.onOpening = () => {
-            this.setState({
-                buffering: 0,
-                playing: false,
-                paused: false
-            })
+            PlayerActions.buffering(0);
         }
 
         this.player.onBuffering = (perc) => {
-            if (perc === 100)
-                return this.setState({
-                    buffering: false
-                });
-            return this.setState({
-                buffering: perc
-            })
+            PlayerActions.buffering(perc);
         }
 
         this.player.onPlaying = () => {
             PlayerActions.playing();
+            if (!this.state.initialResize) {
+                this.setState({
+                    initialResize: true
+                });
+                this.handleResize();
+            }
         }
 
         this.player.onPaused = () => {
-            PlayerActions.paused();
+            PlayerActions.pause();
         }
 
         this.player.onStopped = () => {
-            this.setState({
-                buffering: false,
-                playing: false,
-                paused: false
-            })
+            PlayerActions.stopped();
         }
 
         this.player.onEndReached = () => {
@@ -146,9 +135,19 @@ default React.createClass({
             this.player.togglePause(this.state.playing ? false : true);
     },
     render() {
-        return React.createElement('canvas', {
-            onClick: this.handleTogglePlay,
-            ref: 'wcjs-render'
-        });
+        var renderStyles = {
+            container: {
+                textAlign: 'center'
+            },
+            canvas: {
+                display: 'inline-block',
+                height: '100vh'
+            }
+        };
+        return (
+            <div style={renderStyles.container}>
+                <canvas style={renderStyles.canvas} onClick={this.handleTogglePlay} ref="wcjs-render" />
+            </div>
+        );
     }
 });
