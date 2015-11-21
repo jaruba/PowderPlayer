@@ -1,6 +1,7 @@
 ﻿import React from 'react';
 import path from 'path';
 import wcjsRenderer from '../utils/wcjs-renderer';
+import _ from 'lodash';
 
 import PlayerActions from '../actions';
 import PlayerStore from '../store';
@@ -71,28 +72,27 @@ default React.createClass({
     initPlayer() {
         this.player = PlayerStore.getState().wcjs;
 
-        this.player.onPositionChanged = (pos) => {
-            PlayerActions.position(pos);
+        var initializeSize = _.once(() => {
             if (!this.state.initialResize) {
                 this.setState({
                     initialResize: true
                 });
                 this.handleResize();
             }
+        });
 
-        }
-
-        this.player.onTimeChanged = (time) => {
-            PlayerActions.time(time);
-        }
+        this.player.onPositionChanged = _.throttle((pos) => {
+            PlayerActions.position(pos);
+            initializeSize();
+        }, 500);
 
         this.player.onOpening = () => {
             PlayerActions.buffering(0);
         }
 
-        this.player.onBuffering = (perc) => {
-            PlayerActions.buffering(perc);
-        }
+        this.player.onTimeChanged = PlayerActions.time;
+
+        this.player.onBuffering = _.throttle(PlayerActions.buffering, 500);
 
         this.player.onLengthChanged = (length) => {
             PlayerActions.length(length);
