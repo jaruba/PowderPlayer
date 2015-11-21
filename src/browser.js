@@ -65,17 +65,26 @@ app.on('ready', function() {
         mainWindow.focus();
     });
 
-    mainWindow.on('close', function() {
-        app.quit();
-    });
+    mainWindow.on('close', app.quit);
 
-    ipcMain.on('app:get:fullscreen', function(event) {
+    ipcMain.on('app:get:fullscreen', (event) => {
         event.sender.send('app:get:fullscreen', mainWindow.isFullScreen());
     });
 
-    ipcMain.on('app:fullscreen', function(event, state) {
-        mainWindow.setFullScreen(state);
+    ipcMain.on('app:get:maximized', (event) => {
+        event.sender.send('app:get:maximized', mainWindow.isMaximized());
     });
+
+    ipcMain.on('app:fullscreen', (event, state) => {
+        mainWindow.setFullScreen(state)
+    });
+
+    ipcMain.on('app:maximize', (event, state) => {
+        state ? mainWindow.maximize() : mainWindow.unmaximize();
+    });
+
+    ipcMain.on('app:minimize', mainWindow.minimize);
+
 });
 
 app.on('window-all-closed', function() {
