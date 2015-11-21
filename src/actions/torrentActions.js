@@ -8,32 +8,33 @@ class torrentActions {
         this.generateActions(
             'add',
             'remove',
-            'change'
+            'change',
+            'selectFile'
         );
     }
 
     addTorrent(torrent) {
         var TorrentUtil = require('../utils/stream/torrentUtil');
         this.dispatch();
-        var Torrentinstance = false;
         TorrentUtil.init(torrent)
             .then((instance) => {
                 ModalActions.metaUpdate({
                     type: 'torrent',
                     data: instance
                 });
-                Torrentinstance = instance;
                 return instance;
             })
             .then((instance) => {
                 this.actions.add(instance);
                 return new Promise((resolve) => {
                     instance.on('ready', function() {
-                        resolve(instance.torrent.files)
+                        resolve(instance)
                     });
                 });
             })
-            .then(TorrentUtil.getContents)
+            .then((instance) => {
+                return TorrentUtil.getContents(instance.torrent.files, instance.infoHash);
+            })
             .then(ModalActions.fileSelector)
             .catch((err) => {
                 //ModalActions.close();

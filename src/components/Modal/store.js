@@ -12,7 +12,7 @@ class modalStore {
         this.meta = false;
         this.fileSelectorFiles = {};
         this.data = false;
-  
+
     }
 
     onOpen(data) {

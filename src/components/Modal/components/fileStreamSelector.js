@@ -1,21 +1,25 @@
 import React from 'react';
-import ModalActions from '../actions';
-import ModalStore from '../store';
 import _ from 'lodash';
 import {
     RaisedButton, List, ListItem
 }
 from 'material-ui';
 
+import ModalActions from '../actions';
+import ModalStore from '../store';
+import TorrentActions from '../../../actions/torrentActions'
+
+
 export
 default React.createClass({
     getInitialState() {
         return {
+            selectedFile: false,
             files: ModalStore.getState().fileSelectorFiles
         };
     },
 
-    componentDidMount() {
+    componentWillMount() {
         ModalStore.listen(this.update);
     },
 
@@ -66,8 +70,20 @@ default React.createClass({
         });
     },
 
+    handleSelectFile(file) {
+        this.setState({
+            selectedFile: file
+        });
+    },
+
+    handleStreamFile(file) {
+        TorrentActions.selectFile(file || this.state.selectedFile)
+    },
+
     generateFile(file) {
         return React.createElement(ListItem, {
+            onClick: this.handleSelectFile.bind(this, file),
+            onDoubleClick: this.handleStreamFile.bind(this, file),
             primaryText: file.name,
             secondaryText: this.formatBytes(file.size),
             secondaryTextLines: 1,
@@ -84,10 +100,9 @@ default React.createClass({
         return (bytes / Math.pow(k, i)).toPrecision(dm) + ' ' + sizes[i];
     },
     render() {
-        let playDisabled = true;
+        let playDisabled = this.state.selectedFile ? false : true;
         let folders_enabled = this.state.files.folders;
         let content = this.state.files ? this.getContent() : [];
-        console.log(content);
         return (
             <div>
                 <List>
@@ -95,7 +110,7 @@ default React.createClass({
                         return content_item;
                     })}
                 </List>
-                <RaisedButton onClick={this.handelCancel} disabled={playDisabled} style={{float: 'right', 'marginTop': '15px', 'marginLeft': '15px' }} label="Play Selected File" />
+                <RaisedButton onClick={this.handleStreamFile} disabled={playDisabled} style={{float: 'right', 'marginTop': '15px', 'marginLeft': '15px' }} label="Play Selected File" />
                 <RaisedButton onClick={this.handelCancel} style={{float: 'right', 'marginTop': '15px' }} label="Cancel" />
             </div>
         );

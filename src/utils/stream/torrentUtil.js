@@ -22,12 +22,15 @@ module.exports = {
         return new Promise((resolve, reject) => {
             Promise.all([this.read(torrent), getPort()])
                 .spread((torrentInfo, port) => {
-                    resolve(peerflix(torrentInfo, {
+                    var engine = peerflix(torrentInfo, {
                         tracker: true,
                         port: port,
                         tmp: temp,
                         buffer: (1.5 * 1024 * 1024).toString()
-                    }));
+                    })
+                    engine['stream-port'] = port;
+                    resolve(engine);
+                    engine = null;
                 })
                 .catch(reject);
         });
@@ -47,7 +50,7 @@ module.exports = {
             });
         });
     },
-    getContents(files) {
+    getContents(files, infoHash) {
         return new Promise((resolve) => {
             var seen = new Set();
             var directorys = [];
@@ -65,7 +68,8 @@ module.exports = {
                         size: file.length,
                         id: fileID,
                         name: file.name,
-                        streamable: true
+                        streamable: true,
+                        infoHash: infoHash
                     };
                     directorys.push(fileParams.dir);
                 }
