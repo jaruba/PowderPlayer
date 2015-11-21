@@ -86,37 +86,23 @@ default React.createClass({
             initializeSize();
         }, 500);
 
-        this.player.onOpening = () => {
-            PlayerActions.buffering(0);
-        }
+        this.player.onOpening = PlayerActions.buffering.bind(0);
 
         this.player.onTimeChanged = PlayerActions.time;
 
         this.player.onBuffering = _.throttle(PlayerActions.buffering, 500);
 
-        this.player.onLengthChanged = (length) => {
-            PlayerActions.length(length);
-        }
+        this.player.onLengthChanged = PlayerActions.length;
 
-        this.player.onSeekableChanged = (seekable) => {
-            PlayerActions.seekable(seekable);
-        }
+        this.player.onSeekableChanged = PlayerActions.seekable;
 
-        this.player.onPlaying = () => {
-            PlayerActions.playing();
-        }
+        this.player.onPlaying = PlayerActions.playing;
 
-        this.player.onPaused = () => {
-            PlayerActions.pause();
-        }
+        this.player.onPaused = PlayerActions.pause;
 
-        this.player.onStopped = () => {
-            PlayerActions.stopped();
-        }
+        this.player.onStopped = PlayerActions.stopped;
 
-        this.player.onEndReached = () => {
-            this.player.stop();
-        }
+        this.player.onEndReached = this.player.stop;
 
         this.player.onEncounteredError = (error) => {
             console.error(error);
