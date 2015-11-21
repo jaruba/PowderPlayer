@@ -1,7 +1,7 @@
 .wcjs-player {
 	height: 100vh;
 	width: 100vw;
-	background-image: url("https://i.ytimg.com/vi/ZSzeFFsKEt4/maxresdefault.jpg");
+	background-color: black;
     background-position: center;
     background-size: cover;
 }
@@ -81,7 +81,16 @@
 }
 
 .wcjs-player .control-bar .scrobbler .handle {
+    height: 12px;
+    opacity: 0;
+    width: 12px;
     position: absolute;
+    bottom: -3px;
+    left: 0%;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: opacity 100ms ease-in-out;
+    background-color: rgba(0, 144, 255, 0.82);
 }
 
 .wcjs-player .control-bar .scrobbler .time {

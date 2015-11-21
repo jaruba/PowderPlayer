@@ -55,10 +55,21 @@ default React.createClass({
         var percent_done = event.pageX / document.body.clientWidth;
 
         var newTime = total_time * percent_done;
+        this.refs['scrobbler-handle'].style.left = (percent_done * 100) + '%';
+        //console.log(total_time, percent_done + '%', newTime);
 
-
-        console.log(total_time, percent_done + '%', newTime);
-
+    },
+    handleScrobble(event) {
+        if (!this.state.length)
+            return;
+        var percent_done = event.pageX / document.body.clientWidth;
+        PlayerActions.scrobble(this.state.length * percent_done);
+    },
+    handleDragStart() {
+        this.refs['scrobbler-handle'].style.opacity = 1;
+    },
+    handleDragEnd() {
+        this.refs['scrobbler-handle'].style.opacity = 0;
     },
     render() {
         var scrobblerStyles = {
@@ -68,10 +79,10 @@ default React.createClass({
         };
         return (
             <div className={this.state.uiShown ? 'control-bar show' : 'control-bar'}>
-                <div onMouseMove={this.handleScrobblerHover} className="scrobbler">    
+                <div onMouseUp={this.handleScrobble} onMouseDown={this.handleDragStart} onMouseOut={this.handleDragEnd} onMouseMove={this.handleScrobblerHover} className="scrobbler">    
                     <div className="buffer"/>
                     <div style={scrobblerStyles.time} className="time"/>
-                    <div className="handle"/>
+                    <div ref="scrobbler-handle" className="handle"/>
                 </div>
                 <IconButton onClick={this.handlePausePlay} iconClassName="material-icons" iconStyle={{color: 'white', fontSize: '35px', top: '-5px', left: '-1px'}} className="play-toggle">{this.state.playing ? 'pause' : 'play_arrow'}</IconButton>
 

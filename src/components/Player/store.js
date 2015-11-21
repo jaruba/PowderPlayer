@@ -45,7 +45,6 @@ class playerStore {
     }
 
     onLength(length) {
-        console.log(length);
         this.setState({
             length: length
         });
@@ -74,6 +73,10 @@ class playerStore {
                 buffering: perc
             })
         }
+    }
+
+    onScrobble(time) {
+        this.wcjs.time = time;
     }
 
     onStopped() {

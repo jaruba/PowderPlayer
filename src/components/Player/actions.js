@@ -16,6 +16,7 @@ class PlayerActions {
             'buffering',
             'time',
             'length',
+            'scrobble',
 
             'fullscreen',
 
