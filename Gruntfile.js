@@ -96,13 +96,23 @@ module.exports = function(grunt) {
                 files: [{
                     expand: true,
                     cwd: '.',
-                    src: ['*.md', 'package.json', 'index.html', ],
+                    src: ['*.md', 'package.json', 'index.html'],
                     dest: 'build/'
                 }, {
                     expand: true,
                     cwd: 'images/',
                     src: ['**/*'],
                     dest: 'build/images/'
+                }, {
+                    expand: true,
+                    cwd: 'bin/vlc',
+                    src: ['**/*'],
+                    dest: 'build/resources/bin/'
+                }, {
+                    expand: true,
+                    cwd: 'bin/wcjs',
+                    src: ['**/*'],
+                    dest: 'build/resources/bin/'
                 }, {
                     expand: true,
                     cwd: 'fonts/',
