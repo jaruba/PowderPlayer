@@ -49,9 +49,15 @@ default React.createClass({
         PlayerActions.toggleFullscreen(!this.state.fullscreen);
     },
     handleScrobblerHover(event) {
-        var scrobbler_percent = document.body.clientWidth / event.pageX;
-        var total_time = this.state.time;
 
+        var total_time = this.state.length;
+
+        var percent_done = event.pageX / document.body.clientWidth;
+
+        var newTime = total_time * percent_done;
+
+
+        console.log(total_time, percent_done + '%', newTime);
 
     },
     render() {

@@ -15,6 +15,7 @@ class playerStore {
         this.position = 0;
         this.buffering = false;
         this.time = 0;
+        this.length = 0;
         this.fullscreen = false;
         this.uiShown = true;
     }
@@ -116,6 +117,7 @@ class playerStore {
             buffering: false,
             title: '',
             time: 0,
+            length: 0,
             position: 0,
             fullscreen: false,
             uiShown: true,
