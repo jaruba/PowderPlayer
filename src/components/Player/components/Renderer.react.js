@@ -145,7 +145,7 @@ default React.createClass({
         };
         return (
             <div style={renderStyles.container}>
-                <canvas style={renderStyles.canvas} onClick={this.handleTogglePlay} ref="wcjs-render" />
+                <canvas style={renderStyles.canvas} onClick={this.handleTogglePlay} onDoubleClick={PlayerActions.toggleFullscreen.bind(this, !this.state.fullscreen)} ref="wcjs-render" />
             </div>
         );
     }
