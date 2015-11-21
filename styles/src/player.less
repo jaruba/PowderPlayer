@@ -28,7 +28,7 @@
 
 .wcjs-player .header .player-playlist {
     font-size: 30px;
-    margin-top: 20px;
+    margin-top: 15px;
     margin-right: 20px;
     width: 55px;
     height: 55px;
@@ -60,12 +60,12 @@
     height: 50px;
 }
 
-.wcjs-player .scrobbler:hover {
+.wcjs-player .control-bar .scrobbler:hover {
     top: -6px;
     height: 6px;
 }
 
-.wcjs-player .scrobbler {
+.wcjs-player .control-bar .scrobbler {
     top: -4px;
     height: 4px;
     width: 100vw;
@@ -73,11 +73,11 @@
     transition: 100ms ease-in-out;
 }
 
-.wcjs-player .scrobbler .handle {
+.wcjs-player .control-bar .scrobbler .handle {
     position: absolute;
 }
 
-.wcjs-player .scrobbler .time {
+.wcjs-player .control-bar .scrobbler .time {
     width: 50%;
     height: 100%;
     position: absolute;
@@ -85,7 +85,7 @@
     background-color: rgba(0, 144, 255, 0.7);
 }
 
-.wcjs-player .scrobbler .buffer {
+.wcjs-player .control-bar .scrobbler .buffer {
     width: 76%;
     position: absolute;
     background-color: rgba(255, 255, 255, 0.23);
@@ -94,3 +94,14 @@
     bottom: 0;
 }
 
+.wcjs-player .control-bar .time-info{
+    font-size: 15px;
+    margin-top: 5px;
+    margin-left: 5px;
+    font-weight: 500;
+    color: #565e6a;
+}
+
+.wcjs-player .control-bar .time-info .current {
+     color: rgba(0, 144, 255, 0.79);
+}

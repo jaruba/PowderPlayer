@@ -1,5 +1,8 @@
 ﻿import React from 'react';
-
+import {
+    IconButton
+}
+from 'material-ui';
 
 export
 default React.createClass({
@@ -26,6 +29,7 @@ default React.createClass({
                     <div className="time"/>
                     <div className="handle"/>
                 </div>
+                <p className="time-info"><span className="current">00:30:15</span> / <span>1:20:00</span></p>
             </div>
         );
     }
