@@ -100,7 +100,7 @@ default React.createClass({
                     <div style={scrobblerStyles.time} className="time"/>
                     <div ref="scrobbler-handle" className="handle"/>
                 </div>
-                <IconButton onClick={this.handlePausePlay} iconClassName="material-icons" iconStyle={{color: 'white', fontSize: '35px', top: '-5px', left: '-1px'}} className="play-toggle">{this.state.playing ? 'pause' : 'play_arrow'}</IconButton>
+                <IconButton onClick={this.handlePausePlay} iconClassName="material-icons" iconStyle={{top: '-5px', left: '-1px'}} className="play-toggle">{this.state.playing ? 'pause' : 'play_arrow'}</IconButton>
 
                 <IconButton onClick={this.handleFullscreen} iconClassName="material-icons" iconStyle={{color: 'white', fontSize: '30px', top: '-5px', left: '-1px'}} className="fullscreen-toggle">{this.state.fullscreen ? 'fullscreen_exit' : 'fullscreen'}</IconButton>
                 <IconButton iconClassName="material-icons" iconStyle={{color: 'white', fontSize: '27px', top: '-5px', left: '-1px'}} className="subtitles-toggle">closed_caption</IconButton>

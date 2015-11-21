@@ -11,6 +11,9 @@
 	position: absolute;
     width: 100vw;
     transition: opacity 300ms ease-in-out;
+    z-index: 2;
+	height: 62px;
+	background: -webkit-linear-gradient(rgba(0,0,0,0.8) 0%,transparent 100%);
 }
 
 .wcjs-player .header.show{
@@ -18,12 +21,24 @@
 }
 
 .wcjs-player .header .player-close {
-	font-size: 40px;
-    margin-top: 10px;
-    margin-left: 20px;
-    width: 65px !important;
-    height: 65px !important;
+	font-size: 28px;
+    margin-top: 0px;
+    margin-left: 0px;
+    width: 58px !important;
+    height: 63px !important;
     float: left;
+    margin-top: 1px;
+    margin-left: 0;
+}
+
+.wcjs-player .header .player-close div {
+    padding: 0;
+    margin-top: -10px;
+}
+
+.wcjs-player .header .player-close .material-icons {
+    margin-top: -10px;
+	font-size: 28px !important;
 }
 
 .wcjs-player .header .player-playlist {
@@ -32,6 +47,7 @@
     width: 55px;
     height: 55px;
     float: right;
+    margin-top: 0;
 }
 
 .wcjs-player .header .player-settings{
@@ -39,19 +55,22 @@
     width: 55px;
     height: 55px;
     float: right;
+    margin-top: 0;
 }
 
 
 .wcjs-player .header .title {
 	float: left;
-    font-size: 25px;
+    font-size: 19px;
     color: white;
-    margin-top: 28px;
-    margin-left: 15px;
-    max-width: 80vw;
+    margin-top: 11px;
+    margin-left: -2px;
+    width: ~"calc(100% - 182px)";
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    -webkit-app-region: drag;
+    display: inline-block;
 }
 
 .wcjs-player .control-bar{
@@ -60,7 +79,7 @@
     width: 100vw;
     position: absolute;
     bottom: 0;
-    height: 50px;
+    height: 64px;
     transition: opacity 300ms ease-in-out;
 }
 .wcjs-player .control-bar.show{
@@ -78,6 +97,7 @@
     width: 100vw;
     position: absolute; 
     transition: 100ms ease-in-out;
+    background-color: rgba(0,0,0,0.8);
 }
 
 .wcjs-player .control-bar .scrobbler .handle {
@@ -91,6 +111,7 @@
     border-radius: 50%;
     transition: opacity 100ms ease-in-out;
     background-color: rgba(0, 144, 255, 0.82);
+	display: none !important;
 }
 
 .wcjs-player .control-bar .scrobbler .time {
@@ -98,7 +119,7 @@
     height: 100%;
     position: absolute;
     bottom: 0;
-    background-color: rgba(0, 144, 255, 0.7);
+    background: -webkit-linear-gradient(left, #a259fe 0%,#1f99ff 100%);
 }
 
 .wcjs-player .control-bar .scrobbler .buffer {
@@ -133,4 +154,38 @@
     float: right;
     margin-right: 5px;
     margin-top: 2px;
+}
+
+.wcjs-player .control-bar .play-toggle {
+    position: absolute;
+    top: 47%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100% !important;
+    padding: 12px;
+	
+}
+
+.wcjs-player .control-bar .play-toggle .material-icons {
+    margin-top: -1px;
+    padding: 7px;
+    background-image: url('../images/play-background.png');
+    background-size: 36px;
+    background-repeat: no-repeat;
+    color: #00c2f9 !important;
+    font-size: 22px !important;
+}
+
+.wcjs-player .control-bar .subtitles-toggle {
+    position: absolute !important;
+    top: 53%;
+    right: 18px;
+    transform: translate(-50%, -50%);
+}
+
+.wcjs-player .control-bar .fullscreen-toggle {
+    position: absolute !important;
+    top: 52%;
+    right: -21px;
+    transform: translate(-50%, -50%);
 }

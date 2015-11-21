@@ -140,7 +140,11 @@ default React.createClass({
             canvas: {
                 display: 'inline-block',
                 height: '100vh',
-                opacity: this.state.initialResize ? 1 : 0
+                opacity: this.state.initialResize ? 1 : 0,
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%,-50%)'
             }
         };
         return (
