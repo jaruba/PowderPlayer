@@ -62,6 +62,12 @@ default React.createClass({
 
         this.player.onPositionChanged = (pos) => {
             PlayerActions.position(pos);
+            if (!this.state.initialResize) {
+                this.setState({
+                    initialResize: true
+                });
+                this.handleResize();
+            }
         }
 
         this.player.onTimeChanged = (time) => {
@@ -86,12 +92,6 @@ default React.createClass({
 
         this.player.onPlaying = () => {
             PlayerActions.playing();
-            if (!this.state.initialResize) {
-                this.setState({
-                    initialResize: true
-                });
-                this.handleResize();
-            }
         }
 
         this.player.onPaused = () => {
@@ -141,7 +141,8 @@ default React.createClass({
             },
             canvas: {
                 display: 'inline-block',
-                height: '100vh'
+                height: '100vh',
+                opacity: this.state.initialResize ? 1 : 0
             }
         };
         return (

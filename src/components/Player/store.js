@@ -95,7 +95,9 @@ class playerStore {
             buffering: false,
             playing: false,
             paused: false
-        })
+        });
+        this.wcjs.stop();
+        this.wcjs.playlist.clear();
     }
 
     onPlaying() {
