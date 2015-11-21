@@ -111,7 +111,7 @@ default React.createClass({
 
         this.player.playlist.add(this.state.uri);
         this.player.play();
-        this.player.subtitles.track = 0;
+        //this.player.subtitles.track = 0;
     },
     handleResize() {
         var canvas = this.refs['wcjs-render'];
