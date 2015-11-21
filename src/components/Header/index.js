@@ -26,25 +26,12 @@ default React.createClass({
             });
         }
     },
-
-    toggleMaximize() {
-
-    },
-
-
-    toggleMinimize() {
-
-    },
-
-
-
-
     render() {
         return (
             <div className="header windows">
                 <i className="material-icons close">clear</i>
-                <i className="material-icons maximize off">crop_3_2</i>
-                <i className="material-icons minimize">remove</i>
+                <i onClick={HeaderActions.toggleMaximize.bind(this, !this.state.maximized)} className="material-icons maximize off">crop_3_2</i>
+                <i onClick={HeaderActions.toggleMinimize} className="material-icons minimize">remove</i>
             </div>
         );
     }
