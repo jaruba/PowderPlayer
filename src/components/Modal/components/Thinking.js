@@ -18,7 +18,7 @@ default React.createClass({
                 downloadSpeed: 0,
                 peers: {
                     active: 0,
-                    total: 0
+                    total: false
                 }
             }
         };
@@ -37,10 +37,10 @@ default React.createClass({
     },
 
     update() {
+        this.setState({
+            meta: ModalStore.getState().meta,
+        });
         if (this.isMounted()) {
-            this.setState({
-                meta: ModalStore.getState().meta,
-            });
             this.updateUI(this.state.meta.type)
         }
     },
@@ -72,6 +72,7 @@ default React.createClass({
     },
 
     render() {
+        var statusText = this.state.stats.peers.total ? <p className="peers" >Connected to {this.state.stats.peers.total} Peers</p> : <p className="peers">Processing URL</p>;
         return (
             <div>
                 <div className="meta" >
@@ -79,8 +80,7 @@ default React.createClass({
                 </div>
                 <LinearProgress mode="indeterminate"  />
                 <RaisedButton onClick={this.handelCancel} style={{float: 'right', 'marginTop': '15px' }} label="Cancel" />
-                <p className="peers" >Connected to {this.state.stats.peers.total} Peers</p>
-
+                {statusText}
             </div>
         );
     }
