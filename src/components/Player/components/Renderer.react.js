@@ -76,6 +76,14 @@ default React.createClass({
             PlayerActions.buffering(perc);
         }
 
+        this.player.onLengthChanged = (length) => {
+            PlayerActions.length(length);
+        }
+
+        this.player.onSeekableChanged = (seekable) => {
+            PlayerActions.seekable(seekable);
+        }
+
         this.player.onPlaying = () => {
             PlayerActions.playing();
             if (!this.state.initialResize) {
@@ -83,7 +91,6 @@ default React.createClass({
                     initialResize: true
                 });
                 this.handleResize();
-                PlayerActions.length(this.player.length);
             }
         }
 

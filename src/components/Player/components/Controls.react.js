@@ -39,6 +39,7 @@ default React.createClass({
             playing: PlayerStore.getState().playing,
             position: PlayerStore.getState().position,
             buffering: PlayerStore.getState().buffering,
+            seekable: PlayerStore.getState().seekable,
             time: PlayerStore.getState().time,
             length: PlayerStore.getState().length
         });
@@ -62,7 +63,7 @@ default React.createClass({
 
     },
     handleScrobble(event) {
-        if (!this.state.length)
+        if (!this.state.length || !this.state.seekable)
             return;
         var percent_done = event.pageX / document.body.clientWidth;
         PlayerActions.scrobble(this.state.length * percent_done);

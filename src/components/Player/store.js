@@ -12,10 +12,15 @@ class playerStore {
 
         this.playing = false;
         this.paused = false;
+
+
         this.position = 0;
         this.buffering = false;
         this.time = 0;
         this.length = 0;
+        this.seekable = false;
+
+
         this.fullscreen = false;
         this.uiShown = true;
     }
@@ -41,6 +46,12 @@ class playerStore {
     onPosition(pos) {
         this.setState({
             position: pos
+        });
+    }
+
+    onSeekable(state) {
+        this.setState({
+            seekable: state
         });
     }
 
