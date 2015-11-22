@@ -8,7 +8,8 @@ class HeaderActions {
     constructor() {
         this.generateActions(
             'maximize',
-            'minimize'
+            'minimize',
+            'view'
         );
     }
 

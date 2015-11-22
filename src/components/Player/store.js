@@ -26,7 +26,6 @@ class playerStore {
     }
 
     onWcjsInit(wcjs) {
-        console.log('WCJS Initing');
         this.setState({
             wcjs: wcjs
         });

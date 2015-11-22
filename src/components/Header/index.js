@@ -8,13 +8,13 @@ default React.createClass({
     getInitialState() {
         return {
             maximized: false,
-            minimized: false
+            minimized: false,
+            view: HeaderStore.getState().view
         };
     },
     componentWillMount() {
         HeaderStore.listen(this.update);
     },
-
     componentWillUnmount() {
         HeaderStore.unlisten(this.update);
     },
@@ -22,11 +22,13 @@ default React.createClass({
         if (this.isMounted()) {
             this.setState({
                 maximized: HeaderStore.getState().maximized,
-                minimized: HeaderStore.getState().minimized
+                minimized: HeaderStore.getState().minimized,
+                view: HeaderStore.getState().view
             });
         }
     },
     render() {
+        console.log(this.state.view);
         return (
             <div className="header windows">
                 <h1>Powder Player</h1>

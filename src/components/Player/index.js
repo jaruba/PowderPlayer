@@ -5,6 +5,8 @@ import PlayerRender from './components/Renderer.react';
 
 import PlayerStore from './store';
 import PlayerActions from './actions';
+import HeaderActions from '../Header/actions';
+
 
 export
 default React.createClass({
@@ -19,6 +21,7 @@ default React.createClass({
     },
     componentWillMount() {
         PlayerStore.listen(this.update);
+        HeaderActions.view('player');
     },
     componentWillUnmount() {
         PlayerStore.unlisten(this.update);
