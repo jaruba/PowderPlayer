@@ -21,7 +21,6 @@ class HeaderActions {
 
     toggleMinimize() {
         this.dispatch();
-        console.log('toggleMinimize')
         ipcRenderer.send('app:minimize');
         this.actions.minimize();
     }
