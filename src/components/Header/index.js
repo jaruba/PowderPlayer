@@ -16,14 +16,20 @@ default React.createClass({
         return {
             maximized: false,
             minimized: false,
-            view: HeaderStore.getState().view
+            view: false
         };
     },
     componentWillMount() {
         HeaderStore.listen(this.update);
+        this.history.listen(this.updatehistory)
     },
     componentWillUnmount() {
         HeaderStore.unlisten(this.update);
+    },
+    updatehistory(n, location) {
+        this.setState({
+            view: (location.pathname === '/') ? 'dashboard' : 'player'
+        });
     },
     update() {
         if (this.isMounted()) {
@@ -35,7 +41,6 @@ default React.createClass({
         }
     },
     render() {
-        console.log(this.state.view);
         return (
             <div className="header windows">
                 <h1>Powder Player</h1>
