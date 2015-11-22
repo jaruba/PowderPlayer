@@ -32,6 +32,7 @@ class PlayerActions {
     }
 
     toggleFullscreen(state) {
+        this.dispatch();
         ipcRenderer.send('app:fullscreen', state);
         this.actions.fullscreen(state);
     }

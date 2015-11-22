@@ -68,11 +68,11 @@ app.on('ready', function() {
     mainWindow.on('close', app.quit);
 
     ipcMain.on('app:get:fullscreen', (event) => {
-        event.sender.send('app:get:fullscreen', mainWindow.isFullScreen());
+        event.returnValue = mainWindow.isFullScreen();
     });
 
     ipcMain.on('app:get:maximized', (event) => {
-        event.sender.send('app:get:maximized', mainWindow.isMaximized());
+        event.returnValue = mainWindow.isMaximized();
     });
 
     ipcMain.on('app:fullscreen', (event, state) => {
@@ -83,9 +83,13 @@ app.on('ready', function() {
         state ? mainWindow.maximize() : mainWindow.unmaximize();
     });
 
-    ipcMain.on('app:minimize', mainWindow.minimize);
+    ipcMain.on('app:minimize', () => {
+        mainWindow.minimize();
+    });
 
-    ipcMain.on('app:close', mainWindow.close);
+    ipcMain.on('app:close', () => {
+        mainWindow.close();
+    });
 
 });
 

@@ -12,13 +12,9 @@ class HeaderActions {
         );
     }
 
-    close(){
-    	ipcRenderer.send('app:close');
-    }
-
     toggleMaximize() {
         this.dispatch();
-        let state = !ipcRenderer.send('app:get:maximized');
+        let state = !ipcRenderer.sendSync('app:get:maximized');
         ipcRenderer.send('app:maximize', state);
         this.actions.maximize(state);
     }
@@ -29,8 +25,12 @@ class HeaderActions {
         ipcRenderer.send('app:minimize');
         this.actions.minimize();
     }
+
+    close() {
+        ipcRenderer.send('app:close');
+    }
 }
 
 
 export
-default alt.generateActions(HeaderActions);
+default alt.createActions(HeaderActions);
