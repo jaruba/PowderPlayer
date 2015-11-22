@@ -8,13 +8,6 @@ class HeaderStore {
 
         this.maximized = false;
         this.minimized = false;
-        this.view = 'dashboard';
-    }
-
-    onView(view) {
-        this.setState({
-            view: view,
-        });
     }
 
     onMaximized(toggle) {

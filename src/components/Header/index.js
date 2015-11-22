@@ -1,10 +1,17 @@
 import React from 'react';
+import {
+    History
+}
+from 'react-router';
 import HeaderStore from './store';
 import HeaderActions from './actions';
 
 
 export
 default React.createClass({
+
+    mixins: [History],
+
     getInitialState() {
         return {
             maximized: false,

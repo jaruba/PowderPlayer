@@ -8,15 +8,11 @@ from 'material-ui';
 
 import utils from '../utils/util';
 import ModalActions from './Modal/actions';
-import HeaderActions from './Header/actions';
 
 
 
 export
 default React.createClass({
-    componentWillMount() {
-        HeaderActions.view('dashboard');
-    },
     addSource(source) {
         switch (source) {
             case 'url':
