@@ -10,6 +10,7 @@ import ModalActions from './actions';
 import FileStreamSelector from './components/fileStreamSelector';
 import URLContents from './components/URLadd';
 import Thinking from './components/Thinking';
+import PlayerSettings from './components/player-settings';
 
 export
 default React.createClass({
@@ -76,6 +77,10 @@ default React.createClass({
                 break;
             case 'thinking':
                 return <Thinking />;
+                break;
+            case 'player-settings':
+                return <PlayerSettings />;
+                break;
         }
     },
 
