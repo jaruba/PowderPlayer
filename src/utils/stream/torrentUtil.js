@@ -54,6 +54,7 @@ module.exports = {
         return new Promise((resolve) => {
             var seen = new Set();
             var directorys = [];
+            var files_total = 0;
             var files_organized = {};
             for (var fileID in files) {
                 var file = files[fileID];
@@ -61,6 +62,7 @@ module.exports = {
                 var streamable = (supported.all.indexOf(fileParams.ext) > -1);
 
                 if (streamable) {
+                    files_total++;
                     if (!files_organized[fileParams.dir])
                         files_organized[fileParams.dir] = {};
 
@@ -78,6 +80,7 @@ module.exports = {
                 return !seen.has(dir) && seen.add(dir);
             });
             files_organized['folder_status'] = (directorys.length > 1);
+            files_organized['files_total'] = files_total;
             resolve(files_organized);
         })
     }

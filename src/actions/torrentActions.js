@@ -1,6 +1,8 @@
 import ModalActions from '../components/Modal/actions';
 import PlayerActions from '../components/Player/actions';
-import alt from '../alt'
+import EngineStore from '../stores/engineStore';
+import _ from 'lodash';
+import alt from '../alt';
 
 class torrentActions {
 
@@ -13,7 +15,7 @@ class torrentActions {
         );
     }
 
-    addTorrent(torrent) {
+    addTorrent(torrent, History) {
         var TorrentUtil = require('../utils/stream/torrentUtil');
         this.dispatch();
         TorrentUtil.init(torrent)
@@ -28,20 +30,35 @@ class torrentActions {
                 this.actions.add(instance);
                 return new Promise((resolve) => {
                     instance.on('ready', function() {
-                        resolve(instance)
+                        resolve(instance);
                     });
                 });
             })
             .then((instance) => {
                 return TorrentUtil.getContents(instance.torrent.files, instance.infoHash);
             })
-            .then(ModalActions.fileSelector)
-            .catch((err) => {
+            .then((files) => {
+                if (files.files_total === 1) {
+                    var fileSelectorData = _.omit(files, ['files_total', 'folder_status']);
+                    var folder = fileSelectorData[Object.keys(fileSelectorData)[0]];
+                    var file = folder[Object.keys(folder)[0]];
+                    PlayerActions.open({
+                        title: file.name,
+                        uri: 'http://127.0.0.1:' + EngineStore.state.torrents[file.infoHash]['stream-port'] + '/' + file.id
+                    });
+                    ModalActions.close();
+                    History.replaceState(null, 'player');
+                } else
+                    ModalActions.fileSelector(files);
+            })
+            .catch(err => {
                 //ModalActions.close();
                 console.error(err);
             });
     }
 }
+
+
 
 
 export

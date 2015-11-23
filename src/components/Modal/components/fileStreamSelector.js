@@ -48,10 +48,9 @@ default React.createClass({
     },
 
     getContent() {
-        var fileSelectorData = this.state.files;
+        var fileSelectorData = _.omit(this.state.files, ['files_total', 'folder_status']);
         var content = [];
         _.forEach(fileSelectorData, (folder, key) => {
-            if (key === 'folder_status') return;
             if (fileSelectorData.folder_status) {
                 content.push(this.generateFolder(folder, key))
             } else {

@@ -29,7 +29,7 @@ default React.createClass({
                 console.log(parsed)
                 switch (parsed.catagory) {
                     case 'torrent':
-                        torrentActions.addTorrent(inputvalue);
+                        torrentActions.addTorrent(inputvalue, this.history);
                         break;
                     case 'direct':
                         ModalActions.close();
