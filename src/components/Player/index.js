@@ -35,13 +35,17 @@ default React.createClass({
             });
         }
     },
-    hover() {
-        this.hoverTimeout && clearTimeout(this.hoverTimeout);
-
-        this.state.uiShown || PlayerActions.uiShown(true);
-        this.hoverTimeout = setTimeout(() => {
+    hideUI() {
+        if (!PlayerStore.getState().scrobbling) {
             PlayerActions.uiShown(false);
-        }, 3000);
+        } else {
+            this.hoverTimeout = setTimeout(this.hideUI, 3000);
+        }
+    },
+    hover(event) {
+        this.hoverTimeout && clearTimeout(this.hoverTimeout);
+        this.state.uiShown || PlayerActions.uiShown(true);
+        this.hoverTimeout = setTimeout(this.hideUI, 3000);
     },
     render() {
         var playerContent = this.state.uri ? <PlayerRender /> : '';

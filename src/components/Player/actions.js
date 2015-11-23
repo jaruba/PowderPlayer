@@ -21,13 +21,16 @@ class PlayerActions {
             'time',
             'length',
             'scrobble',
+            'scrobbleState',
 
             'fullscreen',
 
             'metaUpdate',
             'wcjsInit',
             'close',
-            'open'
+            'open',
+            
+            'humanTime'
         );
     }
 
