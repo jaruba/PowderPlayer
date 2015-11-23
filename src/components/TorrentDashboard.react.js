@@ -29,6 +29,15 @@ default React.createClass({
             });
         }
     },
+
+    generateTorrent(infoHash) {
+
+    },
+
+    generateFile(file) {
+
+    },
+
     render() {
         return (
             <div className="wrapper">
