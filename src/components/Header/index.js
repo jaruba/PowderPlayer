@@ -42,11 +42,9 @@ default React.createClass({
         }
     },
     render() {
-        if (this.state.view === 'player')
-            return;
-        
+        var headerClass = 'header ' + process.platform + ((this.state.view === 'player') ? ' player' : '');
         return (
-            <div className="header windows">
+            <div className={headerClass}>
                 <h1>Powder Player</h1>
                 <div className="close" onClick={HeaderActions.close}>
                     <i className="material-icons">clear</i>
