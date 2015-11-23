@@ -2,7 +2,7 @@ import React from 'react';
 import remote from 'remote';
 import Dropzone from 'react-dropzone';
 import {
-    RaisedButton, Paper
+    RaisedButton, Paper, IconButton
 }
 from 'material-ui';
 
@@ -48,8 +48,9 @@ default React.createClass({
             <div className="wrapper">
                <center>
                     <Paper className="holder" rounded={true} zDepth={1}>
-                        <i className="ion-android-settings player-settings"/>
-                        <i className="ion-android-time history-icon"/>
+                        <IconButton iconClassName="material-icons" iconStyle={{color: '#767A7B', fontSize: '30px', top: '-2px', right: '2px'}} className="settings" >settings</IconButton>
+                        <IconButton iconClassName="material-icons" iconStyle={{color: '#767A7B', fontSize: '30px', top: '-2px', right: '2px'}} className="torrent-dash" >view_compact</IconButton>
+
                         <img src="images/powder-logo.png" className="logoBig"/>
                         <br/>
                         <b className="fl_dd droid-bold">Drag &amp; Drop a File</b>
