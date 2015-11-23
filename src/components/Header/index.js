@@ -16,7 +16,7 @@ default React.createClass({
         return {
             maximized: false,
             minimized: false,
-            view: false
+            view: 'dashboard'
         };
     },
     componentWillMount() {
@@ -28,9 +28,9 @@ default React.createClass({
         this.history.unlisten(this.updatehistory);
     },
     updatehistory(n, location) {
-        if (location.pathname)
+        if (location.location.pathname)
             this.setState({
-                view: location.pathname.substr(1)
+                view: (location.location.pathname.substr(1) === '') ? 'dashboard' : location.location.pathname.substr(1)
             });
     },
     update() {
@@ -42,7 +42,7 @@ default React.createClass({
         }
     },
     render() {
-        var headerClass = 'header ' + process.platform + ((this.state.view === 'player') ? ' player' : '');
+        var headerClass = 'header ' + process.platform + ' ' + this.state.view;
         return (
             <div className={headerClass}>
                 <h1>Powder Player</h1>
