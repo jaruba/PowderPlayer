@@ -11,17 +11,34 @@
 	width: 100vw;
 	font-size: 15px;
 	text-align: center;
-	margin-top: 5px;
-	font-weight: 300;
-	color: black;
+	margin-top: 7px;
+	font-weight: 400;
+	color: rgba(55, 55, 55, 0.75);
 }
 
 
-.header i {
+.header.windows div {
     -webkit-app-region: no-drag;
     cursor: pointer;
+    float: right;
+    width: 25px;
+    height: 20px;
+    margin-top: 2px;
+    margin-left: 1px;
+}
+
+.header.windows .minimize i{
+    bottom: 2px;
+}
+
+.header.windows .maximize.off i{
+    font-size: 20px;
+    margin-left: 2px;
+    bottom: 7px;
 }
 
 .header.windows i{
-    float: right;
+    color: #373737;
+    font-size: 22px;
+    position: absolute;
 }

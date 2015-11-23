@@ -45,9 +45,15 @@ default React.createClass({
         return (
             <div className="header windows">
                 <h1>Powder Player</h1>
-                <i onClick={HeaderActions.close} className="material-icons close">clear</i>
-                <i onClick={HeaderActions.toggleMaximize} className="material-icons maximize off">crop_3_2</i>
-                <i onClick={HeaderActions.toggleMinimize} className="material-icons minimize">remove</i>
+                <div className="close" onClick={HeaderActions.close}>
+                    <i className="material-icons">clear</i>
+                </div>
+                <div className="maximize off" onClick={HeaderActions.toggleMaximize}>
+                    <i  className="material-icons">crop_landscape</i>
+                </div>
+                <div className="minimize" onClick={HeaderActions.toggleMinimize}>
+                    <i  className="material-icons">remove</i>
+                </div>
             </div>
         );
     }
