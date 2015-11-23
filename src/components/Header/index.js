@@ -42,6 +42,9 @@ default React.createClass({
         }
     },
     render() {
+        if (this.state.view === 'player')
+            return;
+        
         return (
             <div className="header windows">
                 <h1>Powder Player</h1>
