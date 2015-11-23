@@ -1,9 +1,11 @@
 import React from 'react';
-import ModalActions from '../actions';
 import {
-    RaisedButton, Toggle
+    RaisedButton, Paper
 }
 from 'material-ui';
+
+import utils from '../utils/util';
+
 
 
 export
@@ -20,18 +22,14 @@ default React.createClass({
     componentWillUnmount() {
 
     },
-    update() {
-        if (this.isMounted()) {
-
-        }
-    },
     render() {
         return (
-            <div>
-               <Toggle
-                	name="always-on-top"
-                	defaultToggled={this.state.alwaysOnTop}
-                	label="Always on top:"/>
+            <div className="wrapper">
+               <center>
+                    <Paper className="holder" rounded={true} zDepth={1}>
+                        
+                    </Paper>
+               </center>
             </div>
         );
     }

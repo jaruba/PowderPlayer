@@ -21,22 +21,23 @@ default React.createClass({
     },
     componentWillMount() {
         HeaderStore.listen(this.update);
-        this.history.listen(this.updatehistory)
+        this.history.listen(this.updatehistory);
     },
     componentWillUnmount() {
         HeaderStore.unlisten(this.update);
+        this.history.unlisten(this.updatehistory);
     },
     updatehistory(n, location) {
-        this.setState({
-            view: (location.pathname === '/') ? 'dashboard' : 'player'
-        });
+        if (location.pathname)
+            this.setState({
+                view: location.pathname.substr(1)
+            });
     },
     update() {
         if (this.isMounted()) {
             this.setState({
                 maximized: HeaderStore.getState().maximized,
-                minimized: HeaderStore.getState().minimized,
-                view: HeaderStore.getState().view
+                minimized: HeaderStore.getState().minimized
             });
         }
     },
