@@ -42,6 +42,12 @@ default React.createClass({
         PlayerActions.close();
         this.history.replaceState(null, '');
     },
+    handleOpenSettings() {
+        ModalActions.open({
+            title: 'Player Settings',
+            type: 'player-settings'
+        });
+    },
     handleOpenPlaylist() {
 
 
@@ -52,7 +58,7 @@ default React.createClass({
                 <IconButton onClick={this.handleClose} iconClassName="material-icons" iconStyle={{color: 'white', fontSize: '40px'}} className="player-close" >arrow_back</IconButton>
                 <p className="title">{this.state.title}</p> 
                 <IconButton onClick={this.handleOpenPlaylist} iconClassName="material-icons" className="player-playlist" iconStyle={{color: 'white', fontSize: '30px', right: '-2px', top: '-1px'}} tooltipPosition="bottom-center" tooltip="Playlist">playlist_add_check</IconButton>
-                <IconButton onClick={ModalActions.open.bind(this, {title: 'Player Settings', type: 'player-settings'})} iconClassName="material-icons" iconStyle={{color: 'white', fontSize: '23px'}} tooltipPosition="bottom-center" tooltip="Player Settings" className="player-settings">tune</IconButton>
+                <IconButton onClick={this.handleOpenSettings} iconClassName="material-icons" iconStyle={{color: 'white', fontSize: '23px'}} tooltipPosition="bottom-center" tooltip="Player Settings" className="player-settings">tune</IconButton>
             </div>
         );
     }

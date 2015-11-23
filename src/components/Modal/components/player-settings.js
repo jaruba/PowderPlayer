@@ -1,7 +1,7 @@
 import React from 'react';
 import ModalActions from '../actions';
 import {
-    RaisedButton
+    RaisedButton, Toggle
 }
 from 'material-ui';
 
@@ -10,7 +10,7 @@ export
 default React.createClass({
     getInitialState() {
         return {
-
+            alwaysOnTop: false
         };
     },
     componentWillMount() {
@@ -28,7 +28,10 @@ default React.createClass({
     render() {
         return (
             <div>
-               
+               <Toggle
+                name="always-on-top"
+                defaultToggled={this.state.alwaysOnTop}
+                label="Always on top:"/>
             </div>
         );
     }
