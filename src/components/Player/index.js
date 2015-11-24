@@ -1,4 +1,5 @@
 ﻿import React from 'react';
+import PureRenderMixin from 'react-addons-pure-render-mixin';
 import PlayerHeader from './components/Header.react';
 import PlayerControls from './components/Controls.react';
 import PlayerRender from './components/Renderer.react';
@@ -10,6 +11,8 @@ import PlayerActions from './actions';
 
 export
 default React.createClass({
+    mixins: [PureRenderMixin],
+
     getInitialState() {
         return {
             uri: PlayerStore.getState().uri,
