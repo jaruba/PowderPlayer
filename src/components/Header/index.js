@@ -45,7 +45,7 @@ default React.createClass({
         var headerClass = 'header ' + process.platform + ' ' + this.state.view;
         return (
             <div className={headerClass}>
-                <h1>Powder Player</h1>
+                <h1></h1>
                 <div className="close" onClick={HeaderActions.close}>
                     <i className="material-icons">clear</i>
                 </div>

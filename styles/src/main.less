@@ -1,17 +1,17 @@
 * { margin: 0 }
 html, body { height: 100% }
 body {
-	font-family: 'Roboto', sans-serif;
-	font-weight: 400; 
-	background: #fff;
-	overflow-y:hidden;
-	overflow-x:hidden;
-	height: 100%;
-	-webkit-touch-callout: none;
-	-webkit-user-select: none;
-	-webkit-user-drag: none;
-	img {
-    	pointer-events: none;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400; 
+    background: #fff;
+    overflow-y:hidden;
+    overflow-x:hidden;
+    height: 100%;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
+    img {
+        pointer-events: none;
     }
 }
 
@@ -19,4 +19,33 @@ body {
     height: 100%;
     width: 100%;
     display: table;
+}
+
+#main .holder {
+    min-height: 428px;
+}
+
+#main .mainButHold div > button > div > div > span:first-of-type {
+    display: none
+}
+
+#main .mainButHold div > button > div {
+    height: 100%;
+}
+
+#main .mainButHold > div:first-of-type button {
+    background: rgb(0, 184, 80) !important;
+}
+
+#main .mainButHold > div:first-of-type + div button {
+    background: rgb(28, 168, 237) !important;
+}
+
+#main .mainButHold > div:first-of-type + div + div button {
+    background: rgb(241, 102, 79) !important;
+}
+
+#main .mainButHold .lbl {
+    color: #fff;
+    font-size: 17px;
 }

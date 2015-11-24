@@ -48,8 +48,12 @@ default React.createClass({
             <div className="wrapper">
                <center>
                     <Paper className="holder" rounded={true} zDepth={1}>
-                        <IconButton iconClassName="material-icons" iconStyle={{color: '#767A7B', fontSize: '30px', top: '-2px', right: '2px'}} className="settings" >settings</IconButton>
-                        <IconButton iconClassName="material-icons" iconStyle={{color: '#767A7B', fontSize: '30px', top: '-2px', right: '2px'}} className="torrent-dash" >view_compact</IconButton>
+                        <div className="mainButtonHolder">
+                             <div className="inButtonHolder">
+                                <IconButton iconClassName="material-icons" iconStyle={{color: '#767A7B', fontSize: '30px', top: '-2px', right: '2px'}} className="settings" >settings</IconButton>
+                                <IconButton iconClassName="material-icons" iconStyle={{color: '#767A7B', fontSize: '30px', top: '-2px', right: '2px'}} className="torrent-dash" >view_compact</IconButton>
+                            </div>
+                        </div>
 
                         <img src="images/powder-logo.png" className="logoBig"/>
                         <br/>
@@ -59,9 +63,27 @@ default React.createClass({
                         <br/>
                         <br/>
                         <div className="mainButHold">
-                            <RaisedButton style={{float: 'left', width: '130px'}} onClick={this.addSource.bind(this, 'local-torrent')} label="Add Torrent" />
-                            <RaisedButton style={{width: '130px'}} onClick={this.addSource.bind(this, 'local-video')} label="Add Video" />
-                            <RaisedButton style={{float: 'right', width: '130px'}} onClick={this.addSource.bind(this, 'url')} label="Use a URL" />
+                            <RaisedButton style={{float: 'left', width: '130px', height: '108px'}} onClick={this.addSource.bind(this, 'local-torrent')} label="Add Torrent">
+                                <img src="images/icons/torrent-icon.png" style={{marginTop: '13px'}}/>
+                                <br/>
+                                <span className="fl_sl lbl" style={{marginTop: '11px'}}>
+                                Add Torrent
+                                </span>
+                            </RaisedButton>
+                            <RaisedButton style={{width: '130px', height: '108px'}} onClick={this.addSource.bind(this, 'local-video')} label="Add Video">
+                                <img src="images/icons/video-icon.png" style={{marginTop: '18px'}}/>
+                                <br/>
+                                <span className="fl_sl lbl" style={{marginTop: '15px'}}>
+                                Add Video
+                                </span>
+                            </RaisedButton>
+                            <RaisedButton style={{float: 'right', width: '130px', height: '108px'}} onClick={this.addSource.bind(this, 'url')} label="Use a URL">
+                                <img src="images/icons/link-icon.png" style={{marginTop: '17px'}}/>
+                                <br/>
+                                <span className="fl_sl lbl" style={{marginTop: '10px'}}>
+                                Use a URL
+                                </span>
+                            </RaisedButton>
                         </div>
                     </Paper>
                </center>

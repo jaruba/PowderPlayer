@@ -1,7 +1,19 @@
+@font-face {
+  font-family: 'Droid Sans Bold';
+  src: url('../fonts/DroidSans/DroidSans-Bold.ttf');
+}
+
+@font-face {
+  font-family: 'Droid Sans';
+  src: url('../fonts/DroidSans/DroidSans.ttf');
+}
+
 .wrapper {
+  font-family: 'Droid Sans', sans-serif;
   display: table-cell;
   height: 100%;
   vertical-align: middle;
+  padding-top: 30px;
 }
 
 .wrapper .holder {
@@ -19,7 +31,6 @@
 .wrapper .logoBig {
   margin-top: 47px;
   margin-bottom: 13px;
-  margin-left: 58px;
 }
 
 .wrapper .fl_dd {
@@ -35,22 +46,44 @@
   font-weight: 300;
   margin-top: 13px;
   display: inline-block;
-  margin-bottom: 11px
+  margin-bottom: 11px;
+  font-family: 'Droid Sans', sans-serif;
 }
 
 .wrapper .settings {
-    width: 46px !important;
-    height: 46px;
-    top: -5px;
-    float: right;
+  width: 46px !important;
+  height: 46px;
+  top: -5px;
+  float: right;
 }
 
 .wrapper .torrent-dash {
-    float: right;
-    top: -5px;
-    margin-right: -6px;
+  float: right;
+  top: -5px;
+  margin-right: -6px;
 }
 
 .wrapper .mainButHold { 
   width: 450px 
+}
+
+.mainButtonHolder {
+  float: right;
+  position: relative;
+  width: 100%;
+}
+
+.inButtonHolder {
+  position: absolute;
+  width: 100%;
+}
+
+.wrapper .droid-bold {
+  font-family: 'Droid Sans Bold';
+}
+
+.wrapper .holder {
+  background: rgb(244, 244, 244) !important;
+  border: 3px dashed rgb(204, 204, 204) !important;
+  box-shadow: none !important;
 }

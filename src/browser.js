@@ -28,8 +28,8 @@ app.on('ready', function() {
     var screenSize = require('screen').getPrimaryDisplay().workAreaSize;
 
     var mainWindow = new BrowserWindow({
-        width: screenSize.width * 0.7,
-        height: screenSize.height * 0.7,
+        width: 637,
+        height: 514,
         'standard-window': true,
         'auto-hide-menu-bar': true,
         resizable: true,
