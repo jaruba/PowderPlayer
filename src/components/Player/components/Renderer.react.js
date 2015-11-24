@@ -1,4 +1,5 @@
 ﻿import React from 'react';
+import PureRenderMixin from 'react-addons-pure-render-mixin';
 import path from 'path';
 import wcjsRenderer from '../utils/wcjs-renderer';
 import _ from 'lodash';
@@ -18,6 +19,9 @@ try {
 
 export
 default React.createClass({
+    
+    mixins: [PureRenderMixin],
+
     getInitialState() {
         return {
             uri: PlayerStore.getState().uri,
@@ -112,9 +116,10 @@ default React.createClass({
             console.error(error);
             this.player.stop();
         }
-
-        this.player.playlist.add(this.state.uri);
-        this.player.play();
+        if (this.state.uri) {
+            this.player.playlist.add(this.state.uri);
+            this.player.play();
+        }
         //this.player.subtitles.track = 0;
     },
     handleResize() {
