@@ -21,7 +21,7 @@ default React.createClass({
     getInitialState() {
         return {
             title: PlayerStore.getState().title,
-            uiShown: PlayerStore.getState().uiShown
+            uiShown: PlayerStore.getState().uiShown && !PlayerStore.getState().playlistOpen
         }
     },
     componentWillMount() {
@@ -34,7 +34,7 @@ default React.createClass({
         if (this.isMounted()) {
             this.setState({
                 title: PlayerStore.getState().title,
-                uiShown: PlayerStore.getState().uiShown
+                uiShown: PlayerStore.getState().uiShown && !PlayerStore.getState().playlistOpen
             });
         }
     },
