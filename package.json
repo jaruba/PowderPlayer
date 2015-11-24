@@ -43,6 +43,7 @@
   },
   "devDependencies": {
     "babel": "^6.1.18",
+    "babel-plugin-transform-minify-booleans": "^6.1.18",
     "babel-preset-es2015": "^6.1.18",
     "babel-preset-react": "^6.1.18",
     "grunt": "^0.4.5",

@@ -192,6 +192,7 @@ module.exports = function(grunt) {
         babel: {
             options: {
                 sourceMap: 'inline',
+                plugins: ['transform-minify-booleans'],
                 presets: ['es2015', 'react'],
                 compact: true
             },
