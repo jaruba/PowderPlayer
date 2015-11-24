@@ -32,6 +32,7 @@
     "parse-torrent": "^5.4.0",
     "peerflix": "^0.32.2",
     "react": "^0.14.3",
+    "react-addons-pure-render-mixin": "^0.14.3",
     "react-dom": "^0.14.3",
     "react-dropzone": "^3.0.0",
     "react-modal": "^0.6.1",

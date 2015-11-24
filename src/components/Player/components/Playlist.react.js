@@ -1,9 +1,6 @@
 ﻿import React from 'react';
 import _ from 'lodash';
-import {
-    ItemMixin, ListMixin
-}
-from '../utils/playlistGrid';
+import PureRenderMixin from 'react-addons-pure-render-mixin';
 import {
     IconButton, Paper
 }
@@ -13,7 +10,6 @@ import PlayerActions from '../actions';
 
 
 const PlaylistItem = React.createClass({
-    mixins: [ItemMixin],
     render() {
         return (
             <Paper className="item" zDepth={1}>
@@ -26,17 +22,12 @@ const PlaylistItem = React.createClass({
 
 export
 default React.createClass({
-    mixins: [ListMixin],
+    
+    mixins: [PureRenderMixin],
+
     getInitialState() {
         return {
             open: false,
-        }
-    },
-    componentWillMount() {
-        PlayerStore.listen(this.update);
-    },
-    componentDidMount() {
-        this.setState({
             items: [{
                 image: 'https://walter.trakt.us/images/episodes/001/987/912/screenshots/original/c9596bfbc7.jpg',
                 title: 'Always Accountable 1',
@@ -54,8 +45,12 @@ default React.createClass({
                 title: 'Always Accountables 4',
                 id: 4
             }]
-        });
+        }
     },
+    componentWillMount() {
+        PlayerStore.listen(this.update);
+    },
+
     componentWillUnmount() {
         PlayerStore.unlisten(this.update);
     },
@@ -68,13 +63,6 @@ default React.createClass({
 
 
     },
-    handleSort(reorder) {
-        this.setState({
-            items: reorder.map(function(idx) {
-                return this.state.items[idx];
-            }.bind(this))
-        });
-    },
     render() {
         console.log(this.state)
         return (
@@ -82,7 +70,7 @@ default React.createClass({
                 <div className="playlist-inner">
                     {
                         this.state.items.map(function(item, idx) {
-                            return <PlaylistItem key={idx} index={item.id} {...this.movableProps} image={item.image} title={item.title} />;
+                            return <PlaylistItem key={idx} image={item.image} title={item.title} />;
                         }, this)
                     }
                 </div>

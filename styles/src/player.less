@@ -299,6 +299,8 @@
 
 
 .wcjs-player .playlist-container{
+    display: none;
+    opacity: 0;
     position: absolute;
     z-index: 5;
     top: 0;
@@ -306,7 +308,10 @@
     background-color: rgba(29, 31, 35, 0.82);
     width: 100vw;
 }
-
+.wcjs-player .playlist-container.show{
+    display: block;
+    opacity: 1;
+}
 
 
 .wcjs-player .playlist-container .playlist-inner{
