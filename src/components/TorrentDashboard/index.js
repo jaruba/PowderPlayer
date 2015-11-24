@@ -4,10 +4,10 @@ import {
 }
 from 'material-ui';
 
-import engineStore from '../stores/engineStore';
-import torrentActions from '../actions/torrentActions';
+import engineStore from '../../stores/engineStore';
+import torrentActions from '../../actions/torrentActions';
 
-import utils from '../utils/util';
+import utils from '../../utils/util';
 
 export
 default React.createClass({
