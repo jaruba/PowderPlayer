@@ -15,7 +15,7 @@ default React.createClass({
     getInitialState() {
         return {
             fullscreen: PlayerStore.getState().fullscreen,
-            uiShown: PlayerStore.getState().uiShown,
+            uiShown: PlayerStore.getState().uiShown || PlayerStore.getState().playlistOpen,
 
             scrobbling: false,
             playing: PlayerStore.getState().playing,
@@ -44,7 +44,7 @@ default React.createClass({
         if (this.isMounted()) {
             this.setState({
                 fullscreen: PlayerStore.getState().fullscreen,
-                uiShown: PlayerStore.getState().uiShown,
+                uiShown: PlayerStore.getState().uiShown || PlayerStore.getState().playlistOpen,
 
                 playing: PlayerStore.getState().playing,
                 position: PlayerStore.getState().position,

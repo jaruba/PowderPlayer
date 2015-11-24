@@ -22,7 +22,7 @@ const PlaylistItem = React.createClass({
 
 export
 default React.createClass({
-    
+
     mixins: [PureRenderMixin],
 
     getInitialState() {
@@ -56,7 +56,9 @@ default React.createClass({
     },
     update() {
         if (this.isMounted()) {
-            this.setState({});
+            this.setState({
+                open: PlayerStore.getState().playlistOpen,
+            });
         }
     },
     handleOpenPlaylist() {

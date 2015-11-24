@@ -22,9 +22,10 @@ class playerStore {
 
         this.files = [];
         this.playlist = {};
-        
+
         this.fullscreen = false;
         this.uiShown = true;
+        this.playlistOpen = false;
 
         this.currentTime = '00:00';
         this.totalTime = '00:00';
@@ -51,6 +52,12 @@ class playerStore {
     onWcjsInit(wcjs) {
         this.setState({
             wcjs: wcjs
+        });
+    }
+
+    onOpenPlaylist(state = true) {
+        this.setState({
+            playlistOpen: state
         });
     }
 
