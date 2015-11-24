@@ -2,6 +2,7 @@
 import PlayerHeader from './components/Header.react';
 import PlayerControls from './components/Controls.react';
 import PlayerRender from './components/Renderer.react';
+import Playlist from './components/Playlist.react';
 
 import PlayerStore from './store';
 import PlayerActions from './actions';
@@ -48,15 +49,15 @@ default React.createClass({
         this.hoverTimeout = setTimeout(this.hideUI, 3000);
     },
     render() {
-        var playerContent = this.state.uri ? <PlayerRender /> : '';
         var cursorStyle = {
             cursor: this.state.uiShown ? 'pointer' : 'none'
         };
         return (
             <div onMouseMove={this.hover} className="wcjs-player" style={cursorStyle}>
                 <PlayerHeader />
-                {playerContent}
+                <PlayerRender />
                 <PlayerControls />
+                <Playlist />
             </div>
         );
     }
