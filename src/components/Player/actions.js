@@ -1,4 +1,5 @@
 import alt from '../../alt'
+import _ from 'lodash';
 import {
     ipcRenderer
 }
@@ -35,6 +36,10 @@ class PlayerActions {
     }
 
     toggleFullscreen(state) {
+        document.querySelector(".canvas-holder > div:first-of-type").style.display = 'none';
+        _.delay(() => {
+            document.querySelector(".canvas-holder > div:first-of-type").style.display = 'block';
+        }, 1000);
         this.dispatch();
         ipcRenderer.send('app:fullscreen', state);
         this.actions.fullscreen(state);

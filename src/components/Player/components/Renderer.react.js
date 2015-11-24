@@ -2,6 +2,10 @@
 import path from 'path';
 import wcjsRenderer from '../utils/wcjs-renderer';
 import _ from 'lodash';
+import {
+    RaisedButton
+}
+from 'material-ui';
 
 import PlayerActions from '../actions';
 import PlayerStore from '../store';
@@ -148,7 +152,8 @@ default React.createClass({
             }
         };
         return (
-            <div style={renderStyles.container}>
+            <div className="canvas-holder" style={renderStyles.container}>
+                <RaisedButton onClick={this.handleTogglePlay} onDoubleClick={PlayerActions.toggleFullscreen.bind(this, !this.state.fullscreen)} iconClassName="material-icons" className="over-canvas" label="Canvas Overlay" />
                 <canvas style={renderStyles.canvas} onClick={this.handleTogglePlay} onDoubleClick={PlayerActions.toggleFullscreen.bind(this, !this.state.fullscreen)} ref="wcjs-render" />
             </div>
         );
