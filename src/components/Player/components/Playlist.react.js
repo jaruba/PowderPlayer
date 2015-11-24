@@ -61,6 +61,11 @@ default React.createClass({
             });
         }
     },
+
+    close() {
+        PlayerActions.openPlaylist(false);
+    },
+
     handleOpenPlaylist() {
 
 
@@ -69,6 +74,10 @@ default React.createClass({
         console.log(this.state)
         return (
             <div className={this.state.open ? 'playlist-container show' : 'playlist-container'}>
+                <div className="playlist-controls">
+
+                </div>
+                
                 <div className="playlist-inner">
                     {
                         this.state.items.map(function(item, idx) {

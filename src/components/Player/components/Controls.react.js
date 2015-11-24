@@ -1,6 +1,7 @@
 ﻿import React from 'react';
 import moment from 'moment';
 import _ from 'lodash';
+import PureRenderMixin from 'react-addons-pure-render-mixin';
 import {
     IconButton
 }
@@ -12,6 +13,9 @@ import PlayerActions from '../actions';
 
 export
 default React.createClass({
+
+    mixins: [PureRenderMixin],
+
     getInitialState() {
         return {
             fullscreen: PlayerStore.getState().fullscreen,

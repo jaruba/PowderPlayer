@@ -1,4 +1,5 @@
 ﻿import React from 'react';
+import PureRenderMixin from 'react-addons-pure-render-mixin';
 import {
     History
 }
@@ -16,7 +17,7 @@ import ModalActions from '../../Modal/actions';
 export
 default React.createClass({
 
-    mixins: [History],
+    mixins: [History, PureRenderMixin],
 
     getInitialState() {
         return {
