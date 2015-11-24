@@ -1,6 +1,9 @@
 import peerflix from 'peerflix';
 import path from 'path';
-import remote from 'remote';
+import {
+    app
+}
+from 'remote';
 import readTorrent from 'read-torrent';
 import Promise from 'bluebird';
 import getPort from 'get-port';
@@ -9,7 +12,7 @@ import torrentActions from '../../actions/torrentActions';
 
 
 
-const temp = path.join(remote.require('app').getPath('temp'), 'Powder-Player');
+const temp = path.join(app.getPath('temp'), 'Powder-Player');
 
 const supported = {
     all: [".mkv", ".avi", ".mp4", ".mpg", ".mpeg", ".webm", ".flv", ".ogg", ".ogv", ".mov", ".wmv", ".3gp", ".3g2", ".m4a", ".mp3", ".flac"],
