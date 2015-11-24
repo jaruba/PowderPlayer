@@ -22,7 +22,10 @@ default React.createClass({
             position: PlayerStore.getState().position,
             buffering: PlayerStore.getState().buffering,
             time: PlayerStore.getState().time,
-            length: PlayerStore.getState().length
+            length: PlayerStore.getState().length,
+
+            currentTime: PlayerStore.getState().currentTime,
+            totalTime: PlayerStore.getState().totalTime
         }
     },
     componentWillMount() {
@@ -49,6 +52,7 @@ default React.createClass({
                 seekable: PlayerStore.getState().seekable,
                 time: PlayerStore.getState().time,
                 length: PlayerStore.getState().length,
+
                 currentTime: PlayerStore.getState().currentTime,
                 totalTime: PlayerStore.getState().totalTime
             });
@@ -71,40 +75,40 @@ default React.createClass({
     handleScrobblerHover(event) {
 
         var newState = {};
-            
+
         var total_time = this.state.length;
 
         var percent_done = event.pageX / document.body.clientWidth;
 
         var newTime = total_time * percent_done;
-//        this.refs['scrobbler-handle'].style.left = (percent_done * 100) + '%';
+        //        this.refs['scrobbler-handle'].style.left = (percent_done * 100) + '%';
         //console.log(total_time, percent_done + '%', newTime);
         if (this.state.time) {
             this.refs['scrobbler-tooltip'].style.display = 'inline-block';
             if (percent_done <= 0.5) {
-                var realPos = Math.floor(window.innerWidth*percent_done)-this.state.tooltipHalf;
+                var realPos = Math.floor(window.innerWidth * percent_done) - this.state.tooltipHalf;
             } else {
-                var realPos = Math.floor(window.innerWidth*percent_done)+this.state.tooltipHalf;
+                var realPos = Math.floor(window.innerWidth * percent_done) + this.state.tooltipHalf;
             }
 
             var seekTime = PlayerStore.getState().handleTime(percent_done * this.state.length);
-            
+
             if (seekTime.length > 5)
                 newState.tooltipHalf = 33;
-            else 
+            else
                 newState.tooltipHalf = 24;
-            
-            if (realPos < 0) newState.tooltipLeft = newState.tooltipHalf+'px';
-            else if (realPos > window.innerWidth) newState.tooltipLeft = (window.innerWidth - newState.tooltipHalf)+'px';
+
+            if (realPos < 0) newState.tooltipLeft = newState.tooltipHalf + 'px';
+            else if (realPos > window.innerWidth) newState.tooltipLeft = (window.innerWidth - newState.tooltipHalf) + 'px';
             else newState.tooltipLeft = (percent_done * 100) + '%';
 
             newState.humanTime = seekTime;
         }
-        
+
         if (this.state.scrobbling) {
             newState.seekPerc = percent_done < 0 ? 0 : percent_done > 1 ? 1 : percent_done;
         }
-        
+
         if (Object.keys(newState).length) {
             this.setState(newState);
         }
@@ -119,10 +123,10 @@ default React.createClass({
             scrobbling: false,
             position: this.state.seekPerc
         });
-        
+
         PlayerActions.scrobbleState(false);
-        
-        this.refs['scrobbler-height'].className = this.refs['scrobbler-height'].className.replace(' scrobbling','');
+
+        this.refs['scrobbler-height'].className = this.refs['scrobbler-height'].className.replace(' scrobbling', '');
         this.delayScrobbleGUI();
         var percent_done = event.pageX / document.body.clientWidth;
         PlayerActions.scrobble(this.state.length * percent_done);
@@ -132,15 +136,15 @@ default React.createClass({
         this.setState({
             scrobbling: true
         });
-        
+
         PlayerActions.scrobbleState(true);
-        
+
         this.refs['scrobbler-height'].className = this.refs['scrobbler-height'].className + ' scrobbling';
 
-//        _.delay((still) => {
-//            if (still)
-//                this.refs['scrobbler-handle'].style.opacity = 1;
-//        }, 100, this.state.scrobbling)
+        //        _.delay((still) => {
+        //            if (still)
+        //                this.refs['scrobbler-handle'].style.opacity = 1;
+        //        }, 100, this.state.scrobbling)
 
         var percent_done = event.pageX / document.body.clientWidth;
         this.setState({
@@ -151,7 +155,7 @@ default React.createClass({
     },
     handleDragEnd() {
         this.refs['scrobbler-tooltip'].style.display = 'none';
-//        this.refs['scrobbler-handle'].style.opacity = 0;
+        //        this.refs['scrobbler-handle'].style.opacity = 0;
     },
     handleGlobalMouseMove(event) {
         if (this.state.scrobbling) {
