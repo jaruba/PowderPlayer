@@ -296,3 +296,73 @@
 .wcjs-player .control-bar .currentTime {
      color: #8d96a3;
 }
+
+
+.wcjs-player .playlist-container{
+    position: absolute;
+    z-index: 5;
+    top: 0;
+    height: ~"calc(100vh - 66px)";
+    background-color: rgba(29, 31, 35, 0.82);
+    width: 100vw;
+}
+
+
+
+.wcjs-player .playlist-container .playlist-inner{
+    overflow-x: scroll;
+    width: 70vw;
+    margin-left: 15vw;
+    padding-right: 10px;
+    height: ~"calc(100% - 200px)";
+    margin-top: 100px;
+}
+
+.wcjs-player .playlist-container .playlist-inner::-webkit-scrollbar {
+    width: 10px;
+    background-color: transparent;
+}
+ 
+.wcjs-player .playlist-container .playlist-inner::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+ 
+.wcjs-player .playlist-container .playlist-inner::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.21);
+    border-radius: 3px;
+}
+.wcjs-player .playlist-container .playlist-inner::-webkit-scrollbar-corner{ 
+    background-color: transparent; 
+}
+
+
+.wcjs-player .playlist-container .playlist-inner .item{
+    background-color: blue;
+    width: 230px;
+    float: left;
+    height: 170px;
+    margin-right: 30px;
+    margin-bottom: 30px;
+}
+.wcjs-player .playlist-container .playlist-inner .item img{
+    background-size: cover;
+    background-position: center;
+    height: 100%;
+    width: 100%;
+}
+
+    
+
+.wcjs-player .playlist-container .playlist-inner .item p{
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    line-height: 45px;
+    height: 40px;
+    width: 100%;
+    position: relative;
+    top: -43px;
+    background-color: rgba(26, 27, 31, 0.82);
+}
