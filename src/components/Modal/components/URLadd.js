@@ -15,13 +15,19 @@ import ModalActions from '../actions';
 import MessageActions from '../../Message/actions';
 import PlayerActions from '../../Player/actions';
 
+const clipboard = require('electron').clipboard;
+
 
 export
 default React.createClass({
 
+    componentDidMount() {
+        this.refs['urlInput'].focus();
+    },
+
     mixins: [History],
 
-    handelURLAdd() {
+    handleURLAdd() {
         ModalActions.thinking(true);
         var inputvalue = this.refs.urlInput.getValue();
         if (inputvalue.length > 0) {
@@ -54,11 +60,14 @@ default React.createClass({
             MessageActions.open('Enter a URL to stream.');
         }
     },
+    pasteClipboard() {
+        this.refs['urlInput'].setValue(clipboard.readText('text/plain'));
+    },
     render() {
         return (
             <div>
-                <TextField ref="urlInput" style={{'marginBottom': '15px' }} fullWidth={true} floatingLabelText="Magnet/Torrent URI or Video URL" />
-                <RaisedButton secondary={true} onClick={this.handelURLAdd} style={{float: 'right', }} label="Stream" />
+                <TextField ref="urlInput" style={{'marginBottom': '15px' }} fullWidth={true} onEnterKeyDown={this.handleURLAdd} onContextMenu={this.pasteClipboard} hintText="Magnet/Torrent URI or Video URL" />
+                <RaisedButton secondary={true} onClick={this.handleURLAdd} style={{float: 'right', }} label="Stream" />
                 <RaisedButton onClick={ModalActions.close} style={{float: 'right', 'marginRight': '10px' }} label="Cancel" />
             </div>
         );
