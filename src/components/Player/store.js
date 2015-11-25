@@ -181,7 +181,7 @@ class playerStore {
 
     onError() {
         console.log('Player encountered an error.');
-        this.player.stop();
+        this.wcjs.stop();
     }
 
     onEnded() {
