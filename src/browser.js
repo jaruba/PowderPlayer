@@ -98,6 +98,15 @@ app.on('ready', function() {
         mainWindow.setAlwaysOnTop(state);
     });
 
+    ipcMain.on('app:setThumbarButtons', (event, buttons) => {
+        mainWindow.setThumbarButtons(buttons)
+    });
+
+    ipcMain.on('app:bitchForAttention', (event, state = true) => {
+        if (!mainWindow.isFocused())
+            mainWindow.flashFrame(state);
+    });
+
     ipcMain.on('app:powerSaveBlocker', (event, state) => {
         let enablePowerBlock = () => {
             powerSaveBlockerState = powerSaveBlocker.start('prevent-display-sleep');

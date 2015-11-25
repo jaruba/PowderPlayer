@@ -4,6 +4,10 @@ import EngineStore from '../stores/engineStore';
 import HistoryStore from '../stores/historyStore';
 import _ from 'lodash';
 import alt from '../alt';
+import {
+    ipcRenderer
+}
+from 'electron';
 
 class torrentActions {
 
@@ -49,8 +53,10 @@ class torrentActions {
                     });
                     ModalActions.close();
                     HistoryStore.getState().history.replaceState(null, 'player');
-                } else
+                } else {
                     ModalActions.fileSelector(files);
+                    ipcRenderer.send('app:bitchForAttention');
+                }
             })
             .catch(err => {
                 //ModalActions.close();
