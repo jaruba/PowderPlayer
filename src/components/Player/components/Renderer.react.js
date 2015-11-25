@@ -19,7 +19,7 @@ try {
 
 export
 default React.createClass({
-    
+
     mixins: [PureRenderMixin],
 
     getInitialState() {
@@ -138,8 +138,7 @@ default React.createClass({
         };
     },
     handleTogglePlay() {
-        if (!this.state.buffering)
-            this.player.togglePause(this.state.playing ? false : true);
+        this.state.playing ? PlayerActions.pause() : PlayerActions.play();
     },
     render() {
         var renderStyles = {
