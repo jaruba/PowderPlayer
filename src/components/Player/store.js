@@ -182,13 +182,17 @@ class playerStore {
             playing: false,
             paused: false,
             buffering: false,
-            title: '',
             time: 0,
             length: 0,
             position: 0,
+
+            title: '',
             fullscreen: false,
             uiShown: true,
-            uri: false
+            uri: false,
+            currentTime: '00:00',
+            totalTime: '00:00'
+
         });
         if (this.wcjs) {
             this.wcjs.stop();
