@@ -96,8 +96,7 @@ app.on('ready', function() {
 
     ipcMain.on('app:powerSaveBlocker', (event, state) => {
         let enablePowerBlock = () => {
-            if (powerSaveBlockerState && !powerSaveBlocker.isStarted(powerSaveBlockerState))
-                powerSaveBlockerState = powerSaveBlocker.start('prevent-display-sleep');
+            powerSaveBlockerState = powerSaveBlocker.start('prevent-display-sleep');
         };
         let disablePowerBlock = () => {
             if (powerSaveBlockerState)
