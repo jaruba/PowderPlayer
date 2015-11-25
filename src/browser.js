@@ -37,6 +37,7 @@ app.on('ready', function() {
     var mainWindow = new BrowserWindow({
         width: 637,
         height: 514,
+        icon: 'images/icons/powder-icon.png',
         'standard-window': true,
         'auto-hide-menu-bar': true,
         resizable: true,
