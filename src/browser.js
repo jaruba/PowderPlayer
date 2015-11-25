@@ -2,7 +2,7 @@ import app from 'app';
 import BrowserWindow from 'browser-window';
 import path from 'path';
 import {
-    ipcMain
+    ipcMain, powerSaveBlocker
 }
 from 'electron';
 import util from './utils/util';
@@ -10,6 +10,8 @@ import yargs from 'yargs';
 let startupTime = new Date().getTime();
 
 var args = yargs(process.argv.slice(1)).wrap(100).argv;
+var powerSaveBlockerState = false;
+
 
 function msToTime(s) {
     var ms = s % 1000;
@@ -84,6 +86,15 @@ app.on('ready', function() {
 
     ipcMain.on('app:fullscreen', (event, state) => {
         mainWindow.setFullScreen(state)
+    });
+
+    ipcMain.on('app:powerSaveBlocker', (event, state) => {
+        state ? () => {
+            powerSaveBlockerState = powerSaveBlocker.start('prevent-display-sleep');
+        } : () => {
+            if (powerSaveBlockerState)
+                powerSaveBlocker.stop(powerSaveBlockerState)
+        };
     });
 
     ipcMain.on('app:maximize', (event, state) => {
