@@ -1,7 +1,7 @@
 import alt from '../../alt'
 import _ from 'lodash';
 import {
-    ipcRenderer, powerSaveBlocker
+    ipcRenderer
 }
 from 'electron';
 
@@ -36,9 +36,7 @@ class PlayerActions {
     }
 
     togglePowerSave(state = true) {
-        if (state) this.powerBlock = powerSaveBlocker.start('prevent-display-sleep');
-
-        else this.powerBlock ? powerSaveBlocker.stop(this.powerBlock) : return;
+        ipcRenderer.send('app:powerSaveBlocker', state);
     }
 
     toggleFullscreen(state) {

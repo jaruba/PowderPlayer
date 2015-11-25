@@ -5,15 +5,13 @@ import {
     ipcMain, powerSaveBlocker
 }
 from 'electron';
-import util from './utils/util';
 import yargs from 'yargs';
-let startupTime = new Date().getTime();
 
 var args = yargs(process.argv.slice(1)).wrap(100).argv;
 var powerSaveBlockerState = false;
+var startupTime = new Date().getTime();
 
-
-function msToTime(s) {
+var parseTime = (s) => {
     var ms = s % 1000;
     s = (s - ms) / 1000;
     var secs = s % 60;
@@ -23,7 +21,7 @@ function msToTime(s) {
 }
 
 ipcMain.on('app:startup', function(event, time) {
-    console.log('App Startup Time:', msToTime(Math.floor(time - startupTime)));
+    console.log('App Startup Time:', parseTime(Math.floor(time - startupTime)));
 });
 
 app.commandLine.appendSwitch('v', -1);
@@ -88,21 +86,29 @@ app.on('ready', function() {
         mainWindow.setFullScreen(state)
     });
 
-    ipcMain.on('app:powerSaveBlocker', (event, state) => {
-        state ? () => {
-            powerSaveBlockerState = powerSaveBlocker.start('prevent-display-sleep');
-        } : () => {
-            if (powerSaveBlockerState)
-                powerSaveBlocker.stop(powerSaveBlockerState)
-        };
-    });
-
     ipcMain.on('app:maximize', (event, state) => {
         state ? mainWindow.maximize() : mainWindow.unmaximize();
     });
 
     ipcMain.on('app:minimize', () => {
         mainWindow.minimize();
+    });
+
+    ipcMain.on('app:powerSaveBlocker', (event, state) => {
+        let enablePowerBlock = () => {
+            if (powerSaveBlockerState && !powerSaveBlocker.isStarted(powerSaveBlockerState))
+                powerSaveBlockerState = powerSaveBlocker.start('prevent-display-sleep');
+        };
+        let disablePowerBlock = () => {
+            if (powerSaveBlockerState)
+                powerSaveBlocker.stop(powerSaveBlockerState);
+        };
+
+        state ? enablePowerBlock() : disablePowerBlock();
+    });
+
+    ipcMain.on('app:get:powerSaveBlocker', (event) => {
+        event.returnValue = powerSaveBlockerState ? powerSaveBlocker.isStarted(powerSaveBlockerState) : false;
     });
 
     ipcMain.on('app:close', () => {

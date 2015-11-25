@@ -165,7 +165,7 @@ class playerStore {
             paused: false
         })
         this.wcjs.play();
-       // playerActions.togglePowerSave();
+        playerActions.togglePowerSave();
     }
 
     onPause() {
@@ -194,7 +194,7 @@ class playerStore {
             this.wcjs.stop();
             this.wcjs.playlist.clear();
         }
-        //playerActions.togglePowerSave(false);
+        playerActions.togglePowerSave(false);
     }
 
 }
