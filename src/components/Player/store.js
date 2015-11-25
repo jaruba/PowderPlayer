@@ -113,8 +113,16 @@ class playerStore {
         }
     }
 
-    onScrobble(time) {
+    onOpening() {
+        if (this.wcjs.playlist.currentItem != this.lastItem) {
+            this.setState({
+                lastItem: this.wcjs.playlist.currentItem
+            });
+        }
+    }
 
+    onScrobble(time) {
+        
         time = parseInt(time);
 
         if (time < 0) time = 0;
@@ -169,6 +177,29 @@ class playerStore {
             paused: true
         })
         this.wcjs.pause();
+    }
+
+    onError() {
+        console.log('Player encountered an error.');
+        this.player.stop();
+    }
+
+    onEnded() {
+        if (this.time > 0) {
+            if (typeof this.lastItem !== 'undefined' && this.position < 0.95) {
+                
+                console.log('Playback Ended Prematurely');
+                console.log('Last Known Position: ',this.position);
+                console.log('Last Known Item: ',this.lastItem);
+                console.log('Reconnecting ...');
+                
+                this.wcjs.playlist.currentItem = this.lastItem;
+                this.wcjs.playlist.play();
+                this.wcjs.position = this.position;
+            } else {
+                console.log('Playback has Ended');
+            }
+        }
     }
 
     onClose() {

@@ -23,6 +23,9 @@ class PlayerActions {
             'length',
             'scrobble',
             'scrobbleState',
+            'opening',
+            'error',
+            'ended',
 
             'fullscreen',
             'metaUpdate',

@@ -94,7 +94,7 @@ default React.createClass({
             initializeSize();
         }, 500);
 
-        this.player.onOpening = PlayerActions.buffering.bind(0);
+        this.player.onOpening = PlayerActions.opening;
 
         this.player.onTimeChanged = PlayerActions.time;
 
@@ -110,12 +110,10 @@ default React.createClass({
 
         this.player.onStopped = PlayerActions.stopped;
 
-        this.player.onEndReached = this.player.stop;
+        this.player.onEndReached = PlayerActions.ended;
 
-        this.player.onEncounteredError = (error) => {
-            console.error(error);
-            this.player.stop();
-        }
+        this.player.onEncounteredError = PlayerActions.error;
+
         if (this.state.uri) {
             this.player.playlist.add(this.state.uri);
             PlayerActions.play();
