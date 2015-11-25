@@ -25,8 +25,6 @@ class PlayerActions {
             'scrobbleState',
 
             'fullscreen',
-
-            'powerBlockState',
             'metaUpdate',
             'wcjsInit',
             'close',
@@ -35,16 +33,12 @@ class PlayerActions {
 
             'humanTime'
         );
-        this.powerSaveBlocker = false;
     }
 
     togglePowerSave(state = true) {
-        if (state) this.powerSaveBlocker = powerSaveBlocker.start('prevent-display-sleep');
+        if (state) this.powerBlock = powerSaveBlocker.start('prevent-display-sleep');
 
-        else if (this.powerSaveBlocker) powerSaveBlocker.stop(this.powerSaveBlocker);
-
-        this.actions.powerBlockState(this.powerSaveBlocker ? powerSaveBlocker.isStarted(this.powerSaveBlocker) : false)
-
+        else this.powerBlock ? powerSaveBlocker.stop(this.powerBlock) : return;
     }
 
     toggleFullscreen(state) {

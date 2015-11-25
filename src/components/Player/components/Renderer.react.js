@@ -118,7 +118,7 @@ default React.createClass({
         }
         if (this.state.uri) {
             this.player.playlist.add(this.state.uri);
-            this.player.play();
+            PlayerActions.play();
         }
         //this.player.subtitles.track = 0;
     },

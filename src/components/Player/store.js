@@ -1,7 +1,6 @@
 import alt from '../../alt';
 import playerActions from './actions';
 
-
 class playerStore {
     constructor() {
         this.bindActions(playerActions);
@@ -166,6 +165,7 @@ class playerStore {
             paused: false
         })
         this.wcjs.play();
+       // playerActions.togglePowerSave();
     }
 
     onPause() {
@@ -194,6 +194,7 @@ class playerStore {
             this.wcjs.stop();
             this.wcjs.playlist.clear();
         }
+        //playerActions.togglePowerSave(false);
     }
 
 }
