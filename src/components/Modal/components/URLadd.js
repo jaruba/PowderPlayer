@@ -40,7 +40,6 @@ default React.createClass({
                     case 'direct':
                         ModalActions.close();
                         PlayerActions.open({
-                            type: 'direct',
                             uri: parsed.url,
                             title: parsed.title
                         });
