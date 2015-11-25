@@ -104,6 +104,7 @@ class playerStore {
             title: data.title,
             uri: data.uri
         });
+        playerActions.togglePowerSave(true);
     }
 
     onBuffering(perc) {
@@ -165,7 +166,6 @@ class playerStore {
             paused: false
         })
         this.wcjs.play();
-        playerActions.togglePowerSave();
     }
 
     onPause() {
