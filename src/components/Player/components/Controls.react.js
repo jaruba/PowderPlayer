@@ -70,8 +70,7 @@ default React.createClass({
         }, 1000)
     },
     handlePausePlay() {
-        if (!this.state.buffering)
-            this.state.playing ? PlayerActions.pause() : PlayerActions.play();
+        this.state.playing ? PlayerActions.pause() : PlayerActions.play();
     },
     handleFullscreen() {
         PlayerActions.toggleFullscreen(!this.state.fullscreen);
