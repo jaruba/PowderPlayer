@@ -1,5 +1,9 @@
 import alt from '../../alt';
 import playerActions from './actions';
+import {
+    handleTime
+}
+from './utils/time';
 
 class playerStore {
     constructor() {
@@ -31,22 +35,6 @@ class playerStore {
 
         this.scrobbling = false;
 
-    }
-
-    handleTime(millis) {
-        if (millis < 0) millis = 0;
-        if (millis > this.length && this.length > 0) millis = this.length;
-        var seconds = Math.floor((millis / 1000) % 60);
-        var minutes = Math.floor((millis / (1000 * 60)) % 60);
-        var hours = Math.floor((millis / (1000 * 60 * 60)) % 24);
-        if (hours < 10 && hours > 0) hours = '0' + hours;
-        if (minutes < 10) minutes = '0' + minutes;
-        if (seconds < 10) seconds = '0' + seconds;
-        if (!hours && this.length && this.length > 3600000) hours = '00';
-        if (hours) {
-            return hours + ':' + minutes + ':' + seconds;
-        }
-        return minutes + ':' + seconds;
     }
 
     onWcjsInit(wcjs) {
@@ -88,14 +76,14 @@ class playerStore {
     onLength(length) {
         this.setState({
             length: length,
-            totalTime: this.handleTime(length)
+            totalTime: handleTime(length)
         });
     }
 
     onTime(time) {
         this.setState({
             time: time,
-            currentTime: this.handleTime(time)
+            currentTime: handleTime(time, this.length)
         });
     }
 
@@ -129,7 +117,7 @@ class playerStore {
         if (!this.playing) {
             this.setState({
                 position: time / this.length,
-                currentTime: this.handleTime(time)
+                currentTime: handleTime(time, this.length)
             });
         }
 

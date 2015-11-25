@@ -29,9 +29,7 @@ class PlayerActions {
             'wcjsInit',
             'close',
             'open',
-            'openPlaylist',
-
-            'humanTime'
+            'openPlaylist'
         );
     }
 

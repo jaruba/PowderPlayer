@@ -6,8 +6,10 @@ import {
     IconButton
 }
 from 'material-ui';
-
-
+import {
+    handleTime
+}
+from '../utils/time';
 import PlayerStore from '../store';
 import PlayerActions from '../actions';
 
@@ -94,7 +96,7 @@ default React.createClass({
                 var realPos = Math.floor(window.innerWidth * percent_done) + this.state.tooltipHalf;
             }
 
-            var seekTime = PlayerStore.getState().handleTime(percent_done * this.state.length);
+            var seekTime = handleTime(percent_done * this.state.length);
 
             if (seekTime.length > 5)
                 newState.tooltipHalf = 33;
