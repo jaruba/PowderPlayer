@@ -1,6 +1,7 @@
 import ModalActions from '../components/Modal/actions';
 import PlayerActions from '../components/Player/actions';
 import EngineStore from '../stores/engineStore';
+import HistoryStore from '../stores/historyStore';
 import _ from 'lodash';
 import alt from '../alt';
 
@@ -15,7 +16,7 @@ class torrentActions {
         );
     }
 
-    addTorrent(torrent, History) {
+    addTorrent(torrent) {
         var TorrentUtil = require('../utils/stream/torrentUtil');
         this.dispatch();
         TorrentUtil.init(torrent)
@@ -47,7 +48,7 @@ class torrentActions {
                         uri: 'http://127.0.0.1:' + EngineStore.state.torrents[file.infoHash]['stream-port'] + '/' + file.id
                     });
                     ModalActions.close();
-                    History.replaceState(null, 'player');
+                    HistoryStore.getState().history.replaceState(null, 'player');
                 } else
                     ModalActions.fileSelector(files);
             })

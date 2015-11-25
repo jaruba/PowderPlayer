@@ -1,4 +1,5 @@
 import React from 'react';
+import PureRenderMixin from 'react-addons-pure-render-mixin';
 import ModalActions from '../actions';
 import ModalStore from '../store';
 import _ from 'lodash';
@@ -10,6 +11,9 @@ from 'material-ui';
 
 export
 default React.createClass({
+    
+    mixins: [PureRenderMixin],
+
     getInitialState() {
         return {
             meta: ModalStore.getState().meta,

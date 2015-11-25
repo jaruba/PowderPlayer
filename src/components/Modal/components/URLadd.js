@@ -1,9 +1,5 @@
 import React from 'react';
 import {
-    History
-}
-from 'react-router';
-import {
     TextField, RaisedButton
 }
 from 'material-ui';
@@ -25,8 +21,6 @@ default React.createClass({
         this.refs['urlInput'].focus();
     },
 
-    mixins: [History],
-
     handleURLAdd() {
         ModalActions.thinking(true);
         var inputvalue = this.refs.urlInput.getValue();
@@ -35,7 +29,7 @@ default React.createClass({
                 console.log(parsed)
                 switch (parsed.catagory) {
                     case 'torrent':
-                        torrentActions.addTorrent(inputvalue, this.history);
+                        torrentActions.addTorrent(inputvalue);
                         break;
                     case 'direct':
                         ModalActions.close();
@@ -43,7 +37,6 @@ default React.createClass({
                             uri: parsed.url,
                             title: parsed.title
                         });
-                        this.history.replaceState(null, 'player');
                         break;
                     case 'error':
                         ModalActions.open({

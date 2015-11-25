@@ -1,4 +1,5 @@
 import React from 'react';
+import PureRenderMixin from 'react-addons-pure-render-mixin';
 import {
     Dialog
 }
@@ -14,6 +15,8 @@ import PlayerSettings from './components/player-settings';
 
 export
 default React.createClass({
+
+    mixins: [PureRenderMixin],
 
     getInitialState() {
         return {

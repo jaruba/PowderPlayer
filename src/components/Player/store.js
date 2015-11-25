@@ -1,5 +1,7 @@
 import alt from '../../alt';
 import playerActions from './actions';
+import historyStore from '../../stores/historyStore';
+import _ from 'lodash';
 import {
     handleTime
 }
@@ -93,6 +95,10 @@ class playerStore {
             uri: data.uri
         });
         playerActions.togglePowerSave(true);
+        _.defer(() => {
+            historyStore.getState().history.replaceState(null, 'player');
+        });
+
     }
 
     onBuffering(perc) {
