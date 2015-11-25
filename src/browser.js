@@ -94,6 +94,10 @@ app.on('ready', function() {
         mainWindow.minimize();
     });
 
+    ipcMain.on('app:alwaysOnTop', (event, state) => {
+        mainWindow.setAlwaysOnTop(state);
+    });
+
     ipcMain.on('app:powerSaveBlocker', (event, state) => {
         let enablePowerBlock = () => {
             powerSaveBlockerState = powerSaveBlocker.start('prevent-display-sleep');

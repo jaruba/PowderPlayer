@@ -1,11 +1,17 @@
-import alt from '../../alt';
-import playerActions from './actions';
-import historyStore from '../../stores/historyStore';
 import _ from 'lodash';
+import {
+    ipcRenderer
+}
+from 'electron';
 import {
     handleTime
 }
 from './utils/time';
+import alt from '../../alt';
+
+import playerActions from './actions';
+import historyStore from '../../stores/historyStore';
+
 
 class playerStore {
     constructor() {
@@ -18,6 +24,7 @@ class playerStore {
         this.playing = false;
         this.paused = false;
 
+        this.alwaysOnTop = false
 
         this.position = 0;
         this.buffering = false;
@@ -37,6 +44,10 @@ class playerStore {
 
         this.scrobbling = false;
 
+    }
+
+    onSettingChange(setting) {
+        this.setState(setting);
     }
 
     onWcjsInit(wcjs) {

@@ -28,12 +28,17 @@ class PlayerActions {
             'ended',
 
             'fullscreen',
+            'settingChange',
             'metaUpdate',
             'wcjsInit',
             'close',
             'open',
             'openPlaylist'
         );
+    }
+
+    toggleAlwaysOnTop(state = true) {
+        ipcRenderer.send('app:alwaysOnTop', state);
     }
 
     togglePowerSave(state = true) {
