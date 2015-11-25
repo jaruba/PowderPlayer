@@ -3,6 +3,10 @@ import {
     TextField, RaisedButton
 }
 from 'material-ui';
+import {
+    clipboard
+}
+from 'electron';
 
 import MimeUtil from '../../../utils/mimeDetectorUtil';
 import torrentActions from '../../../actions/torrentActions';
@@ -10,9 +14,6 @@ import ModalActions from '../actions';
 
 import MessageActions from '../../Message/actions';
 import PlayerActions from '../../Player/actions';
-
-const clipboard = require('electron').clipboard;
-
 
 export
 default React.createClass({
