@@ -1,7 +1,7 @@
 import alt from '../../alt'
 import _ from 'lodash';
 import {
-    ipcRenderer
+    ipcRenderer, powerSaveBlocker
 }
 from 'electron';
 
@@ -26,6 +26,7 @@ class PlayerActions {
 
             'fullscreen',
 
+            'powerBlockState',
             'metaUpdate',
             'wcjsInit',
             'close',
@@ -34,14 +35,26 @@ class PlayerActions {
 
             'humanTime'
         );
+        this.powerSaveBlocker = false;
+    }
+
+    togglePowerSave(state = true) {
+        if (state) this.powerSaveBlocker = powerSaveBlocker.start('prevent-display-sleep');
+
+        else if (this.powerSaveBlocker) powerSaveBlocker.stop(this.powerSaveBlocker);
+
+        this.actions.powerBlockState(this.powerSaveBlocker ? powerSaveBlocker.isStarted(this.powerSaveBlocker) : false)
+
     }
 
     toggleFullscreen(state) {
+        this.dispatch();
+
         document.querySelector(".canvas-holder > div:first-of-type").style.display = 'none';
         _.delay(() => {
             document.querySelector(".canvas-holder > div:first-of-type").style.display = 'block';
         }, 1000);
-        this.dispatch();
+
         ipcRenderer.send('app:fullscreen', state);
         this.actions.fullscreen(state);
     }
