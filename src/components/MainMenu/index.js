@@ -16,7 +16,7 @@ default React.createClass({
         return (
             <div className="wrapper">
                <center>
-                    <Paper className="holder" rounded={true} zDepth={1}>
+                    <Dropzone disableClick={true} className="holder" onDrop={this.onDrop}>
                         <div className="mainButtonHolder">
                              <div className="inButtonHolder">
                                 <IconButton iconClassName="material-icons" iconStyle={{color: '#767A7B', fontSize: '30px', top: '-2px', right: '2px'}} className="settings" >settings</IconButton>
@@ -54,7 +54,7 @@ default React.createClass({
                                 </span>
                             </RaisedButton>
                         </div>
-                    </Paper>
+                    </Dropzone>
                </center>
             </div>
         );
