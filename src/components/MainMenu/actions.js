@@ -3,7 +3,9 @@ import {
 }
 from 'remote';
 import alt from '../../alt'
+import path from 'path'
 import ModalActions from './../Modal/actions';
+import PlayerActions from './../Player/actions';
 
 class MainMenuActions {
 
@@ -40,6 +42,12 @@ class MainMenuActions {
             properties: ['openFile', 'createDirectory'],
             filters: filters
         }, (filename) => {
+			if (filename.length) {
+				PlayerActions.open({
+					uri: 'file:///'+filename[0],
+					title: path.normalize(path.basename(filename[0]))
+				});
+			}
             console.log(filename)
         });
 
