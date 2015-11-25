@@ -1,5 +1,6 @@
 import app from 'app';
 import BrowserWindow from 'browser-window';
+import rimraf from 'rimraf';
 import path from 'path';
 import {
     ipcMain, powerSaveBlocker
@@ -20,7 +21,7 @@ var parseTime = (s) => {
     return mins + ' minutes ' + secs + '.' + ms + ' seconds';
 }
 
-ipcMain.on('app:startup', function(event, time) {
+ipcMain.on('app:startup', (event, time) => {
     console.log('App Startup Time:', parseTime(Math.floor(time - startupTime)));
 });
 
@@ -31,7 +32,7 @@ app.commandLine.appendSwitch('disable-d3d11');
 app.commandLine.appendSwitch('gpu-no-context-lost');
 app.commandLine.appendSwitch('ignore-gpu-blacklist');
 
-app.on('ready', function() {
+app.on('ready', () => {
     var screenSize = require('screen').getPrimaryDisplay().workAreaSize;
 
     var mainWindow = new BrowserWindow({
@@ -57,17 +58,17 @@ app.on('ready', function() {
     mainWindow.loadURL(path.normalize('file://' + path.join(__dirname, '../index.html')));
 
 
-    mainWindow.webContents.on('new-window', function(e) {
+    mainWindow.webContents.on('new-window', (e) => {
         e.preventDefault();
     });
 
-    mainWindow.webContents.on('will-navigate', function(e, url) {
+    mainWindow.webContents.on('will-navigate', (e, url) => {
         if (url.indexOf('build/index.html#') < 0) {
             e.preventDefault();
         }
     });
 
-    mainWindow.webContents.on('did-finish-load', function() {
+    mainWindow.webContents.on('did-finish-load', () => {
         mainWindow.setTitle('Powder Player');
         mainWindow.show();
         mainWindow.focus();
@@ -130,6 +131,11 @@ app.on('ready', function() {
 
 });
 
-app.on('window-all-closed', function() {
+app.on('window-all-closed', () => {
     app.quit();
+});
+
+
+app.on('will-quit', () => {
+    rimraf.sync(path.join(app.getPath('temp'), 'Powder-Player'))
 });
