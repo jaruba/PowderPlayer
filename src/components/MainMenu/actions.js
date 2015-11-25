@@ -42,13 +42,13 @@ class MainMenuActions {
             properties: ['openFile', 'createDirectory'],
             filters: filters
         }, (filename) => {
-            if (filename.length) {
+            if (filename && filename.length) {
                 PlayerActions.open({
                     uri: 'file:///'+filename[0],
                     title: path.normalize(path.basename(filename[0]))
                 });
+                console.log(filename)
             }
-            console.log(filename)
         });
 
     }
