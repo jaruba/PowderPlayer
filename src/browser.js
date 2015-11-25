@@ -35,8 +35,6 @@ app.on('ready', function() {
     var screenSize = require('screen').getPrimaryDisplay().workAreaSize;
 
     var mainWindow = new BrowserWindow({
-        minWidth: 637,
-        minHeight: 514,
         width: 637,
         height: 514,
         icon: 'images/icons/powder-icon.png',
