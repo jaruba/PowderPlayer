@@ -24,6 +24,13 @@ ipcMain.on('app:startup', function(event, time) {
     console.log('App Startup Time:', msToTime(Math.floor(time - startupTime)));
 });
 
+app.commandLine.appendSwitch('v', -1);
+app.commandLine.appendSwitch('vmodule', 'console=0');
+app.commandLine.appendSwitch('d3d9');
+app.commandLine.appendSwitch('disable-d3d11');
+app.commandLine.appendSwitch('gpu-no-context-lost');
+app.commandLine.appendSwitch('ignore-gpu-blacklist');
+
 app.on('ready', function() {
     var screenSize = require('screen').getPrimaryDisplay().workAreaSize;
 
