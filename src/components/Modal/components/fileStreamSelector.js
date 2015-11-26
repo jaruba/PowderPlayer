@@ -88,6 +88,7 @@ default React.createClass({
         ModalActions.close();
         let player_object = {
             title: file.name,
+            files: _.omit(this.state.files, ['files_total', 'folder_status', 'folder_status']),
             uri: 'http://127.0.0.1:' + EngineStore.getState().torrents[file.infoHash]['stream-port'] + '/' + file.id
         };
         PlayerActions.open(player_object);

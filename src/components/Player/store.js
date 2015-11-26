@@ -34,7 +34,7 @@ class playerStore {
         this.length = 0;
         this.seekable = false;
 
-        this.files = [];
+        this.files = {};
         this.playlist = {};
 
         this.fullscreen = false;
@@ -107,7 +107,12 @@ class playerStore {
             title: data.title,
             uri: data.uri
         });
+        
         playerActions.togglePowerSave(true);
+
+        if (data.files)
+            playerActions.createPlaylist(data.files);
+
         _.defer(() => {
             historyStore.getState().history.replaceState(null, 'player');
         });
