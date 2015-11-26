@@ -26,6 +26,8 @@ class playerStore {
 
         this.alwaysOnTop = false
 
+        this.muted = false;
+        this.volume = 100;
         this.position = 0;
         this.buffering = false;
         this.time = 0;
@@ -133,7 +135,7 @@ class playerStore {
     }
 
     onScrobble(time) {
-        
+
         time = parseInt(time);
 
         if (time < 0) time = 0;
@@ -163,6 +165,23 @@ class playerStore {
             paused: false
         });
     }
+
+    onVolume(value) {
+        this.setState({
+            volume: value
+        });
+        if (this.wcjs)
+            this.wcjs.volume = value
+    }
+
+    onMute(mute) {
+        if (this.wcjs)
+            this.wcjs.muted(muted);
+        this.setState({
+            muted: muted
+        });
+    }
+
 
     onPlaying() {
         this.setState({
@@ -198,12 +217,12 @@ class playerStore {
     onEnded() {
         if (this.time > 0) {
             if (typeof this.lastItem !== 'undefined' && this.position < 0.95) {
-                
+
                 console.log('Playback Ended Prematurely');
-                console.log('Last Known Position: ',this.position);
-                console.log('Last Known Item: ',this.lastItem);
+                console.log('Last Known Position: ', this.position);
+                console.log('Last Known Item: ', this.lastItem);
                 console.log('Reconnecting ...');
-                
+
                 this.wcjs.playlist.currentItem = this.lastItem;
                 this.wcjs.playlist.play();
                 this.wcjs.position = this.position;

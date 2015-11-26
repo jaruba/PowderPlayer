@@ -12,6 +12,7 @@ class PlayerActions {
             'pause',
             'stop',
             'stopped',
+            'volume',
 
 
             'playing',

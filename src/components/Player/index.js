@@ -17,6 +17,7 @@ default React.createClass({
         return {
             uri: PlayerStore.getState().uri,
 
+            volume: PlayerStore.getState().volume,
             position: PlayerStore.getState().position,
             buffering: PlayerStore.getState().buffering,
             uiShown: PlayerStore.getState().uiShown
@@ -33,6 +34,7 @@ default React.createClass({
             this.setState({
                 uri: PlayerStore.getState().uri,
 
+                volume: PlayerStore.getState().volume,
                 position: PlayerStore.getState().position,
                 buffering: PlayerStore.getState().buffering,
                 uiShown: PlayerStore.getState().uiShown

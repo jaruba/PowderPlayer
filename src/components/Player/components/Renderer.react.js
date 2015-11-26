@@ -27,6 +27,7 @@ default React.createClass({
             uri: PlayerStore.getState().uri,
             initialResize: false,
 
+            volume: PlayerStore.getState().volume,
             playing: PlayerStore.getState().playing,
             paused: PlayerStore.getState().paused,
             fullscreen: PlayerStore.getState().fullscreen
@@ -73,7 +74,8 @@ default React.createClass({
             this.setState({
                 uri: PlayerStore.getState().uri,
                 playing: PlayerStore.getState().playing,
-                fullscreen: PlayerStore.getState().fullscreen
+                fullscreen: PlayerStore.getState().fullscreen,
+                volume: PlayerStore.getState().volume
             });
         }
     },
@@ -138,6 +140,13 @@ default React.createClass({
     handleTogglePlay() {
         this.state.playing ? PlayerActions.pause() : PlayerActions.play();
     },
+    wheel(event) {
+        console.log(this.player)
+        var volume = (event.deltaY > 0) ? this.player.volume + 5 : this.player.volume - 5;
+
+        PlayerActions.volume(volume);
+
+    },
     render() {
         var renderStyles = {
             container: {
@@ -154,7 +163,7 @@ default React.createClass({
             }
         };
         return (
-            <div className="canvas-holder" style={renderStyles.container}>
+            <div className="canvas-holder" onWheel={this.wheel} style={renderStyles.container}>
                 <RaisedButton onClick={this.handleTogglePlay} onDoubleClick={PlayerActions.toggleFullscreen.bind(this, !this.state.fullscreen)} iconClassName="material-icons" className="over-canvas" label="Canvas Overlay" />
                 <canvas style={renderStyles.canvas} onClick={this.handleTogglePlay} onDoubleClick={PlayerActions.toggleFullscreen.bind(this, !this.state.fullscreen)} ref="wcjs-render" />
             </div>
