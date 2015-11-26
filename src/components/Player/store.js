@@ -167,6 +167,10 @@ class playerStore {
     }
 
     onVolume(value) {
+
+        if (value > 150) //dont allow volume higher than 150%
+            value = 150;
+
         this.setState({
             volume: value
         });
