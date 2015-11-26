@@ -34,8 +34,14 @@ class PlayerActions {
             'wcjsInit',
             'close',
             'open',
-            'openPlaylist'
+            'openPlaylist',
+            'setPlaylist'
         );
+    }
+
+    createPlaylist(files) {
+
+
     }
 
     toggleAlwaysOnTop(state = true) {
