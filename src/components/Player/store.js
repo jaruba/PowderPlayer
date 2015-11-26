@@ -240,6 +240,7 @@ class playerStore {
             time: 0,
             length: 0,
             position: 0,
+            volume: 100,
 
             title: '',
             fullscreen: false,
