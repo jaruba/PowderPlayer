@@ -131,9 +131,9 @@ default React.createClass({
 
         if (cond) {
             canvas.style.height = "100%";
-            canvas.style.width = ((container.clientHeight * sourceAspect) / container.clientWidth) * 100 + "%";
+            canvas.style.width = ((container.clientHeight * sourceAspect) / container.clientWidth) * 100 + '%';
         } else {
-            canvas.style.height = ((container.clientWidth / sourceAspect) / container.clientHeight) * 100 + "%";
+            canvas.style.height = ((container.clientWidth / sourceAspect) / container.clientHeight) * 100 + '%';
             canvas.style.width = "100%";
         };
     },
@@ -141,11 +141,8 @@ default React.createClass({
         this.state.playing ? PlayerActions.pause() : PlayerActions.play();
     },
     wheel(event) {
-        console.log(this.player)
-        var volume = (event.deltaY > 0) ? this.player.volume + 5 : this.player.volume - 5;
-
+        var volume = (event.deltaY < 0) ? this.player.volume + 5 : this.player.volume - 5;
         PlayerActions.volume(volume);
-
     },
     render() {
         var renderStyles = {
