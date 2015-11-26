@@ -52,7 +52,6 @@ class torrentActions {
                         uri: 'http://127.0.0.1:' + EngineStore.state.torrents[file.infoHash]['stream-port'] + '/' + file.id
                     });
                     ModalActions.close();
-                    HistoryStore.getState().history.replaceState(null, 'player');
                 } else {
                     ModalActions.fileSelector(files);
                     ipcRenderer.send('app:bitchForAttention');
