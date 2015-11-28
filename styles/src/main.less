@@ -15,6 +15,24 @@ body {
     }
 }
 
+@font-face {
+  font-family: 'Droid Sans Bold';
+  src: url('../fonts/DroidSans/DroidSans-Bold.ttf');
+}
+
+@font-face {
+  font-family: 'Droid Sans';
+  src: url('../fonts/DroidSans/DroidSans.ttf');
+}
+
+.droid-sans {
+  font-family: 'Droid Sans Bold';
+}
+
+.droid-bold {
+  font-family: 'Droid Sans Bold';
+}
+
 #main, #app {
     height: 100%;
     width: 100%;
@@ -23,6 +41,10 @@ body {
 
 #main .holder {
     min-height: 428px;
+}
+
+#main .holder-hover {
+    border-color: #383838 !important;
 }
 
 #main .mainButHold div > button > div > div > span:first-of-type {
@@ -48,4 +70,32 @@ body {
 #main .mainButHold .lbl {
     color: #fff;
     font-size: 17px;
+}
+
+.loader {
+    height: 4px;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    background-color: #ddd;
+}
+
+.loader:before{
+    display: block;
+    position: absolute;
+    content: "";
+    left: -200px;
+    width: 200px;
+    height: 4px;
+    background-color: #00bcd4;
+    animation: loading 2s linear infinite;
+}
+
+@keyframes loading {
+    from {left: -200px; width: 30%;}
+    50% {width: 30%;}
+    70% {width: 70%;}
+    80% { left: 50%;}
+    95% {left: 120%;}
+    to {left: 100%;}
 }

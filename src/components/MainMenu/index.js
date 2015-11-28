@@ -5,18 +5,38 @@ import {
 }
 from 'material-ui';
 import MainMenuActions from './actions';
+import torrentActions from '../../actions/torrentActions';
 
 
 export
 default React.createClass({
-    onDrop(file) {
-        console.log('Received file:', file);
+    getInitialState() {
+        return {
+            dropBorderColor: '#ccc'
+        }
     },
+    onDrop(files,e) {
+		if (files && files.length) {
+	        console.log('Received files:', files);
+		} else {
+			var droppedLink = e.dataTransfer.getData("text/plain");
+			if (droppedLink) {
+				console.log('Received link:', droppedLink);
+				torrentActions.addTorrent(droppedLink);
+			}
+		}
+    },
+    onDragEnter() {
+		document.querySelector('.wrapper .holder').classList.add('holder-hover');
+	},
+    onDragLeave() {
+		document.querySelector('.wrapper .holder').classList.remove('holder-hover');
+	},
     render() {
         return (
             <div className="wrapper">
                <center>
-                    <Dropzone disableClick={true} className="holder" onDrop={this.onDrop}>
+                    <Dropzone ref="dropper" disableClick={true} className="holder" onDragEnter={this.onDragEnter} onDragLeave={this.onDragLeave} onDrop={this.onDrop} style={{}}>
                         <div className="mainButtonHolder">
                              <div className="inButtonHolder">
                                 <IconButton iconClassName="material-icons" iconStyle={{color: '#767A7B', fontSize: '30px', top: '-2px', right: '2px'}} className="settings" >settings</IconButton>

@@ -4,7 +4,7 @@ import ModalActions from '../actions';
 import ModalStore from '../store';
 import _ from 'lodash';
 import {
-    LinearProgress, RaisedButton
+    RaisedButton
 }
 from 'material-ui';
 
@@ -79,7 +79,8 @@ default React.createClass({
         var statusText = this.state.stats.peers.total ? <p className="peers" >Connected to {this.state.stats.peers.total} Peers</p> : <p className="peers">Processing URL</p>;
         return (
             <div>
-                <LinearProgress mode="indeterminate"  />
+                <div className="loader"></div>
+                <div style={{height: '15px'}}/>    
                 <RaisedButton onClick={this.handelCancel} style={{float: 'right', 'marginTop': '15px' }} label="Cancel" />
                 {statusText}
             </div>
