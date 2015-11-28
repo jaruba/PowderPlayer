@@ -45,6 +45,8 @@ class playerStore {
         this.totalTime = '00:00';
 
         this.scrobbling = false;
+        
+        this.itemDesc = (i) => { return false };
 
     }
 
@@ -54,13 +56,26 @@ class playerStore {
 
     onWcjsInit(wcjs) {
         this.setState({
-            wcjs: wcjs
+            wcjs: wcjs,
+            itemDesc: (i) => {
+                if (typeof i === 'number') {
+                    if (i > -1 && i < wcjs.playlist.items.count) {
+                        
+                        if (!wcjs.playlist.items[i].setting) wcjs.playlist.items[i].setting = '{}';
+                        var wjsDesc = JSON.stringify(wcjs.playlist.items[i]);
+                        
+                        return JSON.parse(wjsDesc.split('\\"').join('"').split('"{').join('{').split('}"').join('}'));
+                        
+                    }
+                }
+                return false;
+            }
         });
     }
 
-    onOpenPlaylist(state = true) {
+    onTogglePlaylist() {
         this.setState({
-            playlistOpen: state
+            playlistOpen: !this.playlistOpen
         });
     }
 
@@ -91,7 +106,7 @@ class playerStore {
     onLength(length) {
         this.setState({
             length: length,
-            totalTime: handleTime(length)
+            totalTime: handleTime(length, length)
         });
     }
 
@@ -107,7 +122,7 @@ class playerStore {
             title: data.title,
             uri: data.uri
         });
-        
+
         playerActions.togglePowerSave(true);
 
         if (data.files)
@@ -237,6 +252,33 @@ class playerStore {
                 this.wcjs.position = this.position;
             } else {
                 console.log('Playback has Ended');
+            }
+        }
+    }
+    
+    onItemCount() {
+        if (this.wcjs)
+            return this.wcjs.playlist.items.count;
+        return false;
+    }
+    
+    onSetItemState(obj) {
+        if (obj && typeof obj.idx === 'number') {
+            var i = obj.idx;
+            if (i > -1 && i < this.wcjs.playlist.items.count) {
+                if (this.wcjs.playlist.items[i].setting.length) {
+                    var wjsDesc = JSON.parse(this.wcjs.playlist.items[i].setting);
+                } else {
+                    var wjsDesc = {};
+                }
+                if (obj) {
+                    for (var key in obj) {
+                        if (obj.hasOwnProperty(key)) {
+                            wjsDesc[key] = obj[key];
+                        }
+                    }
+                }
+                this.wcjs.playlist.items[i].setting = JSON.stringify(wjsDesc);
             }
         }
     }

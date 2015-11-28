@@ -34,8 +34,12 @@ class PlayerActions {
             'wcjsInit',
             'close',
             'open',
-            'openPlaylist',
-            'setPlaylist'
+            'togglePlaylist',
+            'setPlaylist',
+            
+            'itemCount',
+            'itemDesc',
+            'setItemState'
         );
     }
 

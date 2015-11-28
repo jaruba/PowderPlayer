@@ -166,7 +166,7 @@ module.exports = {
                 var draw = function() {
                     drawLoop = window.requestAnimationFrame(function() {
                         var gl = canvas.gl;
-                        if (newFrame) gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+                        if (newFrame && gl) gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
                         newFrame = false;
                         draw();
                     });
@@ -273,6 +273,8 @@ module.exports = {
 
         arr1[0] = 0;
         arr2[0] = 128;
+
+        if (!gl) return;
 
         gl.y.fill(1, 1, arr1);
         gl.u.fill(1, 1, arr2);

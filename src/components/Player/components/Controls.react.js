@@ -96,7 +96,7 @@ default React.createClass({
                 var realPos = Math.floor(window.innerWidth * percent_done) + this.state.tooltipHalf;
             }
 
-            var seekTime = handleTime(percent_done * this.state.length);
+            var seekTime = handleTime(percent_done * this.state.length, this.state.length);
 
             if (seekTime.length > 5)
                 newState.tooltipHalf = 33;
