@@ -192,9 +192,10 @@ module.exports = function(grunt) {
         babel: {
             options: {
                 sourceMap: 'inline',
-                plugins: ['transform-minify-booleans'],
+                plugins: ['transform-minify-booleans', 'transform-property-literals', 'transform-simplify-comparison-operators', 'transform-merge-sibling-variables'],
                 presets: ['es2015', 'react'],
-                compact: true
+                compact: true,
+                comments: false
             },
             dist: {
                 files: [{
