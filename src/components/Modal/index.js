@@ -52,10 +52,10 @@ default React.createClass({
     },
 
     update() {
-
-        var modalState = ModalStore.getState();
-
         if (this.isMounted()) {
+
+            var modalState = ModalStore.getState();
+
             this.setState({
                 modalIsOpen: modalState.open,
                 data: modalState.data,
