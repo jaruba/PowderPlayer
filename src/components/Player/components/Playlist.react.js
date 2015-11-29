@@ -62,7 +62,7 @@ default React.createClass({
                     	{
 							this.getItems().map((item, idx) => {
             					return (
-            						<Paper className="item" key={idx} zDepth={1} style={{background: 'url('+ item.image ? item.image : '../images/video-placeholder.svg' +') no-repeat'}}>
+            						<Paper className="item" key={idx} zDepth={1} style={{background: 'url(' + (item.image ? item.image : 'images/video-placeholder.svg') + ') no-repeat'}}>
             							<p className="title">{(path.isAbsolute(item.title)) ? path.normalize(path.parse(item.title).name) : item.title }</p>
             						</Paper>
 									)
