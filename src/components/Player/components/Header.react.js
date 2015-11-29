@@ -48,7 +48,8 @@ default React.createClass({
     handleOpenSettings() {
         ModalActions.open({
             title: 'Player Settings',
-            type: 'player-settings'
+            type: 'player-settings',
+            theme: 'DarkRawTheme'
         });
     },
     handleOpenPlaylist() {

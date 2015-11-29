@@ -1,9 +1,11 @@
 import React from 'react';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
-import {
+
+import MUI from 'material-ui';
+
+const {
     Dialog
-}
-from 'material-ui';
+} = MUI;
 
 import ModalStore from './store';
 import ModalActions from './actions';
@@ -18,12 +20,23 @@ default React.createClass({
 
     mixins: [PureRenderMixin],
 
+    childContextTypes: {
+        muiTheme: React.PropTypes.object,
+    },
+
+    getChildContext() {
+        return {
+            muiTheme: MUI.Styles.ThemeManager.getMuiTheme(MUI.Styles[ModalStore.getState().theme])
+        };
+    },
+    
     getInitialState() {
         return {
             Thinking: ModalStore.getState().thinking,
             modalIsOpen: ModalStore.getState().open,
             type: ModalStore.getState().type,
-            data: ModalStore.getState().data
+            data: ModalStore.getState().data,
+            theme: ModalStore.getState().theme
         };
     },
 
@@ -91,12 +104,12 @@ default React.createClass({
         return (
             <Dialog
                 style={this.getStyle()}
-          		open={this.state.modalIsOpen}
+                  open={this.state.modalIsOpen}
                 autoScrollBodyContent={true}
                 contentClassName='material-dialog'
                 onRequestClose={this.closeModal}>
                 {this.getContents()}
-        	</Dialog>
+            </Dialog>
         );
     }
 });

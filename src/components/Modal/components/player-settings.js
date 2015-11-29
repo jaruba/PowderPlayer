@@ -1,15 +1,30 @@
 import React from 'react';
+import ModalStore from '../store';
 import ModalActions from '../actions';
-import {
+
+import MUI from 'material-ui';
+
+const {
     RaisedButton, Toggle
-}
-from 'material-ui';
+} = MUI;
+
 
 import playerStore from '../../Player/store';
 import playerActions from '../../Player/actions';
 
 export
 default React.createClass({
+
+    childContextTypes: {
+        muiTheme: React.PropTypes.object,
+    },
+
+    getChildContext() {
+        return {
+            muiTheme: MUI.Styles.ThemeManager.getMuiTheme(MUI.Styles[ModalStore.getState().theme])
+        };
+    },
+    
     getInitialState() {
         return {
             alwaysOnTop: playerStore.getState().alwaysOnTop,
@@ -39,10 +54,10 @@ default React.createClass({
         return (
             <div>
                 <Toggle
-                	name="always-on-top"
+                    name="always-on-top"
                     onToggle={this.handelalwaysOnTop}
-                	defaultToggled={this.state.alwaysOnTop}
-                	label="Always on top:"/>
+                    defaultToggled={this.state.alwaysOnTop}
+                    label="Always on top:"/>
 
                 <RaisedButton onClick={ModalActions.close} style={{float: 'right', 'marginTop': '20px' }} label="Close" />
             </div>
