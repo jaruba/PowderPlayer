@@ -45,7 +45,7 @@ default React.createClass({
     },
     getItems() {
         let items = []
-        if (!this.state.playlist) return [];
+        if (!this.state.playlist) return items;
 
         for (var i = 0; i < this.state.playlist.items.count; i++) {
             items.push(PlayerStore.getState().itemDesc(i));
