@@ -46,10 +46,10 @@ default React.createClass({
 
             var playerState = playerStore.getState();
 
-            return {
+            this.setState({
                 alwaysOnTop: playerState.alwaysOnTop,
                 playerRippleEffects: playerState.rippleEffects
-            };
+            });
         }
     },
     handleAlwaysOnTop(event, toggled) {
