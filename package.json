@@ -70,6 +70,6 @@
     "load-grunt-tasks": "^3.3.0"
   },
   "optionalDependencies": {
-    "electron-prebuilt": "0.35.1"
+    "electron-prebuilt": "0.35.0"
   }
 }
