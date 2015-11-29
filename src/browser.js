@@ -30,7 +30,7 @@ app.commandLine.appendSwitch('vmodule', 'console=0');
 app.commandLine.appendSwitch('d3d9');
 app.commandLine.appendSwitch('disable-d3d11');
 app.commandLine.appendSwitch('gpu-no-context-lost');
-app.commandLine.appendSwitch('ignore-gpu-blacklist');
+//app.commandLine.appendSwitch('ignore-gpu-blacklist');
 
 app.on('ready', () => {
     var screenSize = require('screen').getPrimaryDisplay().workAreaSize;
