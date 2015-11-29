@@ -31,12 +31,15 @@ default React.createClass({
     },
     
     getInitialState() {
+
+        var modalState = ModalStore.getState();
+
         return {
-            Thinking: ModalStore.getState().thinking,
-            modalIsOpen: ModalStore.getState().open,
-            type: ModalStore.getState().type,
-            data: ModalStore.getState().data,
-            theme: ModalStore.getState().theme
+            Thinking: modalState.thinking,
+            modalIsOpen: modalState.open,
+            type: modalState.type,
+            data: modalState.data,
+            theme: modalState.theme
         };
     },
 
@@ -49,12 +52,15 @@ default React.createClass({
     },
 
     update() {
+
+        var modalState = ModalStore.getState();
+
         if (this.isMounted()) {
             this.setState({
-                modalIsOpen: ModalStore.getState().open,
-                data: ModalStore.getState().data,
-                type: ModalStore.getState().type,
-                Thinking: ModalStore.getState().thinking
+                modalIsOpen: modalState.open,
+                data: modalState.data,
+                type: modalState.type,
+                Thinking: modalState.thinking
             });
         }
     },

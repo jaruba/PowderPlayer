@@ -35,9 +35,12 @@ default React.createClass({
     },
     update() {
         if (this.isMounted()) {
+
+            var headerState = HeaderStore.getState();
+
             this.setState({
-                maximized: HeaderStore.getState().maximized,
-                minimized: HeaderStore.getState().minimized
+                maximized: headerState.maximized,
+                minimized: headerState.minimized
             });
         }
     },

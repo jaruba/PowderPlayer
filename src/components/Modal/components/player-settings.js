@@ -26,9 +26,12 @@ default React.createClass({
     },
     
     getInitialState() {
+
+        var playerState = playerStore.getState();
+
         return {
-            alwaysOnTop: playerStore.getState().alwaysOnTop,
-            playerRippleEffects: playerStore.getState().rippleEffects
+            alwaysOnTop: playerState.alwaysOnTop,
+            playerRippleEffects: playerState.rippleEffects
         };
     },
     componentWillMount() {
@@ -40,10 +43,13 @@ default React.createClass({
     },
     update() {
         if (this.isMounted()) {
-            this.setState({
-                alwaysOnTop: playerStore.getState().alwaysOnTop,
-                playerRippleEffects: playerStore.getState().rippleEffects
-            });
+
+            var playerState = playerStore.getState();
+
+            return {
+                alwaysOnTop: playerState.alwaysOnTop,
+                playerRippleEffects: playerState.rippleEffects
+            };
         }
     },
     handleAlwaysOnTop(event, toggled) {

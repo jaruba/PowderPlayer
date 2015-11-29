@@ -12,8 +12,11 @@ import utils from '../../utils/util';
 export
 default React.createClass({
     getInitialState() {
+
+        var engineState = engineStore.getState();
+
         return {
-            torrents: engineStore.getState().torrents
+            torrents: engineState.torrents
         };
     },
     componentDidMount() {
@@ -24,8 +27,11 @@ default React.createClass({
     },
     update() {
         if (this.isMounted()) {
+
+            var engineState = engineStore.getState();
+
             this.setState({
-                torrents: engineStore.getState().torrents
+                torrents: engineState.torrents
             });
         }
     },

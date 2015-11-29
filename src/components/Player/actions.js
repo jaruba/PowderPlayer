@@ -39,7 +39,7 @@ class PlayerActions {
             
             'itemCount',
             'itemDesc',
-            'setItemState'
+            'setDesc'
         );
     }
 

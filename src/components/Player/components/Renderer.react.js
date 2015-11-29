@@ -23,16 +23,19 @@ default React.createClass({
     mixins: [PureRenderMixin],
 
     getInitialState() {
+
+        var playerState = PlayerStore.getState();
+
         return {
-            uri: PlayerStore.getState().uri,
+            uri: playerState.uri,
             initialResize: false,
 
-            volume: PlayerStore.getState().volume,
-            playing: PlayerStore.getState().playing,
-            paused: PlayerStore.getState().paused,
-            fullscreen: PlayerStore.getState().fullscreen,
+            volume: playerState.volume,
+            playing: playerState.playing,
+            paused: playerState.paused,
+            fullscreen: playerState.fullscreen,
             
-            rippleEffects: PlayerStore.getState().rippleEffects
+            rippleEffects: playerState.rippleEffects
         }
     },
     componentWillMount() {
@@ -73,12 +76,15 @@ default React.createClass({
     },
     update() {
         if (this.isMounted()) {
+
+            var playerState = PlayerStore.getState();
+
             this.setState({
-                uri: PlayerStore.getState().uri,
-                playing: PlayerStore.getState().playing,
-                fullscreen: PlayerStore.getState().fullscreen,
-                volume: PlayerStore.getState().volume,
-                rippleEffects: PlayerStore.getState().rippleEffects
+                uri: playerState.uri,
+                playing: playerState.playing,
+                fullscreen: playerState.fullscreen,
+                volume: playerState.volume,
+                rippleEffects: playerState.rippleEffects
             });
         }
     },

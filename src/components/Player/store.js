@@ -47,7 +47,7 @@ class playerStore {
 
         this.scrobbling = false;
         
-        this.itemDesc = (i) => { return false };
+        this.itemDesc = i => { return false };
 
     }
 
@@ -58,7 +58,7 @@ class playerStore {
     onWcjsInit(wcjs) {
         this.setState({
             wcjs: wcjs,
-            itemDesc: (i) => {
+            itemDesc: i => {
                 if (typeof i === 'number') {
                     if (i > -1 && i < wcjs.playlist.items.count) {
                         
@@ -263,7 +263,7 @@ class playerStore {
         return false;
     }
     
-    onSetItemState(obj) {
+    onSetDesc(obj) {
         if (obj && typeof obj.idx === 'number') {
             var i = obj.idx;
             if (i > -1 && i < this.wcjs.playlist.items.count) {

@@ -19,21 +19,24 @@ default React.createClass({
     mixins: [PureRenderMixin],
 
     getInitialState() {
+
+        var playerState = PlayerStore.getState();
+
         return {
-            fullscreen: PlayerStore.getState().fullscreen,
-            uiShown: PlayerStore.getState().uiShown || PlayerStore.getState().playlistOpen,
+            fullscreen: playerState.fullscreen,
+            uiShown: playerState.uiShown || playerState.playlistOpen,
 
             scrobbling: false,
-            playing: PlayerStore.getState().playing,
-            position: PlayerStore.getState().position,
-            buffering: PlayerStore.getState().buffering,
-            time: PlayerStore.getState().time,
-            length: PlayerStore.getState().length,
+            playing: playerState.playing,
+            position: playerState.position,
+            buffering: playerState.buffering,
+            time: playerState.time,
+            length: playerState.length,
 
-            currentTime: PlayerStore.getState().currentTime,
-            totalTime: PlayerStore.getState().totalTime,
-            
-            rippleEffects: PlayerStore.getState().rippleEffects
+            currentTime: playerState.currentTime,
+            totalTime: playerState.totalTime,
+
+            rippleEffects: playerState.rippleEffects
         }
     },
     componentWillMount() {
@@ -50,21 +53,24 @@ default React.createClass({
     },
     update() {
         if (this.isMounted()) {
+
+            var playerState = PlayerStore.getState();
+
             this.setState({
-                fullscreen: PlayerStore.getState().fullscreen,
-                uiShown: PlayerStore.getState().uiShown || PlayerStore.getState().playlistOpen,
+                fullscreen: playerState.fullscreen,
+                uiShown: playerState.uiShown || playerState.playlistOpen,
 
-                playing: PlayerStore.getState().playing,
-                position: PlayerStore.getState().position,
-                buffering: PlayerStore.getState().buffering,
-                seekable: PlayerStore.getState().seekable,
-                time: PlayerStore.getState().time,
-                length: PlayerStore.getState().length,
+                playing: playerState.playing,
+                position: playerState.position,
+                buffering: playerState.buffering,
+                seekable: playerState.seekable,
+                time: playerState.time,
+                length: playerState.length,
 
-                currentTime: PlayerStore.getState().currentTime,
-                totalTime: PlayerStore.getState().totalTime,
-            
-                rippleEffects: PlayerStore.getState().rippleEffects
+                currentTime: playerState.currentTime,
+                totalTime: playerState.totalTime,
+
+                rippleEffects: playerState.rippleEffects
             });
         }
     },
