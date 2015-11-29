@@ -24,7 +24,8 @@ class playerStore {
         this.playing = false;
         this.paused = false;
 
-        this.alwaysOnTop = false
+        this.alwaysOnTop = false;
+        this.rippleEffects = localStorage.playerRippleEffects ? (localStorage.playerRippleEffects === "true") : true;
 
         this.muted = false;
         this.volume = 100;

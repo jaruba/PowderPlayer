@@ -30,7 +30,9 @@ default React.createClass({
             volume: PlayerStore.getState().volume,
             playing: PlayerStore.getState().playing,
             paused: PlayerStore.getState().paused,
-            fullscreen: PlayerStore.getState().fullscreen
+            fullscreen: PlayerStore.getState().fullscreen,
+            
+            rippleEffects: PlayerStore.getState().rippleEffects
         }
     },
     componentWillMount() {
@@ -75,7 +77,8 @@ default React.createClass({
                 uri: PlayerStore.getState().uri,
                 playing: PlayerStore.getState().playing,
                 fullscreen: PlayerStore.getState().fullscreen,
-                volume: PlayerStore.getState().volume
+                volume: PlayerStore.getState().volume,
+                rippleEffects: PlayerStore.getState().rippleEffects
             });
         }
     },
@@ -161,7 +164,7 @@ default React.createClass({
         };
         return (
             <div className="canvas-holder" onWheel={this.wheel} style={renderStyles.container}>
-                <RaisedButton onClick={this.handleTogglePlay} onDoubleClick={PlayerActions.toggleFullscreen.bind(this, !this.state.fullscreen)} iconClassName="material-icons" className="over-canvas" label="Canvas Overlay" />
+                <RaisedButton onClick={this.handleTogglePlay} onDoubleClick={PlayerActions.toggleFullscreen.bind(this, !this.state.fullscreen)} iconClassName="material-icons" className={this.state.rippleEffects ? 'over-canvas' : 'over-canvas no-ripples' } label="Canvas Overlay" />
                 <canvas style={renderStyles.canvas} onClick={this.handleTogglePlay} onDoubleClick={PlayerActions.toggleFullscreen.bind(this, !this.state.fullscreen)} ref="wcjs-render" />
             </div>
         );

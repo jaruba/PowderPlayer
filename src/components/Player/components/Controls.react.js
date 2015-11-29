@@ -31,7 +31,9 @@ default React.createClass({
             length: PlayerStore.getState().length,
 
             currentTime: PlayerStore.getState().currentTime,
-            totalTime: PlayerStore.getState().totalTime
+            totalTime: PlayerStore.getState().totalTime,
+            
+            rippleEffects: PlayerStore.getState().rippleEffects
         }
     },
     componentWillMount() {
@@ -60,7 +62,9 @@ default React.createClass({
                 length: PlayerStore.getState().length,
 
                 currentTime: PlayerStore.getState().currentTime,
-                totalTime: PlayerStore.getState().totalTime
+                totalTime: PlayerStore.getState().totalTime,
+            
+                rippleEffects: PlayerStore.getState().rippleEffects
             });
         }
     },
@@ -195,7 +199,7 @@ default React.createClass({
                     </div>
                     <div ref="scrobbler-handle" className="handle"/>
                 </div>
-                <IconButton onClick={this.handlePausePlay} iconClassName="material-icons" iconStyle={{top: '-5px', left: '-1px'}} className="play-toggle">{this.state.playing ? 'pause' : 'play_arrow'}</IconButton>
+                <IconButton onClick={this.handlePausePlay} iconClassName="material-icons" iconStyle={{top: '-5px', left: '-1px'}} className={this.state.rippleEffects ? 'play-toggle' : 'play-toggle no-ripples'}>{this.state.playing ? 'pause' : 'play_arrow'}</IconButton>
 
                 <IconButton onClick={this.handleFullscreen} iconClassName="material-icons" iconStyle={{color: 'white', fontSize: '30px', top: '-5px', left: '-1px'}} className="fullscreen-toggle">{this.state.fullscreen ? 'fullscreen_exit' : 'fullscreen'}</IconButton>
                 <IconButton iconClassName="material-icons" iconStyle={{color: 'white', fontSize: '26px', top: '-5px', left: '-1px'}} className="subtitles-toggle">closed_caption</IconButton>

@@ -20,7 +20,9 @@ default React.createClass({
             volume: PlayerStore.getState().volume,
             position: PlayerStore.getState().position,
             buffering: PlayerStore.getState().buffering,
-            uiShown: PlayerStore.getState().uiShown
+            uiShown: PlayerStore.getState().uiShown,
+            
+            rippleEffects: PlayerStore.getState().rippleEffects
         }
     },
     componentWillMount() {
@@ -37,7 +39,9 @@ default React.createClass({
                 volume: PlayerStore.getState().volume,
                 position: PlayerStore.getState().position,
                 buffering: PlayerStore.getState().buffering,
-                uiShown: PlayerStore.getState().uiShown
+                uiShown: PlayerStore.getState().uiShown,
+                
+                rippleEffects: PlayerStore.getState().rippleEffects
             });
         }
     },

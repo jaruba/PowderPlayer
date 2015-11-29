@@ -28,6 +28,7 @@ default React.createClass({
     getInitialState() {
         return {
             alwaysOnTop: playerStore.getState().alwaysOnTop,
+            playerRippleEffects: playerStore.getState().rippleEffects
         };
     },
     componentWillMount() {
@@ -41,23 +42,39 @@ default React.createClass({
         if (this.isMounted()) {
             this.setState({
                 alwaysOnTop: playerStore.getState().alwaysOnTop,
+                playerRippleEffects: playerStore.getState().rippleEffects
             });
         }
     },
-    handelalwaysOnTop(event, toggled) {
+    handleAlwaysOnTop(event, toggled) {
         playerActions.settingChange({
             alwaysOnTop: toggled
         });
         playerActions.toggleAlwaysOnTop(toggled);
+    },
+    handlePlayerRippleEffects(event, toggled) {
+        
+        localStorage.playerRippleEffects = toggled;
+        
+        playerActions.settingChange({
+            rippleEffects: toggled
+        });
+        
     },
     render() {
         return (
             <div>
                 <Toggle
                     name="always-on-top"
-                    onToggle={this.handelalwaysOnTop}
+                    onToggle={this.handleAlwaysOnTop}
                     defaultToggled={this.state.alwaysOnTop}
                     label="Always on top:"/>
+
+                <Toggle
+                    name="player-ripple-effects"
+                    onToggle={this.handlePlayerRippleEffects}
+                    defaultToggled={this.state.playerRippleEffects}
+                    label="Player Ripple Effects:"/>
 
                 <RaisedButton onClick={ModalActions.close} style={{float: 'right', 'marginTop': '20px' }} label="Close" />
             </div>
