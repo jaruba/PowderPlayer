@@ -8,18 +8,7 @@ from 'material-ui';
 import PlayerStore from '../store';
 import PlayerActions from '../actions';
 import path from 'path';
-import ReactDOM from 'react-dom';
 
-
-const PlaylistItem = React.createClass({
-    render() {
-        return (
-            <Paper className="item" zDepth={1} style={{background: 'url('+this.props.image+') no-repeat'}}>
-                <p className="title">{this.props.title}</p>
-            </Paper>
-        );
-    }
-});
 
 export
 default React.createClass({
@@ -29,7 +18,7 @@ default React.createClass({
     getInitialState() {
         return {
             open: false,
-            items: []
+            playlist: PlayerStore.getState().wcjs.playlist || false
         }
     },
     componentWillMount() {
@@ -43,59 +32,45 @@ default React.createClass({
         if (this.isMounted()) {
             this.setState({
                 open: PlayerStore.getState().playlistOpen,
+                playlist: PlayerStore.getState().wcjs.playlist || false
             });
-            this.populatePlaylist();
         }
     },
-
     close() {
         PlayerActions.openPlaylist(false);
     },
-
     handleOpenPlaylist() {
 
 
     },
-    
-    populatePlaylist() {
-        
-        if (this.state.populated) return;
-        
-        this.setState({
-            populated: true
-        });
+    getItems() {
+        let items = []
+        if (!this.state.playlist) return [];
 
-        var newItems = [];
-        for (var i = 0; i < PlayerStore.getState().wcjs.playlist.items.count; i++) {
-            console.log(PlayerStore.getState().itemDesc(i));
-            newItems.push(PlayerStore.getState().itemDesc(i));
+        for (var i = 0; i < this.state.playlist.items.count; i++) {
+            items.push(PlayerStore.getState().itemDesc(i));
         }
-        
-        newItems.map(function(item, idx) {
-            if (path.isAbsolute(item.title)) {
-                item.title = path.normalize(path.parse(item.title).name);
-            }
-            if (!item.image) {
-                item.image = '../images/video-placeholder.svg';
-            }
-            return ReactDOM.render(<PlaylistItem key={idx} image={item.image} title={item.title} />,document.querySelector('.playlist-inner'));
-        }, this);
-        
+        return items;
     },
-    
     render() {
-        console.log(this.state)
         return (
             <div className={this.state.open ? 'playlist-container show' : 'playlist-container'}>
-                <div className="playlist-controls"/>
-
+				<div className="playlist-controls" / >
                 <div className="playlist-holder">
-                    <div ref="playlist-title" className="droid-sans playlist-title">Playlist</div>
-                    <div className="playlist-inner"/>
-                </div>
+					<div ref="playlist-title" className="droid-sans playlist-title">Playlist</div>
+					<div className="playlist-inner">
+                    	{
+							this.getItems().map((item, idx) => {
+            					return (
+            						<Paper className="item" key={idx} zDepth={1} style={{background: 'url('+ item.image ? item.image : '../images/video-placeholder.svg' +') no-repeat'}}>
+            							<p className="title">{(path.isAbsolute(item.title)) ? path.normalize(path.parse(item.title).name) : item.title }</p>
+            						</Paper>
+									)
+        					}, this)
+                    	}
+                    </div>
+               	</div> 
             </div>
         );
     }
-
-    
 });
