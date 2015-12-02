@@ -20,10 +20,13 @@ default React.createClass({
     mixins: [History, PureRenderMixin],
 
     getInitialState() {
+        
+        var playerState = PlayerStore.getState();
+        
         return {
-            title: PlayerStore.getState().title,
-            uiShown: PlayerStore.getState().uiShown && !PlayerStore.getState().playlistOpen,
-            playlistOpen: PlayerStore.getState().playlistOpen
+            title: playerState.title,
+            uiShown: playerState.uiShown && !playerState.playlistOpen,
+            playlistOpen: playerState.playlistOpen
         }
     },
     componentWillMount() {
@@ -34,10 +37,13 @@ default React.createClass({
     },
     update() {
         if (this.isMounted()) {
+
+            var playerState = PlayerStore.getState();
+
             this.setState({
-                title: PlayerStore.getState().title,
-                uiShown: PlayerStore.getState().uiShown && !PlayerStore.getState().playlistOpen,
-                playlistOpen: PlayerStore.getState().playlistOpen
+                title: playerState.title,
+                uiShown: playerState.uiShown && !playerState.playlistOpen,
+                playlistOpen: playerState.playlistOpen
             });
         }
     },

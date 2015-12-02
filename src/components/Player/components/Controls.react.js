@@ -84,6 +84,12 @@ default React.createClass({
     handlePausePlay() {
         this.state.playing ? PlayerActions.pause() : PlayerActions.play();
     },
+    handleNext() {
+        PlayerActions.next();
+    },
+    handlePrev() {
+        PlayerActions.prev();
+    },
     handleFullscreen() {
         PlayerActions.toggleFullscreen(!this.state.fullscreen);
     },
@@ -206,6 +212,10 @@ default React.createClass({
                     <div ref="scrobbler-handle" className="handle"/>
                 </div>
                 <IconButton onClick={this.handlePausePlay} iconClassName="material-icons" iconStyle={{top: '-5px', left: '-1px'}} className={this.state.rippleEffects ? 'play-toggle' : 'play-toggle no-ripples'}>{this.state.playing ? 'pause' : 'play_arrow'}</IconButton>
+
+                <IconButton onClick={this.handlePrev} iconClassName="material-icons" iconStyle={{top: '-6px'}} className={'prev-button'}>{'skip_previous'}</IconButton>
+                
+                <IconButton onClick={this.handleNext} iconClassName="material-icons" iconStyle={{top: '-6px'}} className={'next-button'}>{'skip_next'}</IconButton>
 
                 <IconButton onClick={this.handleFullscreen} iconClassName="material-icons" iconStyle={{color: 'white', fontSize: '30px', top: '-5px', left: '-1px'}} className="fullscreen-toggle">{this.state.fullscreen ? 'fullscreen_exit' : 'fullscreen'}</IconButton>
                 <IconButton iconClassName="material-icons" iconStyle={{color: 'white', fontSize: '26px', top: '-5px', left: '-1px'}} className="subtitles-toggle">closed_caption</IconButton>

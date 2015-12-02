@@ -10,6 +10,8 @@ import getPort from 'get-port';
 import _ from 'lodash';
 import torrentActions from '../../actions/torrentActions';
 
+import sorter from '../../components/Player/utils/sort';
+import parser from '../../components/Player/utils/parser';
 
 
 const temp = path.join(app.getPath('temp'), 'Powder-Player');
@@ -57,28 +59,46 @@ module.exports = {
         return new Promise((resolve) => {
             var seen = new Set();
             var directorys = [];
-            var files_total = 0;
+            var files_total = files.length;
             var files_organized = {};
+            var files_firstName;
+
+            for (var fileID in files) {
+                var file = files[fileID];
+                if (!files_firstName)
+                    files_firstName = file.name;
+
+                files[fileID].fileID = fileID;
+            }
+
+            if (files_total > 1) {
+                if (parser(files_firstName).shortSzEp()) {
+                    files = sorter.episodes(files, 2);
+                } else {
+                    files = sorter.naturalSort(files, 2);
+                }
+            }
+
             for (var fileID in files) {
                 var file = files[fileID];
                 var fileParams = path.parse(file.path);
                 var streamable = (supported.all.indexOf(fileParams.ext) > -1);
 
                 if (streamable) {
-                    files_total++;
-                    if (!files_organized[fileParams.dir])
-                        files_organized[fileParams.dir] = {};
+                    if (!files_organized.ordered)
+                        files_organized.ordered = [];
 
-                    files_organized[fileParams.dir][fileID] = {
+                    files_organized.ordered.push({
                         size: file.length,
-                        id: fileID,
+                        id: file.fileID,
                         name: file.name,
                         streamable: true,
                         infoHash: infoHash
-                    };
+                    });
                     directorys.push(fileParams.dir);
                 }
             }
+
             directorys = directorys.filter(function(dir) {
                 return !seen.has(dir) && seen.add(dir);
             });

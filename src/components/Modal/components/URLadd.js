@@ -34,10 +34,10 @@ default React.createClass({
                         break;
                     case 'direct':
                         ModalActions.close();
-                        PlayerActions.open({
+                        PlayerActions.addPlaylist([{
                             uri: parsed.url,
                             title: parsed.title
-                        });
+                        }]);
                         break;
                     case 'error':
                         ModalActions.open({

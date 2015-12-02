@@ -27,7 +27,6 @@ default React.createClass({
         var playerState = PlayerStore.getState();
 
         return {
-            uri: playerState.uri,
             initialResize: false,
 
             volume: playerState.volume,
@@ -90,6 +89,7 @@ default React.createClass({
     },
     initPlayer() {
         this.player = PlayerStore.getState().wcjs;
+        this.pendingFiles = PlayerStore.getState().pendingFiles;
 
         var initializeSize = _.once(() => {
             if (!this.state.initialResize) {
@@ -125,11 +125,27 @@ default React.createClass({
 
         this.player.onEncounteredError = PlayerActions.error;
 
-        if (this.state.uri) {
-            this.player.playlist.add(this.state.uri);
-            PlayerActions.play();
+
+        if (this.pendingFiles && this.pendingFiles.length) {
+
+            if (this.player.playlist.items.count == 0) 
+                var playAfter = true;
+
+            for (var i = 0; this.pendingFiles[i]; i++) {
+                if (typeof this.pendingFiles[i] === 'string') {
+                    this.player.playlist.add(this.pendingFiles[i]);
+                } else if (this.pendingFiles[i].uri) {
+                    this.player.playlist.add(this.pendingFiles[i].uri);
+                    if (this.pendingFiles[i].title) {
+                        this.player.playlist.items[this.player.playlist.items.count-1].title = this.pendingFiles[i].title;
+                    }
+                }
+            }
+
+            if (playAfter) PlayerActions.play();
+
         }
-        //this.player.subtitles.track = 0;
+
     },
     handleResize() {
         var canvas = this.refs['wcjs-render'];

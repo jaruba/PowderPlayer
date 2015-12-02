@@ -9,7 +9,6 @@ import PlayerStore from '../store';
 import PlayerActions from '../actions';
 import path from 'path';
 
-
 export
 default React.createClass({
 
@@ -36,13 +35,16 @@ default React.createClass({
             });
         }
     },
+
     close() {
         PlayerActions.openPlaylist(false);
     },
+
     handleOpenPlaylist() {
 
 
     },
+
     getItems() {
         let items = []
         if (!this.state.playlist) return items;
@@ -55,22 +57,24 @@ default React.createClass({
     render() {
         return (
             <div className={this.state.open ? 'playlist-container show' : 'playlist-container'}>
-				<div className="playlist-controls" / >
+                <div className="playlist-controls" / >
                 <div className="playlist-holder">
-					<div ref="playlist-title" className="droid-sans playlist-title">Playlist</div>
-					<div className="playlist-inner">
-                    	{
-							this.getItems().map((item, idx) => {
-            					return (
-            						<Paper className="item" key={idx} zDepth={1} style={{background: 'url(' + (item.image ? item.image : 'images/video-placeholder.svg') + ') no-repeat'}}>
-            							<p className="title">{(path.isAbsolute(item.title)) ? path.normalize(path.parse(item.title).name) : item.title }</p>
-            						</Paper>
-									)
-        					}, this)
-                    	}
+                    <div ref="playlist-title" className="droid-sans playlist-title">Playlist</div>
+                    <div className="playlist-inner">
+                        {
+                            this.getItems().map((item, idx) => {
+                                return (
+                                    <Paper onClick={PlayerActions.playItem.bind(this,idx)} className="item" key={idx} zDepth={1} style={{background: 'url(' + (item.image ? item.image : 'images/video-placeholder.svg') + ') no-repeat'}}>
+                                        <p className="title">{(path.isAbsolute(item.title)) ? path.normalize(path.parse(item.title).name) : item.title }</p>
+                                    </Paper>
+                                    )
+                            }, this)
+                        }
                     </div>
-               	</div> 
+                   </div> 
             </div>
         );
     }
+
+    
 });

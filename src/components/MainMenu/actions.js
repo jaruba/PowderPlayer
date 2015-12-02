@@ -2,10 +2,15 @@ import {
     dialog
 }
 from 'remote';
-import alt from '../../alt'
-import path from 'path'
+
+import alt from '../../alt';
+
 import ModalActions from './../Modal/actions';
 import PlayerActions from './../Player/actions';
+import TorrentActions from '../../actions/torrentActions';
+
+import sorter from './../Player/utils/sort';
+import parser from './../Player/utils/parser';
 
 class MainMenuActions {
 
@@ -39,15 +44,38 @@ class MainMenuActions {
 
         dialog.showOpenDialog({
             title: 'Select file',
-            properties: ['openFile', 'createDirectory'],
+            properties: ['openFile', 'createDirectory', 'multiSelections'],
             filters: filters
         }, (filename) => {
             if (filename && filename.length) {
-                PlayerActions.open({
-                    uri: 'file:///'+filename[0],
-                    title: path.normalize(path.basename(filename[0]))
-                });
-                console.log(filename)
+                
+                if (filters[0].name == 'Videos') {
+                
+                    if (parser(filename[0]).shortSzEp()) {
+                        filename = sorter.episodes(filename, 1);
+                    } else {
+                        filename = sorter.naturalSort(filename, 1);
+                    }
+                    
+                    var newFiles = [];
+                    filename.forEach((file) => {
+                        newFiles.push({
+                            title: parser(file).name(),
+                            uri: 'file:///'+file
+                        });
+                    });
+
+                    PlayerActions.addPlaylist(newFiles);
+                    
+                } else if (filters[0].name == 'Torrents') {
+
+                    ModalActions.open({
+                        type: 'thinking'
+                    });
+
+                    TorrentActions.addTorrent(filename[0]);
+
+                }
             }
         });
 

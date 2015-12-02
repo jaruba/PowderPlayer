@@ -9,7 +9,10 @@ class PlayerActions {
     constructor() {
         this.generateActions(
             'play',
+            'playItem',
             'pause',
+            'prev',
+            'next',
             'stop',
             'stopped',
             'volume',
@@ -33,7 +36,7 @@ class PlayerActions {
             'metaUpdate',
             'wcjsInit',
             'close',
-            'open',
+            'addPlaylist',
             'togglePlaylist',
             'setPlaylist',
             

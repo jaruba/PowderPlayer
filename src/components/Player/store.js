@@ -35,7 +35,8 @@ class playerStore {
         this.length = 0;
         this.seekable = false;
 
-        this.files = {};
+        this.pendingFiles = [];
+        this.files = [];
         this.playlist = {};
 
         this.fullscreen = false;
@@ -118,16 +119,16 @@ class playerStore {
         });
     }
 
-    onOpen(data) {
-        this.setState({
-            title: data.title,
-            uri: data.uri
-        });
+    onAddPlaylist(data) {
+        
+        if (data.length) {
+            this.setState({
+                pendingFiles: data,
+                files: this.files.concat(data)
+            });
+        }
 
         playerActions.togglePowerSave(true);
-
-        if (data.files)
-            playerActions.createPlaylist(data.files);
 
         _.defer(() => {
             historyStore.getState().history.replaceState(null, 'player');
@@ -150,6 +151,7 @@ class playerStore {
     onOpening() {
         if (this.wcjs.playlist.currentItem != this.lastItem) {
             this.setState({
+                title: this.wcjs.playlist.items[this.wcjs.playlist.currentItem].title,
                 lastItem: this.wcjs.playlist.currentItem
             });
         }
@@ -180,6 +182,7 @@ class playerStore {
     }
 
     onStopped() {
+        console.log('Player stopped');
         this.setState({
             buffering: false,
             playing: false,
@@ -210,6 +213,7 @@ class playerStore {
 
     onPlaying() {
         this.setState({
+            title: this.wcjs.playlist.items[this.wcjs.playlist.currentItem].title,
             buffering: false,
             playing: true,
             paused: false
@@ -225,6 +229,13 @@ class playerStore {
         this.wcjs.play();
     }
 
+    onPlayItem(idx) {
+        this.setState({
+            buffering: false
+        })
+        this.wcjs.playlist.playItem(idx[0]);
+    }
+
     onPause() {
         this.setState({
             buffering: false,
@@ -234,12 +245,20 @@ class playerStore {
         this.wcjs.pause();
     }
 
+    onPrev() {
+        this.wcjs.playlist.prev();
+    }
+
+    onNext() {
+        this.wcjs.playlist.next();
+    }
+
     onError() {
         console.log('Player encountered an error.');
-        this.wcjs.stop();
     }
 
     onEnded() {
+        console.log('Playback ended');
         if (this.time > 0) {
             if (typeof this.lastItem !== 'undefined' && this.position < 0.95) {
 
@@ -251,8 +270,6 @@ class playerStore {
                 this.wcjs.playlist.currentItem = this.lastItem;
                 this.wcjs.playlist.play();
                 this.wcjs.position = this.position;
-            } else {
-                console.log('Playback has Ended');
             }
         }
     }
@@ -299,8 +316,9 @@ class playerStore {
             uiShown: true,
             uri: false,
             currentTime: '00:00',
-            totalTime: '00:00'
+            totalTime: '00:00',
 
+            lastItem: -1
         });
         if (this.wcjs) {
             this.wcjs.stop();

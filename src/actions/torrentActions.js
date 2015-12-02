@@ -4,10 +4,12 @@ import EngineStore from '../stores/engineStore';
 import HistoryStore from '../stores/historyStore';
 import _ from 'lodash';
 import alt from '../alt';
+import path from 'path';
 import {
     ipcRenderer
 }
 from 'electron';
+import parser from '../components/Player/utils/parser';
 
 class torrentActions {
 
@@ -43,18 +45,25 @@ class torrentActions {
                 return TorrentUtil.getContents(instance.torrent.files, instance.infoHash);
             })
             .then((files) => {
-                if (files.files_total === 1) {
+                if (localStorage.askFiles == 'true' && files.files_total > 1) {
+                    ModalActions.fileSelector(files);
+                    ipcRenderer.send('app:bitchForAttention');
+                } else {
                     var fileSelectorData = _.omit(files, ['files_total', 'folder_status']);
                     var folder = fileSelectorData[Object.keys(fileSelectorData)[0]];
                     var file = folder[Object.keys(folder)[0]];
-                    PlayerActions.open({
-                        title: file.name,
-                        uri: 'http://127.0.0.1:' + EngineStore.state.torrents[file.infoHash]['stream-port'] + '/' + file.id
+                    var newFiles = [];
+
+                    files.ordered.forEach(function(file) {
+                        newFiles.push({
+                            title: parser(file.name).name(),
+                            uri: 'http://127.0.0.1:' + EngineStore.state.torrents[file.infoHash]['stream-port'] + '/' + file.id
+                        });
                     });
+
+                    PlayerActions.addPlaylist(newFiles);
+
                     ModalActions.close();
-                } else {
-                    ModalActions.fileSelector(files);
-                    ipcRenderer.send('app:bitchForAttention');
                 }
             })
             .catch(err => {

@@ -4,9 +4,14 @@ import {
     RaisedButton, Paper, IconButton
 }
 from 'material-ui';
+
+import sorter from './../Player/utils/sort';
+import parser from './../Player/utils/parser';
+
 import MainMenuActions from './actions';
 import torrentActions from '../../actions/torrentActions';
-
+import PlayerActions from '../../components/Player/actions';
+import ModalActions from './../Modal/actions';
 
 export
 default React.createClass({
@@ -16,22 +21,43 @@ default React.createClass({
         }
     },
     onDrop(files,e) {
-		if (files && files.length) {
-	        console.log('Received files:', files);
-		} else {
-			var droppedLink = e.dataTransfer.getData("text/plain");
-			if (droppedLink) {
-				console.log('Received link:', droppedLink);
-				torrentActions.addTorrent(droppedLink);
-			}
-		}
+        if (files && files.length) {
+
+            var newFiles = [];
+            
+            if (parser(files[0].name).shortSzEp()) {
+                files = sorter.episodes(files, 2);
+            } else {
+                files = sorter.naturalSort(files, 2);
+            }
+            
+            files.forEach( file => {
+                newFiles.push({
+                    title: parser(file.name).name(),
+                    uri: 'file:///'+file.path
+                });
+            });
+            
+            PlayerActions.addPlaylist(newFiles);
+        } else {
+            var droppedLink = e.dataTransfer.getData("text/plain");
+            if (droppedLink) {
+
+                ModalActions.open({
+                    type: 'thinking'
+                });
+
+                torrentActions.addTorrent(droppedLink);
+            }
+        }
+        document.querySelector('.wrapper .holder').classList.remove('holder-hover');
     },
     onDragEnter() {
-		document.querySelector('.wrapper .holder').classList.add('holder-hover');
-	},
+        document.querySelector('.wrapper .holder').classList.add('holder-hover');
+    },
     onDragLeave() {
-		document.querySelector('.wrapper .holder').classList.remove('holder-hover');
-	},
+        document.querySelector('.wrapper .holder').classList.remove('holder-hover');
+    },
     render() {
         return (
             <div className="wrapper">
