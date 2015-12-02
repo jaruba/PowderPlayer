@@ -12,6 +12,8 @@ import alt from '../../alt';
 import playerActions from './actions';
 import historyStore from '../../stores/historyStore';
 
+import needle from 'needle';
+
 
 class playerStore {
     constructor() {
@@ -121,14 +123,40 @@ class playerStore {
 
     onAddPlaylist(data) {
         
-        if (data.length) {
+        if (!this.wcjs) {
+
+            if (data.length) {
+                this.setState({
+                    pendingFiles: data,
+                    files: this.files.concat(data)
+                });
+            }
+    
+            playerActions.togglePowerSave(true);
+    
+        } else {
+            
             this.setState({
-                pendingFiles: data,
                 files: this.files.concat(data)
             });
-        }
+            
+            if (this.wcjs.playlist.items.count == 0) 
+                var playAfter = true;
 
-        playerActions.togglePowerSave(true);
+            for (var i = 0; data[i]; i++) {
+                if (typeof data[i] === 'string') {
+                    this.wcjs.playlist.add(data[i]);
+                } else if (data[i].uri) {
+                    this.wcjs.playlist.add(data[i].uri);
+                    if (data[i].title) {
+                        this.wcjs.playlist.items[this.wcjs.playlist.items.count-1].title = data[i].title;
+                    }
+                }
+            }
+
+            if (playAfter) this.wcjs.playlist.playItem(0);
+                    
+        }
 
         _.defer(() => {
             historyStore.getState().history.replaceState(null, 'player');
@@ -254,7 +282,45 @@ class playerStore {
     }
 
     onError() {
+
         console.log('Player encountered an error.');
+
+        if (this.itemDesc(this.wcjs.playlist.currentItem).mrl.startsWith('https://player.vimeo.com/')) {
+
+            // fix vimeo links on vlc 2.2.1
+
+            var url = this.itemDesc(this.wcjs.playlist.currentItem).mrl,
+                player = this.wcjs;
+
+            player.stop();
+
+            needle.get(url, function(error, response) {
+                if (!error && response.statusCode == 200) {
+                    var bestMRL;
+
+                    // this can also be used to make a quality selector
+                    // currently selecting 720p or best
+                    response.body.request.files.progressive.some( el => {
+                        if (el.quality == '720p') {
+                            bestMRL = el.url;
+                            return true;
+                        } else {
+                            bestMRL = el.url;
+                            return false;
+                        }
+                    });
+
+                    player.playlist.clear();
+
+                    playerActions.addPlaylist([{
+                        title: response.body.video.title,
+                        uri: bestMRL
+                    }]);
+                }
+            });
+            
+        }
+
     }
 
     onEnded() {
