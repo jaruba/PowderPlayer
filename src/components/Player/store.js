@@ -180,7 +180,8 @@ class playerStore {
         if (this.wcjs.playlist.currentItem != this.lastItem) {
             this.setState({
                 title: this.wcjs.playlist.items[this.wcjs.playlist.currentItem].title,
-                lastItem: this.wcjs.playlist.currentItem
+                lastItem: this.wcjs.playlist.currentItem,
+                pendingFiles: []
             });
         }
     }
@@ -384,7 +385,9 @@ class playerStore {
             currentTime: '00:00',
             totalTime: '00:00',
 
-            lastItem: -1
+            lastItem: -1,
+
+            pendingFiles: []
         });
         if (this.wcjs) {
             this.wcjs.stop();
