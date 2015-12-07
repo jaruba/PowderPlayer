@@ -39,10 +39,14 @@ class PlayerActions {
             'addPlaylist',
             'togglePlaylist',
             'setPlaylist',
-            
+            'parseURL',
+            'replaceMRL',
+
             'itemCount',
             'itemDesc',
-            'setDesc'
+            'setDesc',
+
+            'updateImage'
         );
     }
 

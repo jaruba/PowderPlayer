@@ -52,6 +52,7 @@ default React.createClass({
         for (var i = 0; i < this.state.playlist.items.count; i++) {
             items.push(PlayerStore.getState().itemDesc(i));
         }
+
         return items;
     },
     render() {
@@ -63,9 +64,18 @@ default React.createClass({
                     <div className="playlist-inner">
                         {
                             this.getItems().map((item, idx) => {
+                                if (item.setting) item.setting = JSON.parse(item.setting);
+                                if (item.artworkURL) {
+                                    item.image = item.artworkURL;
+                                } else if (item.setting.image) {
+                                    item.image = item.setting.image;
+                                } else {
+                                    item.image = 'images/video-placeholder.svg';
+                                }
+
                                 return (
-                                    <Paper onClick={PlayerActions.playItem.bind(this,idx)} className="item" key={idx} zDepth={1} style={{background: 'url(' + (item.image ? item.image : 'images/video-placeholder.svg') + ') no-repeat'}}>
-                                        <p className="title">{(path.isAbsolute(item.title)) ? path.normalize(path.parse(item.title).name) : item.title }</p>
+                                    <Paper onClick={PlayerActions.playItem.bind(this,idx)} id={'item'+idx} className="item" key={idx} zDepth={1} style={{background: 'url(' + item.image + ') no-repeat'}}>
+                                        <p id={'itemTitle'+idx} className="title">{(path.isAbsolute(item.title)) ? path.normalize(path.parse(item.title).name) : item.title }</p>
                                     </Paper>
                                     )
                             }, this)

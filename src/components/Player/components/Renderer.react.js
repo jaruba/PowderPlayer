@@ -105,7 +105,10 @@ default React.createClass({
             initializeSize();
         }, 500);
 
-        this.player.onOpening = PlayerActions.opening;
+        this.player.onOpening = () => {
+            wcjsRenderer.clearCanvas();
+            PlayerActions.opening();
+        };
 
         this.player.onTimeChanged = PlayerActions.time;
 
@@ -186,8 +189,8 @@ default React.createClass({
         };
         return (
             <div className="canvas-holder" onWheel={this.wheel} style={renderStyles.container}>
-                <RaisedButton onClick={this.handleTogglePlay} onDoubleClick={PlayerActions.toggleFullscreen.bind(this, !this.state.fullscreen)} iconClassName="material-icons" className={this.state.rippleEffects ? 'over-canvas' : 'over-canvas no-ripples' } label="Canvas Overlay" />
-                <canvas style={renderStyles.canvas} onClick={this.handleTogglePlay} onDoubleClick={PlayerActions.toggleFullscreen.bind(this, !this.state.fullscreen)} ref="wcjs-render" />
+                <RaisedButton id={'canvasEffect'} onClick={this.handleTogglePlay} onDoubleClick={PlayerActions.toggleFullscreen.bind(this, !this.state.fullscreen)} iconClassName="material-icons" className={this.state.rippleEffects ? 'over-canvas' : 'over-canvas no-ripples' } label="Canvas Overlay" />
+                <canvas id={'playerCanvas'} style={renderStyles.canvas} onClick={this.handleTogglePlay} onDoubleClick={PlayerActions.toggleFullscreen.bind(this, !this.state.fullscreen)} ref="wcjs-render" />
             </div>
         );
     }

@@ -14,6 +14,8 @@ import historyStore from '../../stores/historyStore';
 
 import needle from 'needle';
 
+import MetaInspector from 'node-metainspector';
+import async from 'async';
 
 class playerStore {
     constructor() {
@@ -64,12 +66,12 @@ class playerStore {
             itemDesc: i => {
                 if (typeof i === 'number') {
                     if (i > -1 && i < wcjs.playlist.items.count) {
-                        
+
                         if (!wcjs.playlist.items[i].setting) wcjs.playlist.items[i].setting = '{}';
                         var wjsDesc = JSON.stringify(wcjs.playlist.items[i]);
-                        
-                        return JSON.parse(wjsDesc.split('\\"').join('"').split('"{').join('{').split('}"').join('}'));
-                        
+
+                        return JSON.parse(wjsDesc);
+
                     }
                 }
                 return false;
@@ -94,6 +96,57 @@ class playerStore {
             fullscreen: state
         });
     }
+    
+    onParseURL(qTask) {
+        if (!this.urlParserQueue) {
+            var player = this;
+            this.urlParserQueue = async.queue( (task, cb) => {
+                var client = new MetaInspector(task.url, { timeout: 5000 });
+    
+                client.on("fetch", function(){
+                    var idx = -1;
+                    if (player.itemDesc(task.idx) && player.itemDesc(task.idx).mrl == task.url) {
+                        idx = task.idx;
+                    } else {
+                        for (var i = 1; i < player.wcjs.playlist.items.count; i++) {
+                            if (player.itemDesc(i).mrl == task.url) {
+                                idx = i;
+                                break;
+                            }
+                        }
+                    }
+                    if (idx > -1 && client.image && client.title) {
+
+                        if (document.getElementById('item'+idx)) {
+                            document.getElementById('item'+idx).style.background = "url('"+client.image+"')";
+                            document.getElementById('itemTitle'+idx).innerHTML = client.title;
+                        }
+                        
+                        playerActions.setDesc({
+                            idx: idx,
+                            title: client.title,
+                            image: client.image
+                        });
+                        
+                    }
+                    _.delay(() => {
+                        cb()
+                    }, 500)
+                });
+                
+                client.on("error", function(err){
+                    _.delay(() => {
+                        cb()
+                    }, 500)
+                });
+                
+                client.fetch();
+            }, 1);
+
+        }
+
+        this.urlParserQueue.push(qTask);
+    };
 
     onPosition(pos) {
         this.setState({
@@ -175,12 +228,45 @@ class playerStore {
             })
         }
     }
+    
+    onUpdateImage(image) {
+
+        if (document.getElementById('canvasEffect')) {
+
+            if (this.wcjs.playlist.items[this.wcjs.playlist.currentItem].mrl.indexOf('soundcloud.com') > -1 && image) {
+                var image = image.replace('large', 't500x500');
+                document.getElementById('canvasEffect').parentNode.style.cssText = "background-color: transparent !important";
+                document.getElementById('playerCanvas').style.display = "none";
+                document.getElementsByClassName('wcjs-player')[0].style.background = "url('"+image+"') 50% 50% / contain no-repeat black";
+            } else {
+                document.getElementById('canvasEffect').parentNode.style.cssText = "background-color: #000 !important";
+                document.getElementById('playerCanvas').style.display = "block";
+                document.getElementsByClassName('wcjs-player')[0].style.background = "black";
+            }
+            
+        }
+
+    }
 
     onOpening() {
+
         if (this.wcjs.playlist.currentItem != this.lastItem) {
+            if (this.wcjs.playlist.items[this.wcjs.playlist.currentItem].artworkURL) {
+                var image = this.wcjs.playlist.items[this.wcjs.playlist.currentItem].artworkURL;
+            } else {
+                try {
+                    var image = JSON.parse(this.wcjs.playlist.items[this.wcjs.playlist.currentItem].setting).image;
+                } catch(e) {}
+            }
+            
+            _.delay(() => {
+                playerActions.updateImage(image);
+            });
+
             this.setState({
                 title: this.wcjs.playlist.items[this.wcjs.playlist.currentItem].title,
                 lastItem: this.wcjs.playlist.currentItem,
+                position: 0,
                 pendingFiles: []
             });
         }
@@ -275,10 +361,18 @@ class playerStore {
     }
 
     onPrev() {
+        this.setState({
+            lastItem: -1,
+            position: 0
+        });
         this.wcjs.playlist.prev();
     }
 
     onNext() {
+        this.setState({
+            lastItem: -1,
+            position: 0
+        });
         this.wcjs.playlist.next();
     }
 
@@ -291,7 +385,8 @@ class playerStore {
             // fix vimeo links on vlc 2.2.1
 
             var url = this.itemDesc(this.wcjs.playlist.currentItem).mrl,
-                player = this.wcjs;
+                player = this.wcjs,
+                lastItem = this.lastItem;
 
             player.stop();
 
@@ -310,13 +405,36 @@ class playerStore {
                             return false;
                         }
                     });
+                    
+                    var image;
+                    
+                    if (response.body.video.thumbs && response.body.video.thumbs.base) {
+                        image = response.body.video.thumbs.base + '_320.jpg';
+                    }
 
-                    player.playlist.clear();
+//                    player.playlist.clear();
 
-                    playerActions.addPlaylist([{
-                        title: response.body.video.title,
-                        uri: bestMRL
-                    }]);
+                    playerActions.replaceMRL({
+                        x: lastItem,
+                        mrl: {
+                            title: response.body.video.title,
+                            uri: bestMRL
+                        }
+                    });
+                    
+                    player.playlist.playItem(lastItem);
+
+                    if (document.getElementById('item'+lastItem)) {
+                        document.getElementById('item'+lastItem).style.background = "url('"+image+"')";
+                        document.getElementById('itemTitle'+lastItem).innerHTML = response.body.video.title;
+                    }
+                    if (image) 
+                        _.delay(() => {
+                            playerActions.setDesc({
+                                idx: lastItem,
+                                image: image
+                            });
+                        },500);
                 }
             });
             
@@ -324,10 +442,41 @@ class playerStore {
 
     }
 
+    onReplaceMRL(newObj) {
+        
+        var newX = newObj.x;
+        var newMRL = newObj.mrl;
+        
+        this.setState({
+            files: this.files.concat([newMRL])
+        });
+
+        this.wcjs.playlist.add(newMRL.uri);
+        if (newMRL.title) {
+            this.wcjs.playlist.items[this.wcjs.playlist.items.count-1].title = newMRL.title;
+        }
+        
+        var newDifference = this.wcjs.playlist.items.count -1;
+        var swapDifference = this.wcjs.playlist.items.count - newX -1;
+            
+        if (newX == this.wcjs.playlist.currentItem && [3, 4].indexOf(this.wcjs.state) > -1) {
+            var playerPos = this.position;
+            this.wcjs.stop();
+            this.wcjs.playlist.advanceItem(newDifference,swapDifference*(-1));
+            this.wcjs.playlist.playItem(newX);
+            this.wcjs.position = playerPos;
+            
+        } else this.wcjs.playlist.advanceItem(newDifference,swapDifference*(-1));
+    
+        this.wcjs.playlist.items[newX].setting = this.wcjs.playlist.items[newX+1].setting;
+        this.wcjs.playlist.removeItem(newX+1);
+    }
+
     onEnded() {
         console.log('Playback ended');
-        if (this.time > 0) {
-            if (typeof this.lastItem !== 'undefined' && this.position < 0.95) {
+
+        if (this.wcjs.time > 0) {
+            if (typeof this.lastItem !== 'undefined' && this.position && this.position < 0.95) {
 
                 console.log('Playback Ended Prematurely');
                 console.log('Last Known Position: ', this.position);
@@ -341,15 +490,12 @@ class playerStore {
         }
     }
     
-    onItemCount() {
-        if (this.wcjs)
-            return this.wcjs.playlist.items.count;
-        return false;
-    }
-    
     onSetDesc(obj) {
         if (obj && typeof obj.idx === 'number') {
             var i = obj.idx;
+            if (obj.title) {
+                this.wcjs.playlist.items[i].title = obj.title;
+            }
             if (i > -1 && i < this.wcjs.playlist.items.count) {
                 if (this.wcjs.playlist.items[i].setting.length) {
                     var wjsDesc = JSON.parse(this.wcjs.playlist.items[i].setting);

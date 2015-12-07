@@ -44,7 +44,9 @@
     "rimraf": "^2.4.4",
     "trakt.tv": "^1.0.1",
     "yargs": "^3.30.0",
-    "needle": "^0.11.0"
+    "needle": "^0.11.0",
+    "node-metainspector": "jaruba/node-metainspector",
+	"async": "^1.5.0"
   },
   "devDependencies": {
     "babel": "^6.1.18",

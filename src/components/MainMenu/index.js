@@ -9,9 +9,11 @@ import sorter from './../Player/utils/sort';
 import parser from './../Player/utils/parser';
 
 import MainMenuActions from './actions';
-import torrentActions from '../../actions/torrentActions';
 import PlayerActions from '../../components/Player/actions';
 import ModalActions from './../Modal/actions';
+import MessageActions from '../Message/actions';
+
+import linkUtil from '../../utils/linkUtil';
 
 export
 default React.createClass({
@@ -43,11 +45,13 @@ default React.createClass({
             var droppedLink = e.dataTransfer.getData("text/plain");
             if (droppedLink) {
 
-                ModalActions.open({
-                    type: 'thinking'
+                ModalActions.thinking(true);
+
+                linkUtil(droppedLink, error => {
+                    ModalActions.thinking(false);
+                    MessageActions.open(error);
                 });
 
-                torrentActions.addTorrent(droppedLink);
             }
         }
         document.querySelector('.wrapper .holder').classList.remove('holder-hover');

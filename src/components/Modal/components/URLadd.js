@@ -8,12 +8,13 @@ import {
 }
 from 'electron';
 
-import MimeUtil from '../../../utils/mimeDetectorUtil';
-import torrentActions from '../../../actions/torrentActions';
 import ModalActions from '../actions';
 
 import MessageActions from '../../Message/actions';
 import PlayerActions from '../../Player/actions';
+
+import linkUtil from '../../../utils/linkUtil';
+
 
 export
 default React.createClass({
@@ -25,33 +26,14 @@ default React.createClass({
     handleURLAdd() {
         ModalActions.thinking(true);
         var inputvalue = this.refs.urlInput.getValue();
-        if (inputvalue.length > 0) {
-            MimeUtil.parseURL(inputvalue).then((parsed) => {
-                console.log(parsed)
-                switch (parsed.catagory) {
-                    case 'torrent':
-                        torrentActions.addTorrent(inputvalue);
-                        break;
-                    case 'direct':
-                        ModalActions.close();
-                        PlayerActions.addPlaylist([{
-                            uri: parsed.url,
-                            title: parsed.title
-                        }]);
-                        break;
-                    case 'error':
-                        ModalActions.open({
-                            title: 'Add URL',
-                            type: 'URLAdd'
-                        });
-                        MessageActions.open('There was a error parsing that URL');
-                        break;
-                }
-            })
-        } else {
+        linkUtil(inputvalue, error => {
             ModalActions.thinking(false);
-            MessageActions.open('Enter a URL to stream.');
-        }
+            ModalActions.open({
+                title: 'Add URL',
+                type: 'URLAdd'
+            });
+            MessageActions.open(error);
+        });
     },
     pasteClipboard() {
         this.refs['urlInput'].setValue(clipboard.readText('text/plain'));
