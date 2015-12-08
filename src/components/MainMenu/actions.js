@@ -12,6 +12,8 @@ import TorrentActions from '../../actions/torrentActions';
 import sorter from './../Player/utils/sort';
 import parser from './../Player/utils/parser';
 
+import _ from 'lodash';
+
 class MainMenuActions {
 
     openURL(paste = false) { // for pasting later 
@@ -58,14 +60,28 @@ class MainMenuActions {
                     }
                     
                     var newFiles = [];
-                    filename.forEach((file) => {
+					var queueParser = [];
+					
+                    filename.forEach( (file, ij) => {
                         newFiles.push({
                             title: parser(file).name(),
                             uri: 'file:///'+file
                         });
+						queueParser.push({
+							idx: ij,
+							url: 'file:///'+file,
+							filename: file.replace(/^.*[\\\/]/, '')
+						});
                     });
 
                     PlayerActions.addPlaylist(newFiles);
+					
+					// start searching for thumbnails after 1 second
+					_.delay(() => {
+						queueParser.forEach( el => {
+							PlayerActions.parseURL(el);
+						});
+					},1000);
                     
                 } else if (filters[0].name == 'Torrents') {
 

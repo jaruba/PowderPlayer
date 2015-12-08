@@ -12,6 +12,9 @@ const {
 import playerStore from '../../Player/store';
 import playerActions from '../../Player/actions';
 
+import MessageActions from '../../Message/actions';
+import traktUtil from '../../Player/utils/trakt';
+
 export
 default React.createClass({
 
@@ -31,7 +34,8 @@ default React.createClass({
 
         return {
             alwaysOnTop: playerState.alwaysOnTop,
-            playerRippleEffects: playerState.rippleEffects
+            playerRippleEffects: playerState.rippleEffects,
+			trakt: traktUtil.loggedIn ? true : false
         };
     },
     componentWillMount() {
@@ -48,7 +52,8 @@ default React.createClass({
 
             this.setState({
                 alwaysOnTop: playerState.alwaysOnTop,
-                playerRippleEffects: playerState.rippleEffects
+                playerRippleEffects: playerState.rippleEffects,
+				trakt: traktUtil.loggedIn ? true : false
             });
         }
     },
@@ -67,6 +72,21 @@ default React.createClass({
         });
         
     },
+	openTraktLogin(event) {
+		if (traktUtil.loggedIn) {
+			traktUtil.logOut();
+			MessageActions.open('Logout Successful');
+			this.setState({
+				trakt: false
+			});
+		} else {
+			ModalActions.open({
+				title: 'Login to Trakt',
+				type: 'TraktCode',
+				theme: 'DarkRawTheme'
+			});
+		}
+	},
     render() {
         return (
             <div>
@@ -83,6 +103,7 @@ default React.createClass({
                     label="Player Ripple Effects:"/>
 
                 <RaisedButton onClick={ModalActions.close} style={{float: 'right', 'marginTop': '20px' }} label="Close" />
+                <RaisedButton onClick={this.openTraktLogin} style={{float: 'right', 'marginTop': '20px', 'marginRight': '15px' }} label={ this.state.trakt ? 'Trakt Logout' : 'Trakt Login' } />
             </div>
         );
     }

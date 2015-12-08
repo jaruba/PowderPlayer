@@ -14,6 +14,7 @@ import FileStreamSelector from './components/fileStreamSelector';
 import URLContents from './components/URLadd';
 import Thinking from './components/Thinking';
 import PlayerSettings from './components/player-settings';
+import TraktCode from './components/TraktCode';
 
 export
 default React.createClass({
@@ -102,6 +103,9 @@ default React.createClass({
                 break;
             case 'player-settings':
                 return <PlayerSettings />;
+                break;
+            case 'TraktCode':
+                return <TraktCode />;
                 break;
         }
     },

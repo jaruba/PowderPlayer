@@ -12,6 +12,7 @@ import Modal from './Modal';
 import Message from './Message';
 import Header from './Header';
 import historyActions from '../actions/historyActions';
+import traktUtil from './Player/utils/trakt';
 
 export
 default React.createClass({
@@ -25,6 +26,8 @@ default React.createClass({
 
     componentDidMount() {
         ipcRenderer.send('app:startup', new Date().getTime());
+		if (localStorage.traktTokens)
+		    traktUtil.autoLogin();
     },
     updatehistory() {
         historyActions.history(this.history);

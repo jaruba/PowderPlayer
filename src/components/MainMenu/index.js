@@ -15,6 +15,8 @@ import MessageActions from '../Message/actions';
 
 import linkUtil from '../../utils/linkUtil';
 
+import _ from 'lodash';
+
 export
 default React.createClass({
     getInitialState() {
@@ -26,6 +28,7 @@ default React.createClass({
         if (files && files.length) {
 
             var newFiles = [];
+			var queueParser = [];
             
             if (parser(files[0].name).shortSzEp()) {
                 files = sorter.episodes(files, 2);
@@ -33,14 +36,26 @@ default React.createClass({
                 files = sorter.naturalSort(files, 2);
             }
             
-            files.forEach( file => {
+            files.forEach( (file, ij) => {
                 newFiles.push({
                     title: parser(file.name).name(),
                     uri: 'file:///'+file.path
                 });
+				queueParser.push({
+					idx: ij,
+					url: 'file:///'+file.path,
+					filename: file.name
+				});
             });
             
             PlayerActions.addPlaylist(newFiles);
+			
+			// start searching for thumbnails after 1 second
+			_.delay(() => {
+				queueParser.forEach( el => {
+					PlayerActions.parseURL(el);
+				});
+			},1000);
         } else {
             var droppedLink = e.dataTransfer.getData("text/plain");
             if (droppedLink) {
