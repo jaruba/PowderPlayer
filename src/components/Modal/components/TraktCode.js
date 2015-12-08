@@ -25,25 +25,25 @@ default React.createClass({
 
     handleCodeAdd() {
         var inputvalue = this.refs.codeInput.getValue();
-		if (inputvalue.length) {
-			ModalActions.close();
-			try {
-				traktUtil.exchangePin(inputvalue);
-				MessageActions.open('Login Successful');
-			} catch(e) {
-				MessageActions.open('Error: '+e.message);
-			}
-		} else {
-			this.refs['codeInput'].focus();
-			MessageActions.open('Error: Trakt Code is Required');
-		}
+        if (inputvalue.length) {
+            ModalActions.close();
+            try {
+                traktUtil.exchangePin(inputvalue);
+                MessageActions.open('Login Successful');
+            } catch(e) {
+                MessageActions.open('Error: '+e.message);
+            }
+        } else {
+            this.refs['codeInput'].focus();
+            MessageActions.open('Error: Trakt Code is Required');
+        }
     },
     pasteClipboard() {
         this.refs['codeInput'].setValue(clipboard.readText('text/plain'));
     },
-	getCode(event) {
-		traktUtil.openTraktAuth();
-	},
+    getCode(event) {
+        traktUtil.openTraktAuth();
+    },
     render() {
         return (
             <div>

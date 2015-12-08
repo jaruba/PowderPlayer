@@ -60,28 +60,28 @@ class MainMenuActions {
                     }
                     
                     var newFiles = [];
-					var queueParser = [];
-					
+                    var queueParser = [];
+                    
                     filename.forEach( (file, ij) => {
                         newFiles.push({
                             title: parser(file).name(),
                             uri: 'file:///'+file
                         });
-						queueParser.push({
-							idx: ij,
-							url: 'file:///'+file,
-							filename: file.replace(/^.*[\\\/]/, '')
-						});
+                        queueParser.push({
+                            idx: ij,
+                            url: 'file:///'+file,
+                            filename: file.replace(/^.*[\\\/]/, '')
+                        });
                     });
 
                     PlayerActions.addPlaylist(newFiles);
-					
-					// start searching for thumbnails after 1 second
-					_.delay(() => {
-						queueParser.forEach( el => {
-							PlayerActions.parseURL(el);
-						});
-					},1000);
+                    
+                    // start searching for thumbnails after 1 second
+                    _.delay(() => {
+                        queueParser.forEach( el => {
+                            PlayerActions.parseURL(el);
+                        });
+                    },1000);
                     
                 } else if (filters[0].name == 'Torrents') {
 

@@ -106,172 +106,177 @@ class playerStore {
         if (!this.urlParserQueue) {
             var player = this;
             this.urlParserQueue = async.queue( (task, cb) => {
-				if (task.url && !task.filename) {
-					var client = new MetaInspector(task.url, { timeout: 5000 });
-		
-					client.on("fetch", function(){
-						var idx = task.idx;
-						if (!(player.itemDesc(task.idx) && player.itemDesc(task.idx).mrl == task.url)) {
-							for (var i = 1; i < player.wcjs.playlist.items.count; i++) {
-								if (player.itemDesc(i).mrl == task.url) {
-									idx = i;
-									break;
-								}
-							}
-						}
-						if (idx > -1 && client.image && client.title) {
-	
-							if (document.getElementById('item'+idx)) {
-								document.getElementById('item'+idx).style.background = "url('"+client.image+"')";
-								document.getElementById('itemTitle'+idx).innerHTML = client.title;
-							}
-							
-							playerActions.setDesc({
-								idx: idx,
-								title: client.title,
-								image: client.image
-							});
-							
-							if (idx == player.wcjs.playlist.currentItem) {
-						        player.setState({
-									title: client.title
-								});
-							}
-							
-						}
-						_.delay(() => {
-							cb()
-						}, 500)
-					});
+                if (task.url && !task.filename) {
+                    var client = new MetaInspector(task.url, { timeout: 5000 });
+        
+                    client.on("fetch", function(){
+                        var idx = task.idx;
+                        if (!(player.itemDesc(task.idx) && player.itemDesc(task.idx).mrl == task.url)) {
+                            for (var i = 1; i < player.wcjs.playlist.items.count; i++) {
+                                if (player.itemDesc(i).mrl == task.url) {
+                                    idx = i;
+                                    break;
+                                }
+                            }
+                        }
+                        if (idx > -1 && client.image && client.title) {
+    
+                            if (document.getElementById('item'+idx)) {
+                                document.getElementById('item'+idx).style.background = "url('"+client.image+"')";
+                                document.getElementById('itemTitle'+idx).innerHTML = client.title;
+                            }
+                            
+                            playerActions.setDesc({
+                                idx: idx,
+                                title: client.title,
+                                image: client.image
+                            });
+                            
+                            if (idx == player.wcjs.playlist.currentItem) {
+                                player.setState({
+                                    title: client.title
+                                });
+                            }
+                            
+                        }
+                        _.delay(() => {
+                            cb()
+                        }, 500)
+                    });
                 
-					client.on("error", function(err){
-						_.delay(() => {
-							cb()
-						}, 500)
-					});
-					
-					client.fetch();
-				} else if (task.filename) {
+                    client.on("error", function(err){
+                        _.delay(() => {
+                            cb()
+                        }, 500)
+                    });
+                    
+                    client.fetch();
+                } else if (task.filename) {
 
-					var parsedFilename = parseVideo(task.filename);
-					
-					console.log(parsedFilename);
-					
-					nameToImdb(parsedFilename, function(err, res, inf) {
-						
-						if (err) {
-							// handle error
-							_.delay(() => {
-								cb()
-							}, 500)
-							return;
-						}
-						
-						if (res) {
-							// handle imdb
-							console.log(res);
-							parsedFilename.imdb = res;
-							parsedFilename.extended = 'images';
-							if (parsedFilename.type == 'movie') {
-								var buildQuery = {
-									id: parsedFilename.imdb,
-									id_type: 'imdb',
-									extended: parsedFilename.extended
-								};
-								var summary = traktUtil.movieInfo;
-							} else if (parsedFilename.type == 'series') {
-								var buildQuery = {
-									id: parsedFilename.imdb,
-									id_type: 'imdb',
-									season: parsedFilename.season,
-									episode: parsedFilename.episode[0],
-									extended: parsedFilename.extended
-								};
-								var summary = traktUtil.episodeInfo;
-							}
-							console.log(11);
-							summary(buildQuery).then( results => {
-								console.log(12);
-								console.log('Results');
-								console.log(results);
-								var idx = task.idx;
+                    var parsedFilename = parseVideo(task.filename);
+                    
+                    console.log('parsed filename:');
+                    console.log(parsedFilename);
+                    
+                    nameToImdb(parsedFilename, function(err, res, inf) {
+                        
+                        if (err) {
+                            // handle error
+                            _.delay(() => {
+                                cb()
+                            }, 500)
+                            return;
+                        }
+                        
+                        if (res) {
+                            // handle imdb
+                            console.log('imdb id:');
+                            console.log(res);
+                            parsedFilename.imdb = res;
+                            parsedFilename.extended = 'images';
+                            if (parsedFilename.type == 'movie') {
+                                var buildQuery = {
+                                    id: parsedFilename.imdb,
+                                    id_type: 'imdb',
+                                    extended: parsedFilename.extended
+                                };
+                                var summary = traktUtil.movieInfo;
+                            } else if (parsedFilename.type == 'series') {
+                                var buildQuery = {
+                                    id: parsedFilename.imdb,
+                                    id_type: 'imdb',
+                                    season: parsedFilename.season,
+                                    episode: parsedFilename.episode[0],
+                                    extended: parsedFilename.extended
+                                };
+                                var summary = traktUtil.episodeInfo;
+                            }
+                            
+                            console.log('there is cloggage here:');
+                            console.log(11);
+                            summary(buildQuery).then( results => {
+                                console.log(12);
+                                console.log('Results');
+                                console.log(results);
+                                var idx = task.idx;
 
-								if (!(player.itemDesc(task.idx) && player.itemDesc(task.idx).mrl == task.url)) {
-									
-									for (var i = 1; i < player.wcjs.playlist.items.count; i++) {
-										if (player.itemDesc(i).mrl.endsWith(task.url)) {
-											idx = i;
-											break;
-										}
-									}
+                                if (!(player.itemDesc(task.idx) && player.itemDesc(task.idx).mrl == task.url)) {
+                                    
+                                    for (var i = 1; i < player.wcjs.playlist.items.count; i++) {
+                                        if (player.itemDesc(i).mrl.endsWith(task.url)) {
+                                            idx = i;
+                                            break;
+                                        }
+                                    }
 
-								}
-								console.log('found idx: '+idx);
-								if (idx > -1 && results && results.title) {
-												
-									var newObj = {
-										idx: idx
-									};
-									
-									// this is the episode title for series:
-//									newObj.title = results.title;
-									newObj.title = parsedFilename.name.split(' ').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
-									
-									if (results.season && results.number) {
-										newObj.title += ' S' + ('0' + results.season).slice(-2) + 'E' + ('0' + results.number).slice(-2);
-									} else if (results.year) {
-										newObj.title += ' ' + results.year;
-									}
-									
-									if (results.images) {
-										if (results.images.screenshot && results.images.screenshot.thumb) {
-											newObj.image = results.images.screenshot.thumb;
-										} else if (results.images.fanart && results.images.fanart.thumb) {
-											newObj.image = results.images.fanart.thumb;
-										}
-									}
-									
-									console.log(newObj);
+                                }
+                                console.log('found idx: '+idx);
+                                if (idx > -1 && results && results.title) {
+                                                
+                                    var newObj = {
+                                        idx: idx
+                                    };
+                                    
+                                    // this is the episode title for series:
+//                                    newObj.title = results.title;
+                                    newObj.title = parsedFilename.name.split(' ').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
+                                    
+                                    if (results.season && results.number) {
+                                        newObj.title += ' S' + ('0' + results.season).slice(-2) + 'E' + ('0' + results.number).slice(-2);
+                                    } else if (results.year) {
+                                        newObj.title += ' ' + results.year;
+                                    }
+                                    
+                                    if (results.images) {
+                                        if (results.images.screenshot && results.images.screenshot.thumb) {
+                                            newObj.image = results.images.screenshot.thumb;
+                                        } else if (results.images.fanart && results.images.fanart.thumb) {
+                                            newObj.image = results.images.fanart.thumb;
+                                        }
+                                    }
+                                    
+                                    if (document.getElementById('item'+idx)) {
+                                        if (newObj.image)
+                                            document.getElementById('item'+idx).style.background = "url('"+newObj.image+"')";
+                                            
+                                        if (newObj.title)
+                                            document.getElementById('itemTitle'+idx).innerHTML = newObj.title;
+                                    }
+                                    
+                                    newObj.parsed = parsedFilename;
+                                    newObj.trakt = results;
+                                    
+                                    console.log('saving data to wcjs item:');
+                                    console.log(newObj);
 
-									if (document.getElementById('item'+idx)) {
-										if (newObj.image)
-											document.getElementById('item'+idx).style.background = "url('"+newObj.image+"')";
-											
-										if (newObj.title)
-											document.getElementById('itemTitle'+idx).innerHTML = newObj.title;
-									}
-									
-									newObj.parsed = parsedFilename;
-									newObj.trakt = results;
-									
-									playerActions.setDesc(newObj);
-									if (idx == player.wcjs.playlist.currentItem) {
-										player.setState({
-											title: newObj.title
-										});
-									}
-							
-									_.delay(() => {
-										cb()
-									}, 500)
-									
-								}
-							}).catch( err => {
-								console.log('Error: '+ err.message);
-								_.delay(() => {
-									cb()
-								}, 500)
-							});
-							return;
-						}
+                                    playerActions.setDesc(newObj);
+                                    if (idx == player.wcjs.playlist.currentItem) {
+                                        player.setState({
+                                            title: newObj.title
+                                        });
+                                    }
+                            
+                                    _.delay(() => {
+                                        cb()
+                                    }, 500)
+                                    
+                                }
+                            }).catch( err => {
+                                console.log('Error: '+ err.message);
+                                _.delay(() => {
+                                    cb()
+                                }, 500)
+                            });
+                            return;
+                        }
 
-						_.delay(() => {
-							cb()
-						}, 500)
-						
-					})
+                        _.delay(() => {
+                            cb()
+                        }, 500)
+                        
+                    })
 
-				}
+                }
 
             }, 1);
 

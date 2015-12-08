@@ -26,8 +26,8 @@ default React.createClass({
 
     componentDidMount() {
         ipcRenderer.send('app:startup', new Date().getTime());
-		if (localStorage.traktTokens)
-		    traktUtil.autoLogin();
+        if (localStorage.traktTokens)
+            traktUtil.autoLogin();
     },
     updatehistory() {
         historyActions.history(this.history);

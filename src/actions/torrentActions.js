@@ -53,29 +53,29 @@ class torrentActions {
                     var folder = fileSelectorData[Object.keys(fileSelectorData)[0]];
                     var file = folder[Object.keys(folder)[0]];
                     var newFiles = [];
-					var queueParser = [];
+                    var queueParser = [];
 
                     files.ordered.forEach( (file, ij) => {
                         newFiles.push({
                             title: parser(file.name).name(),
                             uri: 'http://127.0.0.1:' + EngineStore.state.torrents[file.infoHash]['stream-port'] + '/' + file.id
                         });
-						queueParser.push({
-							idx: ij,
-							url: 'http://127.0.0.1:' + EngineStore.state.torrents[file.infoHash]['stream-port'] + '/' + file.id,
-							filename: file.name
-						});
+                        queueParser.push({
+                            idx: ij,
+                            url: 'http://127.0.0.1:' + EngineStore.state.torrents[file.infoHash]['stream-port'] + '/' + file.id,
+                            filename: file.name
+                        });
                     });
 
                     PlayerActions.addPlaylist(newFiles);
-					
-			
-					// start searching for thumbnails after 1 second
-					_.delay(() => {
-						queueParser.forEach( el => {
-							PlayerActions.parseURL(el);
-						});
-					},1000);
+                    
+            
+                    // start searching for thumbnails after 1 second
+                    _.delay(() => {
+                        queueParser.forEach( el => {
+                            PlayerActions.parseURL(el);
+                        });
+                    },1000);
 
                     ModalActions.close();
                 }
