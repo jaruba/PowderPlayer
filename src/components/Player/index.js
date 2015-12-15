@@ -14,15 +14,18 @@ default React.createClass({
     mixins: [PureRenderMixin],
 
     getInitialState() {
+        var playerState = PlayerStore.getState();
         return {
-            uri: PlayerStore.getState().uri,
+            uri: playerState.uri,
 
-            volume: PlayerStore.getState().volume,
-            position: PlayerStore.getState().position,
-            buffering: PlayerStore.getState().buffering,
-            uiShown: PlayerStore.getState().uiShown,
+            volume: playerState.volume,
+            position: playerState.position,
+            buffering: playerState.buffering,
+            uiShown: playerState.uiShown,
             
-            rippleEffects: PlayerStore.getState().rippleEffects
+            fontSize: playerState.fontSize,
+            
+            rippleEffects: playerState.rippleEffects
         }
     },
     componentWillMount() {
@@ -31,17 +34,26 @@ default React.createClass({
     componentWillUnmount() {
         PlayerStore.unlisten(this.update);
     },
+    componentDidMount() {
+        var announcer = document.getElementsByClassName('wcjs-announce')[0];
+        if (['', '0'].indexOf(announcer.style.opacity) > -1) {
+            PlayerActions.buffering(0);
+        }
+    },
     update() {
         if (this.isMounted()) {
+            var playerState = PlayerStore.getState();
             this.setState({
-                uri: PlayerStore.getState().uri,
+                uri: playerState.uri,
 
-                volume: PlayerStore.getState().volume,
-                position: PlayerStore.getState().position,
-                buffering: PlayerStore.getState().buffering,
-                uiShown: PlayerStore.getState().uiShown,
+                volume: playerState.volume,
+                position: playerState.position,
+                buffering: playerState.buffering,
+                uiShown: playerState.uiShown,
                 
-                rippleEffects: PlayerStore.getState().rippleEffects
+                fontSize: playerState.fontSize,
+                
+                rippleEffects: playerState.rippleEffects
             });
         }
     },
@@ -61,10 +73,14 @@ default React.createClass({
         var cursorStyle = {
             cursor: this.state.uiShown ? 'pointer' : 'none'
         };
+        var announceStyle = {
+            fontSize: this.state.fontSize
+        };
         return (
             <div onMouseMove={this.hover} className="wcjs-player" style={cursorStyle}>
                 <PlayerHeader />
                 <PlayerRender />
+                <span className='wcjs-announce' style={announceStyle}></span>
                 <PlayerControls />
                 <Playlist />
             </div>

@@ -124,9 +124,11 @@ default React.createClass({
 
         this.player.onPlaying = () => {
             if (renderer.state.firstPlay) {
-                renderer.setState({
-                    firstPlay: false
-                });
+                if (renderer.isMounted()) {
+                    renderer.setState({
+                        firstPlay: false
+                    });
+                }
                 _.delay(() => {
                     renderer.handleResize();
                 });
@@ -164,9 +166,11 @@ default React.createClass({
         }
 
         this.player.onMediaChanged = () => {
-            renderer.setState({
-                firstPlay: true
-            });
+            if (renderer.isMounted()) {
+                renderer.setState({
+                    firstPlay: true
+                });
+            }
             PlayerActions.mediaChanged();
         }
 
@@ -191,6 +195,30 @@ default React.createClass({
         }
 
     },
+    calcFontSize() {
+        var height = window.innerHeight;
+        var width = window.innerWidth;
+        var fontSize = 0;
+        
+        if (height < 235) {
+            fontSize = height/14;
+            if (fontSize < 21.3) fontSize = 21.3;
+        } else {
+            if (width > 220 && width <= 982) {
+                fontSize = ((width -220) /40) +9;
+                if (fontSize < 21.3) fontSize = 21.3;
+            } else if (width > 982 && width < 1600) {
+                fontSize = height/14;
+                if (fontSize > 35) fontSize = 35;
+            } else if (width >= 1600 && width <= 1920) {
+                fontSize = ((width - 1600) / 35.5) +40;
+            } else if (width > 1920) {
+                fontSize = parseInt(width / 39.2);
+            } else fontSize = 21.3;
+        }
+        
+        return fontSize;
+    },
     handleResize() {
         var canvas = this.refs['wcjs-render'];
         var container = document.body;
@@ -205,6 +233,10 @@ default React.createClass({
             canvas.style.height = ((container.clientWidth / sourceAspect) / container.clientHeight) * 100 + '%';
             canvas.style.width = "100%";
         };
+
+        PlayerActions.settingChange({
+            fontSize: this.calcFontSize()
+        });
     },
     handleTogglePlay() {
         this.state.playing ? PlayerActions.pause() : PlayerActions.play();

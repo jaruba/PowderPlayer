@@ -65,6 +65,8 @@ class playerStore {
         this.firstPlay = false;
         
         this.foundTrakt = false;
+        
+        this.fontSize = 16;
 
     }
 
@@ -382,15 +384,29 @@ class playerStore {
     }
 
     onBuffering(perc) {
+        var announcer = document.getElementsByClassName('wcjs-announce')[0];
+        if (this.itemDesc().mrl.indexOf('file://') == 0) announcer = null;
+        if (announcer)
+            announcer.innerHTML = 'Buffering '+perc+'%';
+            
         if (perc === 100) {
             this.setState({
                 buffering: false
             });
+            if (announcer && [1, '1'].indexOf(announcer.style.opacity) > -1) {
+                announcer.style.transition = 'opacity .5s ease-in-out';
+                announcer.style.opacity = '0';
+            }
         } else {
             this.setState({
                 buffering: perc
-            })
+            });
+            if (announcer && ['', '0', 0].indexOf(announcer.style.opacity) > -1) {
+                announcer.style.transition = 'none';
+                announcer.style.opacity = '1';
+            }
         }
+
     }
     
     onUpdateImage(image) {
@@ -434,6 +450,7 @@ class playerStore {
                 pendingFiles: []
             });
         }
+
     }
 
     onScrobble(time) {
@@ -508,7 +525,6 @@ class playerStore {
 
 
     onPlaying() {
-        
         if (!this.firstPlay) {
             // catch first play event
             this.wcjs.volume = parseInt(localStorage.volume);
@@ -528,7 +544,6 @@ class playerStore {
         } else {
             traktUtil.handleScrobble('start', this.itemDesc(), this.wcjs.position);
         }
-        
     }
     
     onPaused() {
