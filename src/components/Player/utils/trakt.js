@@ -1,4 +1,5 @@
-var Trakt = require('trakt.tv');
+import Trakt from 'trakt.tv';
+
 var trakttv = new Trakt({
     client_id: window.atob('MTBkYTI2ZGYwYmI4NzQ5MTY5OTQ4YzU3ODJjYmEyZjMxZDJlNWQ0N2I1NzNlNGFjZDE1MzgwN2U3NjFlZWRjYQ=='),
     client_secret: window.atob('MGE4Y2E2ZjIxNGUzN2JiYmIwOTcxOGI5MGU2NjE0YzRlZDlmYmIxZDkwZmEwOWVlZjZiMmE1MTcwMTY4YWQ5MA==')
@@ -64,18 +65,32 @@ trakt.logOut = () => {
 // @param percent = float between 1-100 of progress percentage
 // @param id = the imdbid of the movie/episode
 // @param type = 'movie' or 'episode';
-trakt.scrobble = (state, percent, id, type) => {
+trakt.scrobble = (state, percent, obj) => {
+
+//    console.log('scrobble: '+state+' - '+percent);
+    
+    var type = obj.season ? 'episode' : 'movie';
+    
+    percent = Math.round(percent * 10000)/100;
     var item = {
         progress: percent
     };
     item[type] = {
         ids: {
-            imdb: id
+            trakt: obj.ids.trakt
         }
     };
     trakttv.scrobble[state](item).catch( err => {
         console.error('Trakt scrobble failed', err);
     });
+};
+
+trakt.handleScrobble = (state, desc, progress) => {
+    if (desc.setting && desc.setting.trakt) {
+        var shouldScrobble = trakt.loggedIn ? localStorage.traktScrobble ? (localStorage.traktScrobble == 'true') : true : false;
+        if (shouldScrobble) 
+            trakt.scrobble(state, progress, desc.setting.trakt);
+    }
 };
 
 // search on trakt

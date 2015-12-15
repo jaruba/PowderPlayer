@@ -35,7 +35,8 @@ default React.createClass({
         return {
             alwaysOnTop: playerState.alwaysOnTop,
             playerRippleEffects: playerState.rippleEffects,
-            trakt: traktUtil.loggedIn ? true : false
+            trakt: traktUtil.loggedIn ? true : false,
+            traktScrobble: localStorage.traktScrobble ? (localStorage.traktScrobble == 'true') : true
         };
     },
     componentWillMount() {
@@ -87,6 +88,15 @@ default React.createClass({
             });
         }
     },
+    handleScrobbler(event, toggled) {
+        
+        localStorage.traktScrobble = toggled;
+        
+        this.setState({
+            traktScrobble: toggled
+        });
+        
+    },
     render() {
         return (
             <div>
@@ -101,6 +111,13 @@ default React.createClass({
                     onToggle={this.handlePlayerRippleEffects}
                     defaultToggled={this.state.playerRippleEffects}
                     label="Player Ripple Effects:"/>
+
+                <Toggle
+                    name="trakt-scrobble"
+                    onToggle={this.handleScrobbler}
+                    defaultToggled={this.state.traktScrobble}
+                    style={{ 'display': (this.state.trakt ? 'block' : 'none') }}
+                    label="Trakt Scrobble:"/>
 
                 <RaisedButton onClick={ModalActions.close} style={{float: 'right', 'marginTop': '20px' }} label="Close" />
                 <RaisedButton onClick={this.openTraktLogin} style={{float: 'right', 'marginTop': '20px', 'marginRight': '15px' }} label={ this.state.trakt ? 'Trakt Logout' : 'Trakt Login' } />

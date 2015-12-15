@@ -40,8 +40,8 @@ var sorter = {
                 perfect = true;
                 arr.forEach(function(el,ij) {
                     if (arr[ij+1]) {
-                        if (logic == 1) difference = sorter._alphanumCase(sorter.parser(el).name(),sorter.parser(arr[ij+1]).name());
-                        else if (logic == 2) difference = sorter._alphanumCase(sorter.parser(el.name).name(),sorter.parser(arr[ij+1].name).name());
+                        if (logic == 1) var difference = sorter._alphanumCase(sorter.parser(el).name(),sorter.parser(arr[ij+1]).name());
+                        else if (logic == 2) var difference = sorter._alphanumCase(sorter.parser(el.name).name(),sorter.parser(arr[ij+1].name).name());
                         if (difference > 0) {
                             perfect = false;
                             arr[ij] = arr[ij+1];

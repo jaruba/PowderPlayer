@@ -45,7 +45,7 @@ class torrentActions {
                 return TorrentUtil.getContents(instance.torrent.files, instance.infoHash);
             })
             .then((files) => {
-                if (localStorage.askFiles == 'true' && files.files_total > 1) {
+               if (localStorage.askFiles == 'true' && files.files_total > 1) {
                     ModalActions.fileSelector(files);
                     ipcRenderer.send('app:bitchForAttention');
                 } else {

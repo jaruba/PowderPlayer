@@ -1,3 +1,8 @@
+@font-face {
+    font-family: 'trakt';
+    src: url('http://powder.media/fonts/trakt-icon.ttf');
+}
+
 .header.player {
     display: none;
 }
@@ -5,6 +10,22 @@
 .canvas-holder > div:first-of-type {
     background-color: rgb(0, 0, 0) !important;
     box-shadow: none !important
+}
+
+.trakt-message {
+    bottom: 73px !important;
+    left: 0;
+    right: 0;
+    display: inline-table;
+    z-index: 10;
+    padding: 12px !important;
+    border-radius: 3px !important;
+    background: rgba(0, 0, 0, 0.8) !important
+}
+
+.trakt-message > div {
+    display: inline-table;
+    margin: 0 auto;
 }
 
 .over-canvas {
@@ -120,25 +141,54 @@
     font-size: 28px !important;
 }
 
+.wcjs-player .trakt-info .material-icons {
+    font-family: 'trakt';
+}
+
+.wcjs-player .trakt-info .material-icons:before {
+    content: "\0041";
+}
+
 .wcjs-player .header .player-playlist {
     -webkit-app-region: no-drag;
     margin-top: 15px;
-    margin-right: 20px;
+    margin-right: 2px;
     width: 55px;
     height: 55px;
     float: right;
     margin-top: 0;
+    padding-left: 6px !important;
 }
 
-.wcjs-player .header .player-settings{
+.wcjs-player .header .player-settings {
     -webkit-app-region: no-drag;
     margin-top: 16px;
     width: 55px;
     height: 55px;
     float: right;
     margin-top: 0;
+    padding-right: 6px !important;
+    padding-left: 6px !important;
 }
 
+.trakt-search > div > div {
+    overflow: visible !important;
+}
+
+.wcjs-player .header .trakt-info {
+    -webkit-app-region: no-drag;
+    float: right;
+    padding-right: 6px !important;
+    padding-left: 6px !important;
+}
+
+.inf > div > div {
+    padding: 8px !important
+}
+
+.trakt-message .notification-bar-action {
+    display: none
+}
 
 .wcjs-player .header .title {
     float: left;
@@ -146,7 +196,7 @@
     color: white;
     margin-top: 11px;
     margin-left: -2px;
-    width: ~"calc(100% - 182px)";
+    width: ~"calc(100% - 202px)";
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

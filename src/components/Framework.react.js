@@ -10,6 +10,7 @@ import {
 from 'electron';
 import Modal from './Modal';
 import Message from './Message';
+import TraktMessage from './TraktMessage';
 import Header from './Header';
 import historyActions from '../actions/historyActions';
 import traktUtil from './Player/utils/trakt';
@@ -40,6 +41,7 @@ default React.createClass({
               {React.cloneElement(this.props.children, {query: this.props.query})}
               <Modal />
               <Message />
+              <TraktMessage />
             </div>
         );
     }

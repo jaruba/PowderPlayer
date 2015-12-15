@@ -15,6 +15,8 @@ import URLContents from './components/URLadd';
 import Thinking from './components/Thinking';
 import PlayerSettings from './components/player-settings';
 import TraktCode from './components/TraktCode';
+import TraktInfo from './components/TraktInfo';
+import TraktSearch from './components/TraktSearch';
 
 export
 default React.createClass({
@@ -107,6 +109,12 @@ default React.createClass({
             case 'TraktCode':
                 return <TraktCode />;
                 break;
+            case 'TraktInfo':
+                return <TraktInfo />;
+                break;
+            case 'TraktSearch':
+                return <TraktSearch />;
+                break;
         }
     },
 
@@ -116,7 +124,7 @@ default React.createClass({
                 style={this.getStyle()}
                   open={this.state.modalIsOpen}
                 autoScrollBodyContent={true}
-                contentClassName='material-dialog'
+                contentClassName={this.state.type == 'TraktSearch' ? 'material-dialog trakt-search' : 'material-dialog'}
                 onRequestClose={this.closeModal}>
                 {this.getContents()}
             </Dialog>

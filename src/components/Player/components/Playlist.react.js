@@ -64,7 +64,7 @@ default React.createClass({
                     <div className="playlist-inner">
                         {
                             this.getItems().map((item, idx) => {
-                                if (item.setting) item.setting = JSON.parse(item.setting);
+                                if (!item.setting) item.setting = {};
                                 if (item.artworkURL) {
                                     item.image = item.artworkURL;
                                 } else if (item.setting.image) {

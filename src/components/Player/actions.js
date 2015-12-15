@@ -30,6 +30,7 @@ class PlayerActions {
             'opening',
             'error',
             'ended',
+            'mediaChanged',
 
             'fullscreen',
             'settingChange',

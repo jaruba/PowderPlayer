@@ -120,7 +120,7 @@ default React.createClass({
 
         this.player.onPlaying = PlayerActions.playing;
 
-        this.player.onPaused = PlayerActions.pause;
+        this.player.onPaused = PlayerActions.paused;
 
         this.player.onStopped = PlayerActions.stopped;
 
@@ -128,6 +128,7 @@ default React.createClass({
 
         this.player.onEncounteredError = PlayerActions.error;
 
+        this.player.onMediaChanged = PlayerActions.mediaChanged;
 
         if (this.pendingFiles && this.pendingFiles.length) {
 

@@ -57,6 +57,7 @@ module.exports = {
     },
     getContents(files, infoHash) {
         return new Promise((resolve) => {
+
             var seen = new Set();
             var directorys = [];
             var files_total = files.length;

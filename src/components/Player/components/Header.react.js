@@ -26,7 +26,8 @@ default React.createClass({
         return {
             title: playerState.title,
             uiShown: playerState.uiShown && !playerState.playlistOpen,
-            playlistOpen: playerState.playlistOpen
+            playlistOpen: playerState.playlistOpen,
+            foundTrakt: playerState.foundTrakt
         }
     },
     componentWillMount() {
@@ -43,7 +44,8 @@ default React.createClass({
             this.setState({
                 title: playerState.title,
                 uiShown: playerState.uiShown && !playerState.playlistOpen,
-                playlistOpen: playerState.playlistOpen
+                playlistOpen: playerState.playlistOpen,
+                foundTrakt: playerState.foundTrakt
             });
         }
     },
@@ -58,6 +60,13 @@ default React.createClass({
             theme: 'DarkRawTheme'
         });
     },
+    handleOpenTrakt() {
+        ModalActions.open({
+            title: 'Trakt Info',
+            type: 'TraktInfo',
+            theme: 'DarkRawTheme'
+        });
+    },
     handleOpenPlaylist() {
 
 
@@ -69,6 +78,7 @@ default React.createClass({
                 <p className="title">{this.state.title}</p> 
                 <IconButton onClick={PlayerActions.togglePlaylist} iconClassName="material-icons" className="player-playlist" iconStyle={{color: 'white', fontSize: '30px', right: '-2px', top: '-1px'}} tooltipPosition="bottom-center" tooltip="Playlist">playlist_add_check</IconButton>
                 <IconButton onClick={this.handleOpenSettings} iconClassName="material-icons" iconStyle={{color: 'white', fontSize: '23px'}} tooltipPosition="bottom-center" tooltip="Player Settings" className="player-settings">tune</IconButton>
+                <IconButton onClick={this.handleOpenTrakt} iconClassName="material-icons" iconStyle={{color: 'white', fontSize: '23px'}} tooltipPosition="bottom-center" tooltip="Trakt Info" className="trakt-info" style={{ display: this.state.foundTrakt ? 'block' : 'none' }}></IconButton>
             </div>
         );
     }
