@@ -34,7 +34,8 @@ default React.createClass({
             paused: playerState.paused,
             fullscreen: playerState.fullscreen,
             
-            rippleEffects: playerState.rippleEffects
+            rippleEffects: playerState.rippleEffects,
+            firstPlay: true
         }
     },
     componentWillMount() {
@@ -88,6 +89,9 @@ default React.createClass({
         }
     },
     initPlayer() {
+
+        var renderer = this;
+
         this.player = PlayerStore.getState().wcjs;
         this.pendingFiles = PlayerStore.getState().pendingFiles;
 
@@ -118,17 +122,49 @@ default React.createClass({
 
         this.player.onSeekableChanged = PlayerActions.seekable;
 
-        this.player.onPlaying = PlayerActions.playing;
+        this.player.onPlaying = () => {
+            if (renderer.state.firstPlay) {
+                renderer.setState({
+                    firstPlay: false
+                });
+                _.delay(() => {
+                    renderer.handleResize();
+                });
+            }
+            PlayerActions.playing();
+        }
 
         this.player.onPaused = PlayerActions.paused;
 
-        this.player.onStopped = PlayerActions.stopped;
+        this.player.onStopped = () => {
+            if (renderer.isMounted()) {
+                renderer.setState({
+                    firstPlay: true
+                });
+            }
+            PlayerActions.stopped();
+        }
 
-        this.player.onEndReached = PlayerActions.ended;
+        this.player.onEndReached = () => {
+            renderer.setState({
+                firstPlay: true
+            });
+            PlayerActions.ended();
+        }
 
-        this.player.onEncounteredError = PlayerActions.error;
+        this.player.onEncounteredError = () => {
+            renderer.setState({
+                firstPlay: true
+            });
+            PlayerActions.error();
+        }
 
-        this.player.onMediaChanged = PlayerActions.mediaChanged;
+        this.player.onMediaChanged = () => {
+            renderer.setState({
+                firstPlay: true
+            });
+            PlayerActions.mediaChanged();
+        }
 
         if (this.pendingFiles && this.pendingFiles.length) {
 
