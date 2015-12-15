@@ -27,7 +27,7 @@ default React.createClass({
 
     componentDidMount() {
         ipcRenderer.send('app:startup', new Date().getTime());
-        require('request')('https://i.ytimg.com/vi/_PNGq7tDWMQ/hqdefault.jpg'); // Connect once to avoid cloggage
+        require('request')('https://www.google.com/'); // Connect once to avoid cloggage
         if (localStorage.traktTokens)
             traktUtil.autoLogin();
     },
