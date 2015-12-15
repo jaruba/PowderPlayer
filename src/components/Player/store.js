@@ -121,7 +121,7 @@ class playerStore {
     onParseURL(qTask) {
         if (!this.urlParserQueue) {
             var player = this;
-            this.urlParserQueue = async.queue( (task, cb) => {
+            var parserQueue = async.queue( (task, cb) => {
                 if (task.url && !task.filename) {
                     var client = new MetaInspector(task.url, { timeout: 5000 });
         
@@ -172,7 +172,7 @@ class playerStore {
 
                     var parsedFilename = parseVideo(task.filename);
                     
-                    if (!parsedFilename.season && parser(task.filename).shortSzEp()) {
+                    if (!parsedFilename.season && !task.secondTry && parser(task.filename).shortSzEp()) {
                         parsedFilename.type = 'series';
                         parsedFilename.season = parser(task.filename).season();
                         parsedFilename.episode = [parser(task.filename).episode()];
@@ -211,7 +211,7 @@ class playerStore {
                                 };
                                 var summary = traktUtil.episodeInfo;
                             }
-                            
+
                             summary(buildQuery).then( results => {
 
                                 var idx = task.idx;
@@ -282,6 +282,10 @@ class playerStore {
                                     
                                 }
                             }).catch( err => {
+                                if (!task.secondTry && parsedFilename.type == 'series') {
+                                    task.secondTry = true;
+                                    parserQueue.push(task);
+                                }
                                 console.log('Error: '+ err.message);
                                 _.delay(() => {
                                     cb()
@@ -299,6 +303,8 @@ class playerStore {
                 }
 
             }, 1);
+
+            this.urlParserQueue = parserQueue;
 
         }
 
@@ -551,7 +557,7 @@ class playerStore {
     }
     
     onPrev() {
-        if (this.wcjs.playlist.currentItem-1 > 0) {
+        if (this.wcjs.playlist.currentItem > 0) {
             this.setState({
                 lastItem: -1,
                 position: 0,
