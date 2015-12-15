@@ -285,8 +285,9 @@ class playerStore {
                                 if (!task.secondTry && parsedFilename.type == 'series') {
                                     task.secondTry = true;
                                     parserQueue.push(task);
+                                } else {
+                                    console.log('Error: '+ err.message);
                                 }
-                                console.log('Error: '+ err.message);
                                 _.delay(() => {
                                     cb()
                                 }, 500)

@@ -146,16 +146,20 @@ default React.createClass({
         }
 
         this.player.onEndReached = () => {
-            renderer.setState({
-                firstPlay: true
-            });
+            if (renderer.isMounted()) {
+                renderer.setState({
+                    firstPlay: true
+                });
+            }
             PlayerActions.ended();
         }
 
         this.player.onEncounteredError = () => {
-            renderer.setState({
-                firstPlay: true
-            });
+            if (renderer.isMounted()) {
+                renderer.setState({
+                    firstPlay: true
+                });
+            }
             PlayerActions.error();
         }
 

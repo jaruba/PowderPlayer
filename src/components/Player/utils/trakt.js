@@ -63,7 +63,7 @@ trakt.logOut = () => {
 // call to scrobble
 // @param state = 'start', 'pause', 'stop';
 // @param percent = float between 1-100 of progress percentage
-// @param id = the imdbid of the movie/episode
+// @param id = the trakt id of the movie/episode
 // @param type = 'movie' or 'episode';
 trakt.scrobble = (state, percent, obj) => {
 
