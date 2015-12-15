@@ -40,7 +40,7 @@ class playerStore {
         this.rippleEffects = localStorage.playerRippleEffects ? (localStorage.playerRippleEffects === "true") : true;
 
         this.muted = false;
-        this.volume = 100;
+        this.volume = parseInt(localStorage.volume);
         this.position = 0;
         this.buffering = false;
         this.time = 0;
@@ -474,21 +474,35 @@ class playerStore {
 
     onVolume(value) {
 
-        if (value > 150) //dont allow volume higher than 150%
-            value = 150;
+        if (value > 200) // don't allow volume higher than 200%
+            value = 200;
+
+        if (value < 0)
+            value = 0;
+
+        if (this.muted) {
+            if (this.wcjs)
+                this.wcjs.mute = false;
+            this.setState({
+                muted: false
+            });
+        }
 
         this.setState({
             volume: value
         });
+
+        localStorage.volume = value;
+
         if (this.wcjs)
             this.wcjs.volume = value
     }
 
     onMute(mute) {
         if (this.wcjs)
-            this.wcjs.muted(muted);
+            this.wcjs.mute = mute;
         this.setState({
-            muted: muted
+            muted: mute
         });
     }
 
@@ -497,6 +511,7 @@ class playerStore {
         
         if (!this.firstPlay) {
             // catch first play event
+            this.wcjs.volume = parseInt(localStorage.volume);
             var newObj = {
                 title: this.wcjs.playlist.items[this.wcjs.playlist.currentItem].title,
                 firstPlay: true,

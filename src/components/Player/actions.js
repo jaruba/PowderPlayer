@@ -16,7 +16,7 @@ class PlayerActions {
             'stop',
             'stopped',
             'volume',
-
+            'mute',
 
             'playing',
             'uiShown',

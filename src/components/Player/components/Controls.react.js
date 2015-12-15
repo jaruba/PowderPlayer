@@ -3,7 +3,7 @@ import moment from 'moment';
 import _ from 'lodash';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 import {
-    IconButton
+    IconButton, Slider
 }
 from 'material-ui';
 import {
@@ -36,7 +36,10 @@ default React.createClass({
             currentTime: playerState.currentTime,
             totalTime: playerState.totalTime,
 
-            rippleEffects: playerState.rippleEffects
+            rippleEffects: playerState.rippleEffects,
+
+            volume: parseInt(localStorage.volume),
+            mute: PlayerStore.muted
         }
     },
     componentWillMount() {
@@ -70,7 +73,10 @@ default React.createClass({
                 currentTime: playerState.currentTime,
                 totalTime: playerState.totalTime,
 
-                rippleEffects: playerState.rippleEffects
+                rippleEffects: playerState.rippleEffects,
+
+                volume: parseInt(localStorage.volume),
+                mute: playerState.muted
             });
         }
     },
@@ -189,6 +195,12 @@ default React.createClass({
             this.refs['scrobbler-tooltip'].style.display = 'none';
         }
     },
+    handleVolume(event,t) {
+        PlayerActions.volume(t);
+    },
+    handleMute(event) {
+        PlayerActions.mute(!this.state.mute);
+    },
     render() {
         var scrobblerStyles = {
             time: {
@@ -211,14 +223,17 @@ default React.createClass({
                     </div>
                     <div ref="scrobbler-handle" className="handle"/>
                 </div>
+
                 <IconButton onClick={this.handlePausePlay} iconClassName="material-icons" iconStyle={{top: '-5px', left: '-1px'}} className={this.state.rippleEffects ? 'play-toggle' : 'play-toggle no-ripples'}>{this.state.playing ? 'pause' : 'play_arrow'}</IconButton>
 
                 <IconButton onClick={this.handlePrev} iconClassName="material-icons" iconStyle={{top: '-6px'}} className={'prev-button'}>{'skip_previous'}</IconButton>
-                
+
                 <IconButton onClick={this.handleNext} iconClassName="material-icons" iconStyle={{top: '-6px'}} className={'next-button'}>{'skip_next'}</IconButton>
 
-                <IconButton onClick={this.handleFullscreen} iconClassName="material-icons" iconStyle={{color: 'white', fontSize: '30px', top: '-5px', left: '-1px'}} className="fullscreen-toggle">{this.state.fullscreen ? 'fullscreen_exit' : 'fullscreen'}</IconButton>
-                <IconButton iconClassName="material-icons" iconStyle={{color: 'white', fontSize: '26px', top: '-5px', left: '-1px'}} className="subtitles-toggle">closed_caption</IconButton>
+                <IconButton onClick={this.handleMute} iconClassName="material-icons" iconStyle={{color: '#e7e7e7'}} className="volume-button">{this.state.mute ? 'volume_off' : this.state.volume <= 0 ? 'volume_mute' : this.state.volume <= 120 ? 'volume_down' : 'volume_up' }</IconButton>
+                <Slider name="volume-slider" defaultValue={this.state.volume} step={1} min={0} max={200} onChange={this.handleVolume} value={this.state.mute ? 0 : this.state.volume} />
+                <IconButton onClick={this.handleFullscreen} iconClassName="material-icons" iconStyle={{color: '#e7e7e7', fontSize: '30px', top: '-5px', left: '-1px'}} className="fullscreen-toggle">{this.state.fullscreen ? 'fullscreen_exit' : 'fullscreen'}</IconButton>
+                <IconButton iconClassName="material-icons" iconStyle={{color: '#e7e7e7', fontSize: '26px', top: '-5px', left: '-1px'}} className="subtitles-toggle">closed_caption</IconButton>
 
             </div>
         );
