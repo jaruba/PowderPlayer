@@ -66,7 +66,7 @@ class playerStore {
         
         this.foundTrakt = false;
         
-        this.fontSize = 16;
+        this.fontSize = 21.3;
 
     }
 
@@ -81,20 +81,10 @@ class playerStore {
                 if (typeof i === 'undefined') i = wcjs.playlist.currentItem;
                 if (typeof i === 'number') {
                     if (i > -1 && i < wcjs.playlist.items.count) {
-                        
-                        // clone object, don't reference
-                        var wjsDesc = {};
-                        
-                        _.forEach(wcjs.playlist.items[i], (el, ij) => {
-                            wjsDesc[ij] = el;
-                        });
-                        
+                        var wjsDesc = Object.assign({}, wcjs.playlist.items[i]);
                         if (!wjsDesc.setting) wjsDesc.setting = "{}";
-                        
                         wjsDesc.setting = JSON.parse(wjsDesc.setting);
-
                         return wjsDesc;
-    
                     }
                 }
                 return false;
