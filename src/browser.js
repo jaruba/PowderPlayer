@@ -55,7 +55,6 @@ app.on('ready', () => {
     });
 
     if (args.dev) {
-
         mainWindow.show();
         mainWindow.toggleDevTools();
         mainWindow.focus();
