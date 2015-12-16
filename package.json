@@ -43,7 +43,7 @@
     "react-notification": "^3.0.3",
     "request": "^2.67.0",
     "rimraf": "^2.4.4",
-    "trakt.tv": "^1.0.2",
+    "trakt.tv": "^1.0.3",
     "yargs": "^3.31.0",
     "needle": "^0.11.0",
     "node-metainspector": "jaruba/node-metainspector",
