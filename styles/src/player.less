@@ -505,7 +505,7 @@
 .wcjs-player .volume-button {
     position: absolute !important;
     left: ~"calc(50% + 50px)";
-    top: 6px;
+    top: 7px;
     height: 39px !important;
     overflow: hidden !important;
 }
@@ -521,7 +521,7 @@
 }
 
 .wcjs-player .volume-button div span {
-    font-size: 25px;
+    font-size: 22px !important;
 }
 
 .wcjs-player div[name=volume-slider] {
@@ -543,4 +543,18 @@
     z-index: 10;
     font-weight: 500;
     text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+
+.wcjs-player .volume-hover {
+    width: 0px !important;
+    height: 0px !important;
+}
+
+.wcjs-player .volume-ripple {
+    transition: opacity 450ms ease-in-out;
+}
+
+.wcjs-player .volume-ripple-hover {
+    opacity: 0 !important;
+    transition: none;
 }
