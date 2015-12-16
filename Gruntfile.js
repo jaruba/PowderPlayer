@@ -24,7 +24,7 @@ module.exports = function(grunt) {
     }
 
 
-    var arch = process.arch;
+    var arch = grunt.option('arch') ? grunt.option('arch') : process.arch;
 
     console.log(' ');
     console.log('Compiling For:', (os === 'win') ? 'Windows' : 'Mac', arch);
