@@ -270,7 +270,7 @@ class playerStore {
                                         player.setState({
                                             title: newObj.title
                                         });
-                                        if (player.wcjs.time > 0 && !player.foundTrakt) {
+                                        if (!player.foundTrakt) {
                                             player.setState({
                                                 foundTrakt: true
                                             });
@@ -387,7 +387,8 @@ class playerStore {
 
     onBuffering(perc) {
         var announcer = document.getElementsByClassName('wcjs-announce')[0];
-        if (this.itemDesc().mrl.indexOf('file://') == 0) announcer = null;
+        var itemDesc = this.itemDesc();
+        if (itemDesc.mrl && itemDesc.mrl.indexOf('file://') == 0) announcer = null;
         if (announcer)
             announcer.innerHTML = 'Buffering '+perc+'%';
             
@@ -541,6 +542,9 @@ class playerStore {
             if (itemDesc.setting && itemDesc.setting.trakt && !this.foundTrakt) {
                 newObj.foundTrakt = true;
                 traktUtil.handleScrobble('start', itemDesc, this.wcjs.position);
+                _.delay(() => {
+                    TraktSnackbar.open('Scrobbling');
+                });
             }
             this.setState(newObj);
         } else {
