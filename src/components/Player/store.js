@@ -268,10 +268,12 @@ class playerStore {
                                     playerActions.setDesc(newObj);
                                     if (idx == player.wcjs.playlist.currentItem) {
                                         player.setState({
-                                            title: newObj.title,
-                                            foundTrakt: true
+                                            title: newObj.title
                                         });
-                                        if (player.wcjs.time > 0) {
+                                        if (player.wcjs.time > 0 && !player.foundTrakt) {
+                                            player.setState({
+                                                foundTrakt: true
+                                            });
                                             TraktSnackbar.open('Scrobbling');
 
                                             traktUtil.scrobble('start', player.wcjs.position, results);
@@ -536,7 +538,7 @@ class playerStore {
                 paused: false
             };
             var itemDesc = this.itemDesc();
-            if (itemDesc.setting && itemDesc.setting.trakt) {
+            if (itemDesc.setting && itemDesc.setting.trakt && !this.foundTrakt) {
                 newObj.foundTrakt = true;
                 traktUtil.handleScrobble('start', itemDesc, this.wcjs.position);
             }
