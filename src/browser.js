@@ -33,6 +33,11 @@ app.commandLine.appendSwitch('gpu-no-context-lost');
 app.commandLine.appendSwitch('ignore-gpu-blacklist');
 app.commandLine.appendSwitch('disable-speech-api');
 
+if (args.dev) {
+    app.commandLine.appendSwitch('remote-debugging-port', '8315');
+    app.commandLine.appendSwitch('host-rules', 'MAP * 127.0.0.1');
+}
+
 app.on('ready', () => {
     var screenSize = require('screen').getPrimaryDisplay().workAreaSize;
 
@@ -50,6 +55,7 @@ app.on('ready', () => {
     });
 
     if (args.dev) {
+
         mainWindow.show();
         mainWindow.toggleDevTools();
         mainWindow.focus();
