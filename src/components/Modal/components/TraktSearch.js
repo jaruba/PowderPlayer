@@ -29,7 +29,7 @@ default React.createClass({
     },
 
     componentDidMount() {
-//        this.refs['searchInput'].focus();
+        this.refs['searchInput'].refs['searchTextField'].focus();
     },
 
     pasteClipboard() {
@@ -166,6 +166,7 @@ default React.createClass({
         return (
             <div>
                 <AutoComplete
+                  ref="searchInput"
                   fullWidth={true}
                   showAllItems={true}
                   animated={false}
