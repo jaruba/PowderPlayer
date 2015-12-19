@@ -157,15 +157,25 @@ module.exports = function(grunt) {
                     expand: true,
                     cwd: 'util/images/',
                     src: ['icon.ico', 'icon.png'],
-                    dest: 'dist/<%= BASENAME %>-win32-ia32/resources/'
-                }]
+                    dest: 'dist/' + BASENAME + '-win32-' + arch + '/resources/'
+                }, {
+                    expand: true,
+                    cwd: 'bin/vlc',
+                    src: ['**/*'],
+                    dest: 'dist/' + BASENAME + '-win32-' + arch + '/resources/bin/'
+                }, {
+                    expand: true,
+                    cwd: 'bin/wcjs',
+                    src: ['**/*'],
+                    dest: 'dist/' + BASENAME + '-win32-' + arch + '/resources/bin/'
+                }, ]
             },
             releaseOSX: {
                 files: [{
                     expand: true,
                     cwd: 'util/images/',
                     src: ['icon.png'],
-                    dest: 'dist/<%= OSX_FILENAME %>-win32-ia32/resources/'
+                    dest: 'dist/<%= OSX_FILENAME %>/resources/'
                 }, {
                     src: 'util/images/icon.icns',
                     dest: '<%= OSX_FILENAME %>/Contents/Resources/atom.icns'
@@ -215,9 +225,6 @@ module.exports = function(grunt) {
                         cwd: 'build'
                     }
                 }
-            },
-            zip: {
-                command: 'ditto -c -k --sequesterRsrc --keepParent <%= OSX_FILENAME_ESCAPED %> dist/' + BASENAME + '-' + packagejson.version + '-Mac.zip',
             }
         },
         vlc_libs: {
@@ -241,33 +248,31 @@ module.exports = function(grunt) {
                 }
             }
         },
-
         clean: {
-            unusedWin: ['dist/<%= BASENAME %>-win32-ia32/resources/default_app'],
-            release: ['build/', 'dist/'],
+            release: ['build/', 'dist/']
         },
         compress: {
             windows: {
                 options: {
-                    archive: './dist/' + BASENAME + '-' + packagejson.version + '-Windows-Alpha.zip',
+                    archive: './dist/' + BASENAME + '-' + packagejson.version + '-' + arch + '-Windows.zip',
                     mode: 'zip'
                 },
                 files: [{
                     expand: true,
                     dot: true,
-                    cwd: './dist/<%= BASENAME %>-win32-ia32',
+                    cwd: './dist/' + BASENAME + '-win32-' + arch,
                     src: '**/*'
                 }]
             },
             linux: {
                 options: {
-                    archive: './dist/<%= BASENAME %>-' + packagejson.version + '-Linux-' + arch + '-Alpha.zip',
+                    archive: './dist/' + BASENAME + '-' + packagejson.version + '-Linux-' + arch + '-Alpha.zip',
                     mode: 'zip'
                 },
                 files: [{
                     expand: true,
                     dot: true,
-                    cwd: './dist/<%= BASENAME %>-linux-' + arch,
+                    cwd: './dist/' + BASENAME + '-linux-' + arch,
                     src: '**/*'
                 }]
             },
@@ -305,7 +310,7 @@ module.exports = function(grunt) {
     grunt.registerTask('deps', ['wcjs', 'vlc_libs']);
 
     if (process.platform === 'win32') {
-        grunt.registerTask('release', ['clean:release', 'babel', 'less', 'copy:release', 'electron:windows', 'clean:unusedWin', 'copy:releaseWin', 'compress:windows']);
+        grunt.registerTask('release', ['clean:release', 'babel', 'less', 'copy:release', 'electron:windows', 'copy:releaseWin', 'compress:windows']);
     }
     if (process.platform === 'darwin') {
         grunt.registerTask('release', ['clean:release', 'babel', 'less', 'copy:release', 'electron:osx', 'copy:releaseOSX', 'shell:zip']);

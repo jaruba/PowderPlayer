@@ -8,11 +8,11 @@ import {
 from 'electron';
 import yargs from 'yargs';
 
-var args = yargs(process.argv.slice(1)).wrap(100).argv;
+const args = yargs(process.argv.slice(1)).wrap(100).argv;
+const startupTime = new Date().getTime();
 var powerSaveBlockerState = false;
-var startupTime = new Date().getTime();
 
-var parseTime = (s) => {
+const parseTime = s => {
     var ms = s % 1000;
     s = (s - ms) / 1000;
     var secs = s % 60;
@@ -34,14 +34,11 @@ app.commandLine.appendSwitch('ignore-gpu-blacklist');
 app.commandLine.appendSwitch('disable-speech-api');
 
 app.on('ready', () => {
-    var screenSize = require('screen').getPrimaryDisplay().workAreaSize;
 
     var mainWindow = new BrowserWindow({
         width: 637,
         height: 514,
-        icon: 'images/icons/powder-icon.png',
-        'standard-window': true,
-        'auto-hide-menu-bar': true,
+        icon: path.join(__dirname, '../images/icons/powder-icon.png'),
         resizable: true,
         title: 'Powder Player',
         center: true,
@@ -56,7 +53,7 @@ app.on('ready', () => {
         console.info('Dev Mode Active: Developer Tools Enabled.');
     }
 
-    mainWindow.loadURL(path.normalize('file://' + path.join(__dirname, '../index.html')));
+    mainWindow.loadURL('file://' + path.join(__dirname, '../index.html'));
 
 
     mainWindow.webContents.on('new-window', (e) => {
@@ -93,9 +90,7 @@ app.on('ready', () => {
         state ? mainWindow.maximize() : mainWindow.unmaximize();
     });
 
-    ipcMain.on('app:minimize', () => {
-        mainWindow.minimize();
-    });
+    ipcMain.on('app:minimize', mainWindow.minimize);
 
     ipcMain.on('app:alwaysOnTop', (event, state) => {
         mainWindow.setAlwaysOnTop(state);
@@ -126,17 +121,13 @@ app.on('ready', () => {
         event.returnValue = powerSaveBlockerState ? powerSaveBlocker.isStarted(powerSaveBlockerState) : false;
     });
 
-    ipcMain.on('app:close', () => {
-        mainWindow.close();
-    });
+    ipcMain.on('app:close', app.quit);
 
 });
 
-app.on('window-all-closed', () => {
-    app.quit();
-});
+app.on('window-all-closed', app.quit);
 
 
 app.on('will-quit', () => {
-    rimraf.sync(path.join(app.getPath('temp'), 'Powder-Player'))
+    rimraf.sync(path.join(app.getPath('temp'), 'Powder-Player'));
 });
