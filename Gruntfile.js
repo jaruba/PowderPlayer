@@ -104,6 +104,14 @@ module.exports = function(grunt) {
                     dest: 'build/images/'
                 }, {
                     expand: true,
+                    cwd: 'fonts/',
+                    src: ['**/*'],
+                    dest: 'build/fonts/'
+                }]
+            },
+            videoDev: {
+                files: [{
+                    expand: true,
                     cwd: 'bin/vlc',
                     src: ['**/*'],
                     dest: 'build/bin/'
@@ -112,11 +120,19 @@ module.exports = function(grunt) {
                     cwd: 'bin/wcjs',
                     src: ['**/*'],
                     dest: 'build/bin/'
+                }]
+            },
+            videoWin: {
+                files: [{
+                    expand: true,
+                    cwd: 'bin/vlc',
+                    src: ['**/*'],
+                    dest: 'dist/' + BASENAME + '-win32-' + arch + '/resources/bin'
                 }, {
                     expand: true,
-                    cwd: 'fonts/',
+                    cwd: 'bin/wcjs',
                     src: ['**/*'],
-                    dest: 'build/fonts/'
+                    dest: 'dist/' + BASENAME + '-win32-' + arch + '/resources/bin'
                 }]
             },
             releaseOSX: {
@@ -194,8 +210,7 @@ module.exports = function(grunt) {
         clean: {
             build: ['build/'],
             dist: ['dist/'],
-            release: ['release/'],
-
+            release: ['release/']
         },
         'npm-command': {
             release: {
@@ -256,14 +271,14 @@ module.exports = function(grunt) {
         }
     });
 
-    grunt.registerTask('default', ['newer:babel', 'less', 'newer:copy:dev', 'shell:electron', 'watchChokidar']);
+    grunt.registerTask('default', ['newer:babel', 'less', 'newer:copy:dev', 'newer:copy:videoDev', 'shell:electron', 'watchChokidar']);
 
     grunt.registerTask('run', ['shell:electron', 'watchChokidar']);
 
     grunt.registerTask('deps', ['wcjs', 'vlc_libs']);
 
     if (process.platform === 'win32') {
-        grunt.registerTask('release', ['clean:build', 'clean:dist', 'babel', 'less', 'copy:dev', 'npm-command:release', 'electron:windows', 'compress:windows']);
+        grunt.registerTask('release', ['clean:build', 'clean:dist', 'babel', 'less', 'copy:dev', 'npm-command:release', 'electron:windows', 'copy:videoWin', 'compress:windows']);
     }
     if (process.platform === 'darwin') {
         grunt.registerTask('release', ['clean:build', 'clean:dist', 'babel', 'less', 'copy:dev', 'npm-command:release', 'electron:osx', 'copy:releaseOSX', 'shell:zip']);
