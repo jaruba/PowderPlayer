@@ -12,7 +12,7 @@ import PlayerActions from '../actions';
 import PlayerStore from '../store';
 
 try {
-    var wcjs = require(path.join(process.cwd(), 'resources/bin/', 'WebChimera.js.node'));
+    var wcjs = require(path.join(__dirname, '../../../../bin/', 'WebChimera.js.node'));
 } catch (e) {
     console.error('WCJS Load Error:', e);
 }

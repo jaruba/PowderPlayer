@@ -1,6 +1,7 @@
 .DS_Store
 .swp
 build
+release
 dist
 bin
 node_modules

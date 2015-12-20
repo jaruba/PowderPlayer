@@ -7,6 +7,8 @@ module.exports = function(grunt) {
     require('load-grunt-tasks')(grunt);
     var target = grunt.option('target') || 'development';
 
+    var env = process.env;
+    env.NODE_ENV = 'development';
 
     var os;
     switch (process.platform) {
@@ -60,7 +62,6 @@ module.exports = function(grunt) {
                     version: packagejson.optionalDependencies['electron-prebuilt'],
                     platform: 'win32',
                     arch: arch,
-                    prune: true,
                     asar: true
                 }
             },
@@ -72,8 +73,7 @@ module.exports = function(grunt) {
                     version: packagejson.optionalDependencies['electron-prebuilt'],
                     platform: 'linux',
                     arch: arch,
-                    asar: true,
-                    prune: true
+                    asar: true
                 }
             },
             osx: {
@@ -85,7 +85,6 @@ module.exports = function(grunt) {
                     platform: 'darwin',
                     arch: arch,
                     asar: true,
-                    prune: true,
                     'app-bundle-id': 'media.PowderPlayer',
                     'app-version': packagejson.version
                 }
@@ -107,76 +106,21 @@ module.exports = function(grunt) {
                     expand: true,
                     cwd: 'bin/vlc',
                     src: ['**/*'],
-                    dest: 'build/resources/bin/'
+                    dest: 'build/bin/'
                 }, {
                     expand: true,
                     cwd: 'bin/wcjs',
                     src: ['**/*'],
-                    dest: 'build/resources/bin/'
+                    dest: 'build/bin/'
                 }, {
                     expand: true,
                     cwd: 'fonts/',
                     src: ['**/*'],
                     dest: 'build/fonts/'
-                }, {
-                    cwd: 'node_modules/',
-                    src: Object.keys(packagejson.dependencies).map(function(dep) {
-                        return dep + '/**/*';
-                    }),
-                    dest: 'build/node_modules/',
-                    expand: true
                 }]
-            },
-            release: {
-                files: [{
-                    expand: true,
-                    cwd: '.',
-                    src: ['*.md', 'package.json', 'index.html'],
-                    dest: 'build/'
-                }, {
-                    expand: true,
-                    cwd: 'images/',
-                    src: ['**/*'],
-                    dest: 'build/images/'
-                }, {
-                    expand: true,
-                    cwd: 'fonts/',
-                    src: ['**/*'],
-                    dest: 'build/fonts/'
-                }, {
-                    cwd: 'node_modules/',
-                    src: Object.keys(packagejson.dependencies).map(function(dep) {
-                        return dep + '/**/*';
-                    }),
-                    dest: 'build/node_modules/',
-                    expand: true
-                }]
-            },
-            releaseWin: {
-                files: [{
-                    expand: true,
-                    cwd: 'util/images/',
-                    src: ['icon.ico', 'icon.png'],
-                    dest: 'dist/' + BASENAME + '-win32-' + arch + '/resources/'
-                }, {
-                    expand: true,
-                    cwd: 'bin/vlc',
-                    src: ['**/*'],
-                    dest: 'dist/' + BASENAME + '-win32-' + arch + '/resources/bin/'
-                }, {
-                    expand: true,
-                    cwd: 'bin/wcjs',
-                    src: ['**/*'],
-                    dest: 'dist/' + BASENAME + '-win32-' + arch + '/resources/bin/'
-                }, ]
             },
             releaseOSX: {
                 files: [{
-                    expand: true,
-                    cwd: 'util/images/',
-                    src: ['icon.png'],
-                    dest: 'dist/<%= OSX_FILENAME %>/resources/'
-                }, {
                     src: 'util/images/icon.icns',
                     dest: '<%= OSX_FILENAME %>/Contents/Resources/atom.icns'
                 }],
@@ -185,7 +129,6 @@ module.exports = function(grunt) {
                 }
             },
         },
-        // styles
         less: {
             options: {
                 compress: true,
@@ -198,7 +141,6 @@ module.exports = function(grunt) {
                 }
             }
         },
-        // javascript
         babel: {
             options: {
                 sourceMap: 'inline',
@@ -222,7 +164,8 @@ module.exports = function(grunt) {
                 options: {
                     async: true,
                     execOptions: {
-                        cwd: 'build'
+                        cwd: 'build',
+                        env: env
                     }
                 }
             }
@@ -249,12 +192,23 @@ module.exports = function(grunt) {
             }
         },
         clean: {
-            release: ['build/', 'dist/']
+            build: ['build/'],
+            dist: ['dist/'],
+            release: ['release/'],
+
+        },
+        'npm-command': {
+            release: {
+                options: {
+                    cwd: 'build/',
+                    args: ['--production', '--no-optional']
+                }
+            }
         },
         compress: {
             windows: {
                 options: {
-                    archive: './dist/' + BASENAME + '-' + packagejson.version + '-' + arch + '-Windows.zip',
+                    archive: './release/' + BASENAME + '-' + packagejson.version + '-' + arch + '-Windows.zip',
                     mode: 'zip'
                 },
                 files: [{
@@ -266,7 +220,7 @@ module.exports = function(grunt) {
             },
             linux: {
                 options: {
-                    archive: './dist/' + BASENAME + '-' + packagejson.version + '-Linux-' + arch + '-Alpha.zip',
+                    archive: './release/' + BASENAME + '-' + packagejson.version + '-Linux-' + arch + '-Alpha.zip',
                     mode: 'zip'
                 },
                 files: [{
@@ -277,7 +231,6 @@ module.exports = function(grunt) {
                 }]
             },
         },
-        // livereload
         watchChokidar: {
             options: {
                 spawn: true
@@ -286,7 +239,7 @@ module.exports = function(grunt) {
                 options: {
                     livereload: true
                 },
-                files: ['build/**/*', '!build/resources/bin/plugins/**/*']
+                files: ['build/**/*', '!build/bin/plugins/**/*']
             },
             js: {
                 files: ['src/**/*.js'],
@@ -310,13 +263,13 @@ module.exports = function(grunt) {
     grunt.registerTask('deps', ['wcjs', 'vlc_libs']);
 
     if (process.platform === 'win32') {
-        grunt.registerTask('release', ['clean:release', 'babel', 'less', 'copy:release', 'electron:windows', 'copy:releaseWin', 'compress:windows']);
+        grunt.registerTask('release', ['clean:build', 'clean:dist', 'babel', 'less', 'copy:dev', 'npm-command:release', 'electron:windows', 'compress:windows']);
     }
     if (process.platform === 'darwin') {
-        grunt.registerTask('release', ['clean:release', 'babel', 'less', 'copy:release', 'electron:osx', 'copy:releaseOSX', 'shell:zip']);
+        grunt.registerTask('release', ['clean:build', 'clean:dist', 'babel', 'less', 'copy:dev', 'npm-command:release', 'electron:osx', 'copy:releaseOSX', 'shell:zip']);
     }
     if (process.platform === 'linux') {
-        grunt.registerTask('release', ['clean:release', 'babel', 'less', 'copy:release', 'electron:linux', 'compress:linux']);
+        grunt.registerTask('release', ['clean:build', 'clean:dist', 'babel', 'less', 'copy:dev', 'npm-command:release', 'electron:linux', 'compress:linux']);
     }
 
     process.on('SIGINT', function() {
