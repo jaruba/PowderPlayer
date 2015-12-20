@@ -78,10 +78,14 @@ RequestExecutionLevel user
     !define MUI_UI_HEADERIMAGE_RIGHT "..\images\POWDER_icon.ico"
     !define MUI_ICON "..\images\POWDER_icon.ico"
     !define MUI_UNICON "..\images\POWDER_icon.ico"
+    !define MUI_WELCOMEFINISHPAGE_BITMAP "images\installer-image.bmp"
+    !define MUI_UNWELCOMEFINISHPAGE_BITMAP "images\installer-image.bmp"
 !else
     !define MUI_UI_HEADERIMAGE_RIGHT "../images/POWDER_icon.ico"
     !define MUI_ICON "../images/POWDER_icon.ico"
     !define MUI_UNICON "../images/POWDER_icon.ico"
+    !define MUI_WELCOMEFINISHPAGE_BITMAP "images/installer-image.bmp"
+    !define MUI_UNWELCOMEFINISHPAGE_BITMAP "images/installer-image.bmp"
 !endif
 !define MUI_ABORTWARNING
 !define MUI_FINISHPAGE_LINK "${APP_URL}"
