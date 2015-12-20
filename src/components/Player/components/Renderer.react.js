@@ -12,7 +12,8 @@ import PlayerActions from '../actions';
 import PlayerStore from '../store';
 
 try {
-    var wcjs = require(path.join(__dirname, '../../../../bin/', 'WebChimera.js.node'));
+    var wcjs_path = (process.env.NODE_ENV === 'development') ? path.join(__dirname, '../../../../bin/', 'WebChimera.js.node') : path.join(process.cwd(), 'resources/bin/', 'WebChimera.js.node');
+    var wcjs = require(wcjs_path);
 } catch (e) {
     console.error('WCJS Load Error:', e);
 }
@@ -33,7 +34,7 @@ default React.createClass({
             playing: playerState.playing,
             paused: playerState.paused,
             fullscreen: playerState.fullscreen,
-            
+
             rippleEffects: playerState.rippleEffects,
             firstPlay: true
         }
@@ -176,7 +177,7 @@ default React.createClass({
 
         if (this.pendingFiles && this.pendingFiles.length) {
 
-            if (this.player.playlist.items.count == 0) 
+            if (this.player.playlist.items.count == 0)
                 var playAfter = true;
 
             for (var i = 0; this.pendingFiles[i]; i++) {
@@ -185,7 +186,7 @@ default React.createClass({
                 } else if (this.pendingFiles[i].uri) {
                     this.player.playlist.add(this.pendingFiles[i].uri);
                     if (this.pendingFiles[i].title) {
-                        this.player.playlist.items[this.player.playlist.items.count-1].title = this.pendingFiles[i].title;
+                        this.player.playlist.items[this.player.playlist.items.count - 1].title = this.pendingFiles[i].title;
                     }
                 }
             }
@@ -199,24 +200,24 @@ default React.createClass({
         var height = window.innerHeight;
         var width = window.innerWidth;
         var fontSize = 0;
-        
+
         if (height < 235) {
-            fontSize = height/14;
+            fontSize = height / 14;
             if (fontSize < 21.3) fontSize = 21.3;
         } else {
             if (width > 220 && width <= 982) {
-                fontSize = ((width -220) /40) +9;
+                fontSize = ((width - 220) / 40) + 9;
                 if (fontSize < 21.3) fontSize = 21.3;
             } else if (width > 982 && width < 1600) {
-                fontSize = height/14;
+                fontSize = height / 14;
                 if (fontSize > 35) fontSize = 35;
             } else if (width >= 1600 && width <= 1920) {
-                fontSize = ((width - 1600) / 35.5) +40;
+                fontSize = ((width - 1600) / 35.5) + 40;
             } else if (width > 1920) {
                 fontSize = parseInt(width / 39.2);
             } else fontSize = 21.3;
         }
-        
+
         return fontSize;
     },
     handleResize() {
