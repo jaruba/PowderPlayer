@@ -8,6 +8,10 @@ import {
     ipcRenderer
 }
 from 'electron';
+import {
+    mouseTrap
+}
+from 'react-mousetrap';
 import Modal from './Modal';
 import Message from './Message';
 import TraktMessage from './TraktMessage';
@@ -15,12 +19,16 @@ import Header from './Header';
 import historyActions from '../actions/historyActions';
 import traktUtil from './Player/utils/trakt';
 
-export
-default React.createClass({
+const Framework = React.createClass({
 
     mixins: [PureRenderMixin, RouteContext, History],
 
     componentWillMount() {
+
+        this.props.bindShortcut('ctrl+d', () => {
+            ipcRenderer.send('app:toggleDevTools');
+        });
+
         historyActions.history(this.history);
         this.history.listen(this.updatehistory);
     },
@@ -46,3 +54,6 @@ default React.createClass({
         );
     }
 });
+
+export
+default mouseTrap(Framework)

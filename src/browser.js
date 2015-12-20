@@ -117,6 +117,13 @@ app.on('ready', () => {
         state ? enablePowerBlock() : disablePowerBlock();
     });
 
+    ipcMain.on('app:toggleDevTools', () => {
+        mainWindow.show();
+        mainWindow.toggleDevTools();
+        mainWindow.focus();
+        console.info('Developer Tools Toggled.');
+    });
+
     ipcMain.on('app:get:powerSaveBlocker', (event) => {
         event.returnValue = powerSaveBlockerState ? powerSaveBlocker.isStarted(powerSaveBlockerState) : false;
     });

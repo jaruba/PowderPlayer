@@ -40,6 +40,7 @@
     "react-dom": "^0.14.3",
     "react-dropzone": "^3.2.3",
     "react-modal": "^0.6.1",
+    "react-mousetrap": "0.0.6",
     "react-notification": "^3.0.3",
     "react-router": "^1.0.2",
     "react-tap-event-plugin": "^0.2.1",
