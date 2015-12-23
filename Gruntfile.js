@@ -201,7 +201,7 @@ module.exports = function(grunt) {
                 force: true,
                 runtime: {
                     type: 'electron',
-                    version: 'latest',
+                    version: packagejson.optionalDependencies['electron-prebuilt'].replace(/[^0-9\.]/g, ''),
                     arch: arch,
                     platform: os
                 }
