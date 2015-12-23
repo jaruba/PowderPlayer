@@ -5,10 +5,7 @@ import HistoryStore from '../stores/historyStore';
 import _ from 'lodash';
 import alt from '../alt';
 import path from 'path';
-import {
-    ipcRenderer
-}
-from 'electron';
+import ipc from 'ipc';
 import parser from '../components/Player/utils/parser';
 
 class torrentActions {
@@ -47,7 +44,7 @@ class torrentActions {
             .then((files) => {
                if (localStorage.askFiles == 'true' && files.files_total > 1) {
                     ModalActions.fileSelector(files);
-                    ipcRenderer.send('app:bitchForAttention');
+                    ipc.send('app:bitchForAttention');
                 } else {
                     var fileSelectorData = _.omit(files, ['files_total', 'folder_status']);
                     var folder = fileSelectorData[Object.keys(fileSelectorData)[0]];

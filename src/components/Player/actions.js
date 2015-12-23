@@ -1,9 +1,6 @@
 import alt from '../../alt'
 import _ from 'lodash';
-import {
-    ipcRenderer
-}
-from 'electron';
+import ipc from 'ipc';
 
 class PlayerActions {
     constructor() {
@@ -57,11 +54,11 @@ class PlayerActions {
     }
 
     toggleAlwaysOnTop(state = true) {
-        ipcRenderer.send('app:alwaysOnTop', state);
+        ipc.send('app:alwaysOnTop', state);
     }
 
     togglePowerSave(state = true) {
-        ipcRenderer.send('app:powerSaveBlocker', state);
+        ipc.send('app:powerSaveBlocker', state);
     }
 
     toggleFullscreen(state) {
@@ -72,7 +69,7 @@ class PlayerActions {
             document.querySelector(".canvas-holder > div:first-of-type").style.display = 'block';
         }, 1000);
 
-        ipcRenderer.send('app:fullscreen', state);
+        ipc.send('app:fullscreen', state);
         this.actions.fullscreen(state);
     }
 }

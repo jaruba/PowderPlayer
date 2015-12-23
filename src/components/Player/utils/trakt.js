@@ -1,4 +1,5 @@
 import Trakt from 'trakt.tv';
+import shell from 'shell';
 
 var trakttv = new Trakt({
     client_id: window.atob('MTBkYTI2ZGYwYmI4NzQ5MTY5OTQ4YzU3ODJjYmEyZjMxZDJlNWQ0N2I1NzNlNGFjZDE1MzgwN2U3NjFlZWRjYQ=='),
@@ -12,7 +13,7 @@ trakt.loggedIn = false;
 // TODO: openExternal() to replace by smth to open 'url' in default browser (or new window)
 trakt.openTraktAuth = () => {
     var url = trakttv.get_url();
-    require('electron').shell.openExternal(url);
+    shell.openExternal(url);
 };
 
 // this will exchange user's pasted pin for a set of tokens

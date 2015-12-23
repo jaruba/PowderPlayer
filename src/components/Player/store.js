@@ -1,8 +1,5 @@
 import _ from 'lodash';
-import {
-    ipcRenderer
-}
-from 'electron';
+import ipc from 'ipc';
 import {
     handleTime
 }

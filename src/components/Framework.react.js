@@ -4,10 +4,7 @@ import {
     RouteContext, History
 }
 from 'react-router';
-import {
-    ipcRenderer
-}
-from 'electron';
+import ipc from 'ipc';
 import {
     mouseTrap
 }
@@ -18,6 +15,7 @@ import TraktMessage from './TraktMessage';
 import Header from './Header';
 import historyActions from '../actions/historyActions';
 import traktUtil from './Player/utils/trakt';
+import request from 'request';
 
 const Framework = React.createClass({
 
@@ -25,17 +23,15 @@ const Framework = React.createClass({
 
     componentWillMount() {
 
-        this.props.bindShortcut('ctrl+d', () => {
-            ipcRenderer.send('app:toggleDevTools');
-        });
+        this.props.bindShortcut('ctrl+d', () => ipc.send('app:toggleDevTools'));
 
         historyActions.history(this.history);
         this.history.listen(this.updatehistory);
     },
 
     componentDidMount() {
-        ipcRenderer.send('app:startup', new Date().getTime());
-        require('request')('https://www.google.com/'); // Connect once to avoid cloggage
+        ipc.send('app:startup', new Date().getTime());
+        request('https://www.google.com'); // Connect once to avoid cloggage
         if (localStorage.traktTokens)
             traktUtil.autoLogin();
     },

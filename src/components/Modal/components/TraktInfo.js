@@ -3,10 +3,8 @@ import {
     TextField, RaisedButton, List, ListItem
 }
 from 'material-ui';
-import {
-    clipboard
-}
-from 'electron';
+import shell from 'shell';
+import clipboard from 'clipboard';
 
 import ModalActions from '../actions';
 
@@ -21,8 +19,8 @@ import MetaInspector from 'node-metainspector';
 
 import TraktSnackbar from '../../TraktMessage/actions';
 
-const remote = require('electron').remote;
-const BrowserWindow = remote.BrowserWindow;
+import {BrowserWindow } from 'remote';
+
 
 export
 default React.createClass({
@@ -74,7 +72,7 @@ default React.createClass({
         traktUtil.openTraktAuth();
     },
     openImdb(event) {
-        require('electron').shell.openExternal('http://www.imdb.com/title/'+this.state.parsed.imdb+'/');
+        shell.openExternal('http://www.imdb.com/title/'+this.state.parsed.imdb+'/');
         ModalActions.close();
     },
     openTrailer(event) {

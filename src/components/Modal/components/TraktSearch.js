@@ -3,10 +3,7 @@ import {
     AutoComplete, RaisedButton
 }
 from 'material-ui';
-import {
-    clipboard
-}
-from 'electron';
+import clipboard from 'clipboard'
 
 import ModalActions from '../actions';
 

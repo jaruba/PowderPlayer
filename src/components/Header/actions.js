@@ -1,8 +1,5 @@
 import alt from '../../alt'
-import {
-    ipcRenderer
-}
-from 'electron';
+import ipc from 'ipc';
 
 class HeaderActions {
     constructor() {
@@ -14,19 +11,19 @@ class HeaderActions {
 
     toggleMaximize() {
         this.dispatch();
-        let state = !ipcRenderer.sendSync('app:get:maximized');
-        ipcRenderer.send('app:maximize', state);
+        let state = !ipc.sendSync('app:get:maximized');
+        ipc.send('app:maximize', state);
         this.actions.maximize(state);
     }
 
     toggleMinimize() {
         this.dispatch();
-        ipcRenderer.send('app:minimize');
+        ipc.send('app:minimize');
         this.actions.minimize();
     }
 
     close() {
-        ipcRenderer.send('app:close');
+        ipc.send('app:close');
     }
 }
 

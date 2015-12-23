@@ -2,10 +2,8 @@ import app from 'app';
 import BrowserWindow from 'browser-window';
 import rimraf from 'rimraf';
 import path from 'path';
-import {
-    ipcMain, powerSaveBlocker
-}
-from 'electron';
+import powerSaveBlocker from 'power-save-blocker';
+import ipc from 'ipc';
 import yargs from 'yargs';
 
 const args = yargs(process.argv.slice(1)).wrap(100).argv;
@@ -21,7 +19,7 @@ const parseTime = s => {
     return mins + ' minutes ' + secs + '.' + ms + ' seconds';
 }
 
-ipcMain.on('app:startup', (event, time) => {
+ipc.on('app:startup', (event, time) => {
     console.log('App Startup Time:', parseTime(Math.floor(time - startupTime)));
 });
 
@@ -35,7 +33,7 @@ app.commandLine.appendSwitch('disable-speech-api');
 
 app.on('ready', () => {
 
-    var mainWindow = new BrowserWindow({
+    const mainWindow = new BrowserWindow({
         width: 637,
         height: 514,
         icon: path.join(__dirname, '../images/icons/powder-icon.png'),
@@ -53,12 +51,10 @@ app.on('ready', () => {
         console.info('Dev Mode Active: Developer Tools Enabled.');
     }
 
-    mainWindow.loadURL('file://' + path.join(__dirname, '../index.html'));
+    mainWindow.loadUrl('file://' + path.join(__dirname, '../index.html'));
 
 
-    mainWindow.webContents.on('new-window', (e) => {
-        e.preventDefault();
-    });
+    mainWindow.webContents.on('new-window', (e) => e.preventDefault());
 
     mainWindow.webContents.on('will-navigate', (e, url) => {
         if (url.indexOf('build/index.html#') < 0) {
@@ -74,38 +70,32 @@ app.on('ready', () => {
 
     mainWindow.on('close', app.quit);
 
-    ipcMain.on('app:get:fullscreen', (event) => {
+    ipc.on('app:get:fullscreen', (event) => {
         event.returnValue = mainWindow.isFullScreen();
     });
 
-    ipcMain.on('app:get:maximized', (event) => {
+    ipc.on('app:get:maximized', (event) => {
         event.returnValue = mainWindow.isMaximized();
     });
 
-    ipcMain.on('app:fullscreen', (event, state) => {
-        mainWindow.setFullScreen(state)
-    });
+    ipc.on('app:fullscreen', (event, state) => mainWindow.setFullScreen(state));
 
-    ipcMain.on('app:maximize', (event, state) => {
+    ipc.on('app:maximize', (event, state) => {
         state ? mainWindow.maximize() : mainWindow.unmaximize();
     });
 
-    ipcMain.on('app:minimize', mainWindow.minimize);
+    ipc.on('app:minimize', mainWindow.minimize);
 
-    ipcMain.on('app:alwaysOnTop', (event, state) => {
-        mainWindow.setAlwaysOnTop(state);
-    });
+    ipc.on('app:alwaysOnTop', (event, state) => mainWindow.setAlwaysOnTop(state));
 
-    ipcMain.on('app:setThumbarButtons', (event, buttons) => {
-        mainWindow.setThumbarButtons(buttons)
-    });
+    ipc.on('app:setThumbarButtons', (event, buttons) => mainWindow.setThumbarButtons(buttons));
 
-    ipcMain.on('app:bitchForAttention', (event, state = true) => {
+    ipc.on('app:bitchForAttention', (event, state = true) => {
         if (!mainWindow.isFocused())
             mainWindow.flashFrame(state);
     });
 
-    ipcMain.on('app:powerSaveBlocker', (event, state) => {
+    ipc.on('app:powerSaveBlocker', (event, state) => {
         let enablePowerBlock = () => {
             powerSaveBlockerState = powerSaveBlocker.start('prevent-display-sleep');
         };
@@ -117,18 +107,18 @@ app.on('ready', () => {
         state ? enablePowerBlock() : disablePowerBlock();
     });
 
-    ipcMain.on('app:toggleDevTools', () => {
+    ipc.on('app:toggleDevTools', () => {
         mainWindow.show();
         mainWindow.toggleDevTools();
         mainWindow.focus();
         console.info('Developer Tools Toggled.');
     });
 
-    ipcMain.on('app:get:powerSaveBlocker', (event) => {
+    ipc.on('app:get:powerSaveBlocker', (event) => {
         event.returnValue = powerSaveBlockerState ? powerSaveBlocker.isStarted(powerSaveBlockerState) : false;
     });
 
-    ipcMain.on('app:close', app.quit);
+    ipc.on('app:close', app.quit);
 
 });
 
@@ -136,5 +126,9 @@ app.on('window-all-closed', app.quit);
 
 
 app.on('will-quit', () => {
-    rimraf.sync(path.join(app.getPath('temp'), 'Powder-Player'));
+    try {
+        rimraf.sync(path.join(app.getPath('temp'), 'Powder-Player'));
+    } catch (e) {
+        console.error(e);
+    }
 });
