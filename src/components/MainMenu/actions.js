@@ -1,7 +1,4 @@
-import {
-    dialog
-}
-from 'remote';
+const dialog = require('remote').require('dialog');
 
 import alt from '../../alt';
 

@@ -1,9 +1,6 @@
 import peerflix from 'peerflix';
 import path from 'path';
-import {
-    app
-}
-from 'remote';
+const app = require('remote').require('app');
 import readTorrent from 'read-torrent';
 import Promise from 'bluebird';
 import getPort from 'get-port';
