@@ -50,7 +50,7 @@
     "trakt.tv": "^1.0.3",
     "video-name-parser": "^1.0.1",
     "yargs": "^3.31.0",
-	"opensubtitles-api": "^2.3.0",
+    "opensubtitles-api": "^2.3.0",
     "subtitles-grouping": "^1.0.12"
   },
   "devDependencies": {
