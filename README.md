@@ -14,7 +14,7 @@ It can do everything that a Torrent Client can, everything that a Video/Audio Pl
 **Run Dev**:
 
      grunt --dev
-*`ctrl+shift+i` to open devtools, or run `grunt run --dev`*
+*`ctrl+shift+i` to re-open devtools*
 
 **Release**:
 
