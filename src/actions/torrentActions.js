@@ -55,7 +55,10 @@ class torrentActions {
                     files.ordered.forEach( (file, ij) => {
                         newFiles.push({
                             title: parser(file.name).name(),
-                            uri: 'http://127.0.0.1:' + EngineStore.state.torrents[file.infoHash]['stream-port'] + '/' + file.id
+                            uri: 'http://127.0.0.1:' + EngineStore.state.torrents[file.infoHash]['stream-port'] + '/' + file.id,
+                            byteSize: file.size,
+                            torrentHash: file.infoHash,
+                            path: file.path
                         });
                         queueParser.push({
                             idx: ij,
@@ -63,6 +66,8 @@ class torrentActions {
                             filename: file.name
                         });
                     });
+
+//                  console.log(newFiles);
 
                     PlayerActions.addPlaylist(newFiles);
                     

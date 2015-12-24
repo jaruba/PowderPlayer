@@ -188,6 +188,21 @@ default React.createClass({
                     if (this.pendingFiles[i].title) {
                         this.player.playlist.items[this.player.playlist.items.count - 1].title = this.pendingFiles[i].title;
                     }
+                    
+                    if (this.pendingFiles[i].byteSize && this.pendingFiles[i].torrentHash)
+                        PlayerActions.setDesc({
+                            idx: this.player.playlist.items.count-1,
+                            byteSize: this.pendingFiles[i].byteSize,
+                            torrentHash: this.pendingFiles[i].torrentHash,
+                            path: this.pendingFiles[i].path
+                        });
+                    else if (this.pendingFiles[i].path)
+                        PlayerActions.setDesc({
+                            idx: this.player.playlist.items.count-1,
+                            path: this.pendingFiles[i].path
+                        });
+                        
+
                 }
             }
 
@@ -220,6 +235,29 @@ default React.createClass({
 
         return fontSize;
     },
+    calcSubSize() {
+        var height = window.innerHeight;
+        var width = window.innerWidth;
+        var fontSize = 0;
+        
+        if (height < 235) {
+            fontSize = height/14;
+            if (fontSize < 16) fontSize = 16;
+        } else {
+            if (width > 220 && width <= 982) {
+                fontSize = ((width -220) / 40) + 9;
+                if (fontSize < 16) fontSize = 16;
+            } else if (width > 982 && width < 1600) {
+                fontSize = height / 14;
+                if (fontSize > 35) fontSize = 35;
+            } else if (width >= 1600 && width <= 1920) {
+                fontSize = ((width - 1600) / 35.5) + 40;
+            } else if (width > 1920) {
+                fontSize = parseInt(width / 39.2);
+            } else fontSize = 20;
+        }
+        return fontSize;
+    },
     handleResize() {
         var canvas = this.refs['wcjs-render'];
         var container = document.body;
@@ -236,7 +274,8 @@ default React.createClass({
         };
 
         PlayerActions.settingChange({
-            fontSize: this.calcFontSize()
+            fontSize: this.calcFontSize(),
+            subSize: this.calcSubSize()
         });
     },
     handleTogglePlay() {

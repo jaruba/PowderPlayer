@@ -1,4 +1,5 @@
 import MetaInspector from 'node-metainspector';
+import PlayerActions from '../actions';
 
 var linker = {};
 

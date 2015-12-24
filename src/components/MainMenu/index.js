@@ -39,7 +39,8 @@ default React.createClass({
             files.forEach( (file, ij) => {
                 newFiles.push({
                     title: parser(file.name).name(),
-                    uri: 'file:///'+file.path
+                    uri: 'file:///'+file.path,
+                    path: file.path
                 });
                 queueParser.push({
                     idx: ij,

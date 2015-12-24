@@ -16,6 +16,8 @@ import Header from './Header';
 import historyActions from '../actions/historyActions';
 import traktUtil from './Player/utils/trakt';
 import request from 'request';
+// we just initiate this here for _reasons_:
+import subUtil from './Player/utils/subtitles';
 
 const Framework = React.createClass({
 

@@ -210,7 +210,7 @@
     position: absolute;
     bottom: 0;
     height: 64px;
-    z-index: 2;
+    z-index: 10;
     transition: opacity 300ms ease-in-out;
 }
 .wcjs-player .control-bar.show{
@@ -545,6 +545,19 @@
     text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
 }
 
+.wcjs-player .wcjs-subtitle-text {
+    color: white;
+    font-family: "Roboto", sans-serif;
+    text-align: center;
+    display: block;
+    position: absolute;
+    width: 100%;
+    bottom: 70px;
+    z-index: 10;
+    font-weight: 500;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+
 .wcjs-player .volume-hover {
     width: 0px !important;
     height: 0px !important;
@@ -557,4 +570,56 @@
 .wcjs-player .volume-ripple-hover {
     opacity: 0 !important;
     transition: none;
+}
+
+.wcjs-player .subtitle-list {
+    width: 70vw;
+    height: 70%;
+    overflow: hidden;
+    overflow-y: scroll;
+    max-width: 278px;
+    max-height: ~"calc(100% - 132px)";
+    right: 2%;
+    position: absolute;
+    bottom: 0px;
+    border: 10px solid rgba(29,31,35,0.82);
+    border-radius: 4px;
+    bottom: 70px;
+    background-color: rgba(29,31,35,0.82);
+    z-index: 10;
+    display: none;
+    opacity: 0;
+}
+
+.wcjs-player .subtitle-list.show {
+    display: block;
+    opacity: 1;
+}
+
+.wcjs-player .subtitle-list > div {
+    padding: 0 !important
+}
+
+.wcjs-player .subtitle-list::-webkit-scrollbar {
+    width: 10px;
+    background-color: rgba(22,25,27,1);
+    border-radius: 3px;
+}
+ 
+.wcjs-player .subtitle-list::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+ 
+.wcjs-player .subtitle-list::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: 3px;
+}
+.wcjs-player .subtitle-list::-webkit-scrollbar-corner{ 
+    background-color: transparent; 
+}
+
+@media screen and (max-width: 595px) {
+    .wcjs-player div[name=volume-slider] {
+        display: none;
+    }
 }

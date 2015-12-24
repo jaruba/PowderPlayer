@@ -65,7 +65,8 @@ class MainMenuActions {
                     filename.forEach( (file, ij) => {
                         newFiles.push({
                             title: parser(file).name(),
-                            uri: 'file:///'+file
+                            uri: 'file:///'+file,
+                            path: file
                         });
                         queueParser.push({
                             idx: ij,

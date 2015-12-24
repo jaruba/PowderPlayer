@@ -19,6 +19,7 @@ import nameToImdb from 'name-to-imdb';
 import parser from './utils/parser';
 
 import traktUtil from './utils/trakt';
+import subUtil from './utils/subtitles';
 
 import TraktSnackbar from '../TraktMessage/actions';
 
@@ -51,19 +52,27 @@ class playerStore {
         this.fullscreen = false;
         this.uiShown = true;
         this.playlistOpen = false;
+        this.subtitlesOpen = false;
 
         this.currentTime = '00:00';
         this.totalTime = '00:00';
 
         this.scrobbling = false;
-        
+
         this.itemDesc = i => { return false };
-        
+
         this.firstPlay = false;
-        
+
         this.foundTrakt = false;
-        
+
         this.fontSize = 21.3;
+        this.subSize = 21.3;
+
+        this.foundSubs = false;
+        this.subtitle = [];
+        this.trackSub = -1;
+        this.subDelay = 0;
+        this.selectedSub = 1;
 
     }
 
@@ -89,9 +98,24 @@ class playerStore {
         });
     }
 
+    onLoadSub(subLink) {
+        subUtil.loadSubtitle(subLink, parsedSub => {
+            this.setState({
+                subtitle: parsedSub,
+                trackSub: -1
+            });
+        });
+    }
+
     onTogglePlaylist() {
         this.setState({
             playlistOpen: !this.playlistOpen
+        });
+    }
+
+    onToggleSubtitles() {
+        this.setState({
+            subtitlesOpen: !this.subtitlesOpen
         });
     }
 
@@ -168,6 +192,10 @@ class playerStore {
                         parsedFilename.name = parser(task.filename).showName();
                     }
                     
+                    if (parsedFilename.type == 'series' && parsedFilename.year) {
+                        delete parsedFilename.year;
+                    }
+                    
                     nameToImdb(parsedFilename, function(err, res, inf) {
                         
                         if (err) {
@@ -177,10 +205,10 @@ class playerStore {
                             }, 500)
                             return;
                         }
-                        
+
                         if (res) {
                             // handle imdb
-                            
+
                             parsedFilename.imdb = res;
                             parsedFilename.extended = 'full,images';
                             if (parsedFilename.type == 'movie') {
@@ -208,7 +236,7 @@ class playerStore {
                                 var itemDesc = player.itemDesc(task.idx);
 
                                 if (!(itemDesc && itemDesc.mrl == task.url)) {
-                                    
+
                                     for (var i = 1; i < player.wcjs.playlist.items.count; i++) {
                                         if (player.itemDesc(i).mrl.endsWith(task.url)) {
                                             idx = i;
@@ -219,7 +247,7 @@ class playerStore {
                                 }
 
                                 if (idx > -1 && results && results.title) {
-                                                
+
                                     var newObj = {
                                         idx: idx
                                     };
@@ -327,10 +355,44 @@ class playerStore {
             time: time,
             currentTime: handleTime(time, this.length)
         });
+        
+        // print subtitle text if a subtitle is selected
+        if (this.subtitle.length > 0) {
+            var subLines = this.subtitle;
+            var nowSecond = (time - this.subDelay) /1000;
+            if (this.trackSub > -2) {
+            
+                var line = -1;
+                var os = 0;
+                
+                for (os in subLines) {
+                    if (os > nowSecond) break;
+                    line = os;
+                }
+                
+                if (line >= 0) {
+                    if(line != this.trackSub) {
+                        if ((subLines[line].t.match(new RegExp("<", "g")) || []).length == 2) {
+                            if (!(subLines[line].t.substr(0,1) == "<" && subLines[line].t.slice(-1) == ">"))
+                                subLines[line].t = subLines[line].t.replace(/<\/?[^>]+(>|$)/g, "");
+                        } else if ((subLines[line].t.match(new RegExp("<", "g")) || []).length > 2)
+                            subLines[line].t = subLines[line].t.replace(/<\/?[^>]+(>|$)/g, "");
+
+                        document.getElementsByClassName("wcjs-subtitle-text")[0].innerHTML = subLines[line].t;
+                        
+                        this.setState({
+                            trackSub: line
+                        });
+                    } else if (subLines[line].o < nowSecond)
+                        document.getElementsByClassName("wcjs-subtitle-text")[0].innerHTML = '';
+
+                }
+            }
+        }
     }
 
     onAddPlaylist(data) {
-        
+
         if (!this.wcjs) {
 
             if (data.length) {
@@ -339,15 +401,15 @@ class playerStore {
                     files: this.files.concat(data)
                 });
             }
-    
+
             playerActions.togglePowerSave(true);
-    
+
         } else {
-            
+
             this.setState({
                 files: this.files.concat(data)
             });
-            
+
             if (this.wcjs.playlist.items.count == 0) 
                 var playAfter = true;
 
@@ -356,14 +418,35 @@ class playerStore {
                     this.wcjs.playlist.add(data[i]);
                 } else if (data[i].uri) {
                     this.wcjs.playlist.add(data[i].uri);
-                    if (data[i].title) {
+                    if (data[i].title)
                         this.wcjs.playlist.items[this.wcjs.playlist.items.count-1].title = data[i].title;
-                    }
+
+                    data[i].idx = this.wcjs.playlist.items.count-1;
+
+                    let keeper = data[i];
+
+                    if (data[i].byteSize && data[i].torrentHash)
+                        _.delay(() => {
+                            playerActions.setDesc({
+                                idx: keeper.idx,
+                                byteSize: keeper.byteSize,
+                                torrentHash: keeper.torrentHash,
+                                path: keeper.path
+                            });
+                        });
+                    else if (data[i].path)
+                        _.defer(() => {
+                            playerActions.setDesc({
+                                idx: keeper.idx,
+                                path: keeper.path
+                            });
+                        });
+
                 }
             }
 
             if (playAfter) this.wcjs.playlist.playItem(0);
-                    
+
         }
 
         _.defer(() => {
@@ -534,6 +617,67 @@ class playerStore {
                 });
             }
             this.setState(newObj);
+
+            var itemDesc = itemDesc.setting;
+
+            if (itemDesc.subtitles) {
+                this.setState({
+                    foundSubs: true
+                });
+            } else if (itemDesc.path) {
+
+                var subQuery = {
+                    filepath: itemDesc.path,
+                    fps: this.wcjs.input.fps
+                };
+                
+                if (itemDesc.byteSize)
+                    subQuery.byteLength = itemDesc.byteSize;
+
+                if (itemDesc.torrentHash) {
+                    subQuery.torrentHash = itemDesc.torrentHash;
+                    subQuery.isFinished = false;
+                }
+                
+                subQuery.cb = subs => {
+                    if (!subs) {
+                        TraktSnackbar.open('Subtitles Not Found');
+                    } else {
+                        this.setState({
+                            foundSubs: true
+                        });
+                        _.defer(() => {
+                            playerActions.setDesc({
+                                subtitles: subs
+                            });
+                            TraktSnackbar.open('Found Subtitles');
+                            if (localStorage.lastLanguage && localStorage.lastLanguage != 'none') {
+                                if (subs[localStorage.lastLanguage]) {
+                                    playerActions.loadSub(subs[localStorage.lastLanguage]);
+                                    // select it in the menu too
+                                    var itemIdx = 1;
+                                    _.some(subs, (el, ij) => {
+                                        itemIdx++;
+                                        if (ij == localStorage.lastLanguage) {
+                                            _.defer(() => {
+                                                playerActions.settingChange({
+                                                    selectedSub: itemIdx
+                                                });
+                                            });
+                                            return true;
+                                        } else {
+                                            return false;
+                                        }
+                                    })
+                                }
+                            }
+                        });
+                    }
+                };
+                
+                subUtil.fetchSubs(subQuery);
+            }
+            
         } else {
             traktUtil.handleScrobble('start', this.itemDesc(), this.wcjs.position);
         }
@@ -545,7 +689,13 @@ class playerStore {
     
     onMediaChanged() {
         this.setState({
-            firstPlay: false
+            firstPlay: false,
+            foundSubs: false,
+            subtitle: [],
+            trackSub: -1,
+            subDelay: 0,
+            selectedSub: 1,
+            subtitlesOpen: false
         });
     }
 
@@ -733,26 +883,26 @@ class playerStore {
     }
     
     onSetDesc(obj) {
+        if (typeof obj.idx === 'undefined')
+            obj.idx = this.wcjs.playlist.currentItem;
+
         if (obj && typeof obj.idx === 'number') {
             var i = obj.idx;
-            if (obj.title) {
+
+            if (obj.title)
                 this.wcjs.playlist.items[i].title = obj.title;
-            }
+
             if (i > -1 && i < this.wcjs.playlist.items.count) {
-
-                if (this.wcjs.playlist.items[i].setting.length) {
+                if (this.wcjs.playlist.items[i].setting.length)
                     var wjsDesc = JSON.parse(this.wcjs.playlist.items[i].setting);
-                } else {
+                else
                     var wjsDesc = {};
-                }
 
-                if (obj) {
-                    for (var key in obj) {
-                        if (obj.hasOwnProperty(key)) {
+                if (obj)
+                    for (var key in obj)
+                        if (obj.hasOwnProperty(key))
                             wjsDesc[key] = obj[key];
-                        }
-                    }
-                }
+
                 this.wcjs.playlist.items[i].setting = JSON.stringify(wjsDesc);
             }
         }
@@ -777,7 +927,17 @@ class playerStore {
 
             lastItem: -1,
 
-            pendingFiles: []
+            pendingFiles: [],
+
+            foundSubs: false,
+            subtitle: [],
+            trackSub: -1,
+            subDelay: 0,
+            selectedSub: 1,
+            
+            playlistOpen: false,
+            subtitlesOpen: false
+
         });
         if (this.wcjs) {
             

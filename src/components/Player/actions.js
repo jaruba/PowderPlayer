@@ -36,9 +36,11 @@ class PlayerActions {
             'close',
             'addPlaylist',
             'togglePlaylist',
+            'toggleSubtitles',
             'setPlaylist',
             'parseURL',
             'replaceMRL',
+            'loadSub',
 
             'itemCount',
             'itemDesc',

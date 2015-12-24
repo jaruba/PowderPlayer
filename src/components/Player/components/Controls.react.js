@@ -38,9 +38,12 @@ default React.createClass({
 
             rippleEffects: playerState.rippleEffects,
 
+            foundSubs: playerState.foundSubs,
+            subtitlesOpen: playerState.subtitlesOpen,
+
             volume: parseInt(localStorage.volume),
             mute: PlayerStore.muted,
-            
+
             volumeDragging: false,
             volumePendingEffects: '',
             volumePendingRipples: ''
@@ -52,7 +55,7 @@ default React.createClass({
     componentDidMount() {
         window.addEventListener('mousemove', this.handleGlobalMouseMove);
         window.addEventListener('mouseup', this.handleGlobalMouseUp);
-        
+
         // assign a class to the volume index pointer
         var volumeSlider = document.getElementsByName('volume-slider')[0].children[4].children[0].children[2];
         volumeSlider.className = 'volume-index volume-hover';
@@ -83,6 +86,9 @@ default React.createClass({
                 totalTime: playerState.totalTime,
 
                 rippleEffects: playerState.rippleEffects,
+
+                foundSubs: playerState.foundSubs,
+                subtitlesOpen: playerState.subtitlesOpen,
 
                 volume: parseInt(localStorage.volume),
                 mute: playerState.muted
@@ -298,7 +304,7 @@ default React.createClass({
                 <IconButton onClick={this.handleMute} iconClassName="material-icons" iconStyle={{color: '#e7e7e7'}} className="volume-button">{this.state.mute ? 'volume_off' : this.state.volume <= 0 ? 'volume_mute' : this.state.volume <= 120 ? 'volume_down' : 'volume_up' }</IconButton>
                 <Slider name="volume-slider" defaultValue={this.state.volume} step={1} min={0} max={200} onChange={this.handleVolume} value={this.state.mute ? 0 : this.state.volume} onMouseEnter={this.volumeRippleEffect} onMouseLeave={this.volumeRippleEffect} onDragStart={this.volumeDragStart} onDragStop={this.volumeDragStop} />
                 <IconButton onClick={this.handleFullscreen} iconClassName="material-icons" iconStyle={{color: '#e7e7e7', fontSize: '30px', top: '-5px', left: '-1px'}} className="fullscreen-toggle">{this.state.fullscreen ? 'fullscreen_exit' : 'fullscreen'}</IconButton>
-                <IconButton iconClassName="material-icons" iconStyle={{color: '#e7e7e7', fontSize: '26px', top: '-5px', left: '-1px'}} className="subtitles-toggle">closed_caption</IconButton>
+                <IconButton onClick={PlayerActions.toggleSubtitles} iconClassName="material-icons" iconStyle={{color: this.state.subtitlesOpen ? '#00acff' : '#e7e7e7', fontSize: '26px', top: '-5px', left: '-1px'}} className="subtitles-toggle" style={{display: this.state.foundSubs ? 'inline-block' : 'none'}}>closed_caption</IconButton>
 
             </div>
         );

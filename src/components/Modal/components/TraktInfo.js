@@ -19,8 +19,7 @@ import MetaInspector from 'node-metainspector';
 
 import TraktSnackbar from '../../TraktMessage/actions';
 
-import {BrowserWindow } from 'remote';
-
+import {BrowserWindow} from 'remote';
 
 export
 default React.createClass({
