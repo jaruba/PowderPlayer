@@ -9,7 +9,7 @@ var subtitles = {
 	fetchOsCookie: function(retryCookie) {
 		utils.checkInternet(function(isConnected) {
 			if (isConnected) {
-				var req = require('http').request({ host: "dl.opensubtitles.org", path: "/en/download/subencoding-utf8/file/5833874" },function(res) {
+				var req = require('http').request({ host: "dl.opensubtitles.org", path: "/en/download/subencoding-utf8/vrf-ef3a1f1e6e/file/1954677189" },function(res) {
 					if (res.headers["set-cookie"] && res.headers["set-cookie"][0]) {
 						tempCookie = res.headers["set-cookie"][0];
 						subtitles.osCookie = (tempCookie + "").split(";").shift();
@@ -85,7 +85,9 @@ var subtitles = {
 						});
 						newString = '{ ';
 						async.forEachOf(subData, function (item, ij, callback){
-							newString += '"'+item.langName+'": "http://dl.opensubtitles.org/en/download/subencoding-utf8/file/'+item.url.split('/').pop()+'", ';
+							var vrf = item.url.substr(item.url.indexOf('vrf-'));
+							vrf = vrf.substr(0,vrf.indexOf('/'));
+							newString += '"'+item.langName+'": "http://dl.opensubtitles.org/en/download/subencoding-utf8/'+vrf+'/file/'+item.url.split('/').pop()+'", ';
 							callback();
 						}, function(err) {
 							newString = newString.substr(0,newString.length -2)+" }";
