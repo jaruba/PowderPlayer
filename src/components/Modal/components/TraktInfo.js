@@ -17,8 +17,6 @@ import traktUtil from '../../Player/utils/trakt';
 
 import MetaInspector from 'node-metainspector';
 
-import TraktSnackbar from '../../TraktMessage/actions';
-
 const BrowserWindow = require('remote').require('browser-window');
 
 
@@ -91,7 +89,7 @@ default React.createClass({
 //            console.log(trailer_url);
             if (trailer_url == 'http://www.imdb.comundefined') {
 
-                TraktSnackbar.open('No Trailer Found');
+                PlayerStore.getState().notifier.info('Trailer Not Found', '', 4000);
 
             } else {
             
@@ -113,7 +111,7 @@ default React.createClass({
         });
 
         client.on("error", function(err){
-            TraktSnackbar.open('Trailer Error: '+err);
+            PlayerStore.getState().notifier.info('Trailer Error: '+err, '', 4000);
 //            console.log(err);
         });
 

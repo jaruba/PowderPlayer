@@ -9,6 +9,8 @@ import SubtitleList from './components/Subtitles.react';
 import PlayerStore from './store';
 import PlayerActions from './actions';
 
+import ReactNotify from 'react-notify';
+
 
 export
 default React.createClass({
@@ -41,6 +43,9 @@ default React.createClass({
         if (['', '0'].indexOf(announcer.style.opacity) > -1) {
             PlayerActions.buffering(0);
         }
+        PlayerActions.settingChange({
+            notifier: this.refs.notificator
+        });
     },
     update() {
         if (this.isMounted()) {
@@ -91,6 +96,7 @@ default React.createClass({
                 <PlayerControls />
                 <Playlist />
                 <SubtitleList />
+                <ReactNotify ref='notificator'/>
             </div>
         );
     }

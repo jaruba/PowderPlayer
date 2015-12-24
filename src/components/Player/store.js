@@ -21,8 +21,6 @@ import parser from './utils/parser';
 import traktUtil from './utils/trakt';
 import subUtil from './utils/subtitles';
 
-import TraktSnackbar from '../TraktMessage/actions';
-
 class playerStore {
     constructor() {
         this.bindActions(playerActions);
@@ -73,6 +71,8 @@ class playerStore {
         this.trackSub = -1;
         this.subDelay = 0;
         this.selectedSub = 1;
+
+        this.notifier = false;
 
     }
 
@@ -289,7 +289,8 @@ class playerStore {
                                             player.setState({
                                                 foundTrakt: true
                                             });
-                                            TraktSnackbar.open('Scrobbling');
+
+                                            player.notifier.info('Scrobbling', '', 6000);
 
                                             traktUtil.scrobble('start', player.wcjs.position, results);
                                         }
@@ -612,9 +613,7 @@ class playerStore {
             if (itemDesc.setting && itemDesc.setting.trakt && !this.foundTrakt) {
                 newObj.foundTrakt = true;
                 traktUtil.handleScrobble('start', itemDesc, this.wcjs.position);
-                _.delay(() => {
-                    TraktSnackbar.open('Scrobbling');
-                });
+                this.notifier.info('Scrobbling', '', 4000);
             }
             this.setState(newObj);
 
@@ -638,10 +637,12 @@ class playerStore {
                     subQuery.torrentHash = itemDesc.torrentHash;
                     subQuery.isFinished = false;
                 }
-                
+
+                var player = this;
+
                 subQuery.cb = subs => {
                     if (!subs) {
-                        TraktSnackbar.open('Subtitles Not Found');
+                        player.notifier.info('Subtitles Not Found', '', 6000);
                     } else {
                         this.setState({
                             foundSubs: true
@@ -650,7 +651,8 @@ class playerStore {
                             playerActions.setDesc({
                                 subtitles: subs
                             });
-                            TraktSnackbar.open('Found Subtitles');
+                            player.notifier.info('Found Subtitles', '', 6000);
+
                             if (localStorage.lastLanguage && localStorage.lastLanguage != 'none') {
                                 if (subs[localStorage.lastLanguage]) {
                                     playerActions.loadSub(subs[localStorage.lastLanguage]);
