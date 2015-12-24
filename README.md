@@ -9,12 +9,13 @@ It can do everything that a Torrent Client can, everything that a Video/Audio Pl
 **Building Instructions**:
 
      npm install
-     npm install electron-prebuilt
      grunt deps
-     grunt
 
 **Run Dev**:
 
-     grunt run
-
+     grunt --dev
 *`ctrl+shift+i` to open devtools, or run `grunt run --dev`*
+
+**Release**:
+
+     grunt release
