@@ -305,7 +305,8 @@ class playerStore {
                                             
                                             var shouldScrobble = traktUtil.loggedIn ? localStorage.traktScrobble ? (localStorage.traktScrobble == 'true') : true : false;
                                             if (shouldScrobble) {
-                                                player.notifier.info('Scrobbling', '', 6000);
+                                                if (!localStorage.playerNotifs || localStorage.playerNotifs == 'true')
+                                                    player.notifier.info('Scrobbling', '', 6000);
                                                 traktUtil.scrobble('start', player.wcjs.position, results);
                                             }
                                         }
@@ -630,7 +631,8 @@ class playerStore {
                 var shouldScrobble = traktUtil.loggedIn ? localStorage.traktScrobble ? (localStorage.traktScrobble == 'true') : true : false;
                 if (shouldScrobble) {
                     traktUtil.handleScrobble('start', itemDesc, this.wcjs.position);
-                    this.notifier.info('Scrobbling', '', 4000);
+                    if (!localStorage.playerNotifs || localStorage.playerNotifs == 'true')
+                        this.notifier.info('Scrobbling', '', 4000);
                 }
             }
             this.setState(newObj);
@@ -662,7 +664,8 @@ class playerStore {
     
                     subQuery.cb = subs => {
                         if (!subs) {
-                            player.notifier.info('Subtitles Not Found', '', 6000);
+                            if (!localStorage.playerNotifs || localStorage.playerNotifs == 'true')
+                                player.notifier.info('Subtitles Not Found', '', 6000);
                         } else {
                             this.setState({
                                 foundSubs: true
@@ -671,7 +674,8 @@ class playerStore {
                                 playerActions.setDesc({
                                     subtitles: subs
                                 });
-                                player.notifier.info('Found Subtitles', '', 6000);
+                                if (!localStorage.playerNotifs || localStorage.playerNotifs == 'true')
+                                    player.notifier.info('Found Subtitles', '', 6000);
     
                                 if (localStorage.lastLanguage && localStorage.lastLanguage != 'none') {
                                     if (subs[localStorage.lastLanguage]) {

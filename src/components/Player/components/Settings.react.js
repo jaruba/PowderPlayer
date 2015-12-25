@@ -36,6 +36,7 @@ default React.createClass({
             open: false,
             alwaysOnTop: playerState.alwaysOnTop,
             playerRippleEffects: playerState.rippleEffects,
+            playerNotifs: localStorage.playerNotifs ? (localStorage.playerNotifs == 'true') : true,
             trakt: traktUtil.loggedIn ? true : false,
             traktScrobble: localStorage.traktScrobble ? (localStorage.traktScrobble == 'true') : true,
             findSubs: localStorage.findSubs ? (localStorage.findSubs == 'true') : true
@@ -118,10 +119,14 @@ default React.createClass({
         
     },
     
-    _handleTabsChange(value) {
+    handlePlayerNotifs(event, toggled) {
+        
+        localStorage.playerNotifs = toggled;
+        
         this.setState({
-            tabsValue: value
+            playerNotifs: toggled
         });
+        
     },
 
     render() {
@@ -129,48 +134,59 @@ default React.createClass({
             <div className={this.state.open ? 'playlist-container show' : 'playlist-container'}>
                 <div className="playlist-controls" / >
                 <div className="playlist-holder settings-holder" style={{marginLeft: '0', height: '100%'}}>
-<Tabs style={{width: '70vw', maxWidth: '700px', marginTop: '11%', marginLeft: 'auto', marginRight: 'auto', height: '100%'}}>
-  <Tab label="General" style={{height: '100%'}}>
-                    <div className="playlist-inner" style={{maxWidth: '700px', maxHeight: 'calc(100% - 130px)'}}>
-                <Toggle
-                    name="always-on-top"
-                    onToggle={this.handleAlwaysOnTop}
-                    defaultToggled={this.state.alwaysOnTop}
-                    label="Always on top:"
-                    style={{marginBottom: '7px'}}/>
+                    <Tabs style={{width: '70vw', maxWidth: '700px', marginTop: '11%', marginLeft: 'auto', marginRight: 'auto', height: '100%'}}>
 
-                <Toggle
-                    name="player-ripple-effects"
-                    onToggle={this.handlePlayerRippleEffects}
-                    defaultToggled={this.state.playerRippleEffects}
-                    label="Player Ripple Effects:"
-                    style={{marginBottom: '7px'}}/>
-                    </div>
-  </Tab>
-  <Tab label="Subtitles" style={{height: '100%'}}>
-                    <div className="playlist-inner" style={{maxWidth: '700px', maxHeight: 'calc(100% - 130px)'}}>
-                <Toggle
-                    name="find-subs"
-                    onToggle={this.handleFindSubs}
-                    defaultToggled={this.state.findSubs}
-                    label="Find Subtitles:"
-                    style={{marginBottom: '7px'}}/>
-                    </div>
-  </Tab>
-  <Tab label="Trakt" style={{height: '100%'}}>
-                    <div className="playlist-inner" style={{maxWidth: '700px', maxHeight: 'calc(100% - 130px)'}}>
-                <Toggle
-                    name="trakt-scrobble"
-                    onToggle={this.handleScrobbler}
-                    defaultToggled={this.state.traktScrobble}
-                    style={{ 'display': (this.state.trakt ? 'block' : 'none') }}
-                    label="Trakt Scrobble:"
-                    style={{marginBottom: '7px'}}/>
-                <RaisedButton onClick={this.openTraktLogin} label={ this.state.trakt ? 'Trakt Logout' : 'Trakt Login' } />
-                    </div>
-  </Tab>
-</Tabs>
-                   </div> 
+                        <Tab label="General" style={{height: '100%'}}>
+                            <div className="playlist-inner" style={{maxWidth: '700px', maxHeight: 'calc(100% - 130px)'}}>
+                                <Toggle
+                                    name="always-on-top"
+                                    onToggle={this.handleAlwaysOnTop}
+                                    defaultToggled={this.state.alwaysOnTop}
+                                    label="Always on top:"
+                                    style={{marginBottom: '7px'}}/>
+
+                                <Toggle
+                                    name="player-ripple-effects"
+                                    onToggle={this.handlePlayerRippleEffects}
+                                    defaultToggled={this.state.playerRippleEffects}
+                                    label="Player Ripple Effects:"
+                                    style={{marginBottom: '7px'}}/>
+
+                                <Toggle
+                                    name="player-notifs"
+                                    onToggle={this.handlePlayerNotifs}
+                                    defaultToggled={this.state.playerNotifs}
+                                    label="Notifications:"
+                                    style={{marginBottom: '7px'}}/>
+                            </div>
+                        </Tab>
+
+                        <Tab label="Subtitles" style={{height: '100%'}}>
+                            <div className="playlist-inner" style={{maxWidth: '700px', maxHeight: 'calc(100% - 130px)'}}>
+                                <Toggle
+                                    name="find-subs"
+                                    onToggle={this.handleFindSubs}
+                                    defaultToggled={this.state.findSubs}
+                                    label="Find Subtitles:"
+                                    style={{marginBottom: '7px'}}/>
+                            </div>
+                        </Tab>
+
+                        <Tab label="Trakt" style={{height: '100%'}}>
+                            <div className="playlist-inner" style={{maxWidth: '700px', maxHeight: 'calc(100% - 130px)'}}>
+                                <Toggle
+                                    name="trakt-scrobble"
+                                    onToggle={this.handleScrobbler}
+                                    defaultToggled={this.state.traktScrobble}
+                                    style={{ 'display': (this.state.trakt ? 'block' : 'none') }}
+                                    label="Trakt Scrobble:"
+                                    style={{marginBottom: '7px'}}/>
+                                <RaisedButton onClick={this.openTraktLogin} label={ this.state.trakt ? 'Trakt Logout' : 'Trakt Login' } />
+                            </div>
+                        </Tab>
+
+                    </Tabs>
+                </div> 
             </div>
         );
     }
