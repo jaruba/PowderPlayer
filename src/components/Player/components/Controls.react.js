@@ -24,7 +24,7 @@ default React.createClass({
 
         return {
             fullscreen: playerState.fullscreen,
-            uiShown: playerState.uiShown || playerState.playlistOpen,
+            uiShown: playerState.uiShown || playerState.playlistOpen || playerState.settingsOpen,
 
             scrobbling: false,
             playing: playerState.playing,
@@ -73,7 +73,7 @@ default React.createClass({
 
             this.setState({
                 fullscreen: playerState.fullscreen,
-                uiShown: playerState.uiShown || playerState.playlistOpen,
+                uiShown: playerState.uiShown || playerState.playlistOpen || playerState.settingsOpen,
 
                 playing: playerState.playing,
                 position: playerState.position,

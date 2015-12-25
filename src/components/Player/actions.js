@@ -37,6 +37,7 @@ class PlayerActions {
             'addPlaylist',
             'togglePlaylist',
             'toggleSubtitles',
+            'toggleSettings',
             'setPlaylist',
             'parseURL',
             'replaceMRL',

@@ -51,6 +51,7 @@ class playerStore {
         this.uiShown = true;
         this.playlistOpen = false;
         this.subtitlesOpen = false;
+        this.settingsOpen = false;
 
         this.currentTime = '00:00';
         this.totalTime = '00:00';
@@ -109,13 +110,25 @@ class playerStore {
 
     onTogglePlaylist() {
         this.setState({
-            playlistOpen: !this.playlistOpen
+            playlistOpen: !this.playlistOpen,
+            settingsOpen: false,
+            subtitlesOpen: false
         });
     }
 
     onToggleSubtitles() {
         this.setState({
+            playlistOpen: false,
+            settingsOpen: false,
             subtitlesOpen: !this.subtitlesOpen
+        });
+    }
+    
+    onToggleSettings() {
+        this.setState({
+            settingsOpen: !this.settingsOpen,
+            playlistOpen: false,
+            subtitlesOpen: false
         });
     }
 

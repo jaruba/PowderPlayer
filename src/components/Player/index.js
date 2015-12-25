@@ -4,6 +4,7 @@ import PlayerHeader from './components/Header.react';
 import PlayerControls from './components/Controls.react';
 import PlayerRender from './components/Renderer.react';
 import Playlist from './components/Playlist.react';
+import Settings from './components/Settings.react';
 import SubtitleList from './components/Subtitles.react';
 
 import PlayerStore from './store';
@@ -95,6 +96,7 @@ default React.createClass({
                 <span className='wcjs-subtitle-text' style={subStyle}></span>
                 <PlayerControls />
                 <Playlist />
+                <Settings />
                 <SubtitleList />
                 <ReactNotify ref='notificator'/>
             </div>

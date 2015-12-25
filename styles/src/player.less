@@ -438,6 +438,28 @@
     color: #00acff !important;
 }
 
+.wcjs-player .settings-head {
+    opacity: 1;
+    background: transparent;
+}
+
+.wcjs-player .settings-head {
+    opacity: 1;
+    background: transparent;
+}
+
+.wcjs-player .settings-head .player-close {
+    display: none !important;
+}
+
+.wcjs-player .settings-head .title {
+    display: none;
+}
+
+.wcjs-player .settings-head .player-settings .material-icons {
+    color: #00acff !important;
+}
+
 .wcjs-player .playlist-container .playlist-title {
     color: #00abfe;
     font-weight: 600;
@@ -669,4 +691,13 @@
  
 .notify-title {
   font-weight: 700;
+}
+
+@media screen and (max-height: 320px) {
+    .wcjs-player .settings-holder > div > div:last-of-type {
+        height: 100%
+    }
+    .wcjs-player .settings-holder > div > div:last-of-type > div {
+        height: 100%
+    }
 }
