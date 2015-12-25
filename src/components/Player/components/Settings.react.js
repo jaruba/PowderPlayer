@@ -40,7 +40,8 @@ default React.createClass({
             trakt: traktUtil.loggedIn ? true : false,
             traktScrobble: localStorage.traktScrobble ? (localStorage.traktScrobble == 'true') : true,
             findSubs: localStorage.findSubs ? (localStorage.findSubs == 'true') : true,
-            autoSub: localStorage.autoSub ? (localStorage.autoSub == 'true') : true
+            autoSub: localStorage.autoSub ? (localStorage.autoSub == 'true') : true,
+            menuFlags: localStorage.menuFlags ? (localStorage.menuFlags == 'true') : true
         }
     },
     componentWillMount() {
@@ -129,7 +130,6 @@ default React.createClass({
         });
         
     },
-
     
     handleAutoSub(event, toggled) {
         
@@ -137,6 +137,17 @@ default React.createClass({
         
         this.setState({
             autoSub: toggled
+        });
+        
+    },
+
+    
+    handleMenuFlags(event, toggled) {
+        
+        localStorage.menuFlags = toggled;
+        
+        this.setState({
+            menuFlags: toggled
         });
         
     },
@@ -187,6 +198,13 @@ default React.createClass({
                                     onToggle={this.handleAutoSub}
                                     defaultToggled={this.state.autoSub}
                                     label="Auto-select Subtitle:"
+                                    style={{marginBottom: '7px'}}/>
+
+                                <Toggle
+                                    name="menu-flags"
+                                    onToggle={this.handleMenuFlags}
+                                    defaultToggled={this.state.menuFlags}
+                                    label="Flags in Menu:"
                                     style={{marginBottom: '7px'}}/>
                             </div>
                         </Tab>

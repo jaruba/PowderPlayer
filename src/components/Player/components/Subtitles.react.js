@@ -94,28 +94,47 @@ default React.createClass({
     },
     render() {
         var itemId = 1;
+        if (!localStorage.menuFlags || localStorage.menuFlags == 'true') {
+            var none = <ListItem
+                    leftAvatar={<Avatar src='https://css-tricks.com/wp-content/csstricks-uploads/transpBlack25.png' />}
+                    value={1}
+                    key={'None'}
+                    primaryText={'None'}
+                    onClick={this.select.bind(this, 'none', '', 1)} />
+        } else {
+            var none = <ListItem
+                    value={1}
+                    key={'None'}
+                    primaryText={'None'}
+                    onClick={this.select.bind(this, 'none', '', 1)} />
+        }
         return (
             <div className={this.state.open ? 'subtitle-list show' : 'subtitle-list'}>
                 <SelectableList valueLink={{value: this.state.playlistSelected}}>
-                    <ListItem
-                      leftAvatar={<Avatar src='https://css-tricks.com/wp-content/csstricks-uploads/transpBlack25.png' />}
-                      value={1}
-                      key={'None'}
-                      primaryText={'None'}
-                      onClick={this.select.bind(this, 'none', '', 1)} />
+                    {none}
                     {
                         _.map(this.getItems(), (item, idx) => {
                             itemId++;
                             var lang = idx.split('[lg]');
                             if (lang2country[lang[1]]) lang[1] = lang2country[lang[1]];
-                            return (
-                            <ListItem
-                              leftAvatar={<Avatar src={'http://flagpedia.net/data/flags/small/'+lang[1]+'.png'} />}
-                              value={itemId}
-                              key={lang[0]}
-                              primaryText={lang[0]}
-                              onClick={this.select.bind(this, idx, item, itemId)} />
-                            )
+                            if (!localStorage.menuFlags || localStorage.menuFlags == 'true') {
+                                return (
+                                <ListItem
+                                  leftAvatar={<Avatar src={'http://flagpedia.net/data/flags/small/'+lang[1]+'.png'} />}
+                                  value={itemId}
+                                  key={lang[0]}
+                                  primaryText={lang[0]}
+                                  onClick={this.select.bind(this, idx, item, itemId)} />
+                                )
+                            } else {
+                                return (
+                                <ListItem
+                                  value={itemId}
+                                  key={lang[0]}
+                                  primaryText={lang[0]}
+                                  onClick={this.select.bind(this, idx, item, itemId)} />
+                                )
+                            }
                         })
                     }
                 </SelectableList>
