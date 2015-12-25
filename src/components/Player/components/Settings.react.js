@@ -39,7 +39,8 @@ default React.createClass({
             playerNotifs: localStorage.playerNotifs ? (localStorage.playerNotifs == 'true') : true,
             trakt: traktUtil.loggedIn ? true : false,
             traktScrobble: localStorage.traktScrobble ? (localStorage.traktScrobble == 'true') : true,
-            findSubs: localStorage.findSubs ? (localStorage.findSubs == 'true') : true
+            findSubs: localStorage.findSubs ? (localStorage.findSubs == 'true') : true,
+            autoSub: localStorage.autoSub ? (localStorage.autoSub == 'true') : true
         }
     },
     componentWillMount() {
@@ -129,6 +130,17 @@ default React.createClass({
         
     },
 
+    
+    handleAutoSub(event, toggled) {
+        
+        localStorage.autoSub = toggled;
+        
+        this.setState({
+            autoSub: toggled
+        });
+        
+    },
+
     render() {
         return (
             <div className={this.state.open ? 'playlist-container show' : 'playlist-container'}>
@@ -168,6 +180,13 @@ default React.createClass({
                                     onToggle={this.handleFindSubs}
                                     defaultToggled={this.state.findSubs}
                                     label="Find Subtitles:"
+                                    style={{marginBottom: '7px'}}/>
+
+                                <Toggle
+                                    name="find-subs"
+                                    onToggle={this.handleAutoSub}
+                                    defaultToggled={this.state.autoSub}
+                                    label="Auto-select Subtitle:"
                                     style={{marginBottom: '7px'}}/>
                             </div>
                         </Tab>

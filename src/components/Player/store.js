@@ -677,24 +677,26 @@ class playerStore {
                                 if (!localStorage.playerNotifs || localStorage.playerNotifs == 'true')
                                     player.notifier.info('Found Subtitles', '', 6000);
     
-                                if (localStorage.lastLanguage && localStorage.lastLanguage != 'none') {
-                                    if (subs[localStorage.lastLanguage]) {
-                                        playerActions.loadSub(subs[localStorage.lastLanguage]);
-                                        // select it in the menu too
-                                        var itemIdx = 1;
-                                        _.some(subs, (el, ij) => {
-                                            itemIdx++;
-                                            if (ij == localStorage.lastLanguage) {
-                                                _.defer(() => {
-                                                    playerActions.settingChange({
-                                                        selectedSub: itemIdx
+                                if (!localStorage.autoSub || localStorage.autoSub == 'true') {
+                                    if (localStorage.lastLanguage && localStorage.lastLanguage != 'none') {
+                                        if (subs[localStorage.lastLanguage]) {
+                                            playerActions.loadSub(subs[localStorage.lastLanguage]);
+                                            // select it in the menu too
+                                            var itemIdx = 1;
+                                            _.some(subs, (el, ij) => {
+                                                itemIdx++;
+                                                if (ij == localStorage.lastLanguage) {
+                                                    _.defer(() => {
+                                                        playerActions.settingChange({
+                                                            selectedSub: itemIdx
+                                                        });
                                                     });
-                                                });
-                                                return true;
-                                            } else {
-                                                return false;
-                                            }
-                                        })
+                                                    return true;
+                                                } else {
+                                                    return false;
+                                                }
+                                            })
+                                        }
                                     }
                                 }
                             });
