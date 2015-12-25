@@ -289,10 +289,12 @@ class playerStore {
                                             player.setState({
                                                 foundTrakt: true
                                             });
-
-                                            player.notifier.info('Scrobbling', '', 6000);
-
-                                            traktUtil.scrobble('start', player.wcjs.position, results);
+                                            
+                                            var shouldScrobble = traktUtil.loggedIn ? localStorage.traktScrobble ? (localStorage.traktScrobble == 'true') : true : false;
+                                            if (shouldScrobble) {
+                                                player.notifier.info('Scrobbling', '', 6000);
+                                                traktUtil.scrobble('start', player.wcjs.position, results);
+                                            }
                                         }
                                     }
                             
@@ -612,8 +614,11 @@ class playerStore {
             var itemDesc = this.itemDesc();
             if (itemDesc.setting && itemDesc.setting.trakt && !this.foundTrakt) {
                 newObj.foundTrakt = true;
-                traktUtil.handleScrobble('start', itemDesc, this.wcjs.position);
-                this.notifier.info('Scrobbling', '', 4000);
+                var shouldScrobble = traktUtil.loggedIn ? localStorage.traktScrobble ? (localStorage.traktScrobble == 'true') : true : false;
+                if (shouldScrobble) {
+                    traktUtil.handleScrobble('start', itemDesc, this.wcjs.position);
+                    this.notifier.info('Scrobbling', '', 4000);
+                }
             }
             this.setState(newObj);
 
@@ -625,59 +630,63 @@ class playerStore {
                 });
             } else if (itemDesc.path) {
 
-                var subQuery = {
-                    filepath: itemDesc.path,
-                    fps: this.wcjs.input.fps
-                };
-                
-                if (itemDesc.byteSize)
-                    subQuery.byteLength = itemDesc.byteSize;
+                if (!localStorage.findSubs || localStorage.findSubs == "true") {
 
-                if (itemDesc.torrentHash) {
-                    subQuery.torrentHash = itemDesc.torrentHash;
-                    subQuery.isFinished = false;
-                }
-
-                var player = this;
-
-                subQuery.cb = subs => {
-                    if (!subs) {
-                        player.notifier.info('Subtitles Not Found', '', 6000);
-                    } else {
-                        this.setState({
-                            foundSubs: true
-                        });
-                        _.defer(() => {
-                            playerActions.setDesc({
-                                subtitles: subs
-                            });
-                            player.notifier.info('Found Subtitles', '', 6000);
-
-                            if (localStorage.lastLanguage && localStorage.lastLanguage != 'none') {
-                                if (subs[localStorage.lastLanguage]) {
-                                    playerActions.loadSub(subs[localStorage.lastLanguage]);
-                                    // select it in the menu too
-                                    var itemIdx = 1;
-                                    _.some(subs, (el, ij) => {
-                                        itemIdx++;
-                                        if (ij == localStorage.lastLanguage) {
-                                            _.defer(() => {
-                                                playerActions.settingChange({
-                                                    selectedSub: itemIdx
-                                                });
-                                            });
-                                            return true;
-                                        } else {
-                                            return false;
-                                        }
-                                    })
-                                }
-                            }
-                        });
+                    var subQuery = {
+                        filepath: itemDesc.path,
+                        fps: this.wcjs.input.fps
+                    };
+                    
+                    if (itemDesc.byteSize)
+                        subQuery.byteLength = itemDesc.byteSize;
+    
+                    if (itemDesc.torrentHash) {
+                        subQuery.torrentHash = itemDesc.torrentHash;
+                        subQuery.isFinished = false;
                     }
-                };
-                
-                subUtil.fetchSubs(subQuery);
+    
+                    var player = this;
+    
+                    subQuery.cb = subs => {
+                        if (!subs) {
+                            player.notifier.info('Subtitles Not Found', '', 6000);
+                        } else {
+                            this.setState({
+                                foundSubs: true
+                            });
+                            _.defer(() => {
+                                playerActions.setDesc({
+                                    subtitles: subs
+                                });
+                                player.notifier.info('Found Subtitles', '', 6000);
+    
+                                if (localStorage.lastLanguage && localStorage.lastLanguage != 'none') {
+                                    if (subs[localStorage.lastLanguage]) {
+                                        playerActions.loadSub(subs[localStorage.lastLanguage]);
+                                        // select it in the menu too
+                                        var itemIdx = 1;
+                                        _.some(subs, (el, ij) => {
+                                            itemIdx++;
+                                            if (ij == localStorage.lastLanguage) {
+                                                _.defer(() => {
+                                                    playerActions.settingChange({
+                                                        selectedSub: itemIdx
+                                                    });
+                                                });
+                                                return true;
+                                            } else {
+                                                return false;
+                                            }
+                                        })
+                                    }
+                                }
+                            });
+                        }
+                    };
+                    
+                    subUtil.fetchSubs(subQuery);
+                    
+                }
             }
             
         } else {

@@ -36,7 +36,8 @@ default React.createClass({
             alwaysOnTop: playerState.alwaysOnTop,
             playerRippleEffects: playerState.rippleEffects,
             trakt: traktUtil.loggedIn ? true : false,
-            traktScrobble: localStorage.traktScrobble ? (localStorage.traktScrobble == 'true') : true
+            traktScrobble: localStorage.traktScrobble ? (localStorage.traktScrobble == 'true') : true,
+            findSubs: localStorage.findSubs ? (localStorage.findSubs == 'true') : true
         };
     },
     componentWillMount() {
@@ -88,6 +89,15 @@ default React.createClass({
             });
         }
     },
+    handleFindSubs(event, toggled) {
+        
+        localStorage.findSubs = toggled;
+        
+        this.setState({
+            findSubs: toggled
+        });
+        
+    },
     handleScrobbler(event, toggled) {
         
         localStorage.traktScrobble = toggled;
@@ -111,6 +121,12 @@ default React.createClass({
                     onToggle={this.handlePlayerRippleEffects}
                     defaultToggled={this.state.playerRippleEffects}
                     label="Player Ripple Effects:"/>
+
+                <Toggle
+                    name="find-subs"
+                    onToggle={this.handleFindSubs}
+                    defaultToggled={this.state.findSubs}
+                    label="Find Subtitles:"/>
 
                 <Toggle
                     name="trakt-scrobble"

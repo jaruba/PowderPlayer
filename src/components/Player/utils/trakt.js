@@ -68,29 +68,30 @@ trakt.logOut = () => {
 // @param type = 'movie' or 'episode';
 trakt.scrobble = (state, percent, obj) => {
 
-//    console.log('scrobble: '+state+' - '+percent);
-    
-    var type = obj.season ? 'episode' : 'movie';
-    
-    percent = Math.round(percent * 10000)/100;
-    var item = {
-        progress: percent
-    };
-    item[type] = {
-        ids: {
-            trakt: obj.ids.trakt
-        }
-    };
-    trakttv.scrobble[state](item).catch( err => {
-        console.error('Trakt scrobble failed', err);
-    });
+    var shouldScrobble = trakt.loggedIn ? localStorage.traktScrobble ? (localStorage.traktScrobble == 'true') : true : false;
+    if (shouldScrobble) {
+        //    console.log('scrobble: '+state+' - '+percent);
+        
+        var type = obj.season ? 'episode' : 'movie';
+        
+        percent = Math.round(percent * 10000)/100;
+        var item = {
+            progress: percent
+        };
+        item[type] = {
+            ids: {
+                trakt: obj.ids.trakt
+            }
+        };
+        trakttv.scrobble[state](item).catch( err => {
+            console.error('Trakt scrobble failed', err);
+        });
+    }
 };
 
 trakt.handleScrobble = (state, desc, progress) => {
     if (desc.setting && desc.setting.trakt) {
-        var shouldScrobble = trakt.loggedIn ? localStorage.traktScrobble ? (localStorage.traktScrobble == 'true') : true : false;
-        if (shouldScrobble) 
-            trakt.scrobble(state, progress, desc.setting.trakt);
+        trakt.scrobble(state, progress, desc.setting.trakt);
     }
 };
 
