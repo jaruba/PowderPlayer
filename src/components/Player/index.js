@@ -6,6 +6,7 @@ import PlayerRender from './components/Renderer.react';
 import Playlist from './components/Playlist.react';
 import Settings from './components/Settings.react';
 import SubtitleList from './components/Subtitles.react';
+import SubtitleText from './components/SubtitleText.react';
 
 import PlayerStore from './store';
 import PlayerActions from './actions';
@@ -85,15 +86,12 @@ default React.createClass({
         var announceStyle = {
             fontSize: this.state.fontSize
         };
-        var subStyle = {
-            fontSize: this.state.subSize
-        };
         return (
             <div onMouseMove={this.hover} className="wcjs-player" style={cursorStyle}>
                 <PlayerHeader />
                 <PlayerRender />
                 <span className='wcjs-announce' style={announceStyle}></span>
-                <span className='wcjs-subtitle-text' style={subStyle}></span>
+                <SubtitleText />
                 <PlayerControls />
                 <Playlist />
                 <Settings />

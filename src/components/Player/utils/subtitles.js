@@ -26,10 +26,6 @@ function toSeconds(t){
     return s;
 }
 
-function nl2br(str,is_xhtml) {
-    breakTag=(is_xhtml||typeof is_xhtml==='undefined')?'<br />':'<br>';return (str+'').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g,'$1'+breakTag+'$2');
-}
-
 subtitles.os = new osMod(atob('T3BlblN1YnRpdGxlc1BsYXllciB2NC43'));
 subtitles.findHashTime = 0;
 subtitles.osCookie = false;
@@ -289,7 +285,7 @@ subtitles.processSub = (srt, extension, cb) => {
               var is = Math.round(st[0].substr(1) /10);
               var os = Math.round(st[1].split('}')[0] /10);
               var t = st[1].split('}')[1].replace('|', '\n');
-              if (is != 1 && os != 1) parsedSub[is] = {i:is, o: os, t: nl2br(t)};
+              if (is != 1 && os != 1) parsedSub[is] = {i:is, o: os, t: t};
             }
         }
     }

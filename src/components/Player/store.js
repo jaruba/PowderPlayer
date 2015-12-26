@@ -75,6 +75,8 @@ class playerStore {
 
         this.notifier = false;
 
+        this.subText = '';
+
     }
 
     onSettingChange(setting) {
@@ -397,13 +399,17 @@ class playerStore {
                         } else if ((subLines[line].t.match(new RegExp("<", "g")) || []).length > 2)
                             subLines[line].t = subLines[line].t.replace(/<\/?[^>]+(>|$)/g, "");
 
-                        document.getElementsByClassName("wcjs-subtitle-text")[0].innerHTML = subLines[line].t;
+                        this.setState({
+                            subText: subLines[line].t
+                        });
                         
                         this.setState({
                             trackSub: line
                         });
                     } else if (subLines[line].o < nowSecond)
-                        document.getElementsByClassName("wcjs-subtitle-text")[0].innerHTML = '';
+                        this.setState({
+                            subText: ''
+                        });
 
                 }
             }
@@ -577,7 +583,8 @@ class playerStore {
             buffering: false,
             playing: false,
             paused: false,
-            foundTrakt: false
+            foundTrakt: false,
+            subText: ''
         });
     }
 
@@ -726,7 +733,8 @@ class playerStore {
             subtitle: [],
             trackSub: -1,
             selectedSub: 1,
-            subtitlesOpen: false
+            subtitlesOpen: false,
+            subText: ''
         });
         
         _.defer(() => {

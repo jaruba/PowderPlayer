@@ -87,9 +87,9 @@ default React.createClass({
                 selectedSub: itemId,
                 subtitlesOpen: false,
                 subtitle: [],
-                trackSub: -1
+                trackSub: -1,
+                subText: ''
             });
-            document.getElementsByClassName("wcjs-subtitle-text")[0].innerHTML = '';
         }
     },
     render() {
