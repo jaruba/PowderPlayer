@@ -105,6 +105,8 @@ class playerStore {
                 subtitle: parsedSub,
                 trackSub: -1
             });
+            playerActions.setSubDelay(0);
+            this.subDelayField.setValue('0 ms');
         });
     }
 
@@ -723,10 +725,14 @@ class playerStore {
             foundSubs: false,
             subtitle: [],
             trackSub: -1,
-            subDelay: 0,
             selectedSub: 1,
             subtitlesOpen: false
         });
+        
+        _.defer(() => {
+            playerActions.setSubDelay(0);
+        });
+        this.subDelayField.setValue('0 ms');
     }
 
     onPlay() {
@@ -857,6 +863,13 @@ class playerStore {
         }
 
     }
+    
+    onSetSubDelay(newDelay) {
+        this.wcjs.subtitles.delay = newDelay;
+        this.setState({
+            subDelay: newDelay
+        });
+    }
 
     onReplaceMRL(newObj) {
         
@@ -962,13 +975,16 @@ class playerStore {
             foundSubs: false,
             subtitle: [],
             trackSub: -1,
-            subDelay: 0,
             selectedSub: 1,
             
             playlistOpen: false,
             subtitlesOpen: false
 
         });
+        _.defer(() => {
+            playerActions.setSubDelay(0);
+        });
+        this.subDelayField.setValue('0 ms');
         if (this.wcjs) {
             
             traktUtil.handleScrobble('stop', this.itemDesc(), this.wcjs.position);

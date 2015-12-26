@@ -42,6 +42,7 @@ class PlayerActions {
             'parseURL',
             'replaceMRL',
             'loadSub',
+            'setSubDelay',
 
             'itemCount',
             'itemDesc',

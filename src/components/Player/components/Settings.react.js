@@ -4,7 +4,7 @@ import PureRenderMixin from 'react-addons-pure-render-mixin';
 import MUI from 'material-ui';
 
 const {
-    RaisedButton, Toggle, Tabs, Tab
+    RaisedButton, Toggle, Tabs, Tab, TextField, IconButton
 } = MUI;
 import PlayerStore from '../store';
 import PlayerActions from '../actions';
@@ -41,7 +41,8 @@ default React.createClass({
             traktScrobble: localStorage.traktScrobble ? (localStorage.traktScrobble == 'true') : true,
             findSubs: localStorage.findSubs ? (localStorage.findSubs == 'true') : true,
             autoSub: localStorage.autoSub ? (localStorage.autoSub == 'true') : true,
-            menuFlags: localStorage.menuFlags ? (localStorage.menuFlags == 'true') : true
+            menuFlags: localStorage.menuFlags ? (localStorage.menuFlags == 'true') : true,
+            defaultSubDelay: playerState.subDelay
         }
     },
     componentWillMount() {
@@ -51,6 +52,13 @@ default React.createClass({
     componentWillUnmount() {
         PlayerStore.unlisten(this.update);
     },
+    
+    componentDidMount() {
+        PlayerActions.settingChange({
+            subDelayField: this.refs['subDelayInput']
+        });
+    },
+        
     update() {
         if (this.isMounted()) {
             var playerState = PlayerStore.getState();
@@ -58,7 +66,8 @@ default React.createClass({
                 open: playerState.settingsOpen,
                 alwaysOnTop: playerState.alwaysOnTop,
                 playerRippleEffects: playerState.rippleEffects,
-                trakt: traktUtil.loggedIn ? true : false
+                trakt: traktUtil.loggedIn ? true : false,
+                defaultSubDelay: playerState.subDelay
             });
         }
     },
@@ -152,7 +161,44 @@ default React.createClass({
         
     },
 
+    _handleSubDelayDown(event) {
+        this.refs['subDelayInput'].setValue((parseInt(this.refs['subDelayInput'].getValue())-50)+' ms');
+        if (event) {
+            PlayerActions.setSubDelay(parseInt(this.refs['subDelayInput'].getValue()));
+        }
+    },
+    
+    _handleSubDelayUp(event) {
+        this.refs['subDelayInput'].setValue((parseInt(this.refs['subDelayInput'].getValue())+50)+' ms');
+        if (event) {
+            PlayerActions.setSubDelay(parseInt(this.refs['subDelayInput'].getValue()));
+        }
+    },
+    
+    _handleSubDelayKeys(event) {
+        if (event.keyCode == 38) {
+            event.preventDefault();
+            this._handleSubDelayUp();
+        } else if (event.keyCode == 40) {
+            event.preventDefault();
+            this._handleSubDelayDown();
+        } else if ([13, 27].indexOf(event.keyCode) > -1) {
+            event.preventDefault();
+            this.refs['subDelayInput'].blur();
+        }
+    },
+    
+    _handleSubDelayBlur(event) {
+        var newValue = parseInt(this.refs['subDelayInput'].getValue());
+        if (isNaN(newValue))
+            newValue = 0;
+
+        this.refs['subDelayInput'].setValue(newValue+' ms');
+        PlayerActions.setSubDelay(newValue);
+    },
+    
     render() {
+
         return (
             <div className={this.state.open ? 'playlist-container show' : 'playlist-container'}>
                 <div className="playlist-controls" / >
@@ -194,7 +240,7 @@ default React.createClass({
                                     style={{marginBottom: '7px'}}/>
 
                                 <Toggle
-                                    name="find-subs"
+                                    name="auto-select-subs"
                                     onToggle={this.handleAutoSub}
                                     defaultToggled={this.state.autoSub}
                                     label="Auto-select Subtitle:"
@@ -206,6 +252,30 @@ default React.createClass({
                                     defaultToggled={this.state.menuFlags}
                                     label="Flags in Menu:"
                                     style={{marginBottom: '7px'}}/>
+
+                                <div className="sub-delay-setting">
+                                <span style={{color: '#fff'}}>
+                                    Subtitle Delay:
+                                </span>
+                                <IconButton
+                                    onClick={this._handleSubDelayDown}
+                                    iconClassName="material-icons"
+                                    iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
+                                    keyboard_arrow_down
+                                </IconButton>
+                                <IconButton
+                                    onClick={this._handleSubDelayUp}
+                                    iconClassName="material-icons"
+                                    iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
+                                    keyboard_arrow_up
+                                </IconButton>
+                                <TextField
+                                    ref="subDelayInput"
+                                    defaultValue={this.state.defaultSubDelay+' ms'}
+                                    onKeyDown={this._handleSubDelayKeys}
+                                    onBlur={this._handleSubDelayBlur}
+                                    style={{float: 'right', height: '32px', width: '100px', top: '-5px'}} />
+                                </div>
                             </div>
                         </Tab>
 
