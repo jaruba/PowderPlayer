@@ -8,7 +8,7 @@ default React.createClass({
         var playerState = PlayerStore.getState();
         return {
             text: playerState.subText,
-            size: playerState.subSize,
+            size: (playerState.subSize * (parseInt(localStorage.customSubSize) / 100)),
             visibility: !(playerState.playlistOpen || playerState.settingsOpen)
         }
     },
@@ -24,7 +24,7 @@ default React.createClass({
             var playerState = PlayerStore.getState();
             this.setState({
                 text: playerState.subText,
-                size: playerState.subSize,
+                size: (playerState.subSize * (parseInt(localStorage.customSubSize) / 100)),
                 visibility: !(playerState.playlistOpen || playerState.settingsOpen)
             });
         }
@@ -36,7 +36,7 @@ default React.createClass({
             zIndex: this.state.visibility ? '10' : '1'
         };
         return (
-            <span className='wcjs-subtitle-text' style={style}>{this.state.text}</span>
+            <span className='wcjs-subtitle-text' style={style} dangerouslySetInnerHTML={{__html: this.state.text}} />
         );
     }
 

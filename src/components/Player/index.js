@@ -33,6 +33,8 @@ default React.createClass({
         }
     },
     componentWillMount() {
+        if (!localStorage.customSubSize)
+            localStorage.customSubSize = 100;
         PlayerStore.listen(this.update);
     },
     componentWillUnmount() {

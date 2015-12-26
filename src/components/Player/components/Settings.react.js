@@ -43,7 +43,8 @@ default React.createClass({
             autoSub: localStorage.autoSub ? (localStorage.autoSub == 'true') : true,
             menuFlags: localStorage.menuFlags ? (localStorage.menuFlags == 'true') : true,
             defaultSubDelay: playerState.subDelay,
-            speed: playerState.speed
+            speed: playerState.speed,
+            customSubSize: localStorage.customSubSize
         }
     },
     componentWillMount() {
@@ -70,7 +71,8 @@ default React.createClass({
                 playerRippleEffects: playerState.rippleEffects,
                 trakt: traktUtil.loggedIn ? true : false,
                 defaultSubDelay: playerState.subDelay,
-                speed: playerState.speed
+                speed: playerState.speed,
+                customSubSize: localStorage.customSubSize
             });
         }
     },
@@ -268,6 +270,59 @@ default React.createClass({
         PlayerStore.getState().wcjs.input.rate = newValue;
     },
     
+    _handleSubSizeDown(event) {
+        var newValue = parseInt(this.refs['subSizeInput'].getValue()) - 5;
+        this.refs['subSizeInput'].setValue(newValue + '%');
+        if (event) {
+            localStorage.customSubSize = newValue;
+            this.setState({
+                customSubSize: newValue
+            });
+        }
+    },
+    
+    _handleSubSizeUp(event) {
+        var newValue = parseInt(this.refs['subSizeInput'].getValue()) + 5;
+        this.refs['subSizeInput'].setValue(newValue + '%');
+        if (event) {
+            localStorage.customSubSize = newValue;
+            this.setState({
+                customSubSize: newValue
+            });
+        }
+    },
+    
+    _handleSubSizeKeys(event) {
+        if (event.keyCode == 38) {
+            event.preventDefault();
+            this._handleSubDelayUp();
+        } else if (event.keyCode == 40) {
+            event.preventDefault();
+            this._handleSubDelayDown();
+        } else if ([13, 27].indexOf(event.keyCode) > -1) {
+            event.preventDefault();
+            this.refs['subSizeInput'].blur();
+        }
+    },
+    
+    _handleSubSizeBlur(event) {
+        var newValue = parseInt(this.refs['subSizeInput'].getValue());
+        if (isNaN(newValue))
+            newValue = 5;
+            
+        if (newValue < 5)
+            newValue = 5;
+        else if (newValue > 400)
+            newValue = 400;
+
+        this.refs['subSizeInput'].setValue(newValue+'%');
+        
+        localStorage.customSubSize = newValue;
+        this.setState({
+            customSubSize: newValue
+        });
+    },
+
     render() {
 
         return (
@@ -370,6 +425,32 @@ default React.createClass({
                                         onKeyDown={this._handleSubDelayKeys}
                                         onBlur={this._handleSubDelayBlur}
                                         style={{float: 'right', height: '32px', width: '86px', top: '-5px'}} />
+                                </div>
+
+                                <div style={{clear: 'both'}} />
+
+                                <div className="sub-delay-setting">
+                                    <span style={{color: '#fff'}}>
+                                        Subtitle Size:
+                                    </span>
+                                    <IconButton
+                                        onClick={this._handleSubSizeDown}
+                                        iconClassName="material-icons"
+                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
+                                        keyboard_arrow_down
+                                    </IconButton>
+                                    <IconButton
+                                        onClick={this._handleSubSizeUp}
+                                        iconClassName="material-icons"
+                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
+                                        keyboard_arrow_up
+                                    </IconButton>
+                                    <TextField
+                                        ref="subSizeInput"
+                                        defaultValue={this.state.customSubSize+'%'}
+                                        onKeyDown={this._handleSubSizeKeys}
+                                        onBlur={this._handleSubSizeBlur}
+                                        style={{float: 'right', height: '32px', width: '50px', top: '-5px'}} />
                                 </div>
                             </div>
                         </Tab>
