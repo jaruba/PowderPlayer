@@ -48,6 +48,8 @@ class PlayerActions {
             'itemDesc',
             'setDesc',
 
+            'announcement',
+
             'updateImage'
         );
     }

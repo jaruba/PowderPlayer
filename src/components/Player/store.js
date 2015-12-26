@@ -76,6 +76,8 @@ class playerStore {
         this.notifier = false;
 
         this.subText = '';
+        this.announce = '';
+        this.announceEffect = '';
 
     }
 
@@ -481,30 +483,45 @@ class playerStore {
     }
 
     onBuffering(perc) {
-        var announcer = document.getElementsByClassName('wcjs-announce')[0];
         var itemDesc = this.itemDesc();
-        if (itemDesc.mrl && itemDesc.mrl.indexOf('file://') == 0) announcer = null;
-        if (announcer)
-            announcer.innerHTML = 'Buffering '+perc+'%';
+        var isLocal = (itemDesc.mrl && itemDesc.mrl.indexOf('file://') == 0);
+        if (!isLocal) {
+            var announcer = {};
+            announcer.announce = 'Buffering '+perc+'%';
+            clearTimeout(this.announceTimer);
+
+            if (perc === 100) {
+                announcer.buffering = false;
+                if (!this.announceEffect)
+                    announcer.announceEffect = true;
+            } else {
+                announcer.buffering = perc;
+                if (this.announceEffect)
+                    announcer.announceEffect = false;
+            }
             
-        if (perc === 100) {
-            this.setState({
-                buffering: false
-            });
-            if (announcer && [1, '1'].indexOf(announcer.style.opacity) > -1) {
-                announcer.style.transition = 'opacity .5s ease-in-out';
-                announcer.style.opacity = '0';
-            }
-        } else {
-            this.setState({
-                buffering: perc
-            });
-            if (announcer && ['', '0', 0].indexOf(announcer.style.opacity) > -1) {
-                announcer.style.transition = 'none';
-                announcer.style.opacity = '1';
-            }
+            if (Object.keys(announcer).length)
+                this.setState(announcer);
         }
 
+    }
+    
+    onAnnouncement(text) {
+        var announcer = {};
+        announcer.announce = text;
+        
+        clearTimeout(this.announceTimer);
+        var playerState = this;
+        announcer.announceTimer = setTimeout(() => {
+            if (!playerState.announceEffect)
+                playerState.announceEffect = true;
+        },2000);
+
+        if (this.announceEffect)
+            announcer.announceEffect = false;
+        
+        if (Object.keys(announcer).length)
+            this.setState(announcer);
     }
     
     onUpdateImage(image) {
@@ -612,6 +629,7 @@ class playerStore {
 
         if (this.wcjs)
             this.wcjs.volume = value
+
     }
 
     onMute(mute) {

@@ -7,8 +7,9 @@ default React.createClass({
     getInitialState() {
         var playerState = PlayerStore.getState();
         return {
-            text: playerState.subText,
-            size: playerState.subSize,
+            text: playerState.announce,
+            size: playerState.fontSize,
+            effect: playerState.announceEffect,
             visibility: !(playerState.playlistOpen || playerState.settingsOpen)
         }
     },
@@ -23,8 +24,9 @@ default React.createClass({
         if (this.isMounted()) {
             var playerState = PlayerStore.getState();
             this.setState({
-                text: playerState.subText,
-                size: playerState.subSize,
+                text: playerState.announce,
+                size: playerState.fontSize,
+                effect: playerState.announceEffect,
                 visibility: !(playerState.playlistOpen || playerState.settingsOpen)
             });
         }
@@ -33,10 +35,12 @@ default React.createClass({
     render() {
         var style = {
             fontSize: this.state.size,
+            transition: this.state.effect ? 'opacity .5s ease-in-out' : 'none',
+            opacity:this.state.effect ? '0' : '1',
             zIndex: this.state.visibility ? '10' : '1'
         };
         return (
-            <span className='wcjs-subtitle-text' style={style}>{this.state.text}</span>
+            <span className='wcjs-announce' style={style}>{this.state.text}</span>
         );
     }
 

@@ -254,7 +254,7 @@ subtitles.processSub = (srt, extension, cb) => {
         
         if (srty[0].substr(0,6).toLowerCase() == "webvtt") si = 1;
 
-        for (s = si; s < srty.length; s++) {
+        for (var s = si; s < srty.length; s++) {
             var st = srty[s].split('\n');
             if (st.length >=2) {
                 var n = -1;
@@ -267,7 +267,7 @@ subtitles.processSub = (srt, extension, cb) => {
                     var is = Math.round(toSeconds(strip(stOrigin.split(' --> ')[0])));
                     var os = Math.round(toSeconds(strip(stOrigin.split(' --> ')[1])));
                     var t = st[n+1];
-                    if (st.length > n+2) for (j=n+2; j<st.length; j++) t = t + '\n'+st[j];
+                    if (st.length > n+2) for (var j=n+2; j<st.length; j++) t = t + '\n'+st[j];
                     parsedSub[is] = {i:is, o: os, t: t};
                 }
             }

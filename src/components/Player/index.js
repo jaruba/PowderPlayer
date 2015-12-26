@@ -7,6 +7,7 @@ import Playlist from './components/Playlist.react';
 import Settings from './components/Settings.react';
 import SubtitleList from './components/Subtitles.react';
 import SubtitleText from './components/SubtitleText.react';
+import Announcement from './components/Announcement.react';
 
 import PlayerStore from './store';
 import PlayerActions from './actions';
@@ -27,9 +28,6 @@ default React.createClass({
             position: playerState.position,
             buffering: playerState.buffering,
             uiShown: playerState.uiShown,
-            
-            fontSize: playerState.fontSize,
-            subSize: playerState.subSize,
             
             rippleEffects: playerState.rippleEffects
         }
@@ -83,14 +81,11 @@ default React.createClass({
         var cursorStyle = {
             cursor: this.state.uiShown ? 'pointer' : 'none'
         };
-        var announceStyle = {
-            fontSize: this.state.fontSize
-        };
         return (
             <div onMouseMove={this.hover} className="wcjs-player" style={cursorStyle}>
                 <PlayerHeader />
                 <PlayerRender />
-                <span className='wcjs-announce' style={announceStyle}></span>
+                <Announcement />
                 <SubtitleText />
                 <PlayerControls />
                 <Playlist />
