@@ -33,6 +33,7 @@ class playerStore {
         this.paused = false;
 
         this.alwaysOnTop = false;
+        this.clickPause = localStorage.clickPause ? (localStorage.clickPause === "true") : true;
         this.rippleEffects = localStorage.playerRippleEffects ? (localStorage.playerRippleEffects === "true") : true;
 
         this.muted = false;
@@ -713,10 +714,10 @@ class playerStore {
                                             playerActions.loadSub(subs[localStorage.lastLanguage]);
                                             // select it in the menu too
                                             if (this.wcjs.subtitles.count > 0)
-                                                var itemIdx = this.wcjs.subtitles.count -1;
+                                                var itemIdx = this.wcjs.subtitles.count;
                                             else
                                                 var itemIdx = 1;
-                                            
+
                                             _.some(subs, (el, ij) => {
                                                 itemIdx++;
                                                 if (ij == localStorage.lastLanguage) {

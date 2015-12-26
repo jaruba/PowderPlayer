@@ -35,6 +35,7 @@ default React.createClass({
         return {
             open: false,
             alwaysOnTop: playerState.alwaysOnTop,
+            clickPause: playerState.clickPause,
             playerRippleEffects: playerState.rippleEffects,
             playerNotifs: localStorage.playerNotifs ? (localStorage.playerNotifs == 'true') : true,
             trakt: traktUtil.loggedIn ? true : false,
@@ -68,6 +69,7 @@ default React.createClass({
             this.setState({
                 open: playerState.settingsOpen,
                 alwaysOnTop: playerState.alwaysOnTop,
+                clickPause: playerState.clickPause,
                 playerRippleEffects: playerState.rippleEffects,
                 trakt: traktUtil.loggedIn ? true : false,
                 defaultSubDelay: playerState.subDelay,
@@ -79,27 +81,6 @@ default React.createClass({
 
     close() {
         PlayerActions.openSettings(false);
-    },
-
-    handleOpenPlaylist() {
-
-
-    },
-
-    handleAlwaysOnTop(event, toggled) {
-        PlayerActions.settingChange({
-            alwaysOnTop: toggled
-        });
-        PlayerActions.toggleAlwaysOnTop(toggled);
-    },
-    handlePlayerRippleEffects(event, toggled) {
-        
-        localStorage.playerRippleEffects = toggled;
-        
-        PlayerActions.settingChange({
-            rippleEffects: toggled
-        });
-        
     },
     openTraktLogin(event) {
         if (traktUtil.loggedIn) {
@@ -116,54 +97,61 @@ default React.createClass({
             });
         }
     },
+
+    handleAlwaysOnTop(event, toggled) {
+        PlayerActions.settingChange({
+            alwaysOnTop: toggled
+        });
+        PlayerActions.toggleAlwaysOnTop(toggled);
+    },
+
+    handlePlayerRippleEffects(event, toggled) {
+        localStorage.playerRippleEffects = toggled;
+        PlayerActions.settingChange({
+            rippleEffects: toggled
+        });
+    },
+
     handleFindSubs(event, toggled) {
-        
         localStorage.findSubs = toggled;
-        
         this.setState({
             findSubs: toggled
         });
-        
     },
+
     handleScrobbler(event, toggled) {
-        
         localStorage.traktScrobble = toggled;
-        
         this.setState({
             traktScrobble: toggled
         });
-        
     },
-    
+
     handlePlayerNotifs(event, toggled) {
-        
         localStorage.playerNotifs = toggled;
-        
         this.setState({
             playerNotifs: toggled
         });
-        
     },
     
     handleAutoSub(event, toggled) {
-        
         localStorage.autoSub = toggled;
-        
         this.setState({
             autoSub: toggled
         });
-        
     },
 
-    
     handleMenuFlags(event, toggled) {
-        
         localStorage.menuFlags = toggled;
-        
         this.setState({
             menuFlags: toggled
         });
-        
+    },
+
+    handleClickPause(event, toggled) {
+        localStorage.clickPause = toggled;
+        PlayerActions.settingChange({
+            clickPause: toggled
+        });
     },
 
     _handleSubDelayDown(event) {
@@ -338,6 +326,13 @@ default React.createClass({
                                     onToggle={this.handleAlwaysOnTop}
                                     defaultToggled={this.state.alwaysOnTop}
                                     label="Always on top:"
+                                    style={{marginBottom: '7px'}}/>
+
+                                <Toggle
+                                    name="click-to-pause"
+                                    onToggle={this.handleClickPause}
+                                    defaultToggled={this.state.clickPause}
+                                    label="Click to Pause:"
                                     style={{marginBottom: '7px'}}/>
 
                                 <Toggle

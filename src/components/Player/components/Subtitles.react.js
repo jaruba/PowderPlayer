@@ -93,7 +93,7 @@ default React.createClass({
             });
         }
     },
-    
+
     selectInternal(idx, item, itemId) {
         var wcjs = PlayerStore.getState().wcjs;
         if (item && (itemId - 1) < wcjs.subtitles.count) {

@@ -36,6 +36,7 @@ default React.createClass({
             fullscreen: playerState.fullscreen,
 
             rippleEffects: playerState.rippleEffects,
+            clickPause: playerState.clickPause,
             firstPlay: true
         }
     },
@@ -75,7 +76,8 @@ default React.createClass({
                 playing: playerState.playing,
                 fullscreen: playerState.fullscreen,
                 volume: playerState.volume,
-                rippleEffects: playerState.rippleEffects
+                rippleEffects: playerState.rippleEffects,
+                clickPause: playerState.clickPause
             });
         }
     },
@@ -269,7 +271,8 @@ default React.createClass({
         });
     },
     handleTogglePlay() {
-        this.state.playing ? PlayerActions.pause() : PlayerActions.play();
+        if (this.state.clickPause)
+            this.state.playing ? PlayerActions.pause() : PlayerActions.play();
     },
     wheel(event) {
         var volume = (event.deltaY < 0) ? this.player.volume + 5 : this.player.volume - 5;
