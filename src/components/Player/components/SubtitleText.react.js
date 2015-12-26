@@ -8,7 +8,8 @@ default React.createClass({
         var playerState = PlayerStore.getState();
         return {
             subText: playerState.subText,
-            subSize: playerState.subSize
+            subSize: playerState.subSize,
+            subVisibility: !(playerState.playlistOpen || playerState.settingsOpen)
         }
     },
     componentWillMount() {
@@ -23,7 +24,8 @@ default React.createClass({
             var playerState = PlayerStore.getState();
             this.setState({
                 subText: playerState.subText,
-                subSize: playerState.subSize
+                subSize: playerState.subSize,
+                subVisibility: !(playerState.playlistOpen || playerState.settingsOpen)
             });
         }
     },
@@ -34,7 +36,8 @@ default React.createClass({
 
     render() {
         var subStyle = {
-            fontSize: this.state.subSize
+            fontSize: this.state.subSize,
+            zIndex: this.subVisibility ? 10 : 1
         };
         return (
             <span className='wcjs-subtitle-text' style={subStyle}>{this.state.subText}</span>
