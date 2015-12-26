@@ -47,6 +47,7 @@ class PlayerActions {
             'itemCount',
             'itemDesc',
             'setDesc',
+            'setRate',
 
             'announcement',
 

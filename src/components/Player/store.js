@@ -78,6 +78,8 @@ class playerStore {
         this.subText = '';
         this.announce = '';
         this.announceEffect = '';
+        
+        this.speed = 1;
 
     }
 
@@ -757,7 +759,9 @@ class playerStore {
         
         _.defer(() => {
             playerActions.setSubDelay(0);
+            playerActions.setRate(1);
         });
+        this.speedField.setValue('1.00x');
         this.subDelayField.setValue('0 ms');
     }
 
@@ -896,6 +900,13 @@ class playerStore {
             subDelay: newDelay
         });
     }
+    
+    onSetRate(newRate) {
+        this.wcjs.input.rate = newRate;
+        this.setState({
+            rate: newRate
+        });
+    }
 
     onReplaceMRL(newObj) {
         
@@ -1009,7 +1020,9 @@ class playerStore {
         });
         _.defer(() => {
             playerActions.setSubDelay(0);
+            playerActions.setRate(1);
         });
+        this.speedField.setValue('1.00x');
         this.subDelayField.setValue('0 ms');
         if (this.wcjs) {
             

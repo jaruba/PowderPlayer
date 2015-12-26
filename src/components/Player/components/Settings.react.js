@@ -42,7 +42,8 @@ default React.createClass({
             findSubs: localStorage.findSubs ? (localStorage.findSubs == 'true') : true,
             autoSub: localStorage.autoSub ? (localStorage.autoSub == 'true') : true,
             menuFlags: localStorage.menuFlags ? (localStorage.menuFlags == 'true') : true,
-            defaultSubDelay: playerState.subDelay
+            defaultSubDelay: playerState.subDelay,
+            speed: playerState.speed
         }
     },
     componentWillMount() {
@@ -55,7 +56,8 @@ default React.createClass({
     
     componentDidMount() {
         PlayerActions.settingChange({
-            subDelayField: this.refs['subDelayInput']
+            subDelayField: this.refs['subDelayInput'],
+            speedField: this.refs['speedInput']
         });
     },
         
@@ -67,7 +69,8 @@ default React.createClass({
                 alwaysOnTop: playerState.alwaysOnTop,
                 playerRippleEffects: playerState.rippleEffects,
                 trakt: traktUtil.loggedIn ? true : false,
-                defaultSubDelay: playerState.subDelay
+                defaultSubDelay: playerState.subDelay,
+                speed: playerState.speed
             });
         }
     },
@@ -196,6 +199,74 @@ default React.createClass({
         this.refs['subDelayInput'].setValue(newValue+' ms');
         PlayerActions.setSubDelay(newValue);
     },
+
+    _handleSpeedDown(event) {
+        
+        var newRate = 0;
+        var playerState = PlayerStore.getState();
+        var curRate = playerState.wcjs.input.rate;
+        
+        if (curRate > 0.25 && curRate <= 0.5) newRate = 0.125;
+        if (curRate > 0.5 && curRate <= 1) newRate = 0.25;
+        if (curRate > 1 && curRate <= 2) newRate = 0.5;
+        if (curRate > 2 && curRate <= 4) newRate = 1;
+        if (curRate > 4) newRate = curRate /2;
+        if ((curRate + newRate) >= 0.25)
+            playerState.wcjs.input.rate = curRate - newRate;
+
+        var newValue = parseFloat(Math.round(playerState.wcjs.input.rate * 100) / 100).toFixed(2);
+
+        this.refs['speedInput'].setValue(newValue + 'x');
+    },
+    
+    _handleSpeedUp(event) {
+
+        var newRate = 0;
+        var playerState = PlayerStore.getState();
+        var curRate = playerState.wcjs.input.rate;
+        
+        if (curRate >= 0.25 && curRate < 0.5) newRate = 0.125;
+        if (curRate >= 0.5 && curRate < 1) newRate = 0.25;
+        if (curRate >= 1 && curRate < 2) newRate = 0.5;
+        if (curRate >= 2 && curRate < 4) newRate = 1;
+        if (curRate >= 4) newRate = curRate;
+        if ((curRate + newRate) < 100)
+            playerState.wcjs.input.rate = curRate + newRate;
+
+        var newValue = parseFloat(Math.round(playerState.wcjs.input.rate * 100) / 100).toFixed(2);
+
+        this.refs['speedInput'].setValue(newValue + 'x');
+        
+    },
+    
+    _handleSpeedKeys(event) {
+        if (event.keyCode == 38) {
+            event.preventDefault();
+            this._handleSpeedUp();
+        } else if (event.keyCode == 40) {
+            event.preventDefault();
+            this._handleSpeedDown();
+        } else if ([13, 27].indexOf(event.keyCode) > -1) {
+            event.preventDefault();
+            this.refs['speedInput'].blur();
+        }
+    },
+    
+    _handleSpeedBlur(event) {
+        var newValue = parseFloat(this.refs['speedInput'].getValue());
+        if (isNaN(newValue))
+            newValue = 0.25;
+
+        if (newValue > 64)
+            newValue = 64;
+        else if (newValue < 0.25)
+            newValue = 0.25;
+
+        var newValue = parseFloat(Math.round(newValue * 100) / 100).toFixed(2);
+
+        this.refs['speedInput'].setValue(newValue+'x');
+        PlayerStore.getState().wcjs.input.rate = newValue;
+    },
     
     render() {
 
@@ -227,6 +298,30 @@ default React.createClass({
                                     defaultToggled={this.state.playerNotifs}
                                     label="Notifications:"
                                     style={{marginBottom: '7px'}}/>
+
+                                <div className="sub-delay-setting">
+                                    <span style={{color: '#fff'}}>
+                                        Playback Speed:
+                                    </span>
+                                    <IconButton
+                                        onClick={this._handleSpeedDown}
+                                        iconClassName="material-icons"
+                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
+                                        keyboard_arrow_down
+                                    </IconButton>
+                                    <IconButton
+                                        onClick={this._handleSpeedUp}
+                                        iconClassName="material-icons"
+                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
+                                        keyboard_arrow_up
+                                    </IconButton>
+                                    <TextField
+                                        ref="speedInput"
+                                        defaultValue={parseFloat(Math.round(this.state.speed * 100) / 100).toFixed(2) + 'x'}
+                                        onKeyDown={this._handleSpeedKeys}
+                                        onBlur={this._handleSpeedBlur}
+                                        style={{float: 'right', height: '32px', width: '60px', top: '-5px'}} />
+                                </div>
                             </div>
                         </Tab>
 
@@ -254,27 +349,27 @@ default React.createClass({
                                     style={{marginBottom: '7px'}}/>
 
                                 <div className="sub-delay-setting">
-                                <span style={{color: '#fff'}}>
-                                    Subtitle Delay:
-                                </span>
-                                <IconButton
-                                    onClick={this._handleSubDelayDown}
-                                    iconClassName="material-icons"
-                                    iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
-                                    keyboard_arrow_down
-                                </IconButton>
-                                <IconButton
-                                    onClick={this._handleSubDelayUp}
-                                    iconClassName="material-icons"
-                                    iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
-                                    keyboard_arrow_up
-                                </IconButton>
-                                <TextField
-                                    ref="subDelayInput"
-                                    defaultValue={this.state.defaultSubDelay+' ms'}
-                                    onKeyDown={this._handleSubDelayKeys}
-                                    onBlur={this._handleSubDelayBlur}
-                                    style={{float: 'right', height: '32px', width: '100px', top: '-5px'}} />
+                                    <span style={{color: '#fff'}}>
+                                        Subtitle Delay:
+                                    </span>
+                                    <IconButton
+                                        onClick={this._handleSubDelayDown}
+                                        iconClassName="material-icons"
+                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
+                                        keyboard_arrow_down
+                                    </IconButton>
+                                    <IconButton
+                                        onClick={this._handleSubDelayUp}
+                                        iconClassName="material-icons"
+                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
+                                        keyboard_arrow_up
+                                    </IconButton>
+                                    <TextField
+                                        ref="subDelayInput"
+                                        defaultValue={this.state.defaultSubDelay+' ms'}
+                                        onKeyDown={this._handleSubDelayKeys}
+                                        onBlur={this._handleSubDelayBlur}
+                                        style={{float: 'right', height: '32px', width: '86px', top: '-5px'}} />
                                 </div>
                             </div>
                         </Tab>
