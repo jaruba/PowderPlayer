@@ -284,6 +284,8 @@ default React.createClass({
     wheel(event) {
         var volume = (event.deltaY < 0) ? this.player.volume + 5 : this.player.volume - 5;
         PlayerActions.volume(volume);
+        if (volume >= 0 && volume <= 200)
+            PlayerActions.announcement('Volume '+volume+'%');
     },
     render() {
         var renderStyles = {
