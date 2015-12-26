@@ -46,18 +46,8 @@ default React.createClass({
     componentDidMount() {
         if (!PlayerStore.getState().wcjs) {
             PlayerActions.wcjsInit(wcjsRenderer.init(this.refs['wcjs-render'], [
-                "--no-media-library",
-                "--no-sub-autodetect-file",
-                "--no-spu",
-                "--no-stats",
-                "--no-osd",
-                "--network-caching=3500",
-                "--file-caching=3000",
-                "--no-skip-frames",
-                "--no-video-title-show",
-                "--disable-screensaver",
-                "--no-autoscale",
-                "--ipv4-timeout=86400000"
+                "--network-caching=7000",
+                "--no-sub-autodetect-file"
             ], {
                 fallbackRenderer: false,
                 preserveDrawingBuffer: true
