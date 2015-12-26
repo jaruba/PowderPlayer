@@ -76,6 +76,7 @@ default React.createClass({
     
     select(idx, item, itemId) {
         localStorage.lastLanguage = idx;
+        PlayerStore.getState().wcjs.subtitles.track = 0;
         if (item) {
             PlayerActions.loadSub(item);
             PlayerActions.settingChange({
@@ -92,6 +93,31 @@ default React.createClass({
             });
         }
     },
+    
+    selectInternal(idx, item, itemId) {
+        var wcjs = PlayerStore.getState().wcjs;
+        if (item && (itemId - 1) < wcjs.subtitles.count) {
+            wcjs.subtitles.track = idx;
+            PlayerActions.settingChange({
+                selectedSub: itemId,
+                subtitlesOpen: false,
+                subtitle: [],
+                subText: ''
+            });
+            
+        }
+    },
+
+    getInternalSubs() {
+        var wcjs = PlayerStore.getState().wcjs;
+        var internalSubs = [];
+        if (wcjs.subtitles && wcjs.subtitles.count > 0) {
+            for (var i = 1; i < wcjs.subtitles.count; i++)
+                internalSubs.push(wcjs.subtitles[i]);
+            return internalSubs;
+        } else return [];
+    },
+
     render() {
         var itemId = 1;
         if (!localStorage.menuFlags || localStorage.menuFlags == 'true') {
@@ -112,6 +138,19 @@ default React.createClass({
             <div className={this.state.open ? 'subtitle-list show' : 'subtitle-list'}>
                 <SelectableList valueLink={{value: this.state.playlistSelected}}>
                     {none}
+                    {
+                        _.map(this.getInternalSubs(), (item, idx) => {
+                            itemId++;
+                            return (
+                            <ListItem
+                              leftAvatar={<Avatar src={'./images/icons/internal-subtitle-icon.png'} />}
+                              value={itemId}
+                              key={item}
+                              primaryText={item}
+                              onClick={this.selectInternal.bind(this, (idx + 1), item, itemId)} />                                    
+                            )
+                        })
+                    }
                     {
                         _.map(this.getItems(), (item, idx) => {
                             itemId++;

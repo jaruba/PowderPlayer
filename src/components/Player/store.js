@@ -642,11 +642,12 @@ class playerStore {
         });
     }
 
-
     onPlaying() {
         if (!this.firstPlay) {
             // catch first play event
-            this.wcjs.volume = parseInt(localStorage.volume);
+            this.wcjs.subtitles.track = 0;
+            if (this.wcjs.volume != parseInt(localStorage.volume))
+                this.wcjs.volume = parseInt(localStorage.volume);
             var newObj = {
                 title: this.wcjs.playlist.items[this.wcjs.playlist.currentItem].title,
                 firstPlay: true,
@@ -711,7 +712,11 @@ class playerStore {
                                         if (subs[localStorage.lastLanguage]) {
                                             playerActions.loadSub(subs[localStorage.lastLanguage]);
                                             // select it in the menu too
-                                            var itemIdx = 1;
+                                            if (this.wcjs.subtitles.count > 0)
+                                                var itemIdx = this.wcjs.subtitles.count -1;
+                                            else
+                                                var itemIdx = 1;
+                                            
                                             _.some(subs, (el, ij) => {
                                                 itemIdx++;
                                                 if (ij == localStorage.lastLanguage) {
