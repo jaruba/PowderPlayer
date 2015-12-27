@@ -1,5 +1,6 @@
 import alt from '../../alt'
 import ipc from 'ipc';
+import remote from 'remote';
 
 class HeaderActions {
     constructor() {
@@ -18,7 +19,7 @@ class HeaderActions {
 
     toggleMinimize() {
         this.dispatch();
-        ipc.send('app:minimize');
+        remote.getCurrentWindow().minimize();
         this.actions.minimize();
     }
 

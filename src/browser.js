@@ -84,8 +84,6 @@ app.on('ready', () => {
         state ? mainWindow.maximize() : mainWindow.unmaximize();
     });
 
-    ipc.on('app:minimize', mainWindow.minimize);
-
     ipc.on('app:alwaysOnTop', (event, state) => mainWindow.setAlwaysOnTop(state));
 
     ipc.on('app:setThumbarButtons', (event, buttons) => mainWindow.setThumbarButtons(buttons));
