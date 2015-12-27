@@ -15,6 +15,8 @@ import ModalActions from '../../Modal/actions';
 var injectTapEventPlugin = require("react-tap-event-plugin");
 injectTapEventPlugin();
 
+import webFrame from 'web-frame';
+
 export
 default React.createClass({
 
@@ -45,7 +47,8 @@ default React.createClass({
             menuFlags: localStorage.menuFlags ? (localStorage.menuFlags == 'true') : true,
             defaultSubDelay: playerState.subDelay,
             speed: playerState.speed,
-            customSubSize: localStorage.customSubSize
+            customSubSize: localStorage.customSubSize,
+            zoomLevel: localStorage.zoomLevel ? parseFloat(localStorage.zoomLevel) : 0
         }
     },
     componentWillMount() {
@@ -74,7 +77,8 @@ default React.createClass({
                 trakt: traktUtil.loggedIn ? true : false,
                 defaultSubDelay: playerState.subDelay,
                 speed: playerState.speed,
-                customSubSize: localStorage.customSubSize
+                customSubSize: localStorage.customSubSize,
+                zoomLevel: localStorage.zoomLevel ? parseFloat(localStorage.zoomLevel) : 0
             });
         }
     },
@@ -311,6 +315,20 @@ default React.createClass({
         });
     },
 
+    _handleZoomLevelDown(event) {
+        var newValue = parseFloat(this.refs['zoomLevelInput'].getValue()) - 0.5;
+        this.refs['zoomLevelInput'].setValue(newValue);
+        webFrame.setZoomLevel(newValue);
+        localStorage.zoomLevel = newValue;
+    },
+
+    _handleZoomLevelUp(event) {
+        var newValue = parseFloat(this.refs['zoomLevelInput'].getValue()) + 0.5;
+        this.refs['zoomLevelInput'].setValue(newValue);
+        webFrame.setZoomLevel(newValue);
+        localStorage.zoomLevel = newValue;
+    },
+
     render() {
 
         return (
@@ -372,6 +390,31 @@ default React.createClass({
                                         onBlur={this._handleSpeedBlur}
                                         style={{float: 'right', height: '32px', width: '60px', top: '-5px'}} />
                                 </div>
+
+                                <div style={{clear: 'both'}} />
+
+                                <div className="sub-delay-setting">
+                                    <span style={{color: '#fff'}}>
+                                        UI Zoom Level:
+                                    </span>
+                                    <IconButton
+                                        onClick={this._handleZoomLevelDown}
+                                        iconClassName="material-icons"
+                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
+                                        keyboard_arrow_down
+                                    </IconButton>
+                                    <IconButton
+                                        onClick={this._handleZoomLevelUp}
+                                        iconClassName="material-icons"
+                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
+                                        keyboard_arrow_up
+                                    </IconButton>
+                                    <TextField
+                                        disabled={true}
+                                        ref="zoomLevelInput"
+                                        defaultValue={this.state.zoomLevel + ''}
+                                        style={{float: 'right', height: '32px', width: '30px', top: '-5px'}} />
+                                </div>
                             </div>
                         </Tab>
 
@@ -400,6 +443,32 @@ default React.createClass({
 
                                 <div className="sub-delay-setting">
                                     <span style={{color: '#fff'}}>
+                                        Subtitle Size:
+                                    </span>
+                                    <IconButton
+                                        onClick={this._handleSubSizeDown}
+                                        iconClassName="material-icons"
+                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
+                                        keyboard_arrow_down
+                                    </IconButton>
+                                    <IconButton
+                                        onClick={this._handleSubSizeUp}
+                                        iconClassName="material-icons"
+                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
+                                        keyboard_arrow_up
+                                    </IconButton>
+                                    <TextField
+                                        ref="subSizeInput"
+                                        defaultValue={this.state.customSubSize+'%'}
+                                        onKeyDown={this._handleSubSizeKeys}
+                                        onBlur={this._handleSubSizeBlur}
+                                        style={{float: 'right', height: '32px', width: '50px', top: '-5px'}} />
+                                </div>
+
+                                <div style={{clear: 'both'}} />
+
+                                <div className="sub-delay-setting">
+                                    <span style={{color: '#fff'}}>
                                         Subtitle Delay:
                                     </span>
                                     <IconButton
@@ -422,31 +491,6 @@ default React.createClass({
                                         style={{float: 'right', height: '32px', width: '86px', top: '-5px'}} />
                                 </div>
 
-                                <div style={{clear: 'both'}} />
-
-                                <div className="sub-delay-setting">
-                                    <span style={{color: '#fff'}}>
-                                        Subtitle Size:
-                                    </span>
-                                    <IconButton
-                                        onClick={this._handleSubSizeDown}
-                                        iconClassName="material-icons"
-                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
-                                        keyboard_arrow_down
-                                    </IconButton>
-                                    <IconButton
-                                        onClick={this._handleSubSizeUp}
-                                        iconClassName="material-icons"
-                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
-                                        keyboard_arrow_up
-                                    </IconButton>
-                                    <TextField
-                                        ref="subSizeInput"
-                                        defaultValue={this.state.customSubSize+'%'}
-                                        onKeyDown={this._handleSubSizeKeys}
-                                        onBlur={this._handleSubSizeBlur}
-                                        style={{float: 'right', height: '32px', width: '50px', top: '-5px'}} />
-                                </div>
                             </div>
                         </Tab>
 
@@ -459,7 +503,7 @@ default React.createClass({
                                     style={{ 'display': (this.state.trakt ? 'block' : 'none') }}
                                     label="Trakt Scrobble:"
                                     style={{marginBottom: '7px'}}/>
-                                <RaisedButton onClick={this.openTraktLogin} label={ this.state.trakt ? 'Trakt Logout' : 'Trakt Login' } />
+                                <RaisedButton secondary={true} onClick={this.openTraktLogin} label={ this.state.trakt ? 'Trakt Logout' : 'Trakt Login' } />
                             </div>
                         </Tab>
 
