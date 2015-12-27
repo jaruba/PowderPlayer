@@ -9,6 +9,8 @@ import SubtitleList from './components/Subtitles.react';
 import SubtitleText from './components/SubtitleText.react';
 import Announcement from './components/Announcement.react';
 
+import webFrame from 'web-frame';
+
 import PlayerStore from './store';
 import PlayerActions from './actions';
 
@@ -48,6 +50,7 @@ default React.createClass({
         PlayerActions.settingChange({
             notifier: this.refs.notificator
         });
+        webFrame.setZoomLevel(localStorage.zoomLevel ? parseFloat(localStorage.zoomLevel) : 0);
     },
     update() {
         if (this.isMounted()) {

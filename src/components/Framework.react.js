@@ -15,7 +15,6 @@ import Header from './Header';
 import historyActions from '../actions/historyActions';
 import traktUtil from './Player/utils/trakt';
 import request from 'request';
-import webFrame from 'web-frame';
 // we just initiate this here for _reasons_:
 import subUtil from './Player/utils/subtitles';
 
@@ -36,13 +35,16 @@ const Framework = React.createClass({
         request('https://www.google.com'); // Connect once to avoid cloggage
         if (localStorage.traktTokens)
             traktUtil.autoLogin();
-
-        if (localStorage.zoomLevel && localStorage.zoomLevel != '0')
-            webFrame.setZoomLevel(parseFloat(localStorage.zoomLevel));
     },
+
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.handleResize);
+    },
+
     updatehistory() {
         historyActions.history(this.history);
     },
+
     render() {
         return (
             <div id="main">

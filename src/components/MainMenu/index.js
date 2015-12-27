@@ -12,6 +12,9 @@ import MainMenuActions from './actions';
 import PlayerActions from '../../components/Player/actions';
 import ModalActions from './../Modal/actions';
 import MessageActions from '../Message/actions';
+import remote from 'remote';
+
+import webFrame from 'web-frame';
 
 import linkUtil from '../../utils/linkUtil';
 
@@ -21,9 +24,46 @@ export
 default React.createClass({
     getInitialState() {
         return {
-            dropBorderColor: '#ccc'
+            dropBorderColor: '#ccc',
+            lastZoom: 0
         }
     },
+    componentWillMount() {
+        window.addEventListener('resize', this.handleResize);
+        this.handleResize();
+    },
+
+    componentDidMount() {
+
+    },
+
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.handleResize);
+    },
+
+    handleResize() {
+
+        var width = remote.getCurrentWindow().getSize()[0];
+        var newZoom = 0;
+
+        if (width < 407)
+            newZoom = -2.3;
+        else if (width >= 407 && width < 632)
+            newZoom = (2.3 - ((width - 407) / 97.8)) * (-1);
+        else if (width >= 632 && width < 755)
+            newZoom = (width - 632) / 123;
+        else
+            newZoom = 1;
+
+        if (newZoom != this.state.lastZoom) {
+            this.setState({
+                lastZoom: newZoom
+            });
+            webFrame.setZoomLevel(newZoom);
+        }
+
+    },
+
     onDrop(files,e) {
         if (files && files.length) {
 
