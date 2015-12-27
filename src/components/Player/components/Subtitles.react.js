@@ -141,14 +141,24 @@ default React.createClass({
                     {
                         _.map(this.getInternalSubs(), (item, idx) => {
                             itemId++;
-                            return (
-                            <ListItem
-                              leftAvatar={<Avatar src={'./images/icons/internal-subtitle-icon.png'} />}
-                              value={itemId}
-                              key={item}
-                              primaryText={item}
-                              onClick={this.selectInternal.bind(this, (idx + 1), item, itemId)} />                                    
-                            )
+                            if (!localStorage.menuFlags || localStorage.menuFlags == 'true') {
+                                return (
+                                <ListItem
+                                  leftAvatar={<Avatar src={'./images/icons/internal-subtitle-icon.png'} />}
+                                  value={itemId}
+                                  key={item}
+                                  primaryText={item}
+                                  onClick={this.selectInternal.bind(this, (idx + 1), item, itemId)} />                                    
+                                )
+                            } else {
+                                return (
+                                <ListItem
+                                  value={itemId}
+                                  key={item}
+                                  primaryText={item}
+                                  onClick={this.selectInternal.bind(this, (idx + 1), item, itemId)} />                                    
+                                )
+                            }
                         })
                     }
                     {
