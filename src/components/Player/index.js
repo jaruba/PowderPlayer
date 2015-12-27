@@ -10,6 +10,7 @@ import SubtitleText from './components/SubtitleText.react';
 import Announcement from './components/Announcement.react';
 
 import webFrame from 'web-frame';
+import remote from 'remote';
 
 import PlayerStore from './store';
 import PlayerActions from './actions';
@@ -38,6 +39,8 @@ default React.createClass({
         if (!localStorage.customSubSize)
             localStorage.customSubSize = 100;
         PlayerStore.listen(this.update);
+        remote.getCurrentWindow().setMinimumSize(392, 228);
+        webFrame.setZoomLevel(localStorage.zoomLevel ? parseFloat(localStorage.zoomLevel) : 0);
     },
     componentWillUnmount() {
         PlayerStore.unlisten(this.update);
@@ -50,7 +53,6 @@ default React.createClass({
         PlayerActions.settingChange({
             notifier: this.refs.notificator
         });
-        webFrame.setZoomLevel(localStorage.zoomLevel ? parseFloat(localStorage.zoomLevel) : 0);
     },
     update() {
         if (this.isMounted()) {

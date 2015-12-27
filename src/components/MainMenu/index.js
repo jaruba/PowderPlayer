@@ -30,6 +30,12 @@ default React.createClass({
     },
     componentWillMount() {
         window.addEventListener('resize', this.handleResize);
+        var currentWindow = remote.getCurrentWindow();
+        currentWindow.setMinimumSize(410, 324);
+        var currentSize = currentWindow.getSize();
+        if (currentSize[0] < 410) currentSize[0] = 410;
+        if (currentSize[1] < 324) currentSize[1] = 324;
+        currentWindow.setSize(currentSize[0], currentSize[1]);
         this.handleResize();
     },
 
