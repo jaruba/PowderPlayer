@@ -692,7 +692,7 @@
   font-weight: 700;
 }
 
-@media screen and (max-height: 320px) {
+@media screen and (max-height: 700px) {
     .wcjs-player .settings-holder > div > div:last-of-type {
         height: 100%
     }
@@ -706,5 +706,30 @@
     height: 20px !important;
     top: -3px;
     float: right;
+    margin-right: -2px;
     padding: 0 !important;
+}
+
+.wcjs-player .sub-delay-setting .clear-button {
+    top: 0px !important;
+    margin-right: -1px !important;
+}
+
+.wcjs-player .sub-delay-setting input {
+    text-align: right;
+}
+
+.wcjs-player .setting-header {
+    color: #fff;
+    font-size: 16px;
+    padding: 5px;
+    background-color: rgba(0,0,0,0.25);
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.wcjs-player .settings-holder .long-buttons span {
+    font-size: 15px !important;
+    text-transform: inherit !important;
+    font-weight: 400 !important;
 }

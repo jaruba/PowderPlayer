@@ -34,8 +34,8 @@ app.commandLine.appendSwitch('disable-speech-api');
 app.on('ready', () => {
 
     const mainWindow = new BrowserWindow({
-        width: 637,
-        height: 514,
+        width: 653,
+        height: 522,
         icon: path.join(__dirname, '../images/icons/powder-icon.png'),
         resizable: true,
         title: 'Powder Player',

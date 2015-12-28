@@ -73,6 +73,8 @@ class playerStore {
         this.trackSub = -1;
         this.subDelay = 0;
         this.selectedSub = 1;
+        this.audioDelay = 0;
+        this.audioTrack = 1;
 
         this.notifier = false;
 
@@ -746,6 +748,7 @@ class playerStore {
         } else {
             traktUtil.handleScrobble('start', this.itemDesc(), this.wcjs.position);
         }
+        this.audioTrackField.setValue(this.wcjs.audio[1]);
     }
     
     onPaused() {
@@ -760,15 +763,20 @@ class playerStore {
             trackSub: -1,
             selectedSub: 1,
             subtitlesOpen: false,
-            subText: ''
+            subText: '',
+            audioChannel: 1,
+            audioTrack: 1
         });
         
         _.defer(() => {
             playerActions.setSubDelay(0);
+            playerActions.setAudioDelay(0);
             playerActions.setRate(1);
         });
         this.speedField.setValue('1.00x');
         this.subDelayField.setValue('0 ms');
+        this.audioDelayField.setValue('0 ms');
+        this.audioChannelField.setValue('Stereo');
     }
 
     onPlay() {
@@ -907,6 +915,13 @@ class playerStore {
         });
     }
     
+    onSetAudioDelay(newDelay) {
+        this.wcjs.audio.delay = newDelay;
+        this.setState({
+            audioDelay: newDelay
+        });
+    }
+    
     onSetRate(newRate) {
         this.wcjs.input.rate = newRate;
         this.setState({
@@ -1020,16 +1035,23 @@ class playerStore {
             trackSub: -1,
             selectedSub: 1,
             
+            audioChannel: 1,
+            audioTrack: 1,
+            
             playlistOpen: false,
             subtitlesOpen: false
 
         });
         _.defer(() => {
             playerActions.setSubDelay(0);
+            playerActions.setAudioDelay(0);
             playerActions.setRate(1);
         });
         this.speedField.setValue('1.00x');
         this.subDelayField.setValue('0 ms');
+        this.audioDelayField.setValue('0 ms');
+        this.audioChannelField.setValue('Stereo');
+
         if (this.wcjs) {
             
             traktUtil.handleScrobble('stop', this.itemDesc(), this.wcjs.position);

@@ -43,6 +43,7 @@ class PlayerActions {
             'replaceMRL',
             'loadSub',
             'setSubDelay',
+            'setAudioDelay',
 
             'itemCount',
             'itemDesc',

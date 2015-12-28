@@ -47,7 +47,7 @@ default React.createClass({
     componentDidMount() {
         if (!PlayerStore.getState().wcjs) {
             PlayerActions.wcjsInit(wcjsRenderer.init(this.refs['wcjs-render'], [
-                "--network-caching=7000",
+                "--network-caching="+localStorage.bufferSize,
                 "--no-sub-autodetect-file"
             ], {
                 fallbackRenderer: false,

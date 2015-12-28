@@ -24,12 +24,17 @@ module.exports = {
         return new Promise((resolve, reject) => {
             Promise.all([this.read(torrent), getPort()])
                 .spread((torrentInfo, port) => {
-                    var engine = peerflix(torrentInfo, {
+                    var opts = {
                         tracker: true,
-                        port: port,
+                        port: localStorage.peerPort && localStorage.peerPort != '6881' ? localStorage.peerPort : port,
                         tmp: temp,
-                        buffer: (1.5 * 1024 * 1024).toString()
-                    })
+                        buffer: (1.5 * 1024 * 1024).toString(),
+                        connections: parseInt(localStorage.maxPeers)
+                    };
+                    if (localStorage.downloadFolder)
+                        opts.path = localStorage.downloadFolder;
+
+                    var engine = peerflix(torrentInfo, opts);
                     engine['stream-port'] = port;
                     resolve(engine);
                     engine = null;

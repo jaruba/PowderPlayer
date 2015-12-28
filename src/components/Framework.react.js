@@ -24,6 +24,11 @@ const Framework = React.createClass({
 
     componentWillMount() {
 
+        if (!localStorage.subEncoding) localStorage.subEncoding = 'auto';
+        if (!localStorage.peerPort) localStorage.peerPort = 6881;
+        if (!localStorage.maxPeers) localStorage.maxPeers = 200;
+        if (!localStorage.bufferSize) localStorage.bufferSize = 7000;
+
         this.props.bindShortcut('ctrl+d', () => ipc.send('app:toggleDevTools'));
 
         historyActions.history(this.history);

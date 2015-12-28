@@ -9,7 +9,9 @@ default React.createClass({
         return {
             text: playerState.subText,
             size: (playerState.subSize * (parseInt(localStorage.customSubSize) / 100)),
-            visibility: !(playerState.playlistOpen || playerState.settingsOpen)
+            visibility: !(playerState.playlistOpen || playerState.settingsOpen),
+            color: localStorage.subColor ? parseInt(localStorage.subColor) : 0,
+            hex: ['#fff', '#ebcb00', '#00e78f', '#00ffff', '#00b6ea']
         }
     },
     componentWillMount() {
@@ -25,7 +27,8 @@ default React.createClass({
             this.setState({
                 text: playerState.subText,
                 size: (playerState.subSize * (parseInt(localStorage.customSubSize) / 100)),
-                visibility: !(playerState.playlistOpen || playerState.settingsOpen)
+                visibility: !(playerState.playlistOpen || playerState.settingsOpen),
+                color: localStorage.subColor ? parseInt(localStorage.subColor) : 0
             });
         }
     },
@@ -33,7 +36,8 @@ default React.createClass({
     render() {
         var style = {
             fontSize: this.state.size,
-            zIndex: this.state.visibility ? '10' : '1'
+            zIndex: this.state.visibility ? '10' : '1',
+            color: this.state.hex[this.state.color]
         };
         return (
             <span className='wcjs-subtitle-text' style={style} dangerouslySetInnerHTML={{__html: this.state.text}} />
