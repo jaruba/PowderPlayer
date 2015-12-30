@@ -20,6 +20,7 @@ import parser from './utils/parser';
 
 import traktUtil from './utils/trakt';
 import subUtil from './utils/subtitles';
+import torrentUtil from '../../utils/stream/torrentUtil';
 
 class playerStore {
     constructor() {
@@ -371,7 +372,31 @@ class playerStore {
         });
     }
 
+    onPulse() {
+        if (this.wcjs) {
+            var length = this.wcjs.length;
+            var itemDesc = this.itemDesc();
+            if (length && itemDesc.setting && itemDesc.setting.torrentHash && itemDesc.setting.byteSize) {
+                var newPulse = Math.round(itemDesc.setting.byteSize / (length /1000) *2);
+                torrentUtil.setPulse(itemDesc.setting.torrentHash, newPulse);
+            }
+        }
+    }
+
+    onFlood() {
+        if (this.wcjs) {
+            var itemDesc = this.itemDesc();
+            if (itemDesc.setting && itemDesc.setting.torrentHash) 
+                torrentUtil.flood(itemDesc.setting.torrentHash);
+        }
+    }
+
     onLength(length) {
+        if (localStorage.speedPulsing && localStorage.speedPulsing == 'enabled') {
+            _.defer(() => {
+                playerActions.pulse();
+            });
+        }
         this.setState({
             length: length,
             totalTime: handleTime(length, length)
@@ -458,7 +483,7 @@ class playerStore {
                     let keeper = data[i];
 
                     if (data[i].byteSize && data[i].torrentHash)
-                        _.delay(() => {
+                        _.defer(() => {
                             playerActions.setDesc({
                                 idx: keeper.idx,
                                 byteSize: keeper.byteSize,

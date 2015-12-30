@@ -63,6 +63,7 @@ default React.createClass({
             defaultPeers: parseInt(localStorage.maxPeers),
             downloadFolder: localStorage.downloadFolder ? localStorage.downloadFolder : 'Temp',
             bufferSize: (parseInt(localStorage.bufferSize)/1000).toFixed(1),
+            speedPulsing: localStorage.speedPulsing ? localStorage.speedPulsing : 'disabled',
             subEncodings: [
                 ['Auto Detect', 'auto'],
                 ['Universal (UTF-8)', 'utf8'],
@@ -682,6 +683,22 @@ default React.createClass({
         });
     },
 
+    _handlePulsingToggle(event) {
+        var newValue = this.refs['pulseInput'].getValue();
+        if (newValue == 'disabled') {
+            newValue = 'enabled';
+            PlayerActions.pulse();
+        } else if (newValue == 'enabled') {
+            newValue = 'disabled';
+            PlayerActions.flood();
+        }
+        localStorage.speedPulsing = newValue;
+        this.setState({
+            speedPulsing: newValue
+        });
+        this.refs['pulseInput'].setValue(newValue);
+    },
+
     render() {
 
         return (
@@ -1122,7 +1139,30 @@ default React.createClass({
                                 </div>
                                 
                                 <div style={{clear: 'both'}} />
-                                
+
+                                <div className="sub-delay-setting">
+                                    <span style={{color: '#fff'}}>
+                                        Speed Pulsing:
+                                    </span>
+                                    <IconButton
+                                        onClick={this._handlePulsingToggle}
+                                        iconClassName="material-icons"
+                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
+                                        keyboard_arrow_down
+                                    </IconButton>
+                                    <IconButton
+                                        onClick={this._handlePulsingToggle}
+                                        iconClassName="material-icons"
+                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
+                                        keyboard_arrow_up
+                                    </IconButton>
+                                    <TextField
+                                        disabled={true}
+                                        ref="pulseInput"
+                                        defaultValue={this.state.speedPulsing}
+                                        style={{float: 'right', height: '32px', width: '110px', top: '-5px', marginRight: '4px'}} />
+                                </div>
+
                             </div>
                         </Tab>
 

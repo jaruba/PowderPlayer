@@ -1,12 +1,12 @@
 {
   "name": "Powder-Player",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "authors": [
-    "Luigi Poole",
-    "Branza Victor-Alexandru"
+    "Branza Victor-Alexandru",
+    "Luigi Poole"
   ],
   "description": "Powder is the future of all torrent requirements, it's a hybrid between a Torrent Client (Peerflix) and a Customized Player (WebChimera.js).",
-  "relese-name": "Hello World",
+  "relese-name": "Nightingale",
   "homepage": "http://powder.media/",
   "main": "js/browser.js",
   "repository": {
@@ -34,7 +34,7 @@
     "node-metainspector": "jaruba/node-metainspector",
     "node-notifier": "^4.4.0",
     "parse-torrent": "^5.7.0",
-    "peerflix": "^0.32.2",
+    "peerflix": "jaruba/peerflix",
     "react": "^0.14.3",
     "react-addons-pure-render-mixin": "^0.14.3",
     "react-dom": "^0.14.3",

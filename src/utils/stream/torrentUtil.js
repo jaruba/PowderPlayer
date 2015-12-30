@@ -20,6 +20,8 @@ const supported = {
 };
 
 module.exports = {
+    streams: {},
+
     init(torrent) {
         return new Promise((resolve, reject) => {
             Promise.all([this.read(torrent), getPort()])
@@ -35,6 +37,7 @@ module.exports = {
                         opts.path = localStorage.downloadFolder;
 
                     var engine = peerflix(torrentInfo, opts);
+                    this.streams[engine.infoHash] = engine;
                     engine['stream-port'] = port;
                     resolve(engine);
                     engine = null;
@@ -49,6 +52,12 @@ module.exports = {
             }
             this.streams[infoHash].destroy();
         }
+    },
+    setPulse(infoHash, pulse) {
+        this.streams[infoHash].setPulse(pulse);
+    },
+    flood(infoHash) {
+        this.streams[infoHash].flood();
     },
     read(torrent) {
         return new Promise((resolve, reject) => {

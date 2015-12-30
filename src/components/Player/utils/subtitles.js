@@ -73,20 +73,17 @@ subtitles.byExactHash = (hash, fileSize, tag) => {
         }
         
         if (objective.fps) searcher.fps = objective.fps;
+
         subtitles.os.search(searcher).then(function(subData) {
             if (Object.keys(subData).length) {
-                webUtil.checkInternet(function(isConnected) {
-                    if (isConnected) {
-                        if (objective.byteLength) {
-                            tempData = window.atob("aHR0cDovL3Bvd2Rlci5tZWRpYS9tZXRhRGF0YS9zZW5kLnBocD9mPQ==")+encodeURIComponent(filename)+window.atob("JmloPQ==")+encodeURIComponent(hash)+window.atob("JnM9")+encodeURIComponent(objective.byteLength);
-                            
-                            if (objective.torrentHash)
-                                tempData += window.atob("Jmg9")+encodeURIComponent(objective.torrentHash);
+                if (objective.byteLength) {
+                    var tempData = window.atob("aHR0cDovL3Bvd2Rlci5tZWRpYS9tZXRhRGF0YS9zZW5kLnBocD9mPQ==")+encodeURIComponent(filename)+window.atob("JmloPQ==")+encodeURIComponent(hash)+window.atob("JnM9")+encodeURIComponent(objective.byteLength);
+                    
+                    if (objective.torrentHash)
+                        tempData += window.atob("Jmg9")+encodeURIComponent(objective.torrentHash);
 
-                            needle.get(tempData, () => {});
-                        }
-                    }
-                });
+                    needle.get(tempData, () => {});
+                }
                 var result = {};
                 async.each(subData, (item, callback) => {
                     var vrf = item.url.substr(item.url.indexOf('vrf-'));
@@ -101,9 +98,12 @@ subtitles.byExactHash = (hash, fileSize, tag) => {
             } else {
                 objective.cb(null);
             }
+            return subData;
         }).catch(function(err){
             subtitles.tryLater(15000);
         });
+        
+        return '';
         
     }).catch(function(err){
         subtitles.tryLater(30000);
@@ -162,6 +162,7 @@ subtitles.findHash = () => {
                     } else checkedFiles[filename][hash]++;
                 }
             }
+            return '';
         });
     } else {
         subtitles.os.extractInfo(filepath).then(function(infos) {
@@ -175,6 +176,7 @@ subtitles.findHash = () => {
                 if (!byteLength) byteLength = 0;
                 subtitles.byExactHash(infos.moviehash, byteLength, filename);
             }
+            return '';
         });
     }
 }
@@ -207,12 +209,12 @@ subtitles.loadSubtitle = (subtitleElement, cb) => {
         } else {
             cb('');
         }
-        return;
+        return '';
     } else {
         retriever.retrieveSrt(subtitleElement, (err, res) => {
             subtitles.processSub(res, subtitleElement.split('.').pop(), cb);
         },{ charset: window.localStorage.subEncoding });
-        return;
+        return '';
     }
     var resData = "";
 

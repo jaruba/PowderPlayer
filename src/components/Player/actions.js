@@ -50,6 +50,9 @@ class PlayerActions {
             'setDesc',
             'setRate',
 
+            'pulse',
+            'flood',
+
             'announcement',
 
             'updateImage'
