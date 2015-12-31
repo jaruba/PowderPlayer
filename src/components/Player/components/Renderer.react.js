@@ -360,9 +360,11 @@ default React.createClass({
             }
         };
         return (
-            <div ref="canvas-holder" className="canvas-holder" onWheel={this.wheel} style={renderStyles.container}>
+            <div>
                 <RaisedButton id={'canvasEffect'} onClick={this.handleTogglePlay} onDoubleClick={PlayerActions.toggleFullscreen.bind(this, !this.state.fullscreen)} iconClassName="material-icons" className={this.state.rippleEffects ? this.state.clickPause ? 'over-canvas' : 'over-canvas no-ripples' : 'over-canvas no-ripples' } label="Canvas Overlay" />
-                <canvas id={'playerCanvas'} style={renderStyles.canvas} onClick={this.handleTogglePlay} onDoubleClick={PlayerActions.toggleFullscreen.bind(this, !this.state.fullscreen)} ref="wcjs-render" />
+                <div ref="canvas-holder" className="canvas-holder" onWheel={this.wheel} style={renderStyles.container}>
+                    <canvas id={'playerCanvas'} style={renderStyles.canvas} onClick={this.handleTogglePlay} onDoubleClick={PlayerActions.toggleFullscreen.bind(this, !this.state.fullscreen)} ref="wcjs-render" />
+                </div>
             </div>
         );
     }

@@ -85,25 +85,26 @@ default React.createClass({
 //            console.log(client);
 
             var trailer_url = ('http://m.imdb.com'+client.iframes[0]).replace(/m\.imdb/i, 'www.imdb').replace(/mobile/i, 'embed').replace('autoplay=false','autoplay=true');
-            
+
 //            console.log(trailer_url);
             if (trailer_url == 'http://www.imdb.comundefined') {
 
                 PlayerStore.getState().notifier.info('Trailer Not Found', '', 4000);
 
             } else {
-            
+
                 var win = new BrowserWindow({ width: 854, height: 510, show: false, 'standard-window': true, 'auto-hide-menu-bar': true, resizable: false, title: parsed.name.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()})+' Trailer - IMDB', center: true });
-                
+
                 win.on('closed', function() {
                   win = null;
                 });
-                
+
                 win.loadUrl(trailer_url);
-                
+
                 win.webContents.on('did-finish-load', () => {
                     win.show();
                     win.focus();
+                    PlayerActions.pause();
                 });
                 
             }

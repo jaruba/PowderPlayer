@@ -549,20 +549,24 @@ class playerStore {
 
     }
     
-    onAnnouncement(text) {
+    onAnnouncement(obj) {
         var announcer = {};
-        announcer.announce = text;
-        
+        if (typeof obj === 'string') obj = { text: obj };
+        announcer.announce = obj.text;
+        if (!obj.delay) obj.delay = 2000;
+
         clearTimeout(this.announceTimer);
         var playerState = this;
         announcer.announceTimer = setTimeout(() => {
             if (!playerState.announceEffect)
-                playerState.announceEffect = true;
-        },2000);
+                playerState.setState({
+                    announceEffect: !playerState.announceEffect
+                });
+        }, obj.delay);
 
         if (this.announceEffect)
             announcer.announceEffect = false;
-        
+
         if (Object.keys(announcer).length)
             this.setState(announcer);
     }
@@ -806,7 +810,8 @@ class playerStore {
             audioTrack: 1,
             aspectRatio: 'Default',
             crop: 'Default',
-            zoom: 1
+            zoom: 1,
+            totalTime: '00:00'
         });
         
         _.defer(() => {

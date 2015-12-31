@@ -44,7 +44,19 @@ const Player = React.createClass({
         
         this.props.bindShortcut('space', (event) => {
             event.preventDefault();
-            PlayerStore.getState().playing ? PlayerActions.pause() : PlayerActions.play();
+            if (PlayerStore.getState().playing) {
+                PlayerActions.announcement({
+                    text: 'Paused',
+                    delay: 500
+                });
+                PlayerActions.pause()
+            } else {
+                PlayerActions.announcement({
+                    text: 'Playing', 
+                    delay: 500
+                });
+                PlayerActions.play();
+            }
         });
 
         this.props.bindShortcut('ctrl+up', (event) => {
