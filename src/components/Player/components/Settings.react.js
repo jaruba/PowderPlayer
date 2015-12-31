@@ -39,6 +39,7 @@ default React.createClass({
         var playerState = PlayerStore.getState();
         return {
             open: false,
+            uiHidden: playerState.uiHidden,
             alwaysOnTop: playerState.alwaysOnTop,
             clickPause: playerState.clickPause,
             playerRippleEffects: playerState.rippleEffects,
@@ -124,7 +125,8 @@ default React.createClass({
             audioDelayField: this.refs['audioDelayInput'],
             audioChannelField: this.refs['audioChannelInput'],
             speedField: this.refs['speedInput'],
-            audioTrackField: this.refs['audioTrackInput']
+            audioTrackField: this.refs['audioTrackInput'],
+            subSizeField: this.refs['subSizeInput']
         });
     },
         
@@ -133,6 +135,7 @@ default React.createClass({
             var playerState = PlayerStore.getState();
             this.setState({
                 open: playerState.settingsOpen,
+                uiHidden: playerState.uiHidden,
                 alwaysOnTop: playerState.alwaysOnTop,
                 clickPause: playerState.clickPause,
                 playerRippleEffects: playerState.rippleEffects,
@@ -702,7 +705,7 @@ default React.createClass({
     render() {
 
         return (
-            <div className={this.state.open ? 'playlist-container show' : 'playlist-container'}>
+            <div className={this.state.uiHidden ? 'playlist-container' : this.state.open ? 'playlist-container show' : 'playlist-container'}>
                 <div className="playlist-controls" / >
                 <div className="playlist-holder settings-holder" style={{marginLeft: '0', height: '100%'}}>
                     <Tabs style={{width: '70vw', maxWidth: '700px', marginTop: '11%', marginLeft: 'auto', marginRight: 'auto', height: '100%'}}>

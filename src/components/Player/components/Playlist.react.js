@@ -15,9 +15,11 @@ default React.createClass({
     mixins: [PureRenderMixin],
 
     getInitialState() {
+        var playerState = PlayerStore.getState();
         return {
             open: false,
-            playlist: PlayerStore.getState().wcjs.playlist || false
+            playlist: playerState.wcjs.playlist || false,
+            uiHidden: playerState.uiHidden
         }
     },
     componentWillMount() {
@@ -29,9 +31,11 @@ default React.createClass({
     },
     update() {
         if (this.isMounted()) {
+            var playerState = PlayerStore.getState();
             this.setState({
-                open: PlayerStore.getState().playlistOpen,
-                playlist: PlayerStore.getState().wcjs.playlist || false
+                open: playerState.playlistOpen,
+                playlist: playerState.wcjs.playlist || false,
+                uiHidden: playerState.uiHidden
             });
         }
     },
@@ -57,7 +61,7 @@ default React.createClass({
     },
     render() {
         return (
-            <div className={this.state.open ? 'playlist-container show' : 'playlist-container'}>
+            <div className={this.state.uiHidden ? 'playlist-container' : this.state.open ? 'playlist-container show' : 'playlist-container'}>
                 <div className="playlist-controls" / >
                 <div className="playlist-holder">
                     <div ref="playlist-title" className="droid-sans playlist-title">Playlist</div>

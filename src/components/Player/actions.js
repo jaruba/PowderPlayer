@@ -44,6 +44,9 @@ class PlayerActions {
             'loadSub',
             'setSubDelay',
             'setAudioDelay',
+            
+            'delayTime',
+            'scrobbleKeys',
 
             'itemCount',
             'itemDesc',

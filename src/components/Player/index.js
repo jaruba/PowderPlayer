@@ -17,9 +17,9 @@ import PlayerActions from './actions';
 
 import ReactNotify from 'react-notify';
 
+import {mouseTrap} from 'react-mousetrap';
 
-export
-default React.createClass({
+const Player = React.createClass({
     mixins: [PureRenderMixin],
 
     getInitialState() {
@@ -41,8 +41,362 @@ default React.createClass({
         PlayerStore.listen(this.update);
         remote.getCurrentWindow().setMinimumSize(392, 228);
         webFrame.setZoomLevel(localStorage.zoomLevel ? parseFloat(localStorage.zoomLevel) : 0);
+        
+        this.props.bindShortcut('space', (event) => {
+            event.preventDefault();
+            PlayerStore.getState().playing ? PlayerActions.pause() : PlayerActions.play();
+        });
+
+        this.props.bindShortcut('ctrl+up', (event) => {
+            var volume = Math.round((this.state.volume + 5) / 5) * 5;
+            if (volume > 200) volume = 200;
+            PlayerActions.volume(volume);
+            PlayerActions.announcement('Volume '+volume+'%');
+        });
+
+        this.props.bindShortcut('ctrl+down', (event) => {
+            var volume = Math.round((this.state.volume - 5) / 5) * 5;
+            if (volume < 0) volume = 0;
+            PlayerActions.volume(volume);
+            PlayerActions.announcement('Volume '+volume+'%');
+        });
+
+        this.props.bindShortcut('ctrl+right', (event) => {
+            var wjsPlayer = PlayerStore.getState();
+            if (["ended","stopping","error"].indexOf(wjsPlayer.wcjs.state) == -1) {
+                if (wjsPlayer.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
+                else var wjsDelay = 700;
+                PlayerActions.delayTime({
+                    jump: 60000,
+                    delay: wjsDelay
+                });
+            }
+        });
+
+        this.props.bindShortcut('ctrl+left', (event) => {
+            var wjsPlayer = PlayerStore.getState();
+            if (["ended","stopping","error"].indexOf(wjsPlayer.wcjs.state) == -1) {
+                if (wjsPlayer.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
+                else var wjsDelay = 700;
+                PlayerActions.delayTime({
+                    jump: -60000,
+                    delay: wjsDelay
+                });
+            }
+        });
+
+        this.props.bindShortcut('alt+right', (event) => {
+            var wjsPlayer = PlayerStore.getState();
+            if (["ended","stopping","error"].indexOf(wjsPlayer.wcjs.state) == -1) {
+                if (wjsPlayer.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
+                else var wjsDelay = 700;
+                PlayerActions.delayTime({
+                    jump: 10000,
+                    delay: wjsDelay
+                });
+            }
+        });
+
+        this.props.bindShortcut('alt+left', (event) => {
+            var wjsPlayer = PlayerStore.getState();
+            if (["ended","stopping","error"].indexOf(wjsPlayer.wcjs.state) == -1) {
+                if (wjsPlayer.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
+                else var wjsDelay = 700;
+                PlayerActions.delayTime({
+                    jump: -10000,
+                    delay: wjsDelay
+                });
+            }
+        });
+        
+        this.props.bindShortcut('shift+right', (event) => {
+            var wjsPlayer = PlayerStore.getState();
+            if (["ended","stopping","error"].indexOf(wjsPlayer.wcjs.state) == -1) {
+                if (wjsPlayer.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
+                else var wjsDelay = 700;
+                PlayerActions.delayTime({
+                    jump: 3000,
+                    delay: wjsDelay
+                });
+            }
+        });
+
+        this.props.bindShortcut('shift+left', (event) => {
+            var wjsPlayer = PlayerStore.getState();
+            if (["ended","stopping","error"].indexOf(wjsPlayer.wcjs.state) == -1) {
+                if (wjsPlayer.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
+                else var wjsDelay = 700;
+                PlayerActions.delayTime({
+                    jump: -3000,
+                    delay: wjsDelay
+                });
+            }
+        });
+        
+        this.props.bindShortcut('right', (event) => {
+            var wjsPlayer = PlayerStore.getState();
+            if (["ended","stopping","error"].indexOf(wjsPlayer.wcjs.state) == -1) {
+                if (wjsPlayer.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
+                else var wjsDelay = 700;
+                PlayerActions.delayTime({
+                    jump: (PlayerStore.getState().length / 60),
+                    delay: wjsDelay
+                });
+            }
+        });
+
+        this.props.bindShortcut('left', (event) => {
+            var wjsPlayer = PlayerStore.getState();
+            if (["ended","stopping","error"].indexOf(wjsPlayer.wcjs.state) == -1) {
+                if (wjsPlayer.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
+                else var wjsDelay = 700;
+                PlayerActions.delayTime({
+                    jump: (-1) * (PlayerStore.getState().length / 60),
+                    delay: wjsDelay
+                });
+            }
+        });
+
+        this.props.bindShortcut('e', (event) => {
+            var wjsPlayer = PlayerStore.getState();
+            if (["ended","stopping","error"].indexOf(wjsPlayer.wcjs.state) == -1) {
+                PlayerActions.pause();
+                PlayerActions.delayTime({
+                    jump: 500,
+                    delay: 0
+                });
+                PlayerActions.settingChange({
+                    subText: ''
+                });
+                PlayerActions.announcement('Next Frame');
+            }
+        });
+
+        this.props.bindShortcut('g', (event) => {
+            var subDelayField = PlayerStore.getState().subDelayField;
+            var newValue = parseInt(subDelayField.getValue())-50;
+            subDelayField.setValue(newValue + ' ms');
+            PlayerActions.setSubDelay(newValue);
+            PlayerActions.announcement('Subtitle Delay: ' + newValue + ' ms');
+        });
+    
+        this.props.bindShortcut('h', (event) => {
+            var subDelayField = PlayerStore.getState().subDelayField;
+            var newValue = parseInt(subDelayField.getValue())+50;
+            subDelayField.setValue(newValue + ' ms');
+            PlayerActions.setSubDelay(newValue);
+            PlayerActions.announcement('Subtitle Delay: ' + newValue + ' ms');
+        });
+
+        this.props.bindShortcut('j', (event) => {
+            var audioDelayField = PlayerStore.getState().audioDelayField;
+            var newValue = parseInt(audioDelayField.getValue())-50;
+            audioDelayField.setValue(newValue + ' ms');
+            PlayerActions.setAudioDelay(newValue);
+            PlayerActions.announcement('Audio Delay: ' + newValue + ' ms');
+        });
+    
+        this.props.bindShortcut('k', (event) => {
+            var audioDelayField = PlayerStore.getState().audioDelayField;
+            var newValue = parseInt(audioDelayField.getValue())+50;
+            audioDelayField.setValue(newValue + ' ms');
+            PlayerActions.setAudioDelay(newValue);
+            PlayerActions.announcement('Audio Delay: ' + newValue + ' ms');
+        });
+
+        this.props.bindShortcut('alt+up', (event) => {
+            var newValue = Math.round((parseInt(localStorage.customSubSize) + 5) / 5) * 5;
+            if (newValue > 500) newValue = 500;
+            localStorage.customSubSize = newValue;
+            PlayerActions.announcement('Subtitle Size '+newValue+'%');
+            PlayerStore.getState().subSizeField.setValue(newValue+'%');
+        });
+
+        this.props.bindShortcut('alt+down', (event) => {
+            var newValue = Math.round((parseInt(localStorage.customSubSize) - 5) / 5) * 5;
+            if (newValue < 5) newValue = 5;
+            localStorage.customSubSize = newValue;
+            PlayerActions.announcement('Subtitle Size '+newValue+'%');
+            PlayerStore.getState().subSizeField.setValue(newValue+'%');
+        });
+
+        this.props.bindShortcut('shift+up', (event) => {
+            var playerState = PlayerStore.getState();
+            var newValue = parseInt(playerState.subBottom) + 5;
+            PlayerActions.announcement('Moved Subtitles Up');
+            PlayerActions.settingChange({
+                subBottom: newValue + 'px'
+            });
+        });
+
+        this.props.bindShortcut('shift+down', (event) => {
+            var playerState = PlayerStore.getState();
+            var newValue = parseInt(playerState.subBottom) - 5;
+            if (newValue < 0) newValue = 0;
+            PlayerActions.announcement('Moved Subtitles Down');
+            PlayerActions.settingChange({
+                subBottom: newValue + 'px'
+            });
+        });
+
+        this.props.bindShortcut('[', (event) => {
+            
+            var newRate = 0;
+            var playerState = PlayerStore.getState();
+            var curRate = parseFloat(playerState.wcjs.input.rate);
+            
+            if (curRate >= 0.25 && curRate <= 0.5) newRate = 0.125;
+            else if (curRate > 0.5 && curRate <= 1) newRate = 0.25;
+            else if (curRate > 1 && curRate <= 2) newRate = 0.5;
+            else if (curRate > 2 && curRate <= 4) newRate = 1;
+            else if (curRate > 4) newRate = curRate /2;
+    
+            if ((curRate + newRate) >= 0.125) {
+                playerState.wcjs.input.rate = curRate - newRate;
+    
+                var newValue = parseFloat(Math.round(playerState.wcjs.input.rate * 100) / 100).toFixed(2);
+        
+                playerState.speedField.setValue(newValue + 'x');
+                
+                PlayerActions.announcement('Speed: ' + newValue + 'x');
+            }
+        });
+
+        this.props.bindShortcut(']', (event) => {
+    
+            var newRate = 0;
+            var playerState = PlayerStore.getState();
+            var curRate = parseFloat(playerState.wcjs.input.rate);
+            
+            if (curRate < 0.25) newRate = 0.125;
+            else if (curRate >= 0.25 && curRate < 0.5) newRate = 0.125;
+            else if (curRate >= 0.5 && curRate < 1) newRate = 0.25;
+            else if (curRate >= 1 && curRate < 2) newRate = 0.5;
+            else if (curRate >= 2 && curRate < 4) newRate = 1;
+            else if (curRate >= 4) newRate = curRate;
+    
+            if ((curRate + newRate) < 100) {
+                playerState.wcjs.input.rate = curRate + newRate;
+    
+                var newValue = parseFloat(Math.round(playerState.wcjs.input.rate * 100) / 100).toFixed(2);
+        
+                playerState.speedField.setValue(newValue + 'x');
+                
+                PlayerActions.announcement('Speed: ' + newValue + 'x');
+            }
+        });
+
+        this.props.bindShortcut('=', (event) => {
+    
+            var newRate = 0;
+            var playerState = PlayerStore.getState();
+
+            playerState.wcjs.input.rate = 1.0;
+
+            var newValue = parseFloat(Math.round(playerState.wcjs.input.rate * 100) / 100).toFixed(2);
+    
+            playerState.speedField.setValue(newValue + 'x');
+            
+            PlayerActions.announcement('Speed: ' + newValue + 'x');
+
+        });
+
+        this.props.bindShortcut('t', (event) => {
+            var playerState = PlayerStore.getState();
+            PlayerActions.announcement(playerState.currentTime + ' / ' + playerState.totalTime);
+        });
+
+        this.props.bindShortcut('f', (event) => {
+            PlayerActions.toggleFullscreen(!PlayerStore.getState().fullscreen);
+        });
+
+        this.props.bindShortcut('f11', (event) => {
+            PlayerActions.toggleFullscreen(!PlayerStore.getState().fullscreen);
+        });
+
+        this.props.bindShortcut('m', (event) => {
+            var playerState = PlayerStore.getState();
+            PlayerActions.mute(!playerState.muted);
+            if (!playerState.muted)
+                PlayerActions.announcement('Muted');
+            else
+                PlayerActions.announcement('Volume ' + playerState.wcjs.volume + '%');
+        });
+
+        this.props.bindShortcut('ctrl+l', (event) => {
+            PlayerActions.togglePlaylist();
+        });
+
+        this.props.bindShortcut('n', (event) => {
+            PlayerActions.next();
+        });
+
+        this.props.bindShortcut('ctrl+h', (event) => {
+            var playerState = PlayerStore.getState();
+            if (playerState.uiHidden)
+                PlayerActions.announcement('UI Visible');
+            else
+                PlayerActions.announcement('UI Hidden');
+            PlayerActions.settingChange({
+                uiHidden: !playerState.uiHidden
+            });
+        });
+
+        this.props.bindShortcut('esc', (event) => {
+            var playerState = PlayerStore.getState();
+            if (playerState.playlistOpen) {
+                PlayerActions.settingChange({
+                    playlistOpen: false
+                });
+            } else if (playerState.settingsOpen) {
+                PlayerActions.settingChange({
+                    settingsOpen: false
+                });
+            } else if (playerState.subtitlesOpen) {
+                PlayerActions.settingChange({
+                    subtitlesOpen: false
+                });
+            } else if (playerState.fullscreen) {
+                PlayerActions.toggleFullscreen(false);
+            }
+        });
+
+        this.props.bindShortcut('p', (event) => {
+            PlayerStore.getState().wcjs.time = 0;
+        });
     },
     componentWillUnmount() {
+        this.props.unbindShortcut('space');
+        this.props.unbindShortcut('ctrl+up');
+        this.props.unbindShortcut('ctrl+down');
+        this.props.unbindShortcut('ctrl+left');
+        this.props.unbindShortcut('ctrl+right');
+        this.props.unbindShortcut('alt+left');
+        this.props.unbindShortcut('alt+right');
+        this.props.unbindShortcut('shift+left');
+        this.props.unbindShortcut('shift+right');
+        this.props.unbindShortcut('left');
+        this.props.unbindShortcut('right');
+        this.props.unbindShortcut('alt+up');
+        this.props.unbindShortcut('alt+down');
+        this.props.unbindShortcut('shift+up');
+        this.props.unbindShortcut('shift+down');
+        this.props.unbindShortcut('t');
+        this.props.unbindShortcut('f');
+        this.props.unbindShortcut('f11');
+        this.props.unbindShortcut('m');
+        this.props.unbindShortcut('ctrl+l');
+        this.props.unbindShortcut('n');
+        this.props.unbindShortcut('esc');
+        this.props.unbindShortcut('e');
+        this.props.unbindShortcut('g');
+        this.props.unbindShortcut('h');
+        this.props.unbindShortcut('j');
+        this.props.unbindShortcut('k');
+        this.props.unbindShortcut(']');
+        this.props.unbindShortcut('[');
+        this.props.unbindShortcut('=');
+        this.props.unbindShortcut('ctrl+h');
         PlayerStore.unlisten(this.update);
     },
     componentDidMount() {
@@ -103,3 +457,6 @@ default React.createClass({
         );
     }
 });
+
+export
+default mouseTrap(Player)

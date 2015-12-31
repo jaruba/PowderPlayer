@@ -51,6 +51,7 @@ class playerStore {
 
         this.fullscreen = false;
         this.uiShown = true;
+        this.uiHidden = false;
         this.playlistOpen = false;
         this.subtitlesOpen = false;
         this.settingsOpen = false;
@@ -73,6 +74,7 @@ class playerStore {
         this.subtitle = [];
         this.trackSub = -1;
         this.subDelay = 0;
+        this.subBottom = '70px';
         this.selectedSub = 1;
         this.audioDelay = 0;
         this.audioTrack = 1;
@@ -84,6 +86,11 @@ class playerStore {
         this.announceEffect = '';
         
         this.speed = 1;
+
+        this.forceTime = false;
+        this.overTime = false;
+        this.scrobbleKeys = false;
+        this.seekPerc = 0;
 
     }
 
@@ -803,6 +810,55 @@ class playerStore {
         this.audioDelayField.setValue('0 ms');
         this.audioChannelField.setValue('Stereo');
     }
+    
+    onDelayTime(q) {
+        var t = q.jump;
+        var d = q.delay;
+
+        if (this.forceTime) {
+            var forceProgress = ((this.seekPerc * this.length) + t) / this.length;
+        } else {
+            var forceProgress = ((this.wcjs.position * this.length) + t) / this.length;
+        }
+
+        if (forceProgress < 0) forceProgress = 0;
+        else if (forceProgress > 1) forceProgress = 1;
+
+        this.setState({
+            keepScrobble: true,
+            seekPerc: forceProgress,
+            forceTime: true,
+            overTime: handleTime((forceProgress * this.length), this.length),
+            uiShown: true
+        });
+        
+        if (this.scrobbleKeys) clearTimeout(this.scrobbleKeys);
+        
+        var scrobbleFunc = () => {
+            this.wcjs.position = this.seekPerc;
+            this.setState({
+                forceTime: false,
+                position: this.seekPerc,
+                time: this.seekPerc * this.length,
+                currentTime: handleTime((this.seekPerc * this.length), this.length)
+            });
+            _.delay(() => {
+                playerActions.settingChange({
+                    keepScrobble: false
+                });
+                _.delay(() => {
+                    playerActions.settingChange({
+                        uiShown: false
+                    });
+                },1000);
+            },1500);
+        };
+        
+        this.setState({
+            scrobbleKeys: setTimeout(scrobbleFunc.bind(this), d)
+        });
+
+    }
 
     onPlay() {
         this.setState({
@@ -1064,7 +1120,8 @@ class playerStore {
             audioTrack: 1,
             
             playlistOpen: false,
-            subtitlesOpen: false
+            subtitlesOpen: false,
+            settingsOpen: false
 
         });
         _.defer(() => {

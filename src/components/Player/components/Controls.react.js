@@ -25,13 +25,16 @@ default React.createClass({
         return {
             fullscreen: playerState.fullscreen,
             uiShown: playerState.uiShown || playerState.playlistOpen || playerState.settingsOpen,
+            uiHidden: playerState.uiHidden,
 
-            scrobbling: false,
+            scrobbling: playerState.scrobbling,
             playing: playerState.playing,
             position: playerState.position,
             buffering: playerState.buffering,
             time: playerState.time,
             length: playerState.length,
+            keepScrobble: playerState.keepScrobble,
+            seekPerc: playerState.seekPerc,
 
             currentTime: playerState.currentTime,
             totalTime: playerState.totalTime,
@@ -42,11 +45,14 @@ default React.createClass({
             subtitlesOpen: playerState.subtitlesOpen,
 
             volume: parseInt(localStorage.volume),
-            mute: PlayerStore.muted,
+            mute: playerState.muted,
 
             volumeDragging: false,
             volumePendingEffects: '',
-            volumePendingRipples: ''
+            volumePendingRipples: '',
+            
+            forceTime: playerState.forceTime,
+            overTime: playerState.overTime
         }
     },
     componentWillMount() {
@@ -74,6 +80,7 @@ default React.createClass({
             this.setState({
                 fullscreen: playerState.fullscreen,
                 uiShown: playerState.uiShown || playerState.playlistOpen || playerState.settingsOpen,
+                uiHidden: playerState.uiHidden,
 
                 playing: playerState.playing,
                 position: playerState.position,
@@ -81,6 +88,8 @@ default React.createClass({
                 seekable: playerState.seekable,
                 time: playerState.time,
                 length: playerState.length,
+                scrobbling: playerState.scrobbling,
+                seekPerc: playerState.seekPerc,
 
                 currentTime: playerState.currentTime,
                 totalTime: playerState.totalTime,
@@ -91,14 +100,19 @@ default React.createClass({
                 subtitlesOpen: playerState.subtitlesOpen,
 
                 volume: parseInt(localStorage.volume),
-                mute: playerState.muted
+                mute: playerState.muted,
+                
+                forceTime: playerState.forceTime,
+                overTime: playerState.overTime,
+                
+                keepScrobble: playerState.keepScrobble
             });
         }
     },
     delayScrobbleGUI() {
         _.delay(() => {
-            this.setState({
-                keepScrobbleGUI: false
+            PlayerActions.settingChange({
+                keepScrobble: false
             })
         }, 1000)
     },
@@ -148,7 +162,9 @@ default React.createClass({
         }
 
         if (this.state.scrobbling) {
-            newState.seekPerc = percent_done < 0 ? 0 : percent_done > 1 ? 1 : percent_done;
+            PlayerActions.settingChange({
+                seekPerc: percent_done < 0 ? 0 : percent_done > 1 ? 1 : percent_done
+            });
         }
 
         if (Object.keys(newState).length) {
@@ -160,13 +176,14 @@ default React.createClass({
         if (!this.state.length || !this.state.seekable)
             return;
 
-        this.setState({
-            keepScrobbleGUI: true,
-            scrobbling: false,
-            position: this.state.seekPerc
+        PlayerActions.settingChange({
+            keepScrobble: true,
+            scrobbling: false
         });
 
-        PlayerActions.scrobbleState(false);
+        this.setState({
+            position: this.state.seekPerc
+        });
 
         this.refs['scrobbler-height'].className = this.refs['scrobbler-height'].className.replace(' scrobbling', '');
         this.delayScrobbleGUI();
@@ -174,10 +191,6 @@ default React.createClass({
         PlayerActions.scrobble(this.state.length * percent_done);
     },
     handleDragStart(event) {
-
-        this.setState({
-            scrobbling: true
-        });
 
         PlayerActions.scrobbleState(true);
 
@@ -188,9 +201,11 @@ default React.createClass({
         //                this.refs['scrobbler-handle'].style.opacity = 1;
         //        }, 100, this.state.scrobbling)
 
+        PlayerActions.settingChange({
+            keepScrobble: true
+        });
         var percent_done = event.pageX / document.body.clientWidth;
-        this.setState({
-            keepScrobbleGUI: true,
+        PlayerActions.settingChange({
             seekPerc: percent_done
         });
         this.delayScrobbleGUI();
@@ -275,7 +290,7 @@ default React.createClass({
     render() {
         var scrobblerStyles = {
             time: {
-                width: this.state.scrobbling || this.state.keepScrobbleGUI ? this.state.seekPerc * 100 + '%' : this.state.position * 100 + '%'
+                width: this.state.scrobbling || this.state.keepScrobble ? this.state.seekPerc * 100 + '%' : this.state.position * 100 + '%'
             },
             tooltip: {
                 marginLeft: '-' + this.state.tooltipHalf + 'px',
@@ -283,14 +298,16 @@ default React.createClass({
             }
         };
         return (
-            <div className={this.state.uiShown ? 'control-bar show' : 'control-bar'} onMouseEnter={this.volumeIndexEffect} onMouseLeave={this.volumeIndexEffect}>
+            <div className={this.state.uiHidden ? 'control-bar' : this.state.uiShown ? 'control-bar show' : 'control-bar'} onMouseEnter={this.volumeIndexEffect} onMouseLeave={this.volumeIndexEffect}>
                 <div onMouseUp={this.handleScrobble} onMouseDown={this.handleDragStart} onMouseOut={this.handleDragEnd} onMouseMove={this.handleScrobblerHover} className="scrobbler-padding"></div>
                 <div ref="scrobbler-height" className="scrobbler">
                     <div className="buffer"/>
                     <div ref="scrobbler-time" style={scrobblerStyles.time} className="time"/>
                     <div ref="scrobbler-tooltip" className="tooltip" style={scrobblerStyles.tooltip}>{this.state.humanTime}</div>
                     <div ref="scrobbler-shownTime" className="shownTime">
-                        <span ref="scrobbler-currentTime" className="currentTime">{this.state.currentTime}</span> / <span ref="scrobbler-totalTime">{this.state.totalTime}</span>
+                        <span ref="scrobbler-currentTime" className="currentTime">{
+                            this.state.forceTime ? this.state.overTime : this.state.currentTime
+                        }</span> / <span ref="scrobbler-totalTime">{this.state.totalTime}</span>
                     </div>
                     <div ref="scrobbler-handle" className="handle"/>
                 </div>
