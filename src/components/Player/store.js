@@ -21,6 +21,7 @@ import parser from './utils/parser';
 import traktUtil from './utils/trakt';
 import subUtil from './utils/subtitles';
 import torrentUtil from '../../utils/stream/torrentUtil';
+import events from 'events';
 
 class playerStore {
     constructor() {
@@ -92,6 +93,11 @@ class playerStore {
         this.scrobbleKeys = false;
         this.seekPerc = 0;
 
+        this.aspectRatio = 'Default';
+        this.crop = 'Default';
+        this.zoom = 1;
+
+        this.events = new events.EventEmitter();
     }
 
     onSettingChange(setting) {
@@ -797,7 +803,10 @@ class playerStore {
             subtitlesOpen: false,
             subText: '',
             audioChannel: 1,
-            audioTrack: 1
+            audioTrack: 1,
+            aspectRatio: 'Default',
+            crop: 'Default',
+            zoom: 1
         });
         
         _.defer(() => {
@@ -809,6 +818,9 @@ class playerStore {
         this.subDelayField.setValue('0 ms');
         this.audioDelayField.setValue('0 ms');
         this.audioChannelField.setValue('Stereo');
+        this.aspectField.setValue('Default');
+        this.cropField.setValue('Default');
+        this.zoomField.setValue('Default');
     }
     
     onDelayTime(q) {
@@ -1121,8 +1133,11 @@ class playerStore {
             
             playlistOpen: false,
             subtitlesOpen: false,
-            settingsOpen: false
+            settingsOpen: false,
 
+            aspectRatio: 'Default',
+            crop: 'Default',
+            zoom: 1
         });
         _.defer(() => {
             playerActions.setSubDelay(0);
@@ -1133,6 +1148,9 @@ class playerStore {
         this.subDelayField.setValue('0 ms');
         this.audioDelayField.setValue('0 ms');
         this.audioChannelField.setValue('Stereo');
+        this.aspectField.setValue('Default');
+        this.cropField.setValue('Default');
+        this.zoomField.setValue('Default');
 
         if (this.wcjs) {
             

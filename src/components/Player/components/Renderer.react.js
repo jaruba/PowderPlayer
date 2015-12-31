@@ -18,6 +18,19 @@ try {
     console.error('WCJS Load Error:', e);
 }
 
+function gcd(a,b) {
+    if (b > a) {
+        var temp = a;
+        a = b;
+        b = temp;
+    } while (b != 0) {
+        var m = a % b;
+        a = b;
+        b = m;
+    }
+    return a;
+}
+
 export
 default React.createClass({
 
@@ -37,12 +50,17 @@ default React.createClass({
 
             rippleEffects: playerState.rippleEffects,
             clickPause: playerState.clickPause,
-            firstPlay: true
+            firstPlay: true,
+
+            aspectRatio: playerState.aspectRatio,
+            crop: playerState.crop,
+            zoom: playerState.zoom
         }
     },
     componentWillMount() {
         PlayerStore.listen(this.update);
         window.addEventListener('resize', this.handleResize);
+        PlayerStore.getState().events.on('resizeNow', this.handleResize.bind(this));
     },
     componentDidMount() {
         if (!PlayerStore.getState().wcjs) {
@@ -65,6 +83,7 @@ default React.createClass({
         wcjsRenderer.clearCanvas();
         PlayerStore.unlisten(this.update);
         window.removeEventListener('resize', this.handleResize);
+        PlayerStore.getState().events.removeListener('resizeNow', this.handleResize);
     },
     update() {
         if (this.isMounted()) {
@@ -77,7 +96,10 @@ default React.createClass({
                 fullscreen: playerState.fullscreen,
                 volume: playerState.volume,
                 rippleEffects: playerState.rippleEffects,
-                clickPause: playerState.clickPause
+                clickPause: playerState.clickPause,
+                aspectRatio: playerState.aspectRatio,
+                crop: playerState.crop,
+                zoom: playerState.zoom
             });
         }
     },
@@ -253,22 +275,64 @@ default React.createClass({
     handleResize() {
         var canvas = this.refs['wcjs-render'];
         var container = document.body;
-        var sourceAspect = canvas.width / canvas.height;
+        var width = canvas.width;
+        var height = canvas.height;
+        var sourceAspect = width / height;
+        var canvasParent = this.refs['canvas-holder'];
+
+        if (this.state.aspectRatio != "Default" && this.state.aspectRatio.indexOf(":") > -1) {
+            var res = this.state.aspectRatio.split(":");
+            var ratio = gcd(width,height);
+        }
+
         var destAspect = container.clientWidth / container.clientHeight;
+
+        if (ratio) var sourceAspect = (ratio * parseFloat(res[0])) / (ratio * parseFloat(res[1]));
+        else var sourceAspect = width / height;
+
+        if (this.state.crop != "Default" && this.state.crop.indexOf(":") > -1) {
+            var res = this.state.crop.split(":");
+            var ratio = gcd(width,height);
+            var sourceAspect = (ratio * parseFloat(res[0])) / (ratio * parseFloat(res[1]));
+        }
+
         var cond = destAspect > sourceAspect;
 
-        if (cond) {
-            canvas.style.height = "100%";
-            canvas.style.width = ((container.clientHeight * sourceAspect) / container.clientWidth) * 100 + '%';
+        if (this.state.crop != "Default" && this.state.crop.indexOf(":") > -1) {
+            if (cond) {
+                canvasParent.style.height = "100%";
+                canvasParent.style.width = ( ((container.clientHeight * sourceAspect) / container.clientWidth ) * 100) + "%";
+            } else {
+                canvasParent.style.height = ( ((container.clientWidth / sourceAspect) /container.clientHeight ) * 100) + "%";
+                canvasParent.style.width = "100%";
+            }
+            var sourceAspect = width / height;
+            var futureWidth = ( ((canvasParent.offsetHeight * sourceAspect) / canvasParent.offsetWidth ) *canvasParent.offsetWidth);
+            if (futureWidth < canvasParent.offsetWidth) {
+                var sourceAspect = canvas.height / canvas.width;
+                canvas.style.width = canvasParent.offsetWidth+"px";
+                canvas.style.height = ( ((canvasParent.offsetWidth * sourceAspect) / canvasParent.offsetHeight ) *canvasParent.offsetHeight) + "px";
+            } else {
+                canvas.style.height = canvasParent.offsetHeight+"px";
+                canvas.style.width = ( ((canvasParent.offsetHeight * sourceAspect) / canvasParent.offsetWidth ) *canvasParent.offsetWidth) + "px";
+            }
         } else {
-            canvas.style.height = ((container.clientWidth / sourceAspect) / container.clientHeight) * 100 + '%';
+            if (cond) {
+                canvasParent.style.height = (100*this.state.zoom)+"%";
+                canvasParent.style.width = ( ((container.clientHeight * sourceAspect) / container.clientWidth ) * 100 *this.state.zoom) + "%";
+            } else {
+                canvasParent.style.height = ( ((container.clientWidth / sourceAspect) /container.clientHeight ) * 100*this.state.zoom) + "%";
+                canvasParent.style.width = (100*this.state.zoom)+"%";
+            }
+            canvas.style.height = "100%";
             canvas.style.width = "100%";
-        };
+        }
 
         PlayerActions.settingChange({
             fontSize: this.calcFontSize(),
             subSize: this.calcSubSize()
         });
+
     },
     handleTogglePlay() {
         if (this.state.clickPause)
@@ -296,7 +360,7 @@ default React.createClass({
             }
         };
         return (
-            <div className="canvas-holder" onWheel={this.wheel} style={renderStyles.container}>
+            <div ref="canvas-holder" className="canvas-holder" onWheel={this.wheel} style={renderStyles.container}>
                 <RaisedButton id={'canvasEffect'} onClick={this.handleTogglePlay} onDoubleClick={PlayerActions.toggleFullscreen.bind(this, !this.state.fullscreen)} iconClassName="material-icons" className={this.state.rippleEffects ? this.state.clickPause ? 'over-canvas' : 'over-canvas no-ripples' : 'over-canvas no-ripples' } label="Canvas Overlay" />
                 <canvas id={'playerCanvas'} style={renderStyles.canvas} onClick={this.handleTogglePlay} onDoubleClick={PlayerActions.toggleFullscreen.bind(this, !this.state.fullscreen)} ref="wcjs-render" />
             </div>

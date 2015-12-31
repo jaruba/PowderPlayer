@@ -364,6 +364,76 @@ const Player = React.createClass({
         this.props.bindShortcut('p', (event) => {
             PlayerStore.getState().wcjs.time = 0;
         });
+        
+        var aspectRatios = ['Default','1:1','4:3','16:9','16:10','2.21:1','2.35:1','2.39:1','5:4'];
+        
+        this.props.bindShortcut('a', (event) => {
+            var playerState = PlayerStore.getState();
+            aspectRatios.some((el, ij) => {
+                if (el == playerState.aspectRatio) {
+                    if (aspectRatios.length == ij+1)
+                        var newValue = 0;
+                    else
+                        var newValue = ij + 1;
+
+                    PlayerActions.settingChange({
+                        aspectRatio: aspectRatios[newValue],
+                        crop: 'Default',
+                        zoom: 1
+                    });
+                    PlayerActions.announcement('Aspect Ratio: ' + aspectRatios[newValue]);
+                    playerState.events.emit('resizeNow');
+                    return true;
+                } else return false;
+            });
+        });
+        
+        var crops = ['Default','16:10','16:9','1.85:1','2.21:1','2.35:1','2.39:1','5:3','4:3','5:4','1:1'];
+        
+        this.props.bindShortcut('c', (event) => {
+            var playerState = PlayerStore.getState();
+            crops.some((el, ij) => {
+                if (el == playerState.crop) {
+                    if (crops.length == ij+1)
+                        var newValue = 0;
+                    else
+                        var newValue = ij + 1;
+
+                    PlayerActions.settingChange({
+                        crop: crops[newValue],
+                        aspectRatio: 'Default',
+                        zoom: 1
+                    });
+                    PlayerActions.announcement('Crop: ' + crops[newValue]);
+                    playerState.events.emit('resizeNow');
+                    return true;
+                } else return false;
+            });
+        });
+
+        var zooms = [['Default',1],['2x Double',2],['0.25x Quarter',0.25],['0.5x Half',0.5]];
+        
+        this.props.bindShortcut('z', (event) => {
+            var playerState = PlayerStore.getState();
+            zooms.some((el, ij) => {
+                if (el[1] == playerState.zoom) {
+                    if (zooms.length == ij+1)
+                        var newValue = 0;
+                    else
+                        var newValue = ij + 1;
+
+                    PlayerActions.settingChange({
+                        zoom: zooms[newValue][1],
+                        crop: 'Default',
+                        aspectRatio: 'Default'
+                    });
+                    PlayerActions.announcement('Zoom: ' + zooms[newValue][0]);
+                    playerState.events.emit('resizeNow');
+                    return true;
+                } else return false;
+            });
+        });
+
     },
     componentWillUnmount() {
         this.props.unbindShortcut('space');
@@ -397,6 +467,9 @@ const Player = React.createClass({
         this.props.unbindShortcut('[');
         this.props.unbindShortcut('=');
         this.props.unbindShortcut('ctrl+h');
+        this.props.unbindShortcut('a');
+        this.props.unbindShortcut('c');
+        this.props.unbindShortcut('z');
         PlayerStore.unlisten(this.update);
     },
     componentDidMount() {

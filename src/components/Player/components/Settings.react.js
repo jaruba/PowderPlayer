@@ -108,7 +108,14 @@ default React.createClass({
                 ['Hong-Kong Supplementary (HKSCS)', 'Big5-HKSCS'],
                 ['Vietnamese (VISCII)', 'viscii'],
                 ['Vietnamese (Windows-1258)', 'windows1258']
-            ]
+            ],
+            
+            aspectRatios: ['Default','1:1','4:3','16:9','16:10','2.21:1','2.35:1','2.39:1','5:4'],
+            crops: ['Default','16:10','16:9','1.85:1','2.21:1','2.35:1','2.39:1','5:3','4:3','5:4','1:1'],
+            zooms: [['Default',1],['2x Double',2],['0.25x Quarter',0.25],['0.5x Half',0.5]],
+            aspectRatio: playerState.aspectRatio,
+            crop: playerState.crop,
+            zoom: playerState.zoom
         }
     },
     componentWillMount() {
@@ -126,7 +133,10 @@ default React.createClass({
             audioChannelField: this.refs['audioChannelInput'],
             speedField: this.refs['speedInput'],
             audioTrackField: this.refs['audioTrackInput'],
-            subSizeField: this.refs['subSizeInput']
+            subSizeField: this.refs['subSizeInput'],
+            aspectField: this.refs['aspectInput'],
+            cropField: this.refs['cropInput'],
+            zoomField: this.refs['zoomInput']
         });
     },
         
@@ -148,7 +158,10 @@ default React.createClass({
                 defaultAudioChannel: playerState.audioChannel,
                 subColor: localStorage.subColor ? parseInt(localStorage.subColor) : 0,
                 defaultAudioTrack: playerState.audioTrack,
-                encoding: localStorage.selectedEncoding ? parseInt(localStorage.selectedEncoding) : 0
+                encoding: localStorage.selectedEncoding ? parseInt(localStorage.selectedEncoding) : 0,
+                aspectRatio: playerState.aspectRatio,
+                crop: playerState.crop,
+                zoom: playerState.zoom
             });
         }
     },
@@ -702,6 +715,204 @@ default React.createClass({
         this.refs['pulseInput'].setValue(newValue);
     },
 
+    _handleAspectUp(event) {
+
+        var aspectRatio = this.state.aspectRatio;
+        var aspectRatios = this.state.aspectRatios;
+        var zoomInput = this.refs['zoomInput'];
+        var aspectInput = this.refs['aspectInput'];
+        var cropInput = this.refs['cropInput'];
+
+        aspectRatios.some((el, ij) => {
+            if (el == aspectRatio) {
+                if (aspectRatios.length == ij+1)
+                    var newValue = 0;
+                else
+                    var newValue = ij + 1;
+
+                PlayerActions.settingChange({
+                    aspectRatio: aspectRatios[newValue],
+                    crop: 'Default',
+                    zoom: 1
+                });
+
+                aspectInput.setValue(aspectRatios[newValue]);
+                zoomInput.setValue('Default');
+                cropInput.setValue('Default');
+                _.defer(() => {
+                    PlayerStore.getState().events.emit('resizeNow');
+                });
+
+                return true;
+            } else return false;
+        });
+    },
+
+    _handleAspectDown(event) {
+
+        var aspectRatio = this.state.aspectRatio;
+        var aspectRatios = this.state.aspectRatios;
+        var zoomInput = this.refs['zoomInput'];
+        var aspectInput = this.refs['aspectInput'];
+        var cropInput = this.refs['cropInput'];
+
+        aspectRatios.some((el, ij) => {
+            if (el == aspectRatio) {
+                if (ij - 1 < 0)
+                    var newValue = aspectRatios.length - 1;
+                else
+                    var newValue = ij - 1;
+
+                PlayerActions.settingChange({
+                    aspectRatio: aspectRatios[newValue],
+                    crop: 'Default',
+                    zoom: 1
+                });
+
+                aspectInput.setValue(aspectRatios[newValue]);
+                zoomInput.setValue('Default');
+                cropInput.setValue('Default');
+                _.defer(() => {
+                    PlayerStore.getState().events.emit('resizeNow');
+                });
+
+                return true;
+            } else return false;
+        });
+    },
+
+    _handleCropUp(event) {
+
+        var crop = this.state.crop;
+        var crops = this.state.crops;
+        var zoomInput = this.refs['zoomInput'];
+        var aspectInput = this.refs['aspectInput'];
+        var cropInput = this.refs['cropInput'];
+
+        crops.some((el, ij) => {
+            if (el == crop) {
+                if (crops.length == ij+1)
+                    var newValue = 0;
+                else
+                    var newValue = ij + 1;
+
+                PlayerActions.settingChange({
+                    crop: crops[newValue],
+                    aspectRatio: 'Default',
+                    zoom: 1
+                });
+
+                cropInput.setValue(crops[newValue]);
+                zoomInput.setValue('Default');
+                aspectInput.setValue('Default');
+                _.defer(() => {
+                    PlayerStore.getState().events.emit('resizeNow');
+                });
+
+                return true;
+            } else return false;
+        });
+    },
+
+    _handleCropDown(event) {
+
+        var crop = this.state.crop;
+        var crops = this.state.crops;
+        var zoomInput = this.refs['zoomInput'];
+        var aspectInput = this.refs['aspectInput'];
+        var cropInput = this.refs['cropInput'];
+
+        crops.some((el, ij) => {
+            if (el == crop) {
+                if (ij - 1 < 0)
+                    var newValue = crops.length - 1;
+                else
+                    var newValue = ij - 1;
+
+                PlayerActions.settingChange({
+                    crop: crops[newValue],
+                    aspectRatio: 'Default',
+                    zoom: 1
+                });
+
+                cropInput.setValue(crops[newValue]);
+                zoomInput.setValue('Default');
+                aspectInput.setValue('Default');
+                _.defer(() => {
+                    PlayerStore.getState().events.emit('resizeNow');
+                });
+
+                return true;
+            } else return false;
+        });
+    },
+
+    _handleZoomUp(event) {
+
+        var zoom = this.state.zoom;
+        var zooms = this.state.zooms;
+        var zoomInput = this.refs['zoomInput'];
+        var aspectInput = this.refs['aspectInput'];
+        var cropInput = this.refs['cropInput'];
+
+        zooms.some((el, ij) => {
+            if (el[1] == zoom) {
+                if (zooms.length == ij+1)
+                    var newValue = 0;
+                else
+                    var newValue = ij + 1;
+
+                PlayerActions.settingChange({
+                    zoom: zooms[newValue][1],
+                    crop: 'Default',
+                    aspectRatio: 'Default'
+                });
+
+                zoomInput.setValue(zooms[newValue][0]);
+                cropInput.setValue('Default');
+                aspectInput.setValue('Default');
+                _.defer(() => {
+                    PlayerStore.getState().events.emit('resizeNow');
+                });
+                
+                return true;
+            } else return false;
+        });
+    },
+
+    _handleZoomDown(event) {
+
+        var zoom = this.state.zoom;
+        var zooms = this.state.zooms;
+        var zoomInput = this.refs['zoomInput'];
+        var aspectInput = this.refs['aspectInput'];
+        var cropInput = this.refs['cropInput'];
+
+        zooms.some((el, ij) => {
+            if (el[1] == zoom) {
+                if (ij - 1 < 0)
+                    var newValue = zooms.length - 1;
+                else
+                    var newValue = ij - 1;
+
+                PlayerActions.settingChange({
+                    zoom: zooms[newValue][1],
+                    crop: 'Default',
+                    aspectRatio: 'Default'
+                });
+
+                zoomInput.setValue(zooms[newValue][0]);
+                cropInput.setValue('Default');
+                aspectInput.setValue('Default');
+                _.defer(() => {
+                    PlayerStore.getState().events.emit('resizeNow');
+                });
+
+                return true;
+            } else return false;
+        });
+    },
+
     render() {
 
         return (
@@ -821,6 +1032,85 @@ default React.createClass({
                                         onBlur={this._handleBufferSizeBlur}
                                         defaultValue={this.state.bufferSize+' sec'}
                                         style={{float: 'right', height: '32px', width: '60px', top: '-5px', marginRight: '4px'}} />
+                                </div>
+
+                                <div style={{clear: 'both'}} />
+
+                                <div className="setting-header">
+                                    Video
+                                </div>
+
+                                <div className="sub-delay-setting">
+                                    <span style={{color: '#fff'}}>
+                                        Aspect Ratio:
+                                    </span>
+                                    <IconButton
+                                        onClick={this._handleAspectDown}
+                                        iconClassName="material-icons"
+                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
+                                        keyboard_arrow_down
+                                    </IconButton>
+                                    <IconButton
+                                        onClick={this._handleAspectUp}
+                                        iconClassName="material-icons"
+                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
+                                        keyboard_arrow_up
+                                    </IconButton>
+                                    <TextField
+                                        disabled={true}
+                                        ref="aspectInput"
+                                        defaultValue={this.state.aspectRatio}
+                                        style={{float: 'right', height: '32px', width: '60px', top: '-5px', marginRight: '4px'}} />
+                                </div>
+
+                                <div style={{clear: 'both'}} />
+
+                                <div className="sub-delay-setting">
+                                    <span style={{color: '#fff'}}>
+                                        Crop:
+                                    </span>
+                                    <IconButton
+                                        onClick={this._handleCropDown}
+                                        iconClassName="material-icons"
+                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
+                                        keyboard_arrow_down
+                                    </IconButton>
+                                    <IconButton
+                                        onClick={this._handleCropUp}
+                                        iconClassName="material-icons"
+                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
+                                        keyboard_arrow_up
+                                    </IconButton>
+                                    <TextField
+                                        disabled={true}
+                                        ref="cropInput"
+                                        defaultValue={this.state.crop}
+                                        style={{float: 'right', height: '32px', width: '60px', top: '-5px', marginRight: '4px'}} />
+                                </div>
+
+                                <div style={{clear: 'both'}} />
+
+                                <div className="sub-delay-setting">
+                                    <span style={{color: '#fff'}}>
+                                        Zoom:
+                                    </span>
+                                    <IconButton
+                                        onClick={this._handleZoomDown}
+                                        iconClassName="material-icons"
+                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
+                                        keyboard_arrow_down
+                                    </IconButton>
+                                    <IconButton
+                                        onClick={this._handleZoomUp}
+                                        iconClassName="material-icons"
+                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
+                                        keyboard_arrow_up
+                                    </IconButton>
+                                    <TextField
+                                        disabled={true}
+                                        ref="zoomInput"
+                                        defaultValue={'Default'}
+                                        style={{float: 'right', height: '32px', width: '90px', top: '-5px', marginRight: '4px'}} />
                                 </div>
 
                                 <div style={{clear: 'both'}} />
