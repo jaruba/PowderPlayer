@@ -52,20 +52,24 @@ class torrentActions {
                     var newFiles = [];
                     var queueParser = [];
 
-                    files.ordered.forEach( (file, ij) => {
-                        newFiles.push({
-                            title: parser(file.name).name(),
-                            uri: 'http://127.0.0.1:' + EngineStore.state.torrents[file.infoHash]['stream-port'] + '/' + file.id,
-                            byteSize: file.size,
-                            torrentHash: file.infoHash,
-                            path: file.path
+                    if (files.ordered.length) {
+                        files.ordered.forEach( (file, ij) => {
+                            if (file.name.toLowerCase().replace("sample","") == file.name.toLowerCase() && file.name != "ETRG.mp4" && file.name.toLowerCase().substr(0,5) != "rarbg") {
+                                newFiles.push({
+                                    title: parser(file.name).name(),
+                                    uri: 'http://127.0.0.1:' + EngineStore.state.torrents[file.infoHash]['stream-port'] + '/' + file.id,
+                                    byteSize: file.size,
+                                    torrentHash: file.infoHash,
+                                    path: file.path
+                                });
+                                queueParser.push({
+                                    idx: ij,
+                                    url: 'http://127.0.0.1:' + EngineStore.state.torrents[file.infoHash]['stream-port'] + '/' + file.id,
+                                    filename: file.name
+                                });
+                            }
                         });
-                        queueParser.push({
-                            idx: ij,
-                            url: 'http://127.0.0.1:' + EngineStore.state.torrents[file.infoHash]['stream-port'] + '/' + file.id,
-                            filename: file.name
-                        });
-                    });
+                    }
 
 //                  console.log(newFiles);
 
@@ -74,9 +78,11 @@ class torrentActions {
             
                     // start searching for thumbnails after 1 second
                     _.delay(() => {
-                        queueParser.forEach( el => {
-                            PlayerActions.parseURL(el);
-                        });
+                        if (queueParser.length) {
+                            queueParser.forEach( el => {
+                                PlayerActions.parseURL(el);
+                            });
+                        }
                     },1000);
 
                     ModalActions.close();
