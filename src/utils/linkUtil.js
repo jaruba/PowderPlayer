@@ -32,12 +32,6 @@ module.exports = (inputvalue, cb) => {
                                         _.delay(() => queueParser.forEach(el => {
                                             PlayerActions.parseURL(el);
                                         }), 1000);
-
-
-
-
-
-                                        
                                     } else {
                                         // add the direct link anyway, maybe vlc will do some magic
                                         resolve(parsed.url);
