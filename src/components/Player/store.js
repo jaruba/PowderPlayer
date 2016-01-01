@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import ipc from 'ipc';
+import localStorage from 'localStorage';
 import {
     handleTime
 }
@@ -35,11 +36,11 @@ class playerStore {
         this.paused = false;
 
         this.alwaysOnTop = false;
-        this.clickPause = localStorage.clickPause ? (localStorage.clickPause === "true") : true;
-        this.rippleEffects = localStorage.playerRippleEffects ? (localStorage.playerRippleEffects === "true") : true;
+        this.clickPause = localStorage.clickPause ? localStorage.clickPause : false;
+        this.rippleEffects = localStorage.playerRippleEffects ? localStorage.playerRippleEffects : true;
 
         this.muted = false;
-        this.volume = parseInt(localStorage.volume);
+        this.volume = localStorage.volume ? localStorage.volume : 100;
         this.position = 0;
         this.buffering = false;
         this.time = 0;
@@ -62,7 +63,9 @@ class playerStore {
 
         this.scrobbling = false;
 
-        this.itemDesc = i => { return false };
+        this.itemDesc = i => {
+            return false
+        };
 
         this.firstPlay = false;
 
@@ -85,7 +88,7 @@ class playerStore {
         this.subText = '';
         this.announce = '';
         this.announceEffect = '';
-        
+
         this.speed = 1;
 
         this.forceTime = false;
@@ -122,15 +125,12 @@ class playerStore {
         });
     }
 
-    onLoadSub(subLink) {
-        subUtil.loadSubtitle(subLink, parsedSub => {
-            this.setState({
-                subtitle: parsedSub,
-                trackSub: -1
-            });
-            playerActions.setSubDelay(0);
-            this.subDelayField.setValue('0 ms');
+    onSetSubtitle(subLink) {
+        this.setState({
+            subtitle: parsedSub,
+            trackSub: -1
         });
+        this.subDelayField.setValue('0 ms');
     }
 
     onTogglePlaylist() {
@@ -148,7 +148,7 @@ class playerStore {
             subtitlesOpen: !this.subtitlesOpen
         });
     }
-    
+
     onToggleSettings() {
         this.setState({
             settingsOpen: !this.settingsOpen,
@@ -168,15 +168,17 @@ class playerStore {
             fullscreen: state
         });
     }
-    
+
     onParseURL(qTask) {
         if (!this.urlParserQueue) {
             var player = this;
-            var parserQueue = async.queue( (task, cb) => {
+            var parserQueue = async.queue((task, cb) => {
                 if (task.url && !task.filename) {
-                    var client = new MetaInspector(task.url, { timeout: 5000 });
-        
-                    client.on("fetch", function(){
+                    var client = new MetaInspector(task.url, {
+                        timeout: 5000
+                    });
+
+                    client.on("fetch", function() {
                         var idx = task.idx;
                         var itemDesc = player.itemDesc(task.idx);
                         if (!(itemDesc && itemDesc.mrl == task.url)) {
@@ -188,54 +190,54 @@ class playerStore {
                             }
                         }
                         if (idx > -1 && client.image && client.title) {
-    
-                            if (document.getElementById('item'+idx)) {
-                                document.getElementById('item'+idx).style.background = "url('"+client.image+"')";
-                                document.getElementById('itemTitle'+idx).innerHTML = client.title;
+
+                            if (document.getElementById('item' + idx)) {
+                                document.getElementById('item' + idx).style.background = "url('" + client.image + "')";
+                                document.getElementById('itemTitle' + idx).innerHTML = client.title;
                             }
-                            
+
                             playerActions.setDesc({
                                 idx: idx,
                                 title: client.title,
                                 image: client.image
                             });
-                            
+
                             if (idx == player.wcjs.playlist.currentItem) {
                                 player.setState({
                                     title: client.title
                                 });
                             }
-                            
+
                         }
                         _.delay(() => {
                             cb()
                         }, 500)
                     });
-                
-                    client.on("error", function(err){
+
+                    client.on("error", function(err) {
                         _.delay(() => {
                             cb()
                         }, 500)
                     });
-                    
+
                     client.fetch();
                 } else if (task.filename) {
 
                     var parsedFilename = parseVideo(task.filename);
-                    
+
                     if (!parsedFilename.season && !task.secondTry && parser(task.filename).shortSzEp()) {
                         parsedFilename.type = 'series';
                         parsedFilename.season = parser(task.filename).season();
                         parsedFilename.episode = [parser(task.filename).episode()];
                         parsedFilename.name = parser(task.filename).showName();
                     }
-                    
+
                     if (parsedFilename.type == 'series' && parsedFilename.year) {
                         delete parsedFilename.year;
                     }
-                    
+
                     nameToImdb(parsedFilename, function(err, res, inf) {
-                        
+
                         if (err) {
                             // handle error
                             _.delay(() => {
@@ -267,7 +269,7 @@ class playerStore {
                                 var summary = traktUtil.episodeInfo;
                             }
 
-                            summary(buildQuery).then( results => {
+                            summary(buildQuery).then(results => {
 
                                 var idx = task.idx;
 
@@ -289,16 +291,16 @@ class playerStore {
                                     var newObj = {
                                         idx: idx
                                     };
-                                    
+
                                     // this is the episode title for series
                                     newObj.title = parsedFilename.name.split(' ').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
-                                    
+
                                     if (results.season && results.number) {
                                         newObj.title += ' S' + ('0' + results.season).slice(-2) + 'E' + ('0' + results.number).slice(-2);
                                     } else if (results.year) {
                                         newObj.title += ' ' + results.year;
                                     }
-                                    
+
                                     if (results.images) {
                                         if (results.images.screenshot && results.images.screenshot.thumb) {
                                             newObj.image = results.images.screenshot.thumb;
@@ -306,18 +308,18 @@ class playerStore {
                                             newObj.image = results.images.fanart.thumb;
                                         }
                                     }
-                                    
-                                    if (document.getElementById('item'+idx)) {
+
+                                    if (document.getElementById('item' + idx)) {
                                         if (newObj.image)
-                                            document.getElementById('item'+idx).style.background = "url('"+newObj.image+"')";
-                                            
+                                            document.getElementById('item' + idx).style.background = "url('" + newObj.image + "')";
+
                                         if (newObj.title)
-                                            document.getElementById('itemTitle'+idx).innerHTML = newObj.title;
+                                            document.getElementById('itemTitle' + idx).innerHTML = newObj.title;
                                     }
-                                    
+
                                     newObj.parsed = parsedFilename;
                                     newObj.trakt = results;
-                                    
+
                                     playerActions.setDesc(newObj);
                                     if (idx == player.wcjs.playlist.currentItem) {
                                         player.setState({
@@ -327,7 +329,7 @@ class playerStore {
                                             player.setState({
                                                 foundTrakt: true
                                             });
-                                            
+
                                             var shouldScrobble = traktUtil.loggedIn ? localStorage.traktScrobble ? (localStorage.traktScrobble == 'true') : true : false;
                                             if (shouldScrobble) {
                                                 if (!localStorage.playerNotifs || localStorage.playerNotifs == 'true')
@@ -336,18 +338,18 @@ class playerStore {
                                             }
                                         }
                                     }
-                            
+
                                     _.delay(() => {
                                         cb()
                                     }, 500)
-                                    
+
                                 }
-                            }).catch( err => {
+                            }).catch(err => {
                                 if (!task.secondTry && parsedFilename.type == 'series') {
                                     task.secondTry = true;
                                     parserQueue.push(task);
                                 } else {
-                                    console.log('Error: '+ err.message);
+                                    console.log('Error: ' + err.message);
                                 }
                                 _.delay(() => {
                                     cb()
@@ -359,7 +361,7 @@ class playerStore {
                         _.delay(() => {
                             cb()
                         }, 500)
-                        
+
                     })
 
                 }
@@ -390,7 +392,7 @@ class playerStore {
             var length = this.wcjs.length;
             var itemDesc = this.itemDesc();
             if (length && itemDesc.setting && itemDesc.setting.torrentHash && itemDesc.setting.byteSize) {
-                var newPulse = Math.round(itemDesc.setting.byteSize / (length /1000) *2);
+                var newPulse = Math.round(itemDesc.setting.byteSize / (length / 1000) * 2);
                 torrentUtil.setPulse(itemDesc.setting.torrentHash, newPulse);
             }
         }
@@ -399,7 +401,7 @@ class playerStore {
     onFlood() {
         if (this.wcjs) {
             var itemDesc = this.itemDesc();
-            if (itemDesc.setting && itemDesc.setting.torrentHash) 
+            if (itemDesc.setting && itemDesc.setting.torrentHash)
                 torrentUtil.flood(itemDesc.setting.torrentHash);
         }
     }
@@ -421,25 +423,25 @@ class playerStore {
             time: time,
             currentTime: handleTime(time, this.length)
         });
-        
+
         // print subtitle text if a subtitle is selected
         if (this.subtitle.length > 0) {
             var subLines = this.subtitle;
-            var nowSecond = (time - this.subDelay) /1000;
+            var nowSecond = (time - this.subDelay) / 1000;
             if (this.trackSub > -2) {
-            
+
                 var line = -1;
                 var os = 0;
-                
+
                 for (os in subLines) {
                     if (os > nowSecond) break;
                     line = os;
                 }
-                
+
                 if (line >= 0) {
-                    if(line != this.trackSub) {
+                    if (line != this.trackSub) {
                         if ((subLines[line].t.match(new RegExp("<", "g")) || []).length == 2) {
-                            if (!(subLines[line].t.substr(0,1) == "<" && subLines[line].t.slice(-1) == ">"))
+                            if (!(subLines[line].t.substr(0, 1) == "<" && subLines[line].t.slice(-1) == ">"))
                                 subLines[line].t = subLines[line].t.replace(/<\/?[^>]+(>|$)/g, "");
                         } else if ((subLines[line].t.match(new RegExp("<", "g")) || []).length > 2)
                             subLines[line].t = subLines[line].t.replace(/<\/?[^>]+(>|$)/g, "");
@@ -447,7 +449,7 @@ class playerStore {
                         this.setState({
                             subText: subLines[line].t
                         });
-                        
+
                         this.setState({
                             trackSub: line
                         });
@@ -480,7 +482,7 @@ class playerStore {
                 files: this.files.concat(data)
             });
 
-            if (this.wcjs.playlist.items.count == 0) 
+            if (this.wcjs.playlist.items.count == 0)
                 var playAfter = true;
 
             for (var i = 0; data[i]; i++) {
@@ -489,9 +491,9 @@ class playerStore {
                 } else if (data[i].uri) {
                     this.wcjs.playlist.add(data[i].uri);
                     if (data[i].title)
-                        this.wcjs.playlist.items[this.wcjs.playlist.items.count-1].title = data[i].title;
+                        this.wcjs.playlist.items[this.wcjs.playlist.items.count - 1].title = data[i].title;
 
-                    data[i].idx = this.wcjs.playlist.items.count-1;
+                    data[i].idx = this.wcjs.playlist.items.count - 1;
 
                     let keeper = data[i];
 
@@ -530,7 +532,7 @@ class playerStore {
         var isLocal = (itemDesc.mrl && itemDesc.mrl.indexOf('file://') == 0);
         if (!isLocal) {
             var announcer = {};
-            announcer.announce = 'Buffering '+perc+'%';
+            announcer.announce = 'Buffering ' + perc + '%';
             clearTimeout(this.announceTimer);
 
             if (perc === 100) {
@@ -542,16 +544,18 @@ class playerStore {
                 if (this.announceEffect)
                     announcer.announceEffect = false;
             }
-            
+
             if (Object.keys(announcer).length)
                 this.setState(announcer);
         }
 
     }
-    
+
     onAnnouncement(obj) {
         var announcer = {};
-        if (typeof obj === 'string') obj = { text: obj };
+        if (typeof obj === 'string') obj = {
+            text: obj
+        };
         announcer.announce = obj.text;
         if (!obj.delay) obj.delay = 2000;
 
@@ -570,7 +574,7 @@ class playerStore {
         if (Object.keys(announcer).length)
             this.setState(announcer);
     }
-    
+
     onUpdateImage(image) {
 
         if (document.getElementById('canvasEffect')) {
@@ -579,13 +583,13 @@ class playerStore {
                 var image = image.replace('large', 't500x500');
                 document.getElementById('canvasEffect').parentNode.style.cssText = "background-color: transparent !important";
                 document.getElementById('playerCanvas').style.display = "none";
-                document.getElementsByClassName('wcjs-player')[0].style.background = "url('"+image+"') 50% 50% / contain no-repeat black";
+                document.getElementsByClassName('wcjs-player')[0].style.background = "url('" + image + "') 50% 50% / contain no-repeat black";
             } else {
                 document.getElementById('canvasEffect').parentNode.style.cssText = "background-color: #000 !important";
                 document.getElementById('playerCanvas').style.display = "block";
                 document.getElementsByClassName('wcjs-player')[0].style.background = "black";
             }
-            
+
         }
 
     }
@@ -598,9 +602,9 @@ class playerStore {
             } else {
                 try {
                     var image = JSON.parse(this.wcjs.playlist.items[this.wcjs.playlist.currentItem].setting).image;
-                } catch(e) {}
+                } catch (e) {}
             }
-            
+
             _.delay(() => {
                 playerActions.updateImage(image);
             });
@@ -726,17 +730,17 @@ class playerStore {
                         filepath: itemDesc.path,
                         fps: this.wcjs.input.fps
                     };
-                    
+
                     if (itemDesc.byteSize)
                         subQuery.byteLength = itemDesc.byteSize;
-    
+
                     if (itemDesc.torrentHash) {
                         subQuery.torrentHash = itemDesc.torrentHash;
                         subQuery.isFinished = false;
                     }
-    
+
                     var player = this;
-    
+
                     subQuery.cb = subs => {
                         if (!subs) {
                             if (!localStorage.playerNotifs || localStorage.playerNotifs == 'true')
@@ -751,7 +755,7 @@ class playerStore {
                                 });
                                 if (!localStorage.playerNotifs || localStorage.playerNotifs == 'true')
                                     player.notifier.info('Found Subtitles', '', 6000);
-    
+
                                 if (!localStorage.autoSub || localStorage.autoSub == 'true') {
                                     if (localStorage.lastLanguage && localStorage.lastLanguage != 'none') {
                                         if (subs[localStorage.lastLanguage]) {
@@ -781,22 +785,22 @@ class playerStore {
                             });
                         }
                     };
-                    
+
                     subUtil.fetchSubs(subQuery);
-                    
+
                 }
             }
-            
+
         } else {
             traktUtil.handleScrobble('start', this.itemDesc(), this.wcjs.position);
         }
         this.audioTrackField.setValue(this.wcjs.audio[1]);
     }
-    
+
     onPaused() {
         traktUtil.handleScrobble('pause', this.itemDesc(), this.wcjs.position);
     }
-    
+
     onMediaChanged() {
         this.setState({
             firstPlay: false,
@@ -813,7 +817,7 @@ class playerStore {
             zoom: 1,
             totalTime: '00:00'
         });
-        
+
         _.defer(() => {
             playerActions.setSubDelay(0);
             playerActions.setAudioDelay(0);
@@ -827,7 +831,7 @@ class playerStore {
         this.cropField.setValue('Default');
         this.zoomField.setValue('Default');
     }
-    
+
     onDelayTime(q) {
         var t = q.jump;
         var d = q.delay;
@@ -848,9 +852,9 @@ class playerStore {
             overTime: handleTime((forceProgress * this.length), this.length),
             uiShown: true
         });
-        
+
         if (this.scrobbleKeys) clearTimeout(this.scrobbleKeys);
-        
+
         var scrobbleFunc = () => {
             this.wcjs.position = this.seekPerc;
             this.setState({
@@ -867,10 +871,10 @@ class playerStore {
                     playerActions.settingChange({
                         uiShown: false
                     });
-                },1000);
-            },1500);
+                }, 1000);
+            }, 1500);
         };
-        
+
         this.setState({
             scrobbleKeys: setTimeout(scrobbleFunc.bind(this), d)
         });
@@ -891,7 +895,7 @@ class playerStore {
             buffering: false,
             foundTrakt: false
         })
-            
+
         traktUtil.handleScrobble('stop', this.itemDesc(), this.wcjs.position);
 
         this.wcjs.playlist.playItem(idx[0]);
@@ -907,7 +911,7 @@ class playerStore {
 
         traktUtil.handleScrobble('pause', this.itemDesc(), this.wcjs.position);
     }
-    
+
     onPrev() {
         if (this.wcjs.playlist.currentItem > 0) {
             this.setState({
@@ -915,23 +919,23 @@ class playerStore {
                 position: 0,
                 foundTrakt: false
             });
-            
+
             traktUtil.handleScrobble('stop', this.itemDesc(), this.wcjs.position);
-            
+
             this.wcjs.playlist.prev();
         }
     }
 
     onNext() {
-        if (this.wcjs.playlist.currentItem+1 < this.wcjs.playlist.items.count) {
+        if (this.wcjs.playlist.currentItem + 1 < this.wcjs.playlist.items.count) {
             this.setState({
                 lastItem: -1,
                 position: 0,
                 foundTrakt: false
             });
-    
+
             traktUtil.handleScrobble('stop', this.itemDesc(), this.wcjs.position);
-            
+
             this.wcjs.playlist.next();
         }
     }
@@ -941,7 +945,7 @@ class playerStore {
         console.log('Player encountered an error.');
 
         var itemDesc = this.itemDesc();
-        
+
         traktUtil.handleScrobble('stop', itemDesc, this.wcjs.position);
 
         if (itemDesc.mrl.startsWith('https://player.vimeo.com/')) {
@@ -960,7 +964,7 @@ class playerStore {
 
                     // this can also be used to make a quality selector
                     // currently selecting 720p or best
-                    response.body.request.files.progressive.some( el => {
+                    response.body.request.files.progressive.some(el => {
                         if (el.quality == '720p') {
                             bestMRL = el.url;
                             return true;
@@ -969,14 +973,14 @@ class playerStore {
                             return false;
                         }
                     });
-                    
+
                     var image;
-                    
+
                     if (response.body.video.thumbs && response.body.video.thumbs.base) {
                         image = response.body.video.thumbs.base + '_320.jpg';
                     }
 
-//                    player.playlist.clear();
+                    //                    player.playlist.clear();
 
                     playerActions.replaceMRL({
                         x: lastItem,
@@ -985,41 +989,41 @@ class playerStore {
                             uri: bestMRL
                         }
                     });
-                    
+
                     player.playlist.playItem(lastItem);
 
-                    if (document.getElementById('item'+lastItem)) {
-                        document.getElementById('item'+lastItem).style.background = "url('"+image+"')";
-                        document.getElementById('itemTitle'+lastItem).innerHTML = response.body.video.title;
+                    if (document.getElementById('item' + lastItem)) {
+                        document.getElementById('item' + lastItem).style.background = "url('" + image + "')";
+                        document.getElementById('itemTitle' + lastItem).innerHTML = response.body.video.title;
                     }
-                    if (image) 
+                    if (image)
                         _.delay(() => {
                             playerActions.setDesc({
                                 idx: lastItem,
                                 image: image
                             });
-                        },500);
+                        }, 500);
                 }
             });
-            
+
         }
 
     }
-    
+
     onSetSubDelay(newDelay) {
         this.wcjs.subtitles.delay = newDelay;
         this.setState({
             subDelay: newDelay
         });
     }
-    
+
     onSetAudioDelay(newDelay) {
         this.wcjs.audio.delay = newDelay;
         this.setState({
             audioDelay: newDelay
         });
     }
-    
+
     onSetRate(newRate) {
         this.wcjs.input.rate = newRate;
         this.setState({
@@ -1028,33 +1032,33 @@ class playerStore {
     }
 
     onReplaceMRL(newObj) {
-        
+
         var newX = newObj.x;
         var newMRL = newObj.mrl;
-        
+
         this.setState({
             files: this.files.concat([newMRL])
         });
 
         this.wcjs.playlist.add(newMRL.uri);
         if (newMRL.title) {
-            this.wcjs.playlist.items[this.wcjs.playlist.items.count-1].title = newMRL.title;
+            this.wcjs.playlist.items[this.wcjs.playlist.items.count - 1].title = newMRL.title;
         }
-        
-        var newDifference = this.wcjs.playlist.items.count -1;
-        var swapDifference = this.wcjs.playlist.items.count - newX -1;
-            
+
+        var newDifference = this.wcjs.playlist.items.count - 1;
+        var swapDifference = this.wcjs.playlist.items.count - newX - 1;
+
         if (newX == this.wcjs.playlist.currentItem && [3, 4].indexOf(this.wcjs.state) > -1) {
             var playerPos = this.position;
             this.wcjs.stop();
-            this.wcjs.playlist.advanceItem(newDifference,swapDifference*(-1));
+            this.wcjs.playlist.advanceItem(newDifference, swapDifference * (-1));
             this.wcjs.playlist.playItem(newX);
             this.wcjs.position = playerPos;
-            
-        } else this.wcjs.playlist.advanceItem(newDifference,swapDifference*(-1));
-    
-        this.wcjs.playlist.items[newX].setting = this.wcjs.playlist.items[newX+1].setting;
-        this.wcjs.playlist.removeItem(newX+1);
+
+        } else this.wcjs.playlist.advanceItem(newDifference, swapDifference * (-1));
+
+        this.wcjs.playlist.items[newX].setting = this.wcjs.playlist.items[newX + 1].setting;
+        this.wcjs.playlist.removeItem(newX + 1);
     }
 
     onEnded() {
@@ -1080,7 +1084,7 @@ class playerStore {
             }
         }
     }
-    
+
     onSetDesc(obj) {
         if (typeof obj.idx === 'undefined')
             obj.idx = this.wcjs.playlist.currentItem;
@@ -1132,10 +1136,10 @@ class playerStore {
             subtitle: [],
             trackSub: -1,
             selectedSub: 1,
-            
+
             audioChannel: 1,
             audioTrack: 1,
-            
+
             playlistOpen: false,
             subtitlesOpen: false,
             settingsOpen: false,
@@ -1158,7 +1162,7 @@ class playerStore {
         this.zoomField.setValue('Default');
 
         if (this.wcjs) {
-            
+
             traktUtil.handleScrobble('stop', this.itemDesc(), this.wcjs.position);
 
             this.wcjs.stop();

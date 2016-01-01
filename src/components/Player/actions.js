@@ -41,10 +41,10 @@ class PlayerActions {
             'setPlaylist',
             'parseURL',
             'replaceMRL',
-            'loadSub',
+            'setSubtitle',
             'setSubDelay',
             'setAudioDelay',
-            
+
             'delayTime',
             'scrobbleKeys',
 
@@ -60,6 +60,14 @@ class PlayerActions {
 
             'updateImage'
         );
+    }
+
+
+    loadSub(sub) {
+        subUtil.loadSubtitle(subLink, parsedSub => {
+            this.actions.setSubtitle(parsedSub);
+            this.actions.setSubDelay(0);
+        });
     }
 
     createPlaylist(files) {
