@@ -45,20 +45,21 @@ default React.createClass({
         }
     },
     render() {
-        var headerClass = 'header ' + process.platform + ' ' + this.state.view;
         return (
-            <div className={headerClass}>
-                <h1></h1>
-                <div className="close" onClick={HeaderActions.close}>
-                    <i className="material-icons">clear</i>
+            <header className={this.state.view}>
+                <div className={'controls ' + process.platform}>
+                    <div className="close" onClick={HeaderActions.close}>
+                        <i className="ion-ios-close-empty"/>
+                    </div>
+                    <div className="toggle" onClick={HeaderActions.toggleMaximize}>
+                        <i/>
+                        <i/>
+                    </div>
+                    <div className="minimize" onClick={HeaderActions.toggleMinimize}>
+                        <i/>
+                    </div>
                 </div>
-                <div className="maximize off" onClick={HeaderActions.toggleMaximize}>
-                    <i  className="material-icons">crop_landscape</i>
-                </div>
-                <div className="minimize" onClick={HeaderActions.toggleMinimize}>
-                    <i  className="material-icons">remove</i>
-                </div>
-            </div>
+            </header>
         );
     }
 });

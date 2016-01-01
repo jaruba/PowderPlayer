@@ -1,46 +1,96 @@
-.header{
-    -webkit-app-region: drag;
-    position: absolute;
+header {
     height: 30px;
+    position: fixed;
     width: 100vw;
-    top: 0;
-    background-color: #eee;
-    z-index: 11;
+    -webkit-app-region: drag;
+    background-color: #0173c7;
 }
 
-.header h1 {
-	position: absolute;
-	width: 100vw;
-	font-size: 15px;
-	text-align: center;
-	margin-top: 7px;
-	font-weight: 400;
-	color: rgba(55, 55, 55, 0.75);
+header.player{
+    display:none;
 }
 
-
-.header.win32 div {
+header .controls.win32 div {
     -webkit-app-region: no-drag;
-    cursor: pointer;
+    height: 28px;
+    width: 45px;
     float: right;
-    width: 25px;
-    height: 20px;
-    margin-top: 2px;
-    margin-left: 1px;
+    transition: background-color 30ms linear;
 }
 
-.header.win32 .minimize i{
-    bottom: 2px;
+header .controls.win32 div.close {
+    width: 47px;
 }
 
-.header.win32 .maximize.off i{
-    font-size: 20px;
-    margin-left: 2px;
-    bottom: 7px;
+header .controls.win32 div.close i {
+    font-size: 30px;
+    position: relative;
+    margin-left: 19px;
+    top: -1px;
+    color: white;
 }
 
-.header.win32 i{
-    color: #373737;
-    font-size: 22px;
+header .controls.win32 div.close:hover {
+    background-color: #E81123;
+}
+
+header .controls.win32 div.minimize i {
     position: absolute;
+    margin-left: 19px;
+    background-color: #fff;
+    margin-top: 15px;
+    width: 12px;
+    height: 1px;
+}
+
+header .controls.win32 div.minimize:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+header .controls.win32 div.toggle i {
+    position: absolute;
+    background-color: transparent;
+    border: 1px solid #fff;
+    width: 7px;
+    height: 7px;
+}
+
+header .controls.win32 div.toggle i:first-of-type {
+    margin-left: 19px;
+    margin-top: 10px;
+    z-index: 2;
+    background-color: #0173c7;
+}
+
+header .controls.win32 div.toggle i:nth-of-type(2) {
+    margin-left: 21px;
+    margin-top: 8px;
+    z-index: 1;
+}
+
+header .controls.win32 div.toggle:hover i {
+    background-color: #4096d5;
+}
+
+header .controls.win32 div.toggle:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+header .controls {
+    position: absolute;
+    height: 100%;
+    width: 90%;
+    right: 0px
+}
+
+header .controls div {}
+
+header h1 {
+    text-align: center;
+    color: aliceblue;
+    font-size: 15px;
+    width: 100px;
+    margin: auto;
+    margin-top: 7px;
+    font-weight: 300;
 }
