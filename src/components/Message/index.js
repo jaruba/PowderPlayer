@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 import {
     Snackbar
 }
@@ -11,7 +12,8 @@ export
 default React.createClass({
     getInitialState() {
         return {
-            message: ''
+            message: '',
+            open: false
         };
     },
     componentWillMount() {
@@ -23,24 +25,16 @@ default React.createClass({
     },
     update() {
         this.setState({
-            message: MessageStore.getState().message
+            message: MessageStore.getState().message,
+            open: MessageStore.getState().open
         });
-        this.toggleOpen();
     },
-
-    toggleOpen() {
-        if (MessageStore.getState().open) {
-            this.refs.Snackbar.show()
-        } else
-            this.refs.Snackbar.dismiss()
-    },
-
     render() {
         return (
             <div>
                 <Snackbar 
                     ref="Snackbar"
-                    openOnMount={false}
+                    open={this.state.open}
                     message={this.state.message}
                     autoHideDuration={5000}
                 />
