@@ -22,7 +22,6 @@ import parser from './utils/parser';
 import traktUtil from './utils/trakt';
 import subUtil from './utils/subtitles';
 import torrentUtil from '../../utils/stream/torrentUtil';
-import events from 'events';
 
 class playerStore {
     constructor() {
@@ -99,8 +98,6 @@ class playerStore {
         this.aspectRatio = 'Default';
         this.crop = 'Default';
         this.zoom = 1;
-
-        this.events = new events.EventEmitter();
     }
 
     onSettingChange(setting) {
@@ -169,7 +166,7 @@ class playerStore {
         });
     }
 
-    onParseURL(qTask) {
+    onParsedURL(qTask) {
         if (!this.urlParserQueue) {
             var player = this;
             var parserQueue = async.queue((task, cb) => {
@@ -407,10 +404,8 @@ class playerStore {
     }
 
     onLength(length) {
-        if (localStorage.speedPulsing && localStorage.speedPulsing == 'enabled') {
-            _.defer(() => {
-                playerActions.pulse();
-            });
+        if (localStorage.speedPulsing && localStorage.speedPulsing === 'enabled') {
+            _.defer(playerActions.pulse);
         }
         this.setState({
             length: length,

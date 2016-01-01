@@ -18,12 +18,13 @@ try {
     console.error('WCJS Load Error:', e);
 }
 
-function gcd(a,b) {
+function gcd(a, b) {
     if (b > a) {
         var temp = a;
         a = b;
         b = temp;
-    } while (b != 0) {
+    }
+    while (b != 0) {
         var m = a % b;
         a = b;
         b = m;
@@ -60,12 +61,11 @@ default React.createClass({
     componentWillMount() {
         PlayerStore.listen(this.update);
         window.addEventListener('resize', this.handleResize);
-        PlayerStore.getState().events.on('resizeNow', this.handleResize.bind(this));
     },
     componentDidMount() {
         if (!PlayerStore.getState().wcjs) {
             PlayerActions.wcjsInit(wcjsRenderer.init(this.refs['wcjs-render'], [
-                "--network-caching="+localStorage.bufferSize,
+                "--network-caching=" + localStorage.bufferSize,
                 "--no-sub-autodetect-file"
             ], {
                 fallbackRenderer: false,
@@ -83,7 +83,6 @@ default React.createClass({
         wcjsRenderer.clearCanvas();
         PlayerStore.unlisten(this.update);
         window.removeEventListener('resize', this.handleResize);
-        PlayerStore.getState().events.removeListener('resizeNow', this.handleResize);
     },
     update() {
         if (this.isMounted()) {
@@ -202,20 +201,20 @@ default React.createClass({
                     if (this.pendingFiles[i].title) {
                         this.player.playlist.items[this.player.playlist.items.count - 1].title = this.pendingFiles[i].title;
                     }
-                    
+
                     if (this.pendingFiles[i].byteSize && this.pendingFiles[i].torrentHash)
                         PlayerActions.setDesc({
-                            idx: this.player.playlist.items.count-1,
+                            idx: this.player.playlist.items.count - 1,
                             byteSize: this.pendingFiles[i].byteSize,
                             torrentHash: this.pendingFiles[i].torrentHash,
                             path: this.pendingFiles[i].path
                         });
                     else if (this.pendingFiles[i].path)
                         PlayerActions.setDesc({
-                            idx: this.player.playlist.items.count-1,
+                            idx: this.player.playlist.items.count - 1,
                             path: this.pendingFiles[i].path
                         });
-                        
+
 
                 }
             }
@@ -253,13 +252,13 @@ default React.createClass({
         var height = window.innerHeight;
         var width = window.innerWidth;
         var fontSize = 0;
-        
+
         if (height < 235) {
-            fontSize = height/14;
+            fontSize = height / 14;
             if (fontSize < 16) fontSize = 16;
         } else {
             if (width > 220 && width <= 982) {
-                fontSize = ((width -220) / 40) + 9;
+                fontSize = ((width - 220) / 40) + 9;
                 if (fontSize < 16) fontSize = 16;
             } else if (width > 982 && width < 1600) {
                 fontSize = height / 14;
@@ -282,7 +281,7 @@ default React.createClass({
 
         if (this.state.aspectRatio != "Default" && this.state.aspectRatio.indexOf(":") > -1) {
             var res = this.state.aspectRatio.split(":");
-            var ratio = gcd(width,height);
+            var ratio = gcd(width, height);
         }
 
         var destAspect = container.clientWidth / container.clientHeight;
@@ -292,7 +291,7 @@ default React.createClass({
 
         if (this.state.crop != "Default" && this.state.crop.indexOf(":") > -1) {
             var res = this.state.crop.split(":");
-            var ratio = gcd(width,height);
+            var ratio = gcd(width, height);
             var sourceAspect = (ratio * parseFloat(res[0])) / (ratio * parseFloat(res[1]));
         }
 
@@ -301,28 +300,28 @@ default React.createClass({
         if (this.state.crop != "Default" && this.state.crop.indexOf(":") > -1) {
             if (cond) {
                 canvasParent.style.height = "100%";
-                canvasParent.style.width = ( ((container.clientHeight * sourceAspect) / container.clientWidth ) * 100) + "%";
+                canvasParent.style.width = (((container.clientHeight * sourceAspect) / container.clientWidth) * 100) + "%";
             } else {
-                canvasParent.style.height = ( ((container.clientWidth / sourceAspect) /container.clientHeight ) * 100) + "%";
+                canvasParent.style.height = (((container.clientWidth / sourceAspect) / container.clientHeight) * 100) + "%";
                 canvasParent.style.width = "100%";
             }
             var sourceAspect = width / height;
-            var futureWidth = ( ((canvasParent.offsetHeight * sourceAspect) / canvasParent.offsetWidth ) *canvasParent.offsetWidth);
+            var futureWidth = (((canvasParent.offsetHeight * sourceAspect) / canvasParent.offsetWidth) * canvasParent.offsetWidth);
             if (futureWidth < canvasParent.offsetWidth) {
                 var sourceAspect = canvas.height / canvas.width;
-                canvas.style.width = canvasParent.offsetWidth+"px";
-                canvas.style.height = ( ((canvasParent.offsetWidth * sourceAspect) / canvasParent.offsetHeight ) *canvasParent.offsetHeight) + "px";
+                canvas.style.width = canvasParent.offsetWidth + "px";
+                canvas.style.height = (((canvasParent.offsetWidth * sourceAspect) / canvasParent.offsetHeight) * canvasParent.offsetHeight) + "px";
             } else {
-                canvas.style.height = canvasParent.offsetHeight+"px";
-                canvas.style.width = ( ((canvasParent.offsetHeight * sourceAspect) / canvasParent.offsetWidth ) *canvasParent.offsetWidth) + "px";
+                canvas.style.height = canvasParent.offsetHeight + "px";
+                canvas.style.width = (((canvasParent.offsetHeight * sourceAspect) / canvasParent.offsetWidth) * canvasParent.offsetWidth) + "px";
             }
         } else {
             if (cond) {
-                canvasParent.style.height = (100*this.state.zoom)+"%";
-                canvasParent.style.width = ( ((container.clientHeight * sourceAspect) / container.clientWidth ) * 100 *this.state.zoom) + "%";
+                canvasParent.style.height = (100 * this.state.zoom) + "%";
+                canvasParent.style.width = (((container.clientHeight * sourceAspect) / container.clientWidth) * 100 * this.state.zoom) + "%";
             } else {
-                canvasParent.style.height = ( ((container.clientWidth / sourceAspect) /container.clientHeight ) * 100*this.state.zoom) + "%";
-                canvasParent.style.width = (100*this.state.zoom)+"%";
+                canvasParent.style.height = (((container.clientWidth / sourceAspect) / container.clientHeight) * 100 * this.state.zoom) + "%";
+                canvasParent.style.width = (100 * this.state.zoom) + "%";
             }
             canvas.style.height = "100%";
             canvas.style.width = "100%";
@@ -342,7 +341,7 @@ default React.createClass({
         var volume = (event.deltaY < 0) ? this.player.volume + 5 : this.player.volume - 5;
         PlayerActions.volume(volume);
         if (volume >= 0 && volume <= 200)
-            PlayerActions.announcement('Volume '+volume+'%');
+            PlayerActions.announcement('Volume ' + volume + '%');
     },
     render() {
         var renderStyles = {

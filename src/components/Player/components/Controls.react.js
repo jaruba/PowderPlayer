@@ -50,7 +50,7 @@ default React.createClass({
             volumeDragging: false,
             volumePendingEffects: '',
             volumePendingRipples: '',
-            
+
             forceTime: playerState.forceTime,
             overTime: playerState.overTime
         }
@@ -63,7 +63,7 @@ default React.createClass({
         window.addEventListener('mouseup', this.handleGlobalMouseUp);
 
         // assign a class to the volume index pointer
-        var volumeSlider = document.getElementsByName('volume-slider')[0].children[4].children[0].children[2];
+        var volumeSlider = this.refs['volume-slider'][0].children[4].children[0].children[2];
         volumeSlider.className = 'volume-index volume-hover';
         volumeSlider.children[0].className = 'volume-ripple';
     },
@@ -101,10 +101,10 @@ default React.createClass({
 
                 volume: parseInt(localStorage.volume),
                 mute: playerState.muted,
-                
+
                 forceTime: playerState.forceTime,
                 overTime: playerState.overTime,
-                
+
                 keepScrobble: playerState.keepScrobble
             });
         }
@@ -196,11 +196,6 @@ default React.createClass({
 
         this.refs['scrobbler-height'].className = this.refs['scrobbler-height'].className + ' scrobbling';
 
-        //        _.delay((still) => {
-        //            if (still)
-        //                this.refs['scrobbler-handle'].style.opacity = 1;
-        //        }, 100, this.state.scrobbling)
-
         PlayerActions.settingChange({
             keepScrobble: true
         });
@@ -212,7 +207,6 @@ default React.createClass({
     },
     handleDragEnd() {
         this.refs['scrobbler-tooltip'].style.display = 'none';
-        //        this.refs['scrobbler-handle'].style.opacity = 0;
     },
     handleGlobalMouseMove(event) {
         if (this.state.scrobbling) {
@@ -225,7 +219,7 @@ default React.createClass({
             this.refs['scrobbler-tooltip'].style.display = 'none';
         }
     },
-    handleVolume(event,t) {
+    handleVolume(event, t) {
         PlayerActions.volume(t);
     },
     handleMute(event) {
@@ -239,7 +233,7 @@ default React.createClass({
                 if (i.type == 'react-mouseenter') {
                     volumeIndex.className = volumeClass;
                 } else if (i.type == 'react-mouseleave') {
-                    volumeIndex.className = volumeClass+' volume-hover';
+                    volumeIndex.className = volumeClass + ' volume-hover';
                 }
             } else if (i.type) {
                 this.setState({
@@ -256,7 +250,7 @@ default React.createClass({
                 if (a.type == 'react-mouseenter') {
                     volumeRipple.className = volumeClass;
                 } else if (a.type == 'react-mouseleave') {
-                    volumeRipple.className = volumeClass+' volume-ripple-hover';
+                    volumeRipple.className = volumeClass + ' volume-ripple-hover';
                 }
             } else if (a.type) {
                 this.setState({
@@ -275,13 +269,17 @@ default React.createClass({
             volumeDragging: false
         });
         if (this.state.volumePendingEffects) {
-            this.volumeIndexEffect(null, null, { type: this.state.volumePendingEffects });
+            this.volumeIndexEffect(null, null, {
+                type: this.state.volumePendingEffects
+            });
             this.setState({
                 volumePendingEffects: ''
             });
         }
         if (this.state.volumePendingRipples) {
-            this.volumeRippleEffect(null, null, { type: this.state.volumePendingRipples });
+            this.volumeRippleEffect(null, null, {
+                type: this.state.volumePendingRipples
+            });
             this.setState({
                 volumePendingRipples: ''
             });
@@ -319,7 +317,7 @@ default React.createClass({
                 <IconButton onClick={this.handleNext} iconClassName="material-icons" iconStyle={{top: '-6px'}} className={'next-button'}>{'skip_next'}</IconButton>
 
                 <IconButton onClick={this.handleMute} iconClassName="material-icons" iconStyle={{color: '#e7e7e7'}} className="volume-button">{this.state.mute ? 'volume_off' : this.state.volume <= 0 ? 'volume_mute' : this.state.volume <= 120 ? 'volume_down' : 'volume_up' }</IconButton>
-                <Slider name="volume-slider" defaultValue={this.state.volume} step={1} min={0} max={200} onChange={this.handleVolume} value={this.state.mute ? 0 : this.state.volume} onMouseEnter={this.volumeRippleEffect} onMouseLeave={this.volumeRippleEffect} onDragStart={this.volumeDragStart} onDragStop={this.volumeDragStop} />
+                <Slider name="volume-slider" ref="volume-slider" defaultValue={this.state.volume} step={1} min={0} max={200} onChange={this.handleVolume} value={this.state.mute ? 0 : this.state.volume} onMouseEnter={this.volumeRippleEffect} onMouseLeave={this.volumeRippleEffect} onDragStart={this.volumeDragStart} onDragStop={this.volumeDragStop} />
                 <IconButton onClick={this.handleFullscreen} iconClassName="material-icons" iconStyle={{color: '#e7e7e7', fontSize: '30px', top: '-5px', left: '-1px'}} className="fullscreen-toggle">{this.state.fullscreen ? 'fullscreen_exit' : 'fullscreen'}</IconButton>
                 <IconButton onClick={PlayerActions.toggleSubtitles} iconClassName="material-icons" iconStyle={{color: this.state.subtitlesOpen ? '#00acff' : '#e7e7e7', fontSize: '26px', top: '-5px', left: '-1px'}} className="subtitles-toggle" style={{display: 'inline-block'}}>closed_caption</IconButton>
 
