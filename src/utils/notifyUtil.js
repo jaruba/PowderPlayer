@@ -4,7 +4,7 @@ import _ from 'lodash';
 
 export
 default {
-    notify: function(notifyparams, clickFunction) {
+    notify: (notifyparams, clickFunction) => {
         notifyparams = _.defaults(notifyparams, {
             icon: path.join(__dirname, '../../', 'images/icons/logo.png'),
             message: '',
