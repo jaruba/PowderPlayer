@@ -17,7 +17,13 @@ module.exports = {
                     // command line args
                     
                 } else {
-                    if (url.parse(el).protocol) {
+                    if (path.isAbsolute(el)) {
+                        // local file
+                        files.push({
+                            name: parser(el).filename(),
+                            path: el
+                        });
+                    } else if (url.parse(el).protocol) {
                         // url
                         ModalActions.open({
                             title: 'Thinking',
@@ -27,12 +33,6 @@ module.exports = {
                         linkUtil( el, error => {
                             ModalActions.thinking(false);
                             MessageActions.open(error);
-                        });
-                    } else if (path.isAbsolute(el)) {
-                        // local file
-                        files.push({
-                            name: parser(el).filename(),
-                            path: el
                         });
                     }
                 }
