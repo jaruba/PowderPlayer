@@ -8,11 +8,13 @@ import {
 }
 from 'material-ui';
 
+const appPath = require('remote').require('app');
+
 import PlayerActions from '../actions';
 import PlayerStore from '../store';
 
 try {
-    var wcjs_path = (process.env.NODE_ENV === 'development') ? path.join(__dirname, '../../../../bin/', 'WebChimera.js.node') : path.join(process.cwd(), 'resources/bin/', 'WebChimera.js.node');
+    var wcjs_path = (process.env.NODE_ENV === 'development') ? path.join(__dirname, '../../../../bin/', 'WebChimera.js.node') : path.join(appPath.getAppPath(), '../bin/', 'WebChimera.js.node');
     var wcjs = require(wcjs_path);
 } catch (e) {
     console.error('WCJS Load Error:', e);
@@ -359,7 +361,7 @@ default React.createClass({
             }
         };
         return (
-            <div>
+            <div className='render-holder'>
                 <RaisedButton id={'canvasEffect'} onClick={this.handleTogglePlay} onDoubleClick={PlayerActions.toggleFullscreen.bind(this, !this.state.fullscreen)} iconClassName="material-icons" className={this.state.rippleEffects ? this.state.clickPause ? 'over-canvas' : 'over-canvas no-ripples' : 'over-canvas no-ripples' } label="Canvas Overlay" />
                 <div ref="canvas-holder" className="canvas-holder" onWheel={this.wheel} style={renderStyles.container}>
                     <canvas id={'playerCanvas'} style={renderStyles.canvas} onClick={this.handleTogglePlay} onDoubleClick={PlayerActions.toggleFullscreen.bind(this, !this.state.fullscreen)} ref="wcjs-render" />

@@ -106,7 +106,7 @@ module.exports = {
                         name: file.name,
                         streamable: true,
                         infoHash: infoHash,
-                        path: path.join(temp, 'torrent-stream', infoHash, file.path)
+                        path: localStorage.downloadFolder ? path.join(localStorage.downloadFolder, file.path) : path.join(temp, 'torrent-stream', infoHash, file.path)
                     });
                     directorys.push(fileParams.dir);
                 }

@@ -293,9 +293,9 @@ class PlayerActions {
     toggleFullscreen(state) {
         this.dispatch();
 
-        document.querySelector(".canvas-holder > div:first-of-type").style.display = 'none';
+        window.document.querySelector(".render-holder > div:first-of-type").style.display = 'none';
         _.delay(() => {
-            document.querySelector(".canvas-holder > div:first-of-type").style.display = 'block';
+            window.document.querySelector(".render-holder > div:first-of-type").style.display = 'block';
         }, 1000);
 
         ipc.send('app:fullscreen', state);
