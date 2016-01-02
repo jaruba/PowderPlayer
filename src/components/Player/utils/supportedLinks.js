@@ -12,15 +12,13 @@ class supportedLinks {
 
         if (link.includes('vimeo.com/')) {
 
-            var simpler = link.substr(link.includes('vimeo.com/'));
+            var simpler = link.substr(link.indexOf('vimeo.com/') + 10);
 
-            if (simpler.includes('?')) {
-                simpler = simpler.substr(0, simpler.includes('?'));
-            }
+            if (simpler.includes('?'))
+                simpler = simpler.substr(0, simpler.indexOf('?'));
 
-            if (simpler.includes('#')) {
-                simpler = simpler.substr(0, simpler.includes('#'));
-            }
+            if (simpler.includes('#'))
+                simpler = simpler.substr(0, simpler.indexOf('#'));
 
             if (!isNaN(simpler)) return true;
 
@@ -50,17 +48,17 @@ class supportedLinks {
 
         if (el.includes('youtube.com/embed/')) {
             el = el.substr(el.indexOf('youtube.com/embed/') + 18);
-            if (el.includes('?')) {
-                el = el.substr(0, el.includes('?'));
-            }
+            if (el.includes('?'))
+                el = el.substr(0, el.indexOf('?'));
+
             el = 'https://www.youtube.com/watch?v=' + el;
         }
 
         if (el.includes('player.vimeo.com/video/')) {
             el = el.substr(el.indexOf('player.vimeo.com/video') + 23);
-            if (el.includes('?')) {
-                el = el.substr(0, el.includes('?'));
-            }
+            if (el.includes('?'))
+                el = el.substr(0, el.indexOf('?'));
+
             el = 'https://vimeo.com/' + el;
         }
 
@@ -110,7 +108,7 @@ class supportedLinks {
 
                     client.host = client.host.replace('www.', '');
 
-                    if (['soundcloud.com', 'youtube.com', 'vimeo.com'].includes(client.host)) {
+                    if (['soundcloud.com', 'youtube.com', 'vimeo.com'].indexOf(client.host) > -1) {
                         var relatives = client.links.relative;
                         relatives.forEach((el, ij) => {
                             el = 'https://' + client.host + el;
