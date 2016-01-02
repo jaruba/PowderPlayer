@@ -107,7 +107,10 @@ default React.createClass({
             var droppedLink = e.dataTransfer.getData("text/plain");
             if (droppedLink) {
 
-                ModalActions.thinking(true);
+                ModalActions.open({
+                    title: 'Thinking',
+                    type: 'thinking'
+                });
 
                 linkUtil(droppedLink, error => {
                     ModalActions.thinking(false);
