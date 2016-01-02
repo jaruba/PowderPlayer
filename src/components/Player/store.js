@@ -327,7 +327,7 @@ class playerStore {
                                                 foundTrakt: true
                                             });
 
-                                            var shouldScrobble = traktUtil.loggedIn ? ls.isSet('traktScrobble') ? ls('traktScrobble') : false;
+                                            var shouldScrobble = traktUtil.loggedIn ? ls.isSet('traktScrobble') ? ls('traktScrobble') : true : false;
                                             if (shouldScrobble) {
                                                 if (!ls.isSet('playerNotifs') || ls('playerNotifs'))
                                                     player.notifier.info('Scrobbling', '', 6000);
@@ -702,7 +702,7 @@ class playerStore {
             var itemDesc = this.itemDesc();
             if (itemDesc.setting && itemDesc.setting.trakt && !this.foundTrakt) {
                 newObj.foundTrakt = true;
-                var shouldScrobble = traktUtil.loggedIn ? ls.isSet('traktScrobble') ? ls('traktScrobble') : false;
+                var shouldScrobble = traktUtil.loggedIn ? ls.isSet('traktScrobble') ? ls('traktScrobble') : true : false;
                 if (shouldScrobble) {
                     traktUtil.handleScrobble('start', itemDesc, this.wcjs.position);
                     if (!ls.isSet('playerNotifs') || ls('playerNotifs'))
@@ -751,7 +751,7 @@ class playerStore {
                                 if (!ls.isSet('playerNotifs') || ls('playerNotifs'))
                                     player.notifier.info('Found Subtitles', '', 6000);
 
-                                if (!ls.isSet('autoSub') || ls('autoSub'))
+                                if (!ls.isSet('autoSub') || ls('autoSub')) {
                                     if (ls('lastLanguage') && ls('lastLanguage') != 'none') {
                                         if (subs[ls('lastLanguage')]) {
                                             playerActions.loadSub(subs[ls('lastLanguage')]);

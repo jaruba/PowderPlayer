@@ -69,7 +69,7 @@ trakt.logOut = () => {
 // @param type = 'movie' or 'episode';
 trakt.scrobble = (state, percent, obj) => {
 
-    var shouldScrobble = trakt.loggedIn ? ls.isSet('traktScrobble') ? ls('traktScrobble') : false;
+    var shouldScrobble = trakt.loggedIn ? ls.isSet('traktScrobble') ? ls('traktScrobble') : true : false;
     if (shouldScrobble) {
         //    console.log('scrobble: '+state+' - '+percent);
         

@@ -64,7 +64,7 @@ default React.createClass({
             defaultPort: ls('peerPort'),
             defaultPeers: ls('maxPeers'),
             downloadFolder: ls('downloadFolder') ? ls('downloadFolder') : 'Temp',
-            bufferSize: (parseInt(ls('bufferSize') / 1000).toFixed(1),
+            bufferSize: parseInt(ls('bufferSize') / 1000).toFixed(1),
             speedPulsing: ls('speedPulsing') ? ls('speedPulsing') : 'disabled',
             subEncodings: [
                 ['Auto Detect', 'auto'],
