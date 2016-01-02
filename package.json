@@ -32,7 +32,7 @@
     "moment": "^2.10.6",
     "name-to-imdb": "^1.0.1",
     "needle": "^0.11.0",
-    "node-metainspector": "^1.2.0",
+    "node-metainspector": "jaruba/node-metainspector",
     "node-notifier": "^4.4.0",
     "opensubtitles-api": "^2.3.0",
     "parse-torrent": "^5.7.0",
