@@ -17,6 +17,8 @@ import traktUtil from './Player/utils/trakt';
 import request from 'request';
 // we just initiate this here for _reasons_:
 import subUtil from './Player/utils/subtitles';
+import remote from 'remote';
+import clArgs from '../utils/clArgs';
 
 const Framework = React.createClass({
 
@@ -37,9 +39,18 @@ const Framework = React.createClass({
 
     componentDidMount() {
         ipc.send('app:startup', new Date().getTime());
-        request('https://www.google.com'); // Connect once to avoid cloggage
+        
+        // login trakt
         if (localStorage.traktTokens)
             traktUtil.autoLogin();
+
+        if (remote.process.argv.length > 1) {
+            // load command line args
+            var args = remote.process.argv;
+            args.shift();
+            clArgs.process(args);
+        }
+
     },
 
     componentWillUnmount() {
