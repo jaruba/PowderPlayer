@@ -15,6 +15,7 @@ class HeaderActions {
         let state = !ipc.sendSync('app:get:maximized');
         ipc.send('app:maximize', state);
         this.actions.maximize(state);
+        document.querySelector('header .controls.win32 div.toggle i:nth-of-type(2)').style.display = state ? 'block' : 'none';
     }
 
     toggleMinimize() {

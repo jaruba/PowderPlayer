@@ -16,21 +16,16 @@ header.player div{
 
 header .controls.win32 div {
     -webkit-app-region: no-drag;
-    height: 28px;
-    width: 45px;
+    height: 30px;
+    width: 46px;
     float: right;
     transition: background-color 30ms linear;
 }
 
-header .controls.win32 div.close {
-    width: 47px;
-}
-
 header .controls.win32 div.close i {
-    font-size: 30px;
+    font-size: 25px;
     position: relative;
     margin-left: 19px;
-    top: -1px;
     color: white;
 }
 
@@ -43,8 +38,8 @@ header .controls.win32 div.minimize i {
     margin-left: 19px;
     background-color: #fff;
     margin-top: 15px;
-    width: 12px;
-    height: 1px;
+    width: 10px;
+    height: 0.5px;
 }
 
 header .controls.win32 div.minimize:hover {
@@ -55,8 +50,8 @@ header .controls.win32 div.toggle i {
     position: absolute;
     background-color: transparent;
     border: 1px solid #fff;
-    width: 7px;
-    height: 7px;
+    width: 8px;
+    height: 7.5px;
 }
 
 header .controls.win32 div.toggle i:first-of-type {
@@ -67,6 +62,7 @@ header .controls.win32 div.toggle i:first-of-type {
 }
 
 header .controls.win32 div.toggle i:nth-of-type(2) {
+    display: none;
     margin-left: 21px;
     margin-top: 8px;
     z-index: 1;
