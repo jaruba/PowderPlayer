@@ -1,5 +1,6 @@
 import Trakt from 'trakt.tv';
 import shell from 'shell';
+import ls from 'local-storage';
 
 var trakttv = new Trakt({
     client_id: window.atob('MTBkYTI2ZGYwYmI4NzQ5MTY5OTQ4YzU3ODJjYmEyZjMxZDJlNWQ0N2I1NzNlNGFjZDE1MzgwN2U3NjFlZWRjYQ=='),
@@ -20,7 +21,7 @@ trakt.openTraktAuth = () => {
 // @param pin = the pin the user pasted back in powder
 trakt.exchangePin = pin => {
     trakttv.exchange_code(pin).then( result => {
-        localStorage.traktTokens = JSON.stringify(trakttv.export_token()); // store tokens in app
+        ls('traktTokens', trakttv.export_token()); // store tokens in app
         trakt.loggedIn = true;
     }).catch( err => {
         console.error('Trakt exchange pin failed', err);
@@ -31,11 +32,11 @@ trakt.exchangePin = pin => {
 // this is called on app start to relogin user
 // TODO: use a promise to know if user is logged in or not (to change settings accordingly)
 trakt.autoLogin = () => {
-    if (!localStorage.traktTokens || localStorage.traktTokens == '') {
+    if (!ls.isSet('traktTokens') || ls('traktTokens') == '') {
         throw new Error('This is not how this works, this is not how any of this works!');
     }
-    trakttv.import_token(JSON.parse(localStorage.traktTokens)).then( tokens => {
-        localStorage.traktTokens = JSON.stringify(tokens); // store tokens in app
+    trakttv.import_token(ls('traktTokens')).then( tokens => {
+        ls('traktTokens', JSON.stringify(tokens)); // store tokens in app
         trakt.loggedIn = true;
     }).catch( err => {
         console.error('Trakt auto login failed', err);
@@ -57,7 +58,7 @@ trakt.addToHistory = (id, type) => {
     
 trakt.logOut = () => {
     trakttv._authentication = {};
-    delete localStorage.traktTokens;
+    ls.remove('traktTokens');
     trakt.loggedIn = false;
 };
 
@@ -68,7 +69,7 @@ trakt.logOut = () => {
 // @param type = 'movie' or 'episode';
 trakt.scrobble = (state, percent, obj) => {
 
-    var shouldScrobble = trakt.loggedIn ? localStorage.traktScrobble ? (localStorage.traktScrobble == 'true') : true : false;
+    var shouldScrobble = trakt.loggedIn ? ls.isSet('traktScrobble') ? ls('traktScrobble') : false;
     if (shouldScrobble) {
         //    console.log('scrobble: '+state+' - '+percent);
         

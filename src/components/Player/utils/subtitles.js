@@ -6,6 +6,7 @@ import async from 'async';
 import webUtil from '../../../utils/webUtil.js';
 import http from 'http';
 import retriever from 'subtitles-grouping/lib/retriever';
+import ls from 'local-storage';
 
 var objective = {};
 var checkedFiles = {};
@@ -205,7 +206,7 @@ subtitles.loadSubtitle = (subtitleElement, cb) => {
             retriever.retrieveSrt("http://dl.opensubtitles.org/en/download/file/"+subtitleElement.split('/').pop(), (err, res) => {
 //              window.torrent.flood.start();
                 subtitles.processSub(res, subtitleElement.split('.').pop(), cb);
-            },{ charset: window.localStorage.subEncoding });
+            },{ charset: ls('subEncoding') });
         } else {
             cb('');
         }
@@ -213,7 +214,7 @@ subtitles.loadSubtitle = (subtitleElement, cb) => {
     } else {
         retriever.retrieveSrt(subtitleElement, (err, res) => {
             subtitles.processSub(res, subtitleElement.split('.').pop(), cb);
-        },{ charset: window.localStorage.subEncoding });
+        },{ charset: ls('subEncoding') });
         return '';
     }
     var resData = "";
@@ -225,7 +226,7 @@ subtitles.loadSubtitle = (subtitleElement, cb) => {
                 retriever.retrieveSrt("http://dl.opensubtitles.org/en/download/file/"+subtitleElement.split('/').pop(), (err, res) => {
 //                  window.torrent.flood.start();
                     subtitles.processSub(res, subtitleElement.split('.').pop(), cb);
-                },{ charset: window.localStorage.subEncoding });
+                },{ charset: ls('subEncoding') });
             } else {
                 cb('');
             }

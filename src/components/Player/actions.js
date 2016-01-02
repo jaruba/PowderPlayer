@@ -1,6 +1,7 @@
 import alt from '../../alt'
 import _ from 'lodash';
 import ipc from 'ipc';
+import ls from 'local-storage';
 
 class PlayerActions {
     constructor() {
@@ -224,9 +225,9 @@ class PlayerActions {
                                                 foundTrakt: true
                                             });
 
-                                            var shouldScrobble = traktUtil.loggedIn ? localStorage.traktScrobble ? (localStorage.traktScrobble == 'true') : true : false;
+                                            var shouldScrobble = traktUtil.loggedIn ? ls.isSet('traktScrobble') ? ls('traktScrobble') : false;
                                             if (shouldScrobble) {
-                                                if (!localStorage.playerNotifs || localStorage.playerNotifs == 'true')
+                                                if (!ls.isSet('playerNotifs') || ls('playerNotifs'))
                                                     player.notifier.info('Scrobbling', '', 6000);
                                                 traktUtil.scrobble('start', player.wcjs.position, results);
                                             }

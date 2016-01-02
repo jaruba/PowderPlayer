@@ -12,6 +12,7 @@ import traktUtil from '../utils/trakt';
 import MessageActions from '../../Message/actions';
 import ModalActions from '../../Modal/actions';
 import Register from '../../../utils/registerUtil';
+import ls from 'local-storage';
 
 var injectTapEventPlugin = require("react-tap-event-plugin");
 injectTapEventPlugin();
@@ -43,28 +44,28 @@ default React.createClass({
             alwaysOnTop: playerState.alwaysOnTop,
             clickPause: playerState.clickPause,
             playerRippleEffects: playerState.rippleEffects,
-            playerNotifs: localStorage.playerNotifs ? (localStorage.playerNotifs == 'true') : true,
+            playerNotifs: ls.isSet('playerNotifs') ? ls('playerNotifs') : true,
             trakt: traktUtil.loggedIn ? true : false,
-            traktScrobble: localStorage.traktScrobble ? (localStorage.traktScrobble == 'true') : true,
-            findSubs: localStorage.findSubs ? (localStorage.findSubs == 'true') : true,
-            autoSub: localStorage.autoSub ? (localStorage.autoSub == 'true') : true,
-            menuFlags: localStorage.menuFlags ? (localStorage.menuFlags == 'true') : true,
+            traktScrobble: ls.isSet('traktScrobble') ? ls('traktScrobble') : true,
+            findSubs: ls.isSet('findSubs') ? ls('findSubs') : true,
+            autoSub: ls.isSet('autoSub') ? ls('autoSub') : true,
+            menuFlags: ls.isSet('menuFlags') ? ls('menuFlags') : true,
             defaultSubDelay: playerState.subDelay,
             defaultAudioDelay: playerState.audioDelay,
             speed: playerState.speed,
-            customSubSize: localStorage.customSubSize,
-            zoomLevel: localStorage.zoomLevel ? parseFloat(localStorage.zoomLevel) : 0,
+            customSubSize: ls('customSubSize'),
+            zoomLevel: ls.isSet('zoomLevel') ? ls('zoomLevel') : 0,
             audioChannels: ['Error', 'Stereo', 'Reverse Stereo', 'Left', 'Right', 'Dolby'],
             defaultAudioChannel: playerState.audioChannel,
-            subColor: localStorage.subColor ? parseInt(localStorage.subColor) : 0,
+            subColor: ls.isSet('subColor') ? ls('subColor') : 0,
             subColors: ['White', 'Yellow', 'Green', 'Cyan', 'Blue'],
             defaultAudioTrack: playerState.audioTrack,
-            encoding: localStorage.selectedEncoding ? parseInt(localStorage.selectedEncoding) : 0,
-            defaultPort: parseInt(localStorage.peerPort),
-            defaultPeers: parseInt(localStorage.maxPeers),
-            downloadFolder: localStorage.downloadFolder ? localStorage.downloadFolder : 'Temp',
-            bufferSize: (parseInt(localStorage.bufferSize)/1000).toFixed(1),
-            speedPulsing: localStorage.speedPulsing ? localStorage.speedPulsing : 'disabled',
+            encoding: ls.isSet('selectedEncoding') ? ls('selectedEncoding') : 0,
+            defaultPort: ls('peerPort'),
+            defaultPeers: ls('maxPeers'),
+            downloadFolder: ls('downloadFolder') ? ls('downloadFolder') : 'Temp',
+            bufferSize: (parseInt(ls('bufferSize') / 1000).toFixed(1),
+            speedPulsing: ls('speedPulsing') ? ls('speedPulsing') : 'disabled',
             subEncodings: [
                 ['Auto Detect', 'auto'],
                 ['Universal (UTF-8)', 'utf8'],
@@ -153,12 +154,12 @@ default React.createClass({
                 defaultSubDelay: playerState.subDelay,
                 defaultAudioDelay: playerState.audioDelay,
                 speed: playerState.speed,
-                customSubSize: localStorage.customSubSize,
-                zoomLevel: localStorage.zoomLevel ? parseFloat(localStorage.zoomLevel) : 0,
+                customSubSize: ls('customSubSize'),
+                zoomLevel: ls.isSet('zoomLevel') ? ls('zoomLevel') : 0,
                 defaultAudioChannel: playerState.audioChannel,
-                subColor: localStorage.subColor ? parseInt(localStorage.subColor) : 0,
+                subColor: ls.isSet('subColor') ? ls('subColor') : 0,
                 defaultAudioTrack: playerState.audioTrack,
-                encoding: localStorage.selectedEncoding ? parseInt(localStorage.selectedEncoding) : 0,
+                encoding: ls.isSet('selectedEncoding') ? ls('selectedEncoding') : 0,
                 aspectRatio: playerState.aspectRatio,
                 crop: playerState.crop,
                 zoom: playerState.zoom
@@ -193,62 +194,62 @@ default React.createClass({
     },
 
     handlePlayerRippleEffects(event, toggled) {
-        localStorage.playerRippleEffects = toggled;
+        ls('playerRippleEffects', toggled);
         PlayerActions.settingChange({
             rippleEffects: toggled
         });
     },
 
     handleFindSubs(event, toggled) {
-        localStorage.findSubs = toggled;
+        ls('findSubs', toggled);
         this.setState({
             findSubs: toggled
         });
     },
 
     handleScrobbler(event, toggled) {
-        localStorage.traktScrobble = toggled;
+        ls('traktScrobble', toggled);
         this.setState({
             traktScrobble: toggled
         });
     },
 
     handlePlayerNotifs(event, toggled) {
-        localStorage.playerNotifs = toggled;
+        ls('playerNotifs', toggled);
         this.setState({
             playerNotifs: toggled
         });
     },
     
     handleAutoSub(event, toggled) {
-        localStorage.autoSub = toggled;
+        ls('autoSub', toggled);
         this.setState({
             autoSub: toggled
         });
     },
 
     handleMenuFlags(event, toggled) {
-        localStorage.menuFlags = toggled;
+        ls('menuFlags', toggled);
         this.setState({
             menuFlags: toggled
         });
     },
 
     handleClickPause(event, toggled) {
-        localStorage.clickPause = toggled;
+        ls('clickPause', toggled);
         PlayerActions.settingChange({
             clickPause: toggled
         });
     },
 
     _handleSubDelayDown(event) {
-        this.refs['subDelayInput'].setValue((parseInt(this.refs['subDelayInput'].getValue())-50)+' ms');
+        this.refs['subDelayInput'].setValue((parseInt(this.refs['subDelayInput'].getValue()) - 50) + ' ms');
         if (event)
             PlayerActions.setSubDelay(parseInt(this.refs['subDelayInput'].getValue()));
     },
 
     _handleSubDelayUp(event) {
-        this.refs['subDelayInput'].setValue((parseInt(this.refs['subDelayInput'].getValue())+50)+' ms');
+        this.refs['subDelayInput'].setValue((parseInt(this.refs['subDelayInput'].getValue()) + 50) + ' ms');
         if (event)
             PlayerActions.setSubDelay(parseInt(this.refs['subDelayInput'].getValue()));
     },
@@ -385,7 +386,7 @@ default React.createClass({
         var newValue = parseInt(this.refs['subSizeInput'].getValue()) - 5;
         this.refs['subSizeInput'].setValue(newValue + '%');
         if (event) {
-            localStorage.customSubSize = newValue;
+            ls('customSubSize', newValue);
             this.setState({
                 customSubSize: newValue
             });
@@ -396,7 +397,7 @@ default React.createClass({
         var newValue = parseInt(this.refs['subSizeInput'].getValue()) + 5;
         this.refs['subSizeInput'].setValue(newValue + '%');
         if (event) {
-            localStorage.customSubSize = newValue;
+            ls('customSubSize', newValue);
             this.setState({
                 customSubSize: newValue
             });
@@ -428,7 +429,7 @@ default React.createClass({
 
         this.refs['subSizeInput'].setValue(newValue+'%');
         
-        localStorage.customSubSize = newValue;
+        ls('customSubSize', newValue);
         this.setState({
             customSubSize: newValue
         });
@@ -438,14 +439,14 @@ default React.createClass({
         var newValue = parseFloat(this.refs['zoomLevelInput'].getValue()) - 0.5;
         this.refs['zoomLevelInput'].setValue(newValue);
         webFrame.setZoomLevel(newValue);
-        localStorage.zoomLevel = newValue;
+        ls('zoomLevel', newValue);
     },
 
     _handleZoomLevelUp(event) {
         var newValue = parseFloat(this.refs['zoomLevelInput'].getValue()) + 0.5;
         this.refs['zoomLevelInput'].setValue(newValue);
         webFrame.setZoomLevel(newValue);
-        localStorage.zoomLevel = newValue;
+        ls('zoomLevel', newValue);
     },
     
     _handleAudioChannelDown(event) {
@@ -471,11 +472,11 @@ default React.createClass({
     },
     
     _handleSubColorDown(event) {
-        if (!localStorage.subColor) localStorage.subColor = 0;
-        var newColor = parseInt(localStorage.subColor) - 1;
+        if (!ls.isSet('subColor')) ls('subColor', 0);
+        var newColor = ls('subColor') - 1;
         if (newColor == -1)
             newColor = this.state.subColors.length -1;
-        localStorage.subColor = newColor;
+        ls('subColor', newColor);
         this.setState({
             subColor: newColor
         });
@@ -483,11 +484,11 @@ default React.createClass({
     },
     
     _handleSubColorUp(event) {
-        if (!localStorage.subColor) localStorage.subColor = 0;
-        var newColor = parseInt(localStorage.subColor) + 1;
+        if (!ls.isSet('subColor')) ls('subColor', 0);
+        var newColor = ls('subColor') + 1;
         if (newColor == this.state.subColors.length)
             newColor = 0;
-        localStorage.subColor = newColor;
+        ls('subColor', newColor);
         this.setState({
             subColor: newColor
         });
@@ -521,13 +522,13 @@ default React.createClass({
     },
     
     _handleSubEncodingDown(event) {
-        if (!localStorage.selectedEncoding) localStorage.selectedEncoding = 0;
-        var newEncoding = parseInt(localStorage.selectedEncoding) - 1;
+        if (!ls.isSet('selectedEncoding')) ls('selectedEncoding', 0);
+        var newEncoding = ls('selectedEncoding') - 1;
         if (newEncoding == -1)
             newEncoding = this.state.subEncodings.length -1;
 
-        localStorage.selectedEncoding = newEncoding;
-        localStorage.subEncoding = this.state.subEncodings[newEncoding][1];
+        ls('selectedEncoding', newEncoding);
+        ls('subEncoding', this.state.subEncodings[newEncoding][1]);
         PlayerActions.settingChange({
             encoding: newEncoding
         });
@@ -535,13 +536,13 @@ default React.createClass({
     },
     
     _handleSubEncodingUp(event) {
-        if (!localStorage.selectedEncoding) localStorage.selectedEncoding = 0;
-        var newEncoding = parseInt(localStorage.selectedEncoding) + 1;
+        if (!ls.isSet('selectedEncoding')) ls('selectedEncoding', 0);
+        var newEncoding = ls('selectedEncoding') + 1;
         if (newEncoding == this.state.subEncodings.length)
             newEncoding = 0;
 
-        localStorage.selectedEncoding = newEncoding;
-        localStorage.subEncoding = this.state.subEncodings[newEncoding][1];
+        ls('selectedEncoding', newEncoding);
+        ls('subEncoding', this.state.subEncodings[newEncoding][1]);
         PlayerActions.settingChange({
             encoding: newEncoding
         });
@@ -555,9 +556,8 @@ default React.createClass({
         if (newValue > 65535)
             newValue = 65535;
         this.refs['portInput'].setValue(newValue);
-        if (event) {
-            localStorage.peerPort = newValue;
-        }
+        if (event)
+            ls('peerPort', newValue);
     },
 
     _handlePortUp(event) {
@@ -566,7 +566,7 @@ default React.createClass({
             newValue = 65535;
         this.refs['portInput'].setValue(newValue);
         if (event)
-            localStorage.peerPort = newValue;
+            ls('peerPort', newValue);
     },
     
     _handlePortKeys(event) {
@@ -590,7 +590,7 @@ default React.createClass({
             newValue = 65535;
 
         this.refs['portInput'].setValue(newValue);
-        localStorage.peerPort = newValue;
+        ls('peerPort', newValue);
     },
     
     _handlePeersDown(event) {
@@ -601,7 +601,7 @@ default React.createClass({
             newValue = 100000;
         this.refs['peerInput'].setValue(newValue);
         if (event)
-            localStorage.maxPeers = newValue;
+            ls('maxPeers', newValue);
     },
 
     _handlePeersUp(event) {
@@ -610,7 +610,7 @@ default React.createClass({
             newValue = 100000;
         this.refs['peerInput'].setValue(newValue);
         if (event)
-            localStorage.maxPeers = newValue;
+            ls('maxPeers', newValue);
     },
     
     _handlePeersKeys(event) {
@@ -634,7 +634,7 @@ default React.createClass({
             newValue = 100000;
 
         this.refs['peerInput'].setValue(newValue);
-        localStorage.maxPeers = newValue;
+        ls('maxPeers', newValue);
     },
 
     _handleBufferSizeDown(event) {
@@ -645,7 +645,7 @@ default React.createClass({
             newValue = 60000;
         this.refs['bufferInput'].setValue((newValue/1000).toFixed(1) + ' sec');
         if (event)
-            localStorage.bufferSize = newValue;
+            ls('bufferSize', newValue);
     },
 
     _handleBufferSizeUp(event) {
@@ -654,7 +654,7 @@ default React.createClass({
             newValue = 60000;
         this.refs['bufferInput'].setValue((newValue/1000).toFixed(1) + ' sec');
         if (event)
-            localStorage.bufferSize = newValue;
+            ls('bufferSize', newValue);
     },
 
     _handleBufferSizeKeys(event) {
@@ -678,11 +678,11 @@ default React.createClass({
             newValue = 60000;
 
         this.refs['bufferInput'].setValue((newValue/1000).toFixed(1) + ' sec');
-        localStorage.bufferSize = newValue;
+        ls('bufferSize', newValue);
     },
 
     _handleClearDownload(event) {
-        delete localStorage.downloadFolder;
+        ls.remove('downloadFolder');
         this.refs['downloadInput'].setValue('Temp');
     },
     
@@ -693,7 +693,7 @@ default React.createClass({
             properties: ['openDirectory', 'createDirectory']
         }, (folder) => {
             if (folder && folder.length) {
-                localStorage.downloadFolder = folder[0];
+                ls('downloadFolder', folder[0]);
                 this.refs['downloadInput'].setValue(folder[0]);
             }
         });
@@ -708,7 +708,7 @@ default React.createClass({
             newValue = 'disabled';
             PlayerActions.flood();
         }
-        localStorage.speedPulsing = newValue;
+        ls('speedPulsing', newValue);
         this.setState({
             speedPulsing: newValue
         });

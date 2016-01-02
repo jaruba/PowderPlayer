@@ -15,6 +15,7 @@ import linkUtil from '../../../utils/linkUtil';
 import traktUtil from '../../Player/utils/trakt';
 
 import _ from 'lodash';
+import ls from 'local-storage';
 
 export
 default React.createClass({
@@ -139,7 +140,7 @@ default React.createClass({
                                 theme: 'DarkRawTheme'
                             });
                             if (traktUtil.loggedIn) {
-                                var shouldScrobble = localStorage.traktScrobble ? (localStorage.traktScrobble == 'true') : true;
+                                var shouldScrobble = ls.isSet('traktScrobble') ? ls('traktScrobble') : true;
                                 if (shouldScrobble) {
                                     var newType = '';
                                     if (prevTrakt)

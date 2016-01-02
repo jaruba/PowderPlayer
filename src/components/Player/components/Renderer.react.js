@@ -3,6 +3,7 @@ import PureRenderMixin from 'react-addons-pure-render-mixin';
 import path from 'path';
 import wcjsRenderer from '../utils/wcjs-renderer';
 import _ from 'lodash';
+import ls from 'local-storage';
 import {
     RaisedButton
 }
@@ -67,7 +68,7 @@ default React.createClass({
     componentDidMount() {
         if (!PlayerStore.getState().wcjs) {
             PlayerActions.wcjsInit(wcjsRenderer.init(this.refs['wcjs-render'], [
-                "--network-caching=" + localStorage.bufferSize,
+                "--network-caching=" + ls('bufferSize'),
                 "--no-sub-autodetect-file"
             ], {
                 fallbackRenderer: false,

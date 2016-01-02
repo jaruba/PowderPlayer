@@ -2,6 +2,7 @@
 import _ from 'lodash';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 import MUI from 'material-ui';
+import ls from 'local-storage';
 
 const {
     List, ListItem, Avatar
@@ -75,7 +76,7 @@ default React.createClass({
     },
     
     select(idx, item, itemId) {
-        localStorage.lastLanguage = idx;
+        ls('lastLanguage', idx);
         PlayerStore.getState().wcjs.subtitles.track = 0;
         if (item) {
             PlayerActions.loadSub(item);
@@ -120,7 +121,7 @@ default React.createClass({
 
     render() {
         var itemId = 1;
-        if (!localStorage.menuFlags || localStorage.menuFlags == 'true') {
+        if (!ls.isSet('menuFlags') || ls('menuFlags')) {
             var none = <ListItem
                     leftAvatar={<Avatar src='https://css-tricks.com/wp-content/csstricks-uploads/transpBlack25.png' />}
                     value={1}
@@ -141,7 +142,7 @@ default React.createClass({
                     {
                         _.map(this.getInternalSubs(), (item, idx) => {
                             itemId++;
-                            if (!localStorage.menuFlags || localStorage.menuFlags == 'true') {
+                            if (!ls.isSet('menuFlags') || ls('menuFlags')) {
                                 return (
                                 <ListItem
                                   leftAvatar={<Avatar src={'./images/icons/internal-subtitle-icon.png'} />}
@@ -166,7 +167,7 @@ default React.createClass({
                             itemId++;
                             var lang = idx.split('[lg]');
                             if (lang2country[lang[1]]) lang[1] = lang2country[lang[1]];
-                            if (!localStorage.menuFlags || localStorage.menuFlags == 'true') {
+                            if (!ls.isSet('menuFlags') || ls('menuFlags')) {
                                 return (
                                 <ListItem
                                   leftAvatar={<Avatar src={'http://flagpedia.net/data/flags/small/'+lang[1]+'.png'} />}

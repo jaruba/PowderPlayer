@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import ipc from 'ipc';
-import localStorage from 'localStorage';
+import ls from 'local-storage';
 import {
     handleTime
 }
@@ -35,11 +35,11 @@ class playerStore {
         this.paused = false;
 
         this.alwaysOnTop = false;
-        this.clickPause = localStorage.clickPause ? localStorage.clickPause : false;
-        this.rippleEffects = localStorage.playerRippleEffects ? localStorage.playerRippleEffects : true;
+        this.clickPause = ls.isSet('clickPause') ? ls('clickPause') : false;
+        this.rippleEffects = ls.isSet('playerRippleEffects') ? ls('playerRippleEffects') : true;
 
         this.muted = false;
-        this.volume = localStorage.volume ? localStorage.volume : 100;
+        this.volume = ls.isSet('volume') ? ls('volume') : 100;
         this.position = 0;
         this.buffering = false;
         this.time = 0;
@@ -327,9 +327,9 @@ class playerStore {
                                                 foundTrakt: true
                                             });
 
-                                            var shouldScrobble = traktUtil.loggedIn ? localStorage.traktScrobble ? (localStorage.traktScrobble == 'true') : true : false;
+                                            var shouldScrobble = traktUtil.loggedIn ? ls.isSet('traktScrobble') ? ls('traktScrobble') : false;
                                             if (shouldScrobble) {
-                                                if (!localStorage.playerNotifs || localStorage.playerNotifs == 'true')
+                                                if (!ls.isSet('playerNotifs') || ls('playerNotifs'))
                                                     player.notifier.info('Scrobbling', '', 6000);
                                                 traktUtil.scrobble('start', player.wcjs.position, results);
                                             }
@@ -404,7 +404,7 @@ class playerStore {
     }
 
     onLength(length) {
-        if (localStorage.speedPulsing && localStorage.speedPulsing === 'enabled') {
+        if (ls('speedPulsing') && ls('speedPulsing') == 'enabled') {
             _.defer(playerActions.pulse);
         }
         this.setState({
@@ -671,7 +671,7 @@ class playerStore {
             volume: value
         });
 
-        localStorage.volume = value;
+        ls('volume', value);
 
         if (this.wcjs)
             this.wcjs.volume = value
@@ -690,8 +690,8 @@ class playerStore {
         if (!this.firstPlay) {
             // catch first play event
             this.wcjs.subtitles.track = 0;
-            if (this.wcjs.volume != parseInt(localStorage.volume))
-                this.wcjs.volume = parseInt(localStorage.volume);
+            if (this.wcjs.volume != ls('volume'))
+                this.wcjs.volume = ls('volume');
             var newObj = {
                 title: this.wcjs.playlist.items[this.wcjs.playlist.currentItem].title,
                 firstPlay: true,
@@ -702,10 +702,10 @@ class playerStore {
             var itemDesc = this.itemDesc();
             if (itemDesc.setting && itemDesc.setting.trakt && !this.foundTrakt) {
                 newObj.foundTrakt = true;
-                var shouldScrobble = traktUtil.loggedIn ? localStorage.traktScrobble ? (localStorage.traktScrobble == 'true') : true : false;
+                var shouldScrobble = traktUtil.loggedIn ? ls.isSet('traktScrobble') ? ls('traktScrobble') : false;
                 if (shouldScrobble) {
                     traktUtil.handleScrobble('start', itemDesc, this.wcjs.position);
-                    if (!localStorage.playerNotifs || localStorage.playerNotifs == 'true')
+                    if (!ls.isSet('playerNotifs') || ls('playerNotifs'))
                         this.notifier.info('Scrobbling', '', 4000);
                 }
             }
@@ -719,7 +719,7 @@ class playerStore {
                 });
             } else if (itemDesc.path) {
 
-                if (!localStorage.findSubs || localStorage.findSubs == "true") {
+                if (!ls.isSet('findSubs') || ls('findSubs')) {
 
                     var subQuery = {
                         filepath: itemDesc.path,
@@ -738,7 +738,7 @@ class playerStore {
 
                     subQuery.cb = subs => {
                         if (!subs) {
-                            if (!localStorage.playerNotifs || localStorage.playerNotifs == 'true')
+                            if (!ls.isSet('playerNotifs') || ls('playerNotifs'))
                                 player.notifier.info('Subtitles Not Found', '', 6000);
                         } else {
                             this.setState({
@@ -748,13 +748,13 @@ class playerStore {
                                 playerActions.setDesc({
                                     subtitles: subs
                                 });
-                                if (!localStorage.playerNotifs || localStorage.playerNotifs == 'true')
+                                if (!ls.isSet('playerNotifs') || ls('playerNotifs'))
                                     player.notifier.info('Found Subtitles', '', 6000);
 
-                                if (!localStorage.autoSub || localStorage.autoSub == 'true') {
-                                    if (localStorage.lastLanguage && localStorage.lastLanguage != 'none') {
-                                        if (subs[localStorage.lastLanguage]) {
-                                            playerActions.loadSub(subs[localStorage.lastLanguage]);
+                                if (!ls.isSet('autoSub') || ls('autoSub'))
+                                    if (ls('lastLanguage') && ls('lastLanguage') != 'none') {
+                                        if (subs[ls('lastLanguage')]) {
+                                            playerActions.loadSub(subs[ls('lastLanguage')]);
                                             // select it in the menu too
                                             if (this.wcjs.subtitles.count > 0)
                                                 var itemIdx = this.wcjs.subtitles.count;
@@ -763,7 +763,7 @@ class playerStore {
 
                                             _.some(subs, (el, ij) => {
                                                 itemIdx++;
-                                                if (ij == localStorage.lastLanguage) {
+                                                if (ij == ls('lastLanguage')) {
                                                     _.defer(() => {
                                                         playerActions.settingChange({
                                                             selectedSub: itemIdx

@@ -1,5 +1,6 @@
 ﻿import React from 'react';
 import PlayerStore from '../store';
+import ls from 'local-storage';
 
 export
 default React.createClass({
@@ -8,9 +9,9 @@ default React.createClass({
         var playerState = PlayerStore.getState();
         return {
             text: playerState.subText,
-            size: (playerState.subSize * (parseInt(localStorage.customSubSize) / 100)),
+            size: (playerState.subSize * (ls('customSubSize') / 100)),
             visibility: !(playerState.playlistOpen || playerState.settingsOpen),
-            color: localStorage.subColor ? parseInt(localStorage.subColor) : 0,
+            color: ls.isSet('subColor') ? ls('subColor') : 0,
             hex: ['#fff', '#ebcb00', '#00e78f', '#00ffff', '#00b6ea'],
             subBottom: playerState.subBottom
         }
@@ -27,9 +28,9 @@ default React.createClass({
             var playerState = PlayerStore.getState();
             this.setState({
                 text: playerState.subText,
-                size: (playerState.subSize * (parseInt(localStorage.customSubSize) / 100)),
+                size: (playerState.subSize * (ls('customSubSize') / 100)),
                 visibility: !(playerState.playlistOpen || playerState.settingsOpen),
-                color: localStorage.subColor ? parseInt(localStorage.subColor) : 0,
+                color: ls.isSet('subColor') ? ls('subColor') : 0,
                 subBottom: playerState.subBottom
             });
         }

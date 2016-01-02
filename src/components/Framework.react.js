@@ -19,6 +19,7 @@ import request from 'request';
 import subUtil from './Player/utils/subtitles';
 import remote from 'remote';
 import clArgs from '../utils/clArgs';
+import ls from 'local-storage';
 
 const Framework = React.createClass({
 
@@ -26,10 +27,10 @@ const Framework = React.createClass({
 
     componentWillMount() {
 
-        if (!localStorage.subEncoding) localStorage.subEncoding = 'auto';
-        if (!localStorage.peerPort) localStorage.peerPort = 6881;
-        if (!localStorage.maxPeers) localStorage.maxPeers = 200;
-        if (!localStorage.bufferSize) localStorage.bufferSize = 7000;
+        if (!ls.isSet('subEncoding')) ls('subEncoding', 'auto');
+        if (!ls.isSet('peerPort')) ls('peerPort', 6881);
+        if (!ls.isSet('maxPeers')) ls('maxPeers', 200);
+        if (!ls.isSet('bufferSize')) ls('bufferSize', 7000);
 
         this.props.bindShortcut('ctrl+d', () => ipc.send('app:toggleDevTools'));
 
@@ -41,7 +42,7 @@ const Framework = React.createClass({
         ipc.send('app:startup', new Date().getTime());
         
         // login trakt
-        if (localStorage.traktTokens)
+        if (ls('traktTokens'))
             traktUtil.autoLogin();
 
         if (remote.process.argv.length > 1) {

@@ -6,6 +6,7 @@ import _ from 'lodash';
 import alt from '../alt';
 import path from 'path';
 import ipc from 'ipc';
+import ls from 'local-storage';
 import parser from '../components/Player/utils/parser';
 
 class torrentActions {
@@ -42,7 +43,7 @@ class torrentActions {
                 return TorrentUtil.getContents(instance.torrent.files, instance.infoHash);
             })
             .then((files) => {
-               if (localStorage.askFiles == 'true' && files.files_total > 1) {
+               if (ls('askFiles') && files.files_total > 1) {
                     ModalActions.fileSelector(files);
                     ipc.send('app:bitchForAttention');
                 } else {

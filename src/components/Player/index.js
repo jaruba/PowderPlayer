@@ -11,6 +11,7 @@ import Announcement from './components/Announcement.react';
 
 import webFrame from 'web-frame';
 import remote from 'remote';
+import ls from 'local-storage';
 
 import PlayerStore from './store';
 import PlayerActions from './actions';
@@ -36,11 +37,11 @@ const Player = React.createClass({
         }
     },
     componentWillMount() {
-        if (!localStorage.customSubSize)
-            localStorage.customSubSize = 100;
+        if (!ls.isSet('customSubSize'))
+            ls('customSubSize', 100);
         PlayerStore.listen(this.update);
         remote.getCurrentWindow().setMinimumSize(392, 228);
-        webFrame.setZoomLevel(localStorage.zoomLevel ? parseFloat(localStorage.zoomLevel) : 0);
+        webFrame.setZoomLevel(ls.isSet('zoomLevel') ? ls('zoomLevel') : 0);
         
         this.props.bindShortcut('space', (event) => {
             event.preventDefault();
@@ -217,19 +218,19 @@ const Player = React.createClass({
         });
 
         this.props.bindShortcut('alt+up', (event) => {
-            var newValue = Math.round((parseInt(localStorage.customSubSize) + 5) / 5) * 5;
+            var newValue = Math.round((ls('customSubSize') + 5) / 5) * 5;
             if (newValue > 500) newValue = 500;
-            localStorage.customSubSize = newValue;
-            PlayerActions.announcement('Subtitle Size '+newValue+'%');
-            PlayerStore.getState().subSizeField.setValue(newValue+'%');
+            ls('customSubSize', newValue);
+            PlayerActions.announcement('Subtitle Size ' + newValue + '%');
+            PlayerStore.getState().subSizeField.setValue(newValue + '%');
         });
 
         this.props.bindShortcut('alt+down', (event) => {
-            var newValue = Math.round((parseInt(localStorage.customSubSize) - 5) / 5) * 5;
+            var newValue = Math.round((ls('customSubSize') - 5) / 5) * 5;
             if (newValue < 5) newValue = 5;
-            localStorage.customSubSize = newValue;
-            PlayerActions.announcement('Subtitle Size '+newValue+'%');
-            PlayerStore.getState().subSizeField.setValue(newValue+'%');
+            ls('customSubSize', newValue);
+            PlayerActions.announcement('Subtitle Size ' + newValue + '%');
+            PlayerStore.getState().subSizeField.setValue(newValue + '%');
         });
 
         this.props.bindShortcut('shift+up', (event) => {

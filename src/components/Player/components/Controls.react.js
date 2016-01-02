@@ -1,6 +1,7 @@
 ﻿import React from 'react';
 import moment from 'moment';
 import _ from 'lodash';
+import ls from 'local-storage';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 import {
     IconButton, Slider
@@ -44,7 +45,7 @@ default React.createClass({
             foundSubs: playerState.foundSubs,
             subtitlesOpen: playerState.subtitlesOpen,
 
-            volume: parseInt(localStorage.volume),
+            volume: ls('volume'),
             mute: playerState.muted,
 
             volumeDragging: false,
@@ -99,7 +100,7 @@ default React.createClass({
                 foundSubs: playerState.foundSubs,
                 subtitlesOpen: playerState.subtitlesOpen,
 
-                volume: parseInt(localStorage.volume),
+                volume: ls('volume'),
                 mute: playerState.muted,
 
                 forceTime: playerState.forceTime,

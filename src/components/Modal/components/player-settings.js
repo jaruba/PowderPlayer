@@ -1,6 +1,7 @@
 import React from 'react';
 import ModalStore from '../store';
 import ModalActions from '../actions';
+import ls from 'local-storage';
 
 import MUI from 'material-ui';
 
@@ -36,8 +37,8 @@ default React.createClass({
             alwaysOnTop: playerState.alwaysOnTop,
             playerRippleEffects: playerState.rippleEffects,
             trakt: traktUtil.loggedIn ? true : false,
-            traktScrobble: localStorage.traktScrobble ? (localStorage.traktScrobble == 'true') : true,
-            findSubs: localStorage.findSubs ? (localStorage.findSubs == 'true') : true
+            traktScrobble: ls.isSet('traktScrobble') ? ls('traktScrobble') : true,
+            findSubs: ls.isSet('findSubs'( ? ls('findSubs') : true
         };
     },
     componentWillMount() {
@@ -67,7 +68,7 @@ default React.createClass({
     },
     handlePlayerRippleEffects(event, toggled) {
         
-        localStorage.playerRippleEffects = toggled;
+        ls('playerRippleEffects', toggled);
         
         playerActions.settingChange({
             rippleEffects: toggled
@@ -91,7 +92,7 @@ default React.createClass({
     },
     handleFindSubs(event, toggled) {
         
-        localStorage.findSubs = toggled;
+        ls('findSubs', toggled);
         
         this.setState({
             findSubs: toggled
@@ -100,7 +101,7 @@ default React.createClass({
     },
     handleScrobbler(event, toggled) {
         
-        localStorage.traktScrobble = toggled;
+        ls('traktScrobble', toggled);
         
         this.setState({
             traktScrobble: toggled

@@ -5,6 +5,7 @@ import readTorrent from 'read-torrent';
 import Promise from 'bluebird';
 import getPort from 'get-port';
 import _ from 'lodash';
+import ls from 'local-storage';
 import torrentActions from '../../actions/torrentActions';
 
 import sorter from '../../components/Player/utils/sort';
@@ -28,13 +29,13 @@ module.exports = {
                 .spread((torrentInfo, port) => {
                     var opts = {
                         tracker: true,
-                        port: localStorage.peerPort && localStorage.peerPort != '6881' ? localStorage.peerPort : port,
+                        port: ls.isSet('peerPort') && ls('peerPort') != '6881' ? ls('peerPort') : port,
                         tmp: temp,
                         buffer: (1.5 * 1024 * 1024).toString(),
-                        connections: parseInt(localStorage.maxPeers)
+                        connections: ls('maxPeers')
                     };
-                    if (localStorage.downloadFolder)
-                        opts.path = localStorage.downloadFolder;
+                    if (ls.isSet('downloadFolder'))
+                        opts.path = ls('downloadFolder');
 
                     var engine = peerflix(torrentInfo, opts);
                     this.streams[engine.infoHash] = engine;
@@ -106,7 +107,7 @@ module.exports = {
                         name: file.name,
                         streamable: true,
                         infoHash: infoHash,
-                        path: localStorage.downloadFolder ? path.join(localStorage.downloadFolder, file.path) : path.join(temp, 'torrent-stream', infoHash, file.path)
+                        path: ls.isSet('downloadFolder') ? path.join(ls('downloadFolder'), file.path) : path.join(temp, 'torrent-stream', infoHash, file.path)
                     });
                     directorys.push(fileParams.dir);
                 }
