@@ -38,7 +38,7 @@ default React.createClass({
             playerRippleEffects: playerState.rippleEffects,
             trakt: traktUtil.loggedIn ? true : false,
             traktScrobble: ls.isSet('traktScrobble') ? ls('traktScrobble') : true,
-            findSubs: ls.isSet('findSubs'( ? ls('findSubs') : true
+            findSubs: ls.isSet('findSubs') ? ls('findSubs') : true
         };
     },
     componentWillMount() {
