@@ -35,7 +35,7 @@
         "opensubtitles-api": "*",
         "peerflix": "jaruba/peerflix",
         "read-torrent": "*",
-        "ga-localstorage": "jaruba/ga-localstorage",
+        "universal-analytics": "*",
         "request": "*",
         "upnp-mediarenderer-client": "*",
         "xmlrpc": "*",

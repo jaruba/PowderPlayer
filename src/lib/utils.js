@@ -328,9 +328,14 @@ var utils = {
 				ui.settings.loadPluginList();
 
 				// analytics
-				var script = require("ga-localstorage")("UA-65979437-2");
-				$('body').append('<script>'+script+'</script>');
-				utils.ga.func = ct;
+				var ua = require('universal-analytics');
+				if (!localStorage.cid) {
+					utils.ga.visitor = ua('UA-65979437-3');
+					localStorage.cid = utils.ga.visitor.cid;
+				} else {
+					utils.ga.visitor = ua('UA-65979437-3', localStorage.cid);
+				}
+				utils.ga.visitor.pageview("/mask.html").send();
 				utils.ga.loaded = true;
 			} else $('#select-plugin-list').empty().html('<div onClick="ui.settings.loadPluginList(); return false" class="actionButton wrap-text"><span class="droid-bold">Couldn\'t connect. Press to try again.</span></div>');
 		});
