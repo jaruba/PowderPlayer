@@ -19,6 +19,9 @@ body {
 	overflow-x:hidden;
 	height: 100%
 }
+#plugin-list {
+	display: none
+}
 #main-buttons-hold {
 	float: right;
 	position: relative;
