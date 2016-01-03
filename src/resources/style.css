@@ -449,7 +449,7 @@ input[type="file"] { display: none }
 #header_content { width: calc(100% - 250px); float: right }
 #header_text { width: 70%; color: #fff; text-align: left }
 #optHold { width: 30% }
-.headButs { margin-bottom: 5px; font-size: 15px; width: 28.4%; background: #1C728A; margin-right: 0; }
+.headButs { margin-bottom: 10px; font-size: 15px; width: 45.5%; background: #1C728A }
 .fl_dd {
 	font-size: 33px;
 	color: #767a7b;

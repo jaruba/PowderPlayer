@@ -350,9 +350,8 @@ body {
     
     <div class="third-easy-modal-animated" id="player-settings">
         <center>
-            <h2 class="headButs goLeft">Player Settings</h2>
-            <h2 class="headButs change-set goRight" onClick="$('.third-animated-close').trigger('click'); setTimeout(function() { $('#plugin-list').trigger('click'); },1000); return false">Extensions</h2>
-            <h2 class="headButs change-set" onClick="$('.third-animated-close').trigger('click'); setTimeout(function() { $('#tr-settings').trigger('click'); },1000); return false">Torrent Settings</h2>
+            <h2 class="headButs change-set goRight" onClick="$('.third-animated-close').trigger('click'); setTimeout(function() { $('#tr-settings').trigger('click'); },1000); return false">Torrent Settings</h2>
+            <h2 class="headButs goRight" style="margin-right: 3px">Player Settings</h2>
             <div class="clear"></div>
             <div id="but-assoc4" onClick="utils.register.powLinks(); return false" class="actionButton droid-bold" style="display: none">Associate with Powder Links</div>
             <div id="but-assoc1" onClick="utils.register.magnet(); return false" class="actionButton droid-bold">Associate with Magnet Links</div>
@@ -368,9 +367,9 @@ body {
     
     <div class="forth-easy-modal-animated" id="torrent-settings">
         <center>
-            <h2 class="headButs change-set goLeft" onClick="$('.forth-animated-close').trigger('click'); setTimeout(function() { $('.pl-settings').trigger('click'); },1000); return false">Player Settings</h2>
-            <h2 class="headButs change-set goRight" onClick="$('.forth-animated-close').trigger('click'); setTimeout(function() { $('#plugin-list').trigger('click'); },1000); return false">Extensions</h2>
-            <h2 class="headButs">Torrent Settings</h2><div class="clear"></div>
+            <h2 class="headButs goRight">Torrent Settings</h2>
+            <h2 class="headButs change-set goRight" onClick="$('.forth-animated-close').trigger('click'); setTimeout(function() { $('.pl-settings').trigger('click'); },1000); return false" style="margin-right: 3px">Player Settings</h2>
+            <div class="clear"></div>
             <div id="max-peers-hov" onClick="ui.mechanics.openPeerSelector(); return false" class="actionButton"><span class="droid-bold">Maximum Peers:</span> <span id="max-peers">100</span><input id="spinner" value="100" />
             </div>
             <div id="peer-port-hov" onClick="ui.mechanics.openPeerPortSelector(); return false" class="actionButton"><span class="droid-bold">Peer Listening Port:</span> <span id="peer-port">6881</span><input id="peer-spinner" value="6881" />
@@ -385,9 +384,8 @@ body {
 
     <div class="fifth-easy-modal-animated" id="plugins-settings">
         <center>
-            <h2 class="headButs change-set goLeft" onClick="$('.fifth-animated-close').trigger('click'); setTimeout(function() { $('.pl-settings').trigger('click'); },1000); return false">Player Settings</h2>
-            <h2 class="headButs goRight">Extensions</h2>
-            <h2 class="headButs change-set" onClick="$('.fifth-animated-close').trigger('click'); setTimeout(function() { $('#tr-settings').trigger('click'); },1000); return false">Torrent Settings</h2>
+            <h2 class="headButs change-set goRight" onClick="$('.fifth-animated-close').trigger('click'); setTimeout(function() { $('#tr-settings').trigger('click'); },1000); return false">Torrent Settings</h2>
+            <h2 class="headButs change-set goRight" onClick="$('.fifth-animated-close').trigger('click'); setTimeout(function() { $('.pl-settings').trigger('click'); },1000); return false" style="margin-right: 3px">Player Settings</h2>
             <div class="internal-opt actionButton actionMessage"><span class="droid">Click titles for details. Installed plugins have a yellow background.</span></div>
             <div id="select-plugin-list">
 

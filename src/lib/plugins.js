@@ -16,10 +16,10 @@ function loadPlugins() {
 	});
 }
 
-fs.exists(gui.App.dataPath+pathBreak+'plugins', function (exists) {
-	if (!exists) {
-		fs.mkdir(gui.App.dataPath+pathBreak+'plugins',function() {
-			loadPlugins();
-		});
-	} else loadPlugins();
-});
+//fs.exists(gui.App.dataPath+pathBreak+'plugins', function (exists) {
+//	if (!exists) {
+//		fs.mkdir(gui.App.dataPath+pathBreak+'plugins',function() {
+//			loadPlugins();
+//		});
+//	} else loadPlugins();
+//});
