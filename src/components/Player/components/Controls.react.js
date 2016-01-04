@@ -64,9 +64,9 @@ default React.createClass({
         window.addEventListener('mouseup', this.handleGlobalMouseUp);
 
         // assign a class to the volume index pointer
-        var volumeSlider = this.refs['volume-slider'][0].children[4].children[0].children[2];
-        volumeSlider.className = 'volume-index volume-hover';
-        volumeSlider.children[0].className = 'volume-ripple';
+        var volumeIndex = this.refs['volume-slider'].refs['track'].lastChild;
+        volumeIndex.className = 'volume-index volume-hover';
+        volumeIndex.firstChild.className = 'volume-ripple';
     },
     componentWillUnmount() {
         window.removeEventListener('mousemove', this.handleGlobalMouseMove);
@@ -229,7 +229,7 @@ default React.createClass({
     volumeIndexEffect(f, b, i) {
         if (i) {
             if (!this.state.volumeDragging) {
-                var volumeIndex = document.querySelector('.volume-index');
+                var volumeIndex = this.refs['volume-slider'].refs['track'].lastChild;
                 var volumeClass = volumeIndex.className.replace(' volume-hover', '');
                 if (i.type == 'react-mouseenter') {
                     volumeIndex.className = volumeClass;
@@ -246,7 +246,7 @@ default React.createClass({
     volumeRippleEffect(c, i, a) {
         if (a) {
             if (!this.state.volumeDragging) {
-                var volumeRipple = document.querySelector('.volume-ripple');
+                var volumeRipple = this.refs['volume-slider'].refs['track'].lastChild.firstChild;
                 var volumeClass = volumeRipple.className.replace(' volume-ripple-hover', '');
                 if (a.type == 'react-mouseenter') {
                     volumeRipple.className = volumeClass;
