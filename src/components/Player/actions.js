@@ -225,7 +225,7 @@ class PlayerActions {
                                                 foundTrakt: true
                                             });
 
-                                            var shouldScrobble = traktUtil.loggedIn ? ls.isSet('traktScrobble') ? ls('traktScrobble') : false;
+                                            var shouldScrobble = traktUtil.loggedIn && (ls.isSet('traktScrobble') ? ls('traktScrobble') : true);
                                             if (shouldScrobble) {
                                                 if (!ls.isSet('playerNotifs') || ls('playerNotifs'))
                                                     player.notifier.info('Scrobbling', '', 6000);
