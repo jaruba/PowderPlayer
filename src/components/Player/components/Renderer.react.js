@@ -64,6 +64,7 @@ default React.createClass({
     componentWillMount() {
         PlayerStore.listen(this.update);
         window.addEventListener('resize', this.handleResize);
+        PlayerStore.getState().events.on('resizeNow', this.handleResize);
     },
     componentDidMount() {
         if (!PlayerStore.getState().wcjs) {

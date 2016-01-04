@@ -12,6 +12,8 @@ import MainMenuActions from './actions';
 import PlayerActions from '../../components/Player/actions';
 import ModalActions from './../Modal/actions';
 import MessageActions from '../Message/actions';
+import metaParser from '../../components/Player/utils/metaParser';
+
 import remote from 'remote';
 
 import webFrame from 'web-frame';
@@ -94,13 +96,13 @@ default React.createClass({
                     filename: file.name
                 });
             });
-            
+
             PlayerActions.addPlaylist(newFiles);
             
             // start searching for thumbnails after 1 second
             _.delay(() => {
                 queueParser.forEach( el => {
-                    PlayerActions.parseURL(el);
+                    metaParser.push(el);
                 });
             },1000);
         } else {

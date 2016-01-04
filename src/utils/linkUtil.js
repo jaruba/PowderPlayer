@@ -1,6 +1,7 @@
 import MimeUtil from './mimeDetectorUtil';
 import PlayerActions from './../components/Player/actions';
 import LinkSupport from './../components/Player/utils/supportedLinks';
+import metaParser from './../components/Player/utils/metaParser';
 import ModalActions from './../components/Modal/actions';
 import torrentActions from './../actions/torrentActions';
 import Promise from 'bluebird';
@@ -30,7 +31,7 @@ module.exports = (inputvalue, cb) => {
 
                                         // start searching for thumbnails after 1 second
                                         _.delay(() => queueParser.forEach(el => {
-                                            PlayerActions.parseURL(el);
+                                            metaParser.push(el);
                                         }), 1000);
                                     } else {
                                         // add the direct link anyway, maybe vlc will do some magic

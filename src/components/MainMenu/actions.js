@@ -8,6 +8,7 @@ import TorrentActions from '../../actions/torrentActions';
 
 import sorter from './../Player/utils/sort';
 import parser from './../Player/utils/parser';
+import metaParser from './../Player/utils/metaParser';
 
 import _ from 'lodash';
 
@@ -77,7 +78,7 @@ class MainMenuActions {
                     // start searching for thumbnails after 1 second
                     _.delay(() => {
                         queueParser.forEach( el => {
-                            PlayerActions.parseURL(el);
+                            metaParser.push(el);
                         });
                     },1000);
                     

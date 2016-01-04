@@ -42,6 +42,7 @@ const Framework = React.createClass({
         ipc.send('app:startup', new Date().getTime());
         
         // login trakt
+        if (ls('traktTokens') == '{}') ls.remove('traktTokens');
         if (ls('traktTokens'))
             traktUtil.autoLogin();
 

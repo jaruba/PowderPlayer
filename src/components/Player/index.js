@@ -188,7 +188,7 @@ const Player = React.createClass({
         this.props.bindShortcut('g', (event) => {
             var subDelayField = PlayerStore.getState().subDelayField;
             var newValue = parseInt(subDelayField.getValue())-50;
-            subDelayField.setValue(newValue + ' ms');
+            subDelayField.refs['input'].defaultValue = newValue + ' ms';
             PlayerActions.setSubDelay(newValue);
             PlayerActions.announcement('Subtitle Delay: ' + newValue + ' ms');
         });
@@ -196,7 +196,7 @@ const Player = React.createClass({
         this.props.bindShortcut('h', (event) => {
             var subDelayField = PlayerStore.getState().subDelayField;
             var newValue = parseInt(subDelayField.getValue())+50;
-            subDelayField.setValue(newValue + ' ms');
+            subDelayField.refs['input'].defaultValue = newValue + ' ms';
             PlayerActions.setSubDelay(newValue);
             PlayerActions.announcement('Subtitle Delay: ' + newValue + ' ms');
         });
@@ -204,7 +204,7 @@ const Player = React.createClass({
         this.props.bindShortcut('j', (event) => {
             var audioDelayField = PlayerStore.getState().audioDelayField;
             var newValue = parseInt(audioDelayField.getValue())-50;
-            audioDelayField.setValue(newValue + ' ms');
+            audioDelayField.refs['input'].defaultValue = newValue + ' ms';
             PlayerActions.setAudioDelay(newValue);
             PlayerActions.announcement('Audio Delay: ' + newValue + ' ms');
         });
@@ -212,7 +212,7 @@ const Player = React.createClass({
         this.props.bindShortcut('k', (event) => {
             var audioDelayField = PlayerStore.getState().audioDelayField;
             var newValue = parseInt(audioDelayField.getValue())+50;
-            audioDelayField.setValue(newValue + ' ms');
+            audioDelayField.refs['input'].defaultValue = newValue + ' ms';
             PlayerActions.setAudioDelay(newValue);
             PlayerActions.announcement('Audio Delay: ' + newValue + ' ms');
         });
@@ -222,7 +222,7 @@ const Player = React.createClass({
             if (newValue > 500) newValue = 500;
             ls('customSubSize', newValue);
             PlayerActions.announcement('Subtitle Size ' + newValue + '%');
-            PlayerStore.getState().subSizeField.setValue(newValue + '%');
+            PlayerStore.getState().subSizeField.refs['input'].defaultValue = newValue + '%';
         });
 
         this.props.bindShortcut('alt+down', (event) => {
@@ -230,7 +230,7 @@ const Player = React.createClass({
             if (newValue < 5) newValue = 5;
             ls('customSubSize', newValue);
             PlayerActions.announcement('Subtitle Size ' + newValue + '%');
-            PlayerStore.getState().subSizeField.setValue(newValue + '%');
+            PlayerStore.getState().subSizeField.refs['input'].defaultValue = newValue + '%';
         });
 
         this.props.bindShortcut('shift+up', (event) => {
@@ -269,7 +269,7 @@ const Player = React.createClass({
     
                 var newValue = parseFloat(Math.round(playerState.wcjs.input.rate * 100) / 100).toFixed(2);
         
-                playerState.speedField.setValue(newValue + 'x');
+                playerState.speedField.refs['input'].defaultValue = newValue + 'x';
                 
                 PlayerActions.announcement('Speed: ' + newValue + 'x');
             }
@@ -293,7 +293,7 @@ const Player = React.createClass({
     
                 var newValue = parseFloat(Math.round(playerState.wcjs.input.rate * 100) / 100).toFixed(2);
         
-                playerState.speedField.setValue(newValue + 'x');
+                playerState.speedField.refs['input'].defaultValue = newValue + 'x';
                 
                 PlayerActions.announcement('Speed: ' + newValue + 'x');
             }
@@ -308,7 +308,7 @@ const Player = React.createClass({
 
             var newValue = parseFloat(Math.round(playerState.wcjs.input.rate * 100) / 100).toFixed(2);
     
-            playerState.speedField.setValue(newValue + 'x');
+            playerState.speedField.refs['input'].defaultValue = newValue + 'x';
             
             PlayerActions.announcement('Speed: ' + newValue + 'x');
 

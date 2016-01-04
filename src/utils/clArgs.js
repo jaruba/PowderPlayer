@@ -2,6 +2,7 @@ import ModalActions from '../components/Modal/actions';
 import PlayerActions from '../components/Player/actions';
 import parser from '../components/Player/utils/parser';
 import sorter from '../components/Player/utils/sort';
+import metaParser from '../components/Player/utils/metaParser';
 import linkUtil from './linkUtil';
 import _ from 'lodash';
 import url from 'url';
@@ -67,7 +68,7 @@ module.exports = {
                 // start searching for thumbnails after 1 second
                 _.delay(() => {
                     queueParser.forEach( el => {
-                        PlayerActions.parseURL(el);
+                        metaParser.push(el);
                     });
                 },1000);
 

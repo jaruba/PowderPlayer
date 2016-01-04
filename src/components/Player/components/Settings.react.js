@@ -243,14 +243,14 @@ default React.createClass({
     },
 
     _handleSubDelayDown(event) {
-        this.refs['subDelayInput'].setValue((parseInt(this.refs['subDelayInput'].getValue()) - 50) + ' ms');
+       this.refs['subDelayInput'].refs['input'].defaultValue = (parseInt(this.refs['subDelayInput'].getValue()) - 50) + ' ms';
         if (event)
             PlayerActions.setSubDelay(parseInt(this.refs['subDelayInput'].getValue()));
     },
 
     _handleSubDelayUp(event) {
-        this.refs['subDelayInput'].setValue((parseInt(this.refs['subDelayInput'].getValue()) + 50) + ' ms');
-        if (event)
+       this.refs['subDelayInput'].refs['input'].defaultValue = (parseInt(this.refs['subDelayInput'].getValue()) + 50) + ' ms';
+       if (event)
             PlayerActions.setSubDelay(parseInt(this.refs['subDelayInput'].getValue()));
     },
     
@@ -272,20 +272,22 @@ default React.createClass({
         if (isNaN(newValue))
             newValue = 0;
 
-        this.refs['subDelayInput'].setValue(newValue+' ms');
+        this.refs['subDelayInput'].refs['input'].defaultValue = newValue + ' ms';
         PlayerActions.setSubDelay(newValue);
     },
 
     _handleAudioDelayDown(event) {
-        this.refs['audioDelayInput'].setValue((parseInt(this.refs['audioDelayInput'].getValue())-50)+' ms');
+        var newValue = parseInt(this.refs['audioDelayInput'].getValue()) - 50;
+        this.refs['audioDelayInput'].refs['input'].defaultValue = newValue + ' ms';
         if (event)
-            PlayerActions.setAudioDelay(parseInt(this.refs['audioDelayInput'].getValue()));
+            PlayerActions.setAudioDelay(newValue);
     },
     
     _handleAudioDelayUp(event) {
-        this.refs['audioDelayInput'].setValue((parseInt(this.refs['audioDelayInput'].getValue())+50)+' ms');
+        var newValue = parseInt(this.refs['audioDelayInput'].getValue()) + 50;
+        this.refs['audioDelayInput'].refs['input'].defaultValue = newValue + ' ms';
         if (event)
-            PlayerActions.setAudioDelay(parseInt(this.refs['audioDelayInput'].getValue()));
+            PlayerActions.setAudioDelay(newValue);
     },
     
     _handleAudioDelayKeys(event) {
@@ -306,7 +308,7 @@ default React.createClass({
         if (isNaN(newValue))
             newValue = 0;
 
-        this.refs['audioDelayInput'].setValue(newValue+' ms');
+        this.refs['audioDelayInput'].refs['input'].defaultValue = newValue + ' ms';
         PlayerActions.setAudioDelay(newValue);
     },
 
@@ -327,7 +329,7 @@ default React.createClass({
 
             var newValue = parseFloat(Math.round(playerState.wcjs.input.rate * 100) / 100).toFixed(2);
     
-            this.refs['speedInput'].setValue(newValue + 'x');
+            this.refs['speedInput'].refs['input'].defaultValue = newValue + 'x';
         }
     },
     
@@ -349,7 +351,7 @@ default React.createClass({
 
             var newValue = parseFloat(Math.round(playerState.wcjs.input.rate * 100) / 100).toFixed(2);
     
-            this.refs['speedInput'].setValue(newValue + 'x');
+            this.refs['speedInput'].refs['input'].defaultValue = newValue + 'x';
         }
     },
     
@@ -378,13 +380,13 @@ default React.createClass({
 
         var newValue = parseFloat(Math.round(newValue * 100) / 100).toFixed(2);
 
-        this.refs['speedInput'].setValue(newValue+'x');
+        this.refs['speedInput'].refs['input'].defaultValue = newValue + 'x';
         PlayerStore.getState().wcjs.input.rate = newValue;
     },
     
     _handleSubSizeDown(event) {
         var newValue = parseInt(this.refs['subSizeInput'].getValue()) - 5;
-        this.refs['subSizeInput'].setValue(newValue + '%');
+        this.refs['subSizeInput'].refs['input'].defaultValue = newValue + '%';
         if (event) {
             ls('customSubSize', newValue);
             this.setState({
@@ -395,7 +397,7 @@ default React.createClass({
     
     _handleSubSizeUp(event) {
         var newValue = parseInt(this.refs['subSizeInput'].getValue()) + 5;
-        this.refs['subSizeInput'].setValue(newValue + '%');
+        this.refs['subSizeInput'].refs['input'].defaultValue = newValue + '%';
         if (event) {
             ls('customSubSize', newValue);
             this.setState({
@@ -427,7 +429,7 @@ default React.createClass({
         else if (newValue > 400)
             newValue = 400;
 
-        this.refs['subSizeInput'].setValue(newValue+'%');
+        this.refs['subSizeInput'].refs['input'].defaultValue = newValue + '%';
         
         ls('customSubSize', newValue);
         this.setState({
@@ -437,14 +439,14 @@ default React.createClass({
 
     _handleZoomLevelDown(event) {
         var newValue = parseFloat(this.refs['zoomLevelInput'].getValue()) - 0.5;
-        this.refs['zoomLevelInput'].setValue(newValue);
+        this.refs['zoomLevelInput'].refs['input'].defaultValue = newValue;
         webFrame.setZoomLevel(newValue);
         ls('zoomLevel', newValue);
     },
 
     _handleZoomLevelUp(event) {
         var newValue = parseFloat(this.refs['zoomLevelInput'].getValue()) + 0.5;
-        this.refs['zoomLevelInput'].setValue(newValue);
+        this.refs['zoomLevelInput'].refs['input'].defaultValue = newValue;
         webFrame.setZoomLevel(newValue);
         ls('zoomLevel', newValue);
     },
@@ -457,7 +459,7 @@ default React.createClass({
         PlayerActions.settingChange({
             audioChannel: newChannel
         });
-        this.refs['audioChannelInput'].setValue(this.state.audioChannels[newChannel]);
+        this.refs['audioChannelInput'].refs['input'].defaultValue = this.state.audioChannels[newChannel];
     },
     
     _handleAudioChannelUp(event) {
@@ -468,7 +470,7 @@ default React.createClass({
         PlayerActions.settingChange({
             audioChannel: newChannel
         });
-        this.refs['audioChannelInput'].setValue(this.state.audioChannels[newChannel]);
+        this.refs['audioChannelInput'].refs['input'].defaultValue = this.state.audioChannels[newChannel];
     },
     
     _handleSubColorDown(event) {
@@ -480,7 +482,7 @@ default React.createClass({
         this.setState({
             subColor: newColor
         });
-        this.refs['subColorInput'].setValue(this.state.subColors[newColor]);
+        this.refs['subColorInput'].refs['input'].defaultValue = this.state.subColors[newColor];
     },
     
     _handleSubColorUp(event) {
@@ -492,7 +494,7 @@ default React.createClass({
         this.setState({
             subColor: newColor
         });
-        this.refs['subColorInput'].setValue(this.state.subColors[newColor]);
+        this.refs['subColorInput'].refs['input'].defaultValue = this.state.subColors[newColor];
     },
     
     _handleAudioTracksDown(event) {
@@ -505,7 +507,7 @@ default React.createClass({
             audioTrack: newTrack
         });
         wcjs.audio.track = newTrack;
-        this.refs['audioTrackInput'].setValue(wcjs.audio[newTrack]);
+        this.refs['audioTrackInput'].refs['input'].defaultValue = wcjs.audio[newTrack];
     },
     
     _handleAudioTracksUp(event) {
@@ -518,7 +520,7 @@ default React.createClass({
             audioTrack: newTrack
         });
         wcjs.audio.track = newTrack;
-        this.refs['audioTrackInput'].setValue(wcjs.audio[newTrack]);
+        this.refs['audioTrackInput'].refs['input'].defaultValue = wcjs.audio[newTrack];
     },
     
     _handleSubEncodingDown(event) {
@@ -532,7 +534,7 @@ default React.createClass({
         PlayerActions.settingChange({
             encoding: newEncoding
         });
-        this.refs['subEncodingInput'].setValue(this.state.subEncodings[newEncoding][0]);
+        this.refs['subEncodingInput'].refs['input'].defaultValue = this.state.subEncodings[newEncoding][0];
     },
     
     _handleSubEncodingUp(event) {
@@ -546,7 +548,7 @@ default React.createClass({
         PlayerActions.settingChange({
             encoding: newEncoding
         });
-        this.refs['subEncodingInput'].setValue(this.state.subEncodings[newEncoding][0]);
+        this.refs['subEncodingInput'].refs['input'].defaultValue = this.state.subEncodings[newEncoding][0];
     },
     
     _handlePortDown(event) {
@@ -555,7 +557,7 @@ default React.createClass({
             newValue = 1;
         if (newValue > 65535)
             newValue = 65535;
-        this.refs['portInput'].setValue(newValue);
+        this.refs['portInput'].refs['input'].defaultValue = newValue;
         if (event)
             ls('peerPort', newValue);
     },
@@ -564,7 +566,7 @@ default React.createClass({
         var newValue = parseInt(this.refs['portInput'].getValue())+1;
         if (newValue > 65535)
             newValue = 65535;
-        this.refs['portInput'].setValue(newValue);
+        this.refs['portInput'].refs['input'].defaultValue = newValue;
         if (event)
             ls('peerPort', newValue);
     },
@@ -589,7 +591,7 @@ default React.createClass({
         if (newValue > 65535)
             newValue = 65535;
 
-        this.refs['portInput'].setValue(newValue);
+        this.refs['portInput'].refs['input'].defaultValue = newValue;
         ls('peerPort', newValue);
     },
     
@@ -599,7 +601,7 @@ default React.createClass({
             newValue = 1;
         if (newValue > 100000)
             newValue = 100000;
-        this.refs['peerInput'].setValue(newValue);
+        this.refs['peerInput'].refs['input'].defaultValue = newValue;
         if (event)
             ls('maxPeers', newValue);
     },
@@ -608,7 +610,7 @@ default React.createClass({
         var newValue = parseInt(this.refs['peerInput'].getValue())+1;
         if (newValue > 100000)
             newValue = 100000;
-        this.refs['peerInput'].setValue(newValue);
+        this.refs['peerInput'].refs['input'].defaultValue = newValue;
         if (event)
             ls('maxPeers', newValue);
     },
@@ -633,7 +635,7 @@ default React.createClass({
         if (newValue > 100000)
             newValue = 100000;
 
-        this.refs['peerInput'].setValue(newValue);
+        this.refs['peerInput'].refs['input'].defaultValue = newValue;
         ls('maxPeers', newValue);
     },
 
@@ -643,7 +645,7 @@ default React.createClass({
             newValue = 0;
         if (newValue > 60000)
             newValue = 60000;
-        this.refs['bufferInput'].setValue((newValue/1000).toFixed(1) + ' sec');
+        this.refs['bufferInput'].refs['input'].defaultValue = (newValue/1000).toFixed(1) + ' sec';
         if (event)
             ls('bufferSize', newValue);
     },
@@ -652,7 +654,7 @@ default React.createClass({
         var newValue = (parseFloat(this.refs['bufferInput'].getValue()) * 1000) + 500;
         if (newValue > 60000)
             newValue = 60000;
-        this.refs['bufferInput'].setValue((newValue/1000).toFixed(1) + ' sec');
+        this.refs['bufferInput'].refs['input'].defaultValue = (newValue/1000).toFixed(1) + ' sec';
         if (event)
             ls('bufferSize', newValue);
     },
@@ -677,13 +679,13 @@ default React.createClass({
         if (newValue > 60000)
             newValue = 60000;
 
-        this.refs['bufferInput'].setValue((newValue/1000).toFixed(1) + ' sec');
+        this.refs['bufferInput'].refs['input'].defaultValue = (newValue/1000).toFixed(1) + ' sec';
         ls('bufferSize', newValue);
     },
 
     _handleClearDownload(event) {
         ls.remove('downloadFolder');
-        this.refs['downloadInput'].setValue('Temp');
+        this.refs['downloadInput'].refs['input'].defaultValue = 'Temp';
     },
     
     _handleDownloadFocus(event) {
@@ -694,7 +696,7 @@ default React.createClass({
         }, (folder) => {
             if (folder && folder.length) {
                 ls('downloadFolder', folder[0]);
-                this.refs['downloadInput'].setValue(folder[0]);
+                this.refs['downloadInput'].refs['input'].defaultValue = folder[0];
             }
         });
     },
@@ -712,7 +714,7 @@ default React.createClass({
         this.setState({
             speedPulsing: newValue
         });
-        this.refs['pulseInput'].setValue(newValue);
+        this.refs['pulseInput'].refs['input'].defaultValue = newValue;
     },
 
     _handleAspectUp(event) {
@@ -736,9 +738,9 @@ default React.createClass({
                     zoom: 1
                 });
 
-                aspectInput.setValue(aspectRatios[newValue]);
-                zoomInput.setValue('Default');
-                cropInput.setValue('Default');
+                aspectInput.refs['input'].defaultValue = aspectRatios[newValue];
+                zoomInput.refs['input'].defaultValue = 'Default';
+                cropInput.refs['input'].defaultValue = 'Default';
                 _.defer(() => {
                     PlayerStore.getState().events.emit('resizeNow');
                 });
@@ -769,9 +771,9 @@ default React.createClass({
                     zoom: 1
                 });
 
-                aspectInput.setValue(aspectRatios[newValue]);
-                zoomInput.setValue('Default');
-                cropInput.setValue('Default');
+                aspectInput.refs['input'].defaultValue = aspectRatios[newValue];
+                zoomInput.refs['input'].defaultValue = 'Default';
+                cropInput.refs['input'].defaultValue = 'Default';
                 _.defer(() => {
                     PlayerStore.getState().events.emit('resizeNow');
                 });
@@ -802,9 +804,9 @@ default React.createClass({
                     zoom: 1
                 });
 
-                cropInput.setValue(crops[newValue]);
-                zoomInput.setValue('Default');
-                aspectInput.setValue('Default');
+                cropInput.refs['input'].defaultValue = crops[newValue];
+                zoomInput.refs['input'].defaultValue = 'Default';
+                aspectInput.refs['input'].defaultValue = 'Default';
                 _.defer(() => {
                     PlayerStore.getState().events.emit('resizeNow');
                 });
@@ -835,9 +837,9 @@ default React.createClass({
                     zoom: 1
                 });
 
-                cropInput.setValue(crops[newValue]);
-                zoomInput.setValue('Default');
-                aspectInput.setValue('Default');
+                cropInput.refs['input'].defaultValue = crops[newValue];
+                zoomInput.refs['input'].defaultValue = 'Default';
+                aspectInput.refs['input'].defaultValue = 'Default';
                 _.defer(() => {
                     PlayerStore.getState().events.emit('resizeNow');
                 });
@@ -868,9 +870,9 @@ default React.createClass({
                     aspectRatio: 'Default'
                 });
 
-                zoomInput.setValue(zooms[newValue][0]);
-                cropInput.setValue('Default');
-                aspectInput.setValue('Default');
+                zoomInput.refs['input'].defaultValue = zooms[newValue][0];
+                cropInput.refs['input'].defaultValue = 'Default';
+                aspectInput.refs['input'].defaultValue = 'Default';
                 _.defer(() => {
                     PlayerStore.getState().events.emit('resizeNow');
                 });
@@ -901,9 +903,9 @@ default React.createClass({
                     aspectRatio: 'Default'
                 });
 
-                zoomInput.setValue(zooms[newValue][0]);
-                cropInput.setValue('Default');
-                aspectInput.setValue('Default');
+                zoomInput.refs['input'].defaultValue = zooms[newValue][0];
+                cropInput.refs['input'].defaultValue = 'Default';
+                aspectInput.refs['input'].defaultValue = 'Default';
                 _.defer(() => {
                     PlayerStore.getState().events.emit('resizeNow');
                 });

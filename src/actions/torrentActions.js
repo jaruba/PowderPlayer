@@ -8,6 +8,7 @@ import path from 'path';
 import ipc from 'ipc';
 import ls from 'local-storage';
 import parser from '../components/Player/utils/parser';
+import metaParser from '../components/Player/utils/metaParser';
 
 class torrentActions {
 
@@ -81,7 +82,7 @@ class torrentActions {
                     _.delay(() => {
                         if (queueParser.length) {
                             queueParser.forEach( el => {
-                                PlayerActions.parseURL(el);
+                                metaParser.push(el);
                             });
                         }
                     },1000);

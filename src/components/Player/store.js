@@ -22,6 +22,7 @@ import parser from './utils/parser';
 import traktUtil from './utils/trakt';
 import subUtil from './utils/subtitles';
 import torrentUtil from '../../utils/stream/torrentUtil';
+import events from 'events';
 
 class playerStore {
     constructor() {
@@ -98,6 +99,8 @@ class playerStore {
         this.aspectRatio = 'Default';
         this.crop = 'Default';
         this.zoom = 1;
+
+        this.events = new events.EventEmitter();
     }
 
     onSettingChange(setting) {
@@ -122,12 +125,12 @@ class playerStore {
         });
     }
 
-    onSetSubtitle(subLink) {
+    onSetSubtitle(parsedSub) {
         this.setState({
             subtitle: parsedSub,
             trackSub: -1
         });
-        this.subDelayField.setValue('0 ms');
+        this.subDelayField.refs['input'].defaultValue = '0 ms';
     }
 
     onTogglePlaylist() {
@@ -515,7 +518,6 @@ class playerStore {
             if (playAfter) this.wcjs.playlist.playItem(0);
 
         }
-
         _.defer(() => {
             historyStore.getState().history.replaceState(null, 'player');
         });
@@ -789,7 +791,7 @@ class playerStore {
         } else {
             traktUtil.handleScrobble('start', this.itemDesc(), this.wcjs.position);
         }
-        this.audioTrackField.setValue(this.wcjs.audio[1]);
+        this.audioTrackField.refs['input'].defaultValue = this.wcjs.audio[1];
     }
 
     onPaused() {
@@ -818,13 +820,13 @@ class playerStore {
             playerActions.setAudioDelay(0);
             playerActions.setRate(1);
         });
-        this.speedField.setValue('1.00x');
-        this.subDelayField.setValue('0 ms');
-        this.audioDelayField.setValue('0 ms');
-        this.audioChannelField.setValue('Stereo');
-        this.aspectField.setValue('Default');
-        this.cropField.setValue('Default');
-        this.zoomField.setValue('Default');
+        this.speedField.refs['input'].defaultValue = '1.00x';
+        this.subDelayField.refs['input'].defaultValue = '0 ms';
+        this.audioDelayField.refs['input'].defaultValue = '0 ms';
+        this.audioChannelField.refs['input'].defaultValue = 'Stereo';
+        this.aspectField.refs['input'].defaultValue = 'Default';
+        this.cropField.refs['input'].defaultValue = 'Default';
+        this.zoomField.refs['input'].defaultValue = 'Default';
     }
 
     onDelayTime(q) {
@@ -1148,13 +1150,13 @@ class playerStore {
             playerActions.setAudioDelay(0);
             playerActions.setRate(1);
         });
-        this.speedField.setValue('1.00x');
-        this.subDelayField.setValue('0 ms');
-        this.audioDelayField.setValue('0 ms');
-        this.audioChannelField.setValue('Stereo');
-        this.aspectField.setValue('Default');
-        this.cropField.setValue('Default');
-        this.zoomField.setValue('Default');
+        this.speedField.refs['input'].defaultValue = '1.00x';
+        this.subDelayField.refs['input'].defaultValue = '0 ms';
+        this.audioDelayField.refs['input'].defaultValue = '0 ms';
+        this.audioChannelField.refs['input'].defaultValue = 'Stereo';
+        this.aspectField.refs['input'].defaultValue = 'Default';
+        this.cropField.refs['input'].defaultValue = 'Default';
+        this.zoomField.refs['input'].defaultValue = 'Default';
 
         if (this.wcjs) {
 
