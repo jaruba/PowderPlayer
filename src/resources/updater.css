@@ -11,6 +11,18 @@
   z-index: 1;
 }
 
+.stats {
+	width: 100% !important;
+	color: #535353 !important;
+	text-align: center !important;
+	display: block !important;
+	margin-left: 0 !important;
+}
+
+#all-download {
+	background: #c3c3c3 !important
+}
+
 .dot1, .dot2 {
   width: 60%;
   height: 60%;
