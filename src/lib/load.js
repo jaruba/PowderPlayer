@@ -254,11 +254,13 @@ var load = {
 	
 	torrent: function(torLink,isHistory) {
 		
-		// convert pow protocol to magnet link
-		if (torLink.toLowerCase().match(/pow:\?xt=urn:btih:[a-z0-9]{20,50}/i) != null) {
-			torLink = torLink.replace('pow:','magnet:');
-		} else if (torLink.toLowerCase().substr(0,6) == 'pow://') {
-			torLink = torLink.replace('pow://','magnet:?xt=urn:btih:');
+		if (typeof torLink === 'string') {
+			// convert pow protocol to magnet link
+			if (torLink.toLowerCase().match(/pow:\?xt=urn:btih:[a-z0-9]{20,50}/i) != null) {
+				torLink = torLink.replace('pow:','magnet:');
+			} else if (torLink.toLowerCase().substr(0,6) == 'pow://') {
+				torLink = torLink.replace('pow://','magnet:?xt=urn:btih:');
+			}
 		}
 
 		if ($('#main').css("display") == "table") {
