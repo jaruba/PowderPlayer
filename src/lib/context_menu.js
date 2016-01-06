@@ -81,7 +81,7 @@ var ctxMenu = {
 				if (powGlobals.torrent.engine) {
 					powGlobals.torrent.engine.discover();
 					powGlobals.torrent.engine.swarm.reconnectAll();
-					player.notify("Throttling Download");
+					player.notify("Forcing Download");
 				}
 			}
 		}));
