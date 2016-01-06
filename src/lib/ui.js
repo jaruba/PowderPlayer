@@ -558,3 +558,8 @@ if (localStorage.useVLC == "1") {
 	$('#use-player').val('VLC');
 	$(".internal-opt").hide(0);
 }
+
+if (localStorage.bufferSize) {
+	$('#buffer-spinner').val(localStorage.bufferSize);
+	$('#buffer-sel').html(localStorage.bufferSize);
+}
