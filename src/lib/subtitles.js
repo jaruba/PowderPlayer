@@ -65,7 +65,7 @@ var subtitles = {
 				if (utils.parser(powGlobals.current.filename).shortSzEp()) {
 					searcher.season = utils.parser(powGlobals.current.filename).season().toString();
 					searcher.episode = utils.parser(powGlobals.current.filename).episode().toString();
-					if (powGlobals.current.filename.indexOf(searcher.season + searcher.episode) > -1) {
+					if (powGlobals.current.filename.indexOf(utils.parser(powGlobals.current.filename).shortSzEp().replace('s','').replace('e','')) > -1) {
 						// cases like "2015" as a season/episode tag should be ignored in this case
 						delete searcher.season;
 						delete searcher.episode;
