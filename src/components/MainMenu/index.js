@@ -8,7 +8,6 @@ from 'material-ui';
 import sorter from './../Player/utils/sort';
 import parser from './../Player/utils/parser';
 
-import HistoryActions from '../../actions/historyActions';
 import MainMenuActions from './actions';
 import PlayerActions from '../../components/Player/actions';
 import ModalActions from './../Modal/actions';
