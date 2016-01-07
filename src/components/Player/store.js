@@ -711,7 +711,7 @@ class playerStore {
                         image = response.body.video.thumbs.base + '_320.jpg';
                     }
 
-                    //                    player.playlist.clear();
+                    // player.playlist.clear();
 
                     playerActions.replaceMRL({
                         x: lastItem,
@@ -760,36 +760,6 @@ class playerStore {
         this.setState({
             rate: newRate
         });
-    }
-
-    onReplaceMRL(newObj) {
-
-        var newX = newObj.x;
-        var newMRL = newObj.mrl;
-
-        this.setState({
-            files: this.files.concat([newMRL])
-        });
-
-        this.wcjs.playlist.add(newMRL.uri);
-        if (newMRL.title) {
-            this.wcjs.playlist.items[this.wcjs.playlist.items.count - 1].title = newMRL.title;
-        }
-
-        var newDifference = this.wcjs.playlist.items.count - 1;
-        var swapDifference = this.wcjs.playlist.items.count - newX - 1;
-
-        if (newX == this.wcjs.playlist.currentItem && [3, 4].indexOf(this.wcjs.state) > -1) {
-            var playerPos = this.position;
-            this.wcjs.stop();
-            this.wcjs.playlist.advanceItem(newDifference, swapDifference * (-1));
-            this.wcjs.playlist.playItem(newX);
-            this.wcjs.position = playerPos;
-
-        } else this.wcjs.playlist.advanceItem(newDifference, swapDifference * (-1));
-
-        this.wcjs.playlist.items[newX].setting = this.wcjs.playlist.items[newX + 1].setting;
-        this.wcjs.playlist.removeItem(newX + 1);
     }
 
     onEnded() {

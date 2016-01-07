@@ -41,7 +41,6 @@ class PlayerActions {
             'toggleSubtitles',
             'toggleSettings',
             'setPlaylist',
-            'replaceMRL',
             'setSubtitle',
             'setSubDelay',
             'setAudioDelay',
@@ -157,6 +156,38 @@ class PlayerActions {
             if (playAfter) wcjs.playlist.playItem(0);
 
         }
+    }
+
+    replaceMRL(newObj) {
+
+        var playerState = this.alt.stores.playerStore.getState();
+        var wcjs = playerState.wcjs;
+
+        var newX = newObj.x;
+        var newMRL = newObj.mrl;
+
+        this.actions.settingChange({
+            files: playerState.files.concat([newMRL])
+        });
+
+        wcjs.playlist.add(newMRL.uri);
+        if (newMRL.title)
+            wcjs.playlist.items[wcjs.playlist.items.count - 1].title = newMRL.title;
+
+        var newDifference = wcjs.playlist.items.count - 1;
+        var swapDifference = wcjs.playlist.items.count - newX - 1;
+
+        if (newX == wcjs.playlist.currentItem && [3, 4].indexOf(wcjs.state) > -1) {
+            var playerPos = playerState.position;
+            wcjs.stop();
+            wcjs.playlist.advanceItem(newDifference, swapDifference * (-1));
+            wcjs.playlist.playItem(newX);
+            wcjs.position = playerPos;
+
+        } else wcjs.playlist.advanceItem(newDifference, swapDifference * (-1));
+
+        wcjs.playlist.items[newX].setting = wcjs.playlist.items[newX + 1].setting;
+        wcjs.playlist.removeItem(newX + 1);
     }
 
     toggleAlwaysOnTop(state = true) {
