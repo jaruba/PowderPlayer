@@ -4,6 +4,7 @@ import ipc from 'ipc';
 import subUtil from './utils/subtitles';
 import HistoryStore from '../../stores/historyStore';
 import torrentUtil from '../../utils/stream/torrentUtil';
+import ls from 'local-storage';
 
 class PlayerActions {
 
@@ -38,9 +39,7 @@ class PlayerActions {
             'metaUpdate',
             'wcjsInit',
             'close',
-            'togglePlaylist',
-            'toggleSubtitles',
-            'toggleSettings',
+            'toggleMenu',
             'setPlaylist',
             'setSubtitle',
             'setSubDelay',
@@ -225,6 +224,68 @@ class PlayerActions {
                 document.getElementsByClassName('wcjs-player')[0].style.background = "black";
             }
         }
+    }
+    
+    findSubs(itemDesc) {
+
+        var player = this.alt.stores.playerStore.getState();
+
+        var subQuery = {
+            filepath: itemDesc.path,
+            fps: player.wcjs.input.fps
+        };
+
+        if (itemDesc.byteSize)
+            subQuery.byteLength = itemDesc.byteSize;
+
+        if (itemDesc.torrentHash) {
+            subQuery.torrentHash = itemDesc.torrentHash;
+            subQuery.isFinished = false;
+        }
+        
+        subQuery.cb = subs => {
+            if (!subs) {
+                if (!ls.isSet('playerNotifs') || ls('playerNotifs'))
+                    player.notifier.info('Subtitles Not Found', '', 6000);
+            } else {
+                this.actions.settingChange({
+                    foundSubs: true
+                });
+                this.actions.setDesc({
+                    subtitles: subs
+                });
+                if (!ls.isSet('playerNotifs') || ls('playerNotifs'))
+                    player.notifier.info('Found Subtitles', '', 6000);
+    
+                if (!ls.isSet('autoSub') || ls('autoSub')) {
+                    if (ls('lastLanguage') && ls('lastLanguage') != 'none') {
+                        if (subs[ls('lastLanguage')]) {
+                            this.actions.loadSub(subs[ls('lastLanguage')]);
+                            // select it in the menu too
+                            if (player.wcjs.subtitles.count > 0)
+                                var itemIdx = player.wcjs.subtitles.count;
+                            else
+                                var itemIdx = 1;
+    
+                            _.some(subs, (el, ij) => {
+                                itemIdx++;
+                                if (ij == ls('lastLanguage')) {
+                                    this.actions.settingChange({
+                                        selectedSub: itemIdx
+                                    });
+                                    return true;
+                                } else {
+                                    return false;
+                                }
+                            })
+                        }
+                    }
+                }
+            }
+        }
+
+        subUtil.fetchSubs(subQuery);
+
     }
 
     toggleAlwaysOnTop(state = true) {

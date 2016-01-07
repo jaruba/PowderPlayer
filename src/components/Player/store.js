@@ -1,26 +1,15 @@
 import _ from 'lodash';
 import ipc from 'ipc';
 import ls from 'local-storage';
-import {
-    handleTime
-}
-from './utils/time';
+import {handleTime} from './utils/time';
 import alt from '../../alt';
-
 import playerActions from './actions';
-
 import needle from 'needle';
-
-import MetaInspector from 'node-metainspector';
-import async from 'async';
-
-import parseVideo from 'video-name-parser';
-import nameToImdb from 'name-to-imdb';
-import parser from './utils/parser';
-
 import traktUtil from './utils/trakt';
 import subUtil from './utils/subtitles';
+import LinkSupport from './utils/supportedLinks';
 import events from 'events';
+import ui from './utils/ui';
 
 class playerStore {
 
@@ -131,29 +120,15 @@ class playerStore {
         });
         this.subDelayField.refs['input'].defaultValue = '0 ms';
     }
-
-    onTogglePlaylist() {
-        this.setState({
-            playlistOpen: !this.playlistOpen,
-            settingsOpen: false,
-            subtitlesOpen: false
-        });
-    }
-
-    onToggleSubtitles() {
-        this.setState({
+    
+    onToggleMenu(menu) {
+        var obj = {
             playlistOpen: false,
             settingsOpen: false,
-            subtitlesOpen: !this.subtitlesOpen
-        });
-    }
-
-    onToggleSettings() {
-        this.setState({
-            settingsOpen: !this.settingsOpen,
-            playlistOpen: false,
             subtitlesOpen: false
-        });
+        };
+        obj[menu + 'Open'] = !this[menu + 'Open'];
+        this.setState(obj);
     }
 
     onUiShown(toggle) {
@@ -198,40 +173,10 @@ class playerStore {
 
         // print subtitle text if a subtitle is selected
         if (this.subtitle.length > 0) {
-            var subLines = this.subtitle;
-            var nowSecond = (time - this.subDelay) / 1000;
-            if (this.trackSub > -2) {
-
-                var line = -1;
-                var os = 0;
-
-                for (os in subLines) {
-                    if (os > nowSecond) break;
-                    line = os;
-                }
-
-                if (line >= 0) {
-                    if (line != this.trackSub) {
-                        if ((subLines[line].t.match(new RegExp("<", "g")) || []).length == 2) {
-                            if (!(subLines[line].t.substr(0, 1) == "<" && subLines[line].t.slice(-1) == ">"))
-                                subLines[line].t = subLines[line].t.replace(/<\/?[^>]+(>|$)/g, "");
-                        } else if ((subLines[line].t.match(new RegExp("<", "g")) || []).length > 2)
-                            subLines[line].t = subLines[line].t.replace(/<\/?[^>]+(>|$)/g, "");
-
-                        this.setState({
-                            subText: subLines[line].t
-                        });
-
-                        this.setState({
-                            trackSub: line
-                        });
-                    } else if (subLines[line].o < nowSecond)
-                        this.setState({
-                            subText: ''
-                        });
-
-                }
-            }
+            subUtil.findLine(this.subtitle, this.trackSub, this.subDelay, time).then(result => {
+                if (result)
+                    this.setState(result);
+            });
         }
     }
 
@@ -412,73 +357,8 @@ class playerStore {
                 this.setState({
                     foundSubs: true
                 });
-            } else if (itemDesc.path) {
-
-                if (!ls.isSet('findSubs') || ls('findSubs')) {
-
-                    var subQuery = {
-                        filepath: itemDesc.path,
-                        fps: this.wcjs.input.fps
-                    };
-
-                    if (itemDesc.byteSize)
-                        subQuery.byteLength = itemDesc.byteSize;
-
-                    if (itemDesc.torrentHash) {
-                        subQuery.torrentHash = itemDesc.torrentHash;
-                        subQuery.isFinished = false;
-                    }
-
-                    var player = this;
-
-                    subQuery.cb = subs => {
-                        if (!subs) {
-                            if (!ls.isSet('playerNotifs') || ls('playerNotifs'))
-                                player.notifier.info('Subtitles Not Found', '', 6000);
-                        } else {
-                            this.setState({
-                                foundSubs: true
-                            });
-                            _.defer(() => {
-                                playerActions.setDesc({
-                                    subtitles: subs
-                                });
-                                if (!ls.isSet('playerNotifs') || ls('playerNotifs'))
-                                    player.notifier.info('Found Subtitles', '', 6000);
-
-                                if (!ls.isSet('autoSub') || ls('autoSub')) {
-                                    if (ls('lastLanguage') && ls('lastLanguage') != 'none') {
-                                        if (subs[ls('lastLanguage')]) {
-                                            playerActions.loadSub(subs[ls('lastLanguage')]);
-                                            // select it in the menu too
-                                            if (this.wcjs.subtitles.count > 0)
-                                                var itemIdx = this.wcjs.subtitles.count;
-                                            else
-                                                var itemIdx = 1;
-
-                                            _.some(subs, (el, ij) => {
-                                                itemIdx++;
-                                                if (ij == ls('lastLanguage')) {
-                                                    _.defer(() => {
-                                                        playerActions.settingChange({
-                                                            selectedSub: itemIdx
-                                                        });
-                                                    });
-                                                    return true;
-                                                } else {
-                                                    return false;
-                                                }
-                                            })
-                                        }
-                                    }
-                                }
-                            });
-                        }
-                    };
-
-                    subUtil.fetchSubs(subQuery);
-
-                }
+            } else if (itemDesc.path && (!ls.isSet('findSubs') || ls('findSubs'))) {
+                playerActions.findSubs(itemDesc);
             }
 
         } else {
@@ -508,20 +388,7 @@ class playerStore {
             totalTime: '00:00'
         });
 
-        _.defer(() => {
-            playerActions.setSubDelay(0);
-            playerActions.setAudioDelay(0);
-            playerActions.setRate(1);
-        });
-        if (this.speedField.refs['input']) {
-            this.speedField.refs['input'].defaultValue = '1.00x';
-            this.subDelayField.refs['input'].defaultValue = '0 ms';
-            this.audioDelayField.refs['input'].defaultValue = '0 ms';
-            this.audioChannelField.refs['input'].defaultValue = 'Stereo';
-            this.aspectField.refs['input'].defaultValue = 'Default';
-            this.cropField.refs['input'].defaultValue = 'Default';
-            this.zoomField.refs['input'].defaultValue = 'Default';
-        }
+        ui.defaultSettings();
     }
 
     onDelayTime(q) {
@@ -643,60 +510,10 @@ class playerStore {
         if (itemDesc.mrl.startsWith('https://player.vimeo.com/')) {
 
             // fix vimeo links on vlc 2.2.1
-
-            var url = itemDesc.mrl,
-                player = this.wcjs,
-                lastItem = this.lastItem;
-
-            player.stop();
-
-            needle.get(url, function(error, response) {
-                if (!error && response.statusCode == 200) {
-                    var bestMRL;
-
-                    // this can also be used to make a quality selector
-                    // currently selecting 720p or best
-                    response.body.request.files.progressive.some(el => {
-                        if (el.quality == '720p') {
-                            bestMRL = el.url;
-                            return true;
-                        } else {
-                            bestMRL = el.url;
-                            return false;
-                        }
-                    });
-
-                    var image;
-
-                    if (response.body.video.thumbs && response.body.video.thumbs.base) {
-                        image = response.body.video.thumbs.base + '_320.jpg';
-                    }
-
-                    // player.playlist.clear();
-
-                    playerActions.replaceMRL({
-                        x: lastItem,
-                        mrl: {
-                            title: response.body.video.title,
-                            uri: bestMRL
-                        }
-                    });
-
-                    player.playlist.playItem(lastItem);
-
-                    if (document.getElementById('item' + lastItem)) {
-                        document.getElementById('item' + lastItem).style.background = "url('" + image + "')";
-                        document.getElementById('itemTitle' + lastItem).innerHTML = response.body.video.title;
-                    }
-                    if (image)
-                        _.delay(() => {
-                            playerActions.setDesc({
-                                idx: lastItem,
-                                image: image
-                            });
-                        }, 500);
-                }
-            });
+            
+            var Linky = new LinkSupport;
+            
+            Linky.fixVimeo(this.wcjs, this.lastItem, itemDesc);
 
         }
 
@@ -784,18 +601,8 @@ class playerStore {
             crop: 'Default',
             zoom: 1
         });
-        _.defer(() => {
-            playerActions.setSubDelay(0);
-            playerActions.setAudioDelay(0);
-            playerActions.setRate(1);
-        });
-        this.speedField.refs['input'].defaultValue = '1.00x';
-        this.subDelayField.refs['input'].defaultValue = '0 ms';
-        this.audioDelayField.refs['input'].defaultValue = '0 ms';
-        this.audioChannelField.refs['input'].defaultValue = 'Stereo';
-        this.aspectField.refs['input'].defaultValue = 'Default';
-        this.cropField.refs['input'].defaultValue = 'Default';
-        this.zoomField.refs['input'].defaultValue = 'Default';
+
+        ui.defaultSettings();
 
         if (this.wcjs) {
 

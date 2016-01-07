@@ -57,7 +57,7 @@ subtitles.tryLater = hashMs => {
 }
 
 subtitles.byExactHash = (hash, fileSize, tag) => {
-    subtitles.os.login().then(function(token){
+    subtitles.os.login().then(token => {
         var filename = objective.filename;
         
         var searcher = {
@@ -116,9 +116,8 @@ subtitles.fetchSubs = (newObjective) => {
     objective = newObjective;
     objective.filename = parser(objective.filepath).filename()
     
-    if (!objective.byteLength) {
+    if (!objective.byteLength)
         objective.byteLength = fs.statSync(objective.filepath).size;
-    }
 
     var url = window.atob("aHR0cDovL3Bvd2Rlci5tZWRpYS9tZXRhRGF0YS9nZXQucGhwP2Y9")+encodeURIComponent(objective.filename)+window.atob("Jmg9")+encodeURIComponent(objective.torrentHash)+window.atob("JnM9")+encodeURIComponent(objective.byteLength);
     
@@ -297,6 +296,41 @@ subtitles.processSub = (srt, extension, cb) => {
         cb(parsedSub);
     else
         cb('');
+}
+
+subtitles.findLine = (subLines, trackSub, subDelay, time) => {
+    return new Promise((resolve, reject) => {
+        var nowSecond = (time - subDelay) / 1000;
+        if (trackSub > -2) {
+
+            var line = -1;
+            var os = 0;
+
+            for (os in subLines) {
+                if (os > nowSecond) break;
+                line = os;
+            }
+
+            if (line >= 0) {
+                if (line != trackSub) {
+                    if ((subLines[line].t.match(new RegExp("<", "g")) || []).length == 2) {
+                        if (!(subLines[line].t.substr(0, 1) == "<" && subLines[line].t.slice(-1) == ">"))
+                            subLines[line].t = subLines[line].t.replace(/<\/?[^>]+(>|$)/g, "");
+                    } else if ((subLines[line].t.match(new RegExp("<", "g")) || []).length > 2)
+                        subLines[line].t = subLines[line].t.replace(/<\/?[^>]+(>|$)/g, "");
+                        
+                    resolve({
+                        subText: subLines[line].t,
+                        trackSub: line
+                    });
+                } else if (subLines[line].o < nowSecond)
+                    resolve({
+                        subText: ''
+                    });
+
+            } else resolve();
+        } else resolve();
+    });
 }
 
 subtitles.fetchOsCookie(true);

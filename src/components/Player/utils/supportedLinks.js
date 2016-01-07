@@ -1,6 +1,9 @@
 import MetaInspector from 'node-metainspector';
-import Promice from 'bluebird';
 import PlayerActions from '../actions';
+import PlayerStore from '../store';
+import needle from 'needle';
+import _ from 'lodash';
+
 
 
 class supportedLinks {
@@ -157,6 +160,61 @@ class supportedLinks {
                 }]);
             }
         });
+    }
+
+    fixVimeo(wcjs, lastItem, itemDesc) {
+
+        var url = itemDesc.mrl;
+
+        wcjs.stop();
+
+        needle.get(url, function(error, response) {
+            if (!error && response.statusCode == 200) {
+                var bestMRL;
+
+                // this can also be used to make a quality selector
+                // currently selecting 720p or best
+                response.body.request.files.progressive.some(el => {
+                    if (el.quality == '720p') {
+                        bestMRL = el.url;
+                        return true;
+                    } else {
+                        bestMRL = el.url;
+                        return false;
+                    }
+                });
+
+                var image;
+
+                if (response.body.video.thumbs && response.body.video.thumbs.base)
+                    image = response.body.video.thumbs.base + '_320.jpg';
+
+                // player.playlist.clear();
+
+                PlayerActions.replaceMRL({
+                    x: lastItem,
+                    mrl: {
+                        title: response.body.video.title,
+                        uri: bestMRL
+                    }
+                });
+
+                wcjs.playlist.playItem(lastItem);
+
+                if (document.getElementById('item' + lastItem)) {
+                    document.getElementById('item' + lastItem).style.background = "url('" + image + "')";
+                    document.getElementById('itemTitle' + lastItem).innerHTML = response.body.video.title;
+                }
+                if (image)
+                    _.delay(() => {
+                        PlayerActions.setDesc({
+                            idx: lastItem,
+                            image: image
+                        });
+                    }, 500);
+            }
+        });
+
     }
 }
 
