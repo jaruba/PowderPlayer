@@ -284,25 +284,6 @@ class playerStore {
             this.setState(announcer);
     }
 
-    onUpdateImage(image) {
-
-        if (document.getElementById('canvasEffect')) {
-
-            if (this.wcjs.playlist.items[this.wcjs.playlist.currentItem].mrl.indexOf('soundcloud.com') > -1 && image) {
-                var image = image.replace('large', 't500x500');
-                document.getElementById('canvasEffect').parentNode.style.cssText = "background-color: transparent !important";
-                document.getElementById('playerCanvas').style.display = "none";
-                document.getElementsByClassName('wcjs-player')[0].style.background = "url('" + image + "') 50% 50% / contain no-repeat black";
-            } else {
-                document.getElementById('canvasEffect').parentNode.style.cssText = "background-color: #000 !important";
-                document.getElementById('playerCanvas').style.display = "block";
-                document.getElementsByClassName('wcjs-player')[0].style.background = "black";
-            }
-
-        }
-
-    }
-
     onOpening() {
 
         if (this.wcjs.playlist.currentItem != this.lastItem) {

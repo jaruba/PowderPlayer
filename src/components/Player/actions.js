@@ -53,9 +53,7 @@ class PlayerActions {
             'itemDesc',
             'setRate',
 
-            'announcement',
-
-            'updateImage'
+            'announcement'
         );
     }
 
@@ -210,6 +208,22 @@ class PlayerActions {
             var itemDesc = playerState.itemDesc();
             if (itemDesc.setting && itemDesc.setting.torrentHash)
                 torrentUtil.flood(itemDesc.setting.torrentHash);
+        }
+    }
+
+    updateImage(image) {
+        if (document.getElementById('canvasEffect')) {
+            var wcjs = this.alt.stores.playerStore.getState().wcjs;
+            if (wcjs.playlist.items[wcjs.playlist.currentItem].mrl.indexOf('soundcloud.com') > -1 && image) {
+                var image = image.replace('large', 't500x500');
+                document.getElementById('canvasEffect').parentNode.style.cssText = "background-color: transparent !important";
+                document.getElementById('playerCanvas').style.display = "none";
+                document.getElementsByClassName('wcjs-player')[0].style.background = "url('" + image + "') 50% 50% / contain no-repeat black";
+            } else {
+                document.getElementById('canvasEffect').parentNode.style.cssText = "background-color: #000 !important";
+                document.getElementById('playerCanvas').style.display = "block";
+                document.getElementsByClassName('wcjs-player')[0].style.background = "black";
+            }
         }
     }
 
