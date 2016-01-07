@@ -20,7 +20,6 @@ import parser from './utils/parser';
 
 import traktUtil from './utils/trakt';
 import subUtil from './utils/subtitles';
-import torrentUtil from '../../utils/stream/torrentUtil';
 import events from 'events';
 
 class playerStore {
@@ -179,25 +178,6 @@ class playerStore {
         this.setState({
             seekable: state
         });
-    }
-
-    onPulse() {
-        if (this.wcjs) {
-            var length = this.wcjs.length;
-            var itemDesc = this.itemDesc();
-            if (length && itemDesc.setting && itemDesc.setting.torrentHash && itemDesc.setting.byteSize) {
-                var newPulse = Math.round(itemDesc.setting.byteSize / (length / 1000) * 2);
-                torrentUtil.setPulse(itemDesc.setting.torrentHash, newPulse);
-            }
-        }
-    }
-
-    onFlood() {
-        if (this.wcjs) {
-            var itemDesc = this.itemDesc();
-            if (itemDesc.setting && itemDesc.setting.torrentHash)
-                torrentUtil.flood(itemDesc.setting.torrentHash);
-        }
     }
 
     onLength(length) {

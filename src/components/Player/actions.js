@@ -3,6 +3,7 @@ import _ from 'lodash';
 import ipc from 'ipc';
 import subUtil from './utils/subtitles';
 import HistoryStore from '../../stores/historyStore';
+import torrentUtil from '../../utils/stream/torrentUtil';
 
 class PlayerActions {
 
@@ -51,9 +52,6 @@ class PlayerActions {
             'itemCount',
             'itemDesc',
             'setRate',
-
-            'pulse',
-            'flood',
 
             'announcement',
 
@@ -188,6 +186,31 @@ class PlayerActions {
 
         wcjs.playlist.items[newX].setting = wcjs.playlist.items[newX + 1].setting;
         wcjs.playlist.removeItem(newX + 1);
+    }
+
+    pulse() {
+        var playerState = this.alt.stores.playerStore.getState();
+        var wcjs = playerState.wcjs;
+
+        if (wcjs) {
+            var length = wcjs.length;
+            var itemDesc = playerState.itemDesc();
+            if (length && itemDesc.setting && itemDesc.setting.torrentHash && itemDesc.setting.byteSize) {
+                var newPulse = Math.round(itemDesc.setting.byteSize / (length / 1000) * 2);
+                torrentUtil.setPulse(itemDesc.setting.torrentHash, newPulse);
+            }
+        }
+    }
+
+    flood() {
+        var playerState = this.alt.stores.playerStore.getState();
+        var wcjs = playerState.wcjs;
+
+        if (wcjs) {
+            var itemDesc = playerState.itemDesc();
+            if (itemDesc.setting && itemDesc.setting.torrentHash)
+                torrentUtil.flood(itemDesc.setting.torrentHash);
+        }
     }
 
     toggleAlwaysOnTop(state = true) {
