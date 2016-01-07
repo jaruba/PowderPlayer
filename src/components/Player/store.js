@@ -8,7 +8,6 @@ from './utils/time';
 import alt from '../../alt';
 
 import playerActions from './actions';
-import historyStore from '../../stores/historyStore';
 
 import needle from 'needle';
 
@@ -25,6 +24,7 @@ import torrentUtil from '../../utils/stream/torrentUtil';
 import events from 'events';
 
 class playerStore {
+
     constructor() {
         this.bindActions(playerActions);
 
@@ -461,69 +461,6 @@ class playerStore {
         }
     }
 
-    onAddPlaylist(data) {
-
-        if (!this.wcjs) {
-
-            if (data.length) {
-                this.setState({
-                    pendingFiles: data,
-                    files: this.files.concat(data)
-                });
-            }
-
-            playerActions.togglePowerSave(true);
-
-        } else {
-
-            this.setState({
-                files: this.files.concat(data)
-            });
-
-            if (this.wcjs.playlist.items.count == 0)
-                var playAfter = true;
-
-            for (var i = 0; data[i]; i++) {
-                if (typeof data[i] === 'string') {
-                    this.wcjs.playlist.add(data[i]);
-                } else if (data[i].uri) {
-                    this.wcjs.playlist.add(data[i].uri);
-                    if (data[i].title)
-                        this.wcjs.playlist.items[this.wcjs.playlist.items.count - 1].title = data[i].title;
-
-                    data[i].idx = this.wcjs.playlist.items.count - 1;
-
-                    let keeper = data[i];
-
-                    if (data[i].byteSize && data[i].torrentHash)
-                        _.defer(() => {
-                            playerActions.setDesc({
-                                idx: keeper.idx,
-                                byteSize: keeper.byteSize,
-                                torrentHash: keeper.torrentHash,
-                                path: keeper.path
-                            });
-                        });
-                    else if (data[i].path)
-                        _.defer(() => {
-                            playerActions.setDesc({
-                                idx: keeper.idx,
-                                path: keeper.path
-                            });
-                        });
-
-                }
-            }
-
-            if (playAfter) this.wcjs.playlist.playItem(0);
-
-        }
-        _.defer(() => {
-            historyStore.getState().history.replaceState(null, 'player');
-        });
-
-    }
-
     onBuffering(perc) {
         var itemDesc = this.itemDesc();
         var isLocal = (itemDesc.mrl && itemDesc.mrl.indexOf('file://') == 0);
@@ -549,6 +486,7 @@ class playerStore {
     }
 
     onAnnouncement(obj) {
+
         var announcer = {};
         if (typeof obj === 'string') obj = {
             text: obj
@@ -820,13 +758,15 @@ class playerStore {
             playerActions.setAudioDelay(0);
             playerActions.setRate(1);
         });
-        this.speedField.refs['input'].defaultValue = '1.00x';
-        this.subDelayField.refs['input'].defaultValue = '0 ms';
-        this.audioDelayField.refs['input'].defaultValue = '0 ms';
-        this.audioChannelField.refs['input'].defaultValue = 'Stereo';
-        this.aspectField.refs['input'].defaultValue = 'Default';
-        this.cropField.refs['input'].defaultValue = 'Default';
-        this.zoomField.refs['input'].defaultValue = 'Default';
+        if (this.speedField.refs['input']) {
+            this.speedField.refs['input'].defaultValue = '1.00x';
+            this.subDelayField.refs['input'].defaultValue = '0 ms';
+            this.audioDelayField.refs['input'].defaultValue = '0 ms';
+            this.audioChannelField.refs['input'].defaultValue = 'Stereo';
+            this.aspectField.refs['input'].defaultValue = 'Default';
+            this.cropField.refs['input'].defaultValue = 'Default';
+            this.zoomField.refs['input'].defaultValue = 'Default';
+        }
     }
 
     onDelayTime(q) {
@@ -1078,32 +1018,6 @@ class playerStore {
                 this.wcjs.playlist.currentItem = this.lastItem;
                 this.wcjs.playlist.play();
                 this.wcjs.position = this.position;
-            }
-        }
-    }
-
-    onSetDesc(obj) {
-        if (typeof obj.idx === 'undefined')
-            obj.idx = this.wcjs.playlist.currentItem;
-
-        if (obj && typeof obj.idx === 'number') {
-            var i = obj.idx;
-
-            if (obj.title)
-                this.wcjs.playlist.items[i].title = obj.title;
-
-            if (i > -1 && i < this.wcjs.playlist.items.count) {
-                if (this.wcjs.playlist.items[i].setting.length)
-                    var wjsDesc = JSON.parse(this.wcjs.playlist.items[i].setting);
-                else
-                    var wjsDesc = {};
-
-                if (obj)
-                    for (var key in obj)
-                        if (obj.hasOwnProperty(key))
-                            wjsDesc[key] = obj[key];
-
-                this.wcjs.playlist.items[i].setting = JSON.stringify(wjsDesc);
             }
         }
     }

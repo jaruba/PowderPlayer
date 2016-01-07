@@ -63,10 +63,23 @@ default React.createClass({
     },
     componentWillMount() {
         PlayerStore.listen(this.update);
-        window.addEventListener('resize', this.handleResize);
-        PlayerStore.getState().events.on('resizeNow', this.handleResize);
     },
     componentDidMount() {
+        var renderRef = this.refs['wcjs-render'];
+        var renderParent = this.refs['canvas-holder'];
+
+        window.addEventListener('resize', () => {
+            this.handleResize({
+                canvas: renderRef,
+                canvasParent: renderParent
+            });
+        });
+        PlayerStore.getState().events.on('resizeNow', () => {
+            this.handleResize({
+                canvas: renderRef,
+                canvasParent: renderParent
+            });
+        });
         if (!PlayerStore.getState().wcjs) {
             PlayerActions.wcjsInit(wcjsRenderer.init(this.refs['wcjs-render'], [
                 "--network-caching=" + ls('bufferSize'),
@@ -118,7 +131,11 @@ default React.createClass({
                 this.setState({
                     initialResize: true
                 });
-                this.handleResize();
+
+                this.handleResize({
+                    canvas: this.refs['wcjs-render'],
+                    canvasParent: this.refs['canvas-holder']
+                });
             }
         });
 
@@ -148,7 +165,10 @@ default React.createClass({
                     });
                 }
                 _.delay(() => {
-                    renderer.handleResize();
+                    renderer.handleResize({
+                        canvas: renderer.refs['wcjs-render'],
+                        canvasParent: renderer.refs['canvas-holder']
+                    });
                 });
             }
             PlayerActions.playing();
@@ -275,13 +295,13 @@ default React.createClass({
         }
         return fontSize;
     },
-    handleResize() {
-        var canvas = this.refs['wcjs-render'];
+    handleResize(obj) {
+        var canvas = obj.canvas;
+        var canvasParent = obj.canvasParent;
         var container = document.body;
         var width = canvas.width;
         var height = canvas.height;
         var sourceAspect = width / height;
-        var canvasParent = this.refs['canvas-holder'];
 
         if (this.state.aspectRatio != "Default" && this.state.aspectRatio.indexOf(":") > -1) {
             var res = this.state.aspectRatio.split(":");

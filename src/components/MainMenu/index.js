@@ -8,6 +8,7 @@ from 'material-ui';
 import sorter from './../Player/utils/sort';
 import parser from './../Player/utils/parser';
 
+import HistoryActions from '../../actions/historyActions';
 import MainMenuActions from './actions';
 import PlayerActions from '../../components/Player/actions';
 import ModalActions from './../Modal/actions';
@@ -24,6 +25,7 @@ import _ from 'lodash';
 
 export
 default React.createClass({
+    
     getInitialState() {
         return {
             dropBorderColor: '#ccc',
@@ -78,11 +80,10 @@ default React.createClass({
             var newFiles = [];
             var queueParser = [];
             
-            if (parser(files[0].name).shortSzEp()) {
+            if (parser(files[0].name).shortSzEp())
                 files = sorter.episodes(files, 2);
-            } else {
+            else
                 files = sorter.naturalSort(files, 2);
-            }
             
             files.forEach( (file, ij) => {
                 newFiles.push({

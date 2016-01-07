@@ -6,7 +6,7 @@ from 'material-ui';
 import shell from 'shell';
 import clipboard from 'clipboard';
 
-import ModalActions from '../actions';
+import ModalActions from '../dark/actions';
 
 import MessageActions from '../../Message/actions';
 import PlayerActions from '../../Player/actions';

@@ -11,7 +11,7 @@ from 'material-ui';
 
 import PlayerStore from '../store';
 import PlayerActions from '../actions';
-import ModalActions from '../../Modal/actions';
+import ModalActions from '../../Modal/dark/actions';
 
 
 export

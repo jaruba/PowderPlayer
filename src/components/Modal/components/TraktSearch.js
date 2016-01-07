@@ -5,7 +5,7 @@ import {
 from 'material-ui';
 import clipboard from 'clipboard'
 
-import ModalActions from '../actions';
+import ModalActions from '../dark/actions';
 
 import MessageActions from '../../Message/actions';
 import PlayerActions from '../../Player/actions';
@@ -22,7 +22,7 @@ default React.createClass({
 
     getInitialState() {
         return {
-            results: {}
+            results: []
         }
     },
 
@@ -36,18 +36,22 @@ default React.createClass({
     searchTrakt(t) {
         if (!t) {
             this.setState({
-                results: {}
+                results: []
             });
         } else {
             traktUtil.search({ query: t }).then( res => {
-                var resObj = {};
+                var resObj = [];
+                var optsObj = {};
     
                 res.some( (el, ij) => {
                     if (['movie', 'show'].indexOf(el.type) > -1) {
                         var newTitle = el[el.type].title;
                         if (el[el.type].year) newTitle += ' ('+el[el.type].year+')';
-                        resObj[t+' []'+el[el.type].ids.trakt] = (<AutoComplete.Item primaryText={newTitle} onClick={this.selected.bind(this,null,' []'+el[el.type].ids.trakt)} />);
-                        if (Object.keys(resObj).length == 5) return true;
+
+                        resObj.push(newTitle);
+                        optsObj[newTitle] = el[el.type].ids.trakt;
+
+                        if (Object.keys(resObj).length == 4) return true;
                     }
                     return false;
                 });
@@ -55,6 +59,7 @@ default React.createClass({
                 if (Object.keys(resObj).length) {
                     this.setState({
                         results: resObj,
+                        optsResult: optsObj,
                         traktResult: res
                     });
                 }
@@ -62,7 +67,7 @@ default React.createClass({
         }
     },
     selected(e,t) {
-        var traktID = parseInt(t.substr(t.indexOf(' []')+3));
+        var traktID = this.state.optsResult[e];
         
         this.state.traktResult.some( el => {
             if (el[el.type].ids.trakt == traktID) {

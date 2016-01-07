@@ -10,9 +10,10 @@ const {
 import ModalStore from './store';
 import ModalActions from './actions';
 
-import FileStreamSelector from './components/fileStreamSelector';
-import URLContents from './components/URLadd';
-import Thinking from './components/Thinking';
+import PlayerSettings from '../components/player-settings';
+import TraktCode from '../components/TraktCode';
+import TraktInfo from '../components/TraktInfo';
+import TraktSearch from '../components/TraktSearch';
 
 export
 default React.createClass({
@@ -25,7 +26,7 @@ default React.createClass({
 
     getChildContext() {
         return {
-            muiTheme: MUI.Styles.ThemeManager.getMuiTheme(MUI.Styles['LightRawTheme'])
+            muiTheme: MUI.Styles.ThemeManager.getMuiTheme(MUI.Styles['DarkRawTheme'])
         };
     },
     

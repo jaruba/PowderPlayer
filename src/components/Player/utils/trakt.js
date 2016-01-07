@@ -21,7 +21,7 @@ trakt.openTraktAuth = () => {
 // @param pin = the pin the user pasted back in powder
 trakt.exchangePin = pin => {
     trakttv.exchange_code(pin).then( result => {
-        ls('traktTokens', trakttv.export_token()); // store tokens in app
+        localStorage.traktTokens = JSON.stringify(trakttv.export_token()); // store tokens in app
         trakt.loggedIn = true;
     }).catch( err => {
         console.error('Trakt exchange pin failed', err);
@@ -32,11 +32,11 @@ trakt.exchangePin = pin => {
 // this is called on app start to relogin user
 // TODO: use a promise to know if user is logged in or not (to change settings accordingly)
 trakt.autoLogin = () => {
-    if (!ls.isSet('traktTokens') || ls('traktTokens') == '') {
+    if (!localStorage.traktTokens || localStorage.traktTokens == '') {
         throw new Error('This is not how this works, this is not how any of this works!');
     }
-    trakttv.import_token(ls('traktTokens')).then( tokens => {
-        ls('traktTokens', JSON.stringify(tokens)); // store tokens in app
+    trakttv.import_token(JSON.parse(localStorage.traktTokens)).then( tokens => {
+        localStorage.traktTokens = JSON.stringify(tokens); // store tokens in app
         trakt.loggedIn = true;
     }).catch( err => {
         console.error('Trakt auto login failed', err);
@@ -58,7 +58,7 @@ trakt.addToHistory = (id, type) => {
     
 trakt.logOut = () => {
     trakttv._authentication = {};
-    ls.remove('traktTokens');
+    delete localStorage.traktTokens;
     trakt.loggedIn = false;
 };
 

@@ -221,9 +221,9 @@ subtitles.loadSubtitle = (subtitleElement, cb) => {
 
 //  window.torrent.flood.pause();
     var req = http.request(callOpts, res => {
-        if ([501,404].indexOf(res.statusCode) > -1) {
-            if (altSub) {
-                retriever.retrieveSrt("http://dl.opensubtitles.org/en/download/file/"+subtitleElement.split('/').pop(), (err, res) => {
+        if ([501,410,404].indexOf(res.statusCode) > -1) {
+            if (subtitleElement.indexOf('http://dl.opensubtitles.org/en/download/subencoding-utf8/') == 0) {
+                retriever.retrieveSrt(subtitleElement.replace('/subencoding-utf8/','/file/'), (err, res) => {
 //                  window.torrent.flood.start();
                     subtitles.processSub(res, subtitleElement.split('.').pop(), cb);
                 },{ charset: ls('subEncoding') });

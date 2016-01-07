@@ -9,8 +9,7 @@ const {
 import PlayerStore from '../store';
 import PlayerActions from '../actions';
 import traktUtil from '../utils/trakt';
-import MessageActions from '../../Message/actions';
-import ModalActions from '../../Modal/actions';
+import ModalActions from '../../Modal/dark/actions';
 import Register from '../../../utils/registerUtil';
 import ls from 'local-storage';
 
@@ -173,7 +172,7 @@ default React.createClass({
     openTraktLogin(event) {
         if (traktUtil.loggedIn) {
             traktUtil.logOut();
-            MessageActions.open('Logout Successful');
+            PlayerStore.getState().notifier.info('Logout Successful', '', 4000);
             this.setState({
                 trakt: false
             });

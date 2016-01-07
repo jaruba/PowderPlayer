@@ -10,6 +10,7 @@ import {
 }
 from 'react-mousetrap';
 import Modal from './Modal';
+import DarkModal from './Modal/dark';
 import Message from './Message';
 import Header from './Header';
 import historyActions from '../actions/historyActions';
@@ -34,6 +35,7 @@ const Framework = React.createClass({
 
         this.props.bindShortcut('ctrl+d', () => ipc.send('app:toggleDevTools'));
 
+
         historyActions.history(this.history);
         this.history.listen(this.updatehistory);
     },
@@ -42,7 +44,6 @@ const Framework = React.createClass({
         ipc.send('app:startup', new Date().getTime());
         
         // login trakt
-        if (ls('traktTokens') == '{}') ls.remove('traktTokens');
         if (ls('traktTokens'))
             traktUtil.autoLogin();
 
@@ -52,7 +53,6 @@ const Framework = React.createClass({
             args.shift();
             clArgs.process(args);
         }
-
     },
 
     componentWillUnmount() {
@@ -69,6 +69,7 @@ const Framework = React.createClass({
               <Header/>
               {React.cloneElement(this.props.children, {query: this.props.query})}
               <Modal />
+              <DarkModal />
               <Message />
             </div>
         );
