@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import async from 'async';
-import metaInspector from 'node-metainspector';
+import MetaInspector from 'node-metainspector';
 import parseVideo from 'video-name-parser';
 import nameToImdb from 'name-to-imdb';
 import parser from './parser';

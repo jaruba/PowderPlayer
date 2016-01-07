@@ -68,7 +68,7 @@ class supportedLinks {
 
     handleURL(parsed) {
         return new Promise((resolve, reject) => {
-            if (!linker.isSupportedLink(parsed.url)) {
+            if (!this.isSupportedLink(parsed.url)) {
 
                 var client = new MetaInspector(parsed.url, {
                     timeout: 5000
@@ -94,7 +94,7 @@ class supportedLinks {
                     var queueParser = [];
 
                     links.forEach((el, ij) => {
-                        if (noDupes.indexOf(el) == -1 && linker.isSupportedLink(el)) {
+                        if (noDupes.indexOf(el) == -1 && this.isSupportedLink(el)) {
                             queueParser.push({
                                 idx: ij,
                                 url: el
@@ -113,7 +113,7 @@ class supportedLinks {
                         relatives.forEach((el, ij) => {
                             el = 'https://' + client.host + el;
 
-                            if (noDupes.indexOf(el) == -1 && linker.isSupportedLink(el)) {
+                            if (noDupes.indexOf(el) == -1 && this.isSupportedLink(el)) {
 
                                 queueParser.push({
                                     idx: ij,
@@ -129,9 +129,9 @@ class supportedLinks {
 
                     iframes.forEach((el, ij) => {
 
-                        el = linker.iframeToLink(el);
+                        el = this.iframeToLink(el);
 
-                        if (noDupes.indexOf(el) == -1 && linker.isSupportedLink(el)) {
+                        if (noDupes.indexOf(el) == -1 && this.isSupportedLink(el)) {
                             queueParser.push({
                                 idx: ij,
                                 url: el

@@ -16,16 +16,18 @@ module.exports = (inputvalue, cb) => {
             }
 
             MimeUtil.parseURL(inputvalue)
-                .then((parsed) => {
+                .then(parsed => {
                     switch (parsed.category) {
                         case 'torrent':
                             torrentActions.addTorrent(inputvalue);
                             break;
                         case 'direct':
                             ModalActions.close();
+                            var Linky = new LinkSupport;
                             if (parsed.type.parsed == 'html') {
-                                LinkSupport.handleURL(parsed, (newFiles, queueParser) => {
-
+                                Linky.handleURL(parsed).then(resolvedLink => {
+                                    var newFiles = resolvedLink[0];
+                                    var queueParser = resolvedLink[1];
                                     if (newFiles.length) {
                                         PlayerActions.addPlaylist(newFiles);
 
