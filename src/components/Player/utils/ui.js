@@ -1,5 +1,6 @@
 import PlayerActions from '../actions';
 import PlayerStore from '../store';
+import SubtitleActions from '../components/SubtitleText/actions';
 import _ from 'lodash';
 
 module.exports = {
@@ -10,7 +11,7 @@ module.exports = {
     
     defaultSettings: () => {
         _.defer(() => {
-            PlayerActions.setSubDelay(0);
+            SubtitleActions.setSubDelay(0);
             PlayerActions.setAudioDelay(0);
             PlayerActions.setRate(1);
         });

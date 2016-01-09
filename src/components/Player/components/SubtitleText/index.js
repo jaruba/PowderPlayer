@@ -1,5 +1,6 @@
-﻿import React from 'react';
-import PlayerStore from '../store';
+import React from 'react';
+import PlayerStore from '../../store';
+import SubStore from './store';
 import ls from 'local-storage';
 
 export
@@ -7,35 +8,38 @@ default React.createClass({
 
     getInitialState() {
         var playerState = PlayerStore.getState();
+        var subState = SubStore.getState();
         return {
-            text: playerState.subText,
-            size: (playerState.subSize * (ls('customSubSize') / 100)),
+            text: '',
+            size: (subState.size * (ls('customSubSize') / 100)),
             visibility: !(playerState.playlistOpen || playerState.settingsOpen),
             color: ls.isSet('subColor') ? ls('subColor') : 0,
             hex: ['#fff', '#ebcb00', '#00e78f', '#00ffff', '#00b6ea'],
-            subBottom: playerState.subBottom
+            subBottom: subState.marginBottom
         }
     },
     componentWillMount() {
         PlayerStore.listen(this.update);
+        SubStore.listen(this.update);
     },
 
     componentWillUnmount() {
         PlayerStore.unlisten(this.update);
+        SubStore.unlisten(this.update);
     },
     update() {
         if (this.isMounted()) {
             var playerState = PlayerStore.getState();
+            var subState = SubStore.getState();
             this.setState({
-                text: playerState.subText,
-                size: (playerState.subSize * (ls('customSubSize') / 100)),
+                text: subState.text,
+                size: (subState.size * (ls('customSubSize') / 100)),
                 visibility: !(playerState.playlistOpen || playerState.settingsOpen),
                 color: ls.isSet('subColor') ? ls('subColor') : 0,
-                subBottom: playerState.subBottom
+                subBottom: subState.marginBottom
             });
         }
     },
-
     render() {
         var style = {
             fontSize: this.state.size,
@@ -47,6 +51,4 @@ default React.createClass({
             <span className='wcjs-subtitle-text' style={style} dangerouslySetInnerHTML={{__html: this.state.text}} />
         );
     }
-
-    
 });

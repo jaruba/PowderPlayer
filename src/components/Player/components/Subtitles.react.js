@@ -14,6 +14,8 @@ const SelectableList = SelectableContainerEnhance(List);
 
 import PlayerStore from '../store';
 import PlayerActions from '../actions';
+import SubtitleStore from './SubtitleText/store';
+import SubtitleActions from './SubtitleText/actions';
 import path from 'path';
 
 const lang2country = {
@@ -44,22 +46,24 @@ default React.createClass({
         return {
             open: false,
             playlist: PlayerStore.getState().wcjs.playlist || false,
-            playlistSelected: PlayerStore.getState().selectedSub
+            playlistSelected: SubtitleStore.getState().selectedSub
         }
     },
     componentWillMount() {
         PlayerStore.listen(this.update);
+        SubtitleStore.listen(this.update);
     },
 
     componentWillUnmount() {
         PlayerStore.unlisten(this.update);
+        SubtitleStore.unlisten(this.update);
     },
     update() {
         if (this.isMounted()) {
             this.setState({
                 open: PlayerStore.getState().subtitlesOpen,
                 playlist: PlayerStore.getState().wcjs.playlist || false,
-                playlistSelected: PlayerStore.getState().selectedSub
+                playlistSelected: SubtitleStore.getState().selectedSub
             });
         }
     },
@@ -79,33 +83,35 @@ default React.createClass({
         ls('lastLanguage', idx);
         PlayerStore.getState().wcjs.subtitles.track = 0;
         if (item) {
-            PlayerActions.loadSub(item);
-            PlayerActions.settingChange({
+            SubtitleActions.loadSub(item);
+            SubtitleActions.settingChange({
                 selectedSub: itemId,
-                subtitlesOpen: false
             });
         } else {
-            PlayerActions.settingChange({
+            SubtitleActions.settingChange({
                 selectedSub: itemId,
-                subtitlesOpen: false,
                 subtitle: [],
                 trackSub: -1,
                 subText: ''
             });
         }
+        PlayerActions.settingChange({
+            subtitlesOpen: false
+        });
     },
 
     selectInternal(idx, item, itemId) {
         var wcjs = PlayerStore.getState().wcjs;
         if (item && (itemId - 1) < wcjs.subtitles.count) {
             wcjs.subtitles.track = idx;
-            PlayerActions.settingChange({
+            SubtitleActions.settingChange({
                 selectedSub: itemId,
-                subtitlesOpen: false,
                 subtitle: [],
                 subText: ''
             });
-            
+            PlayerActions.settingChange({
+                subtitlesOpen: false
+            });
         }
     },
 

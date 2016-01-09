@@ -14,6 +14,7 @@ const appPath = require('remote').require('app');
 import PlayerActions from '../actions';
 import PlayerStore from '../store';
 import ControlActions from './Controls/actions';
+import SubtitleActions from './SubtitleText/actions';
 
 try {
     var wcjs_path = (process.env.NODE_ENV === 'development') ? path.join(__dirname, '../../../../bin/', 'WebChimera.js.node') : path.join(appPath.getAppPath(), '../bin/', 'WebChimera.js.node');
@@ -150,7 +151,7 @@ default React.createClass({
             PlayerActions.opening();
         };
 
-        this.player.onTimeChanged = ControlActions.time;
+        this.player.onTimeChanged = ControlActions.pushTime;
 
         this.player.onBuffering = _.throttle(PlayerActions.buffering, 500);
 
@@ -352,9 +353,12 @@ default React.createClass({
             canvas.style.width = "100%";
         }
 
+        SubtitleActions.settingChange({
+            size: this.calcSubSize()
+        });
+
         PlayerActions.settingChange({
-            fontSize: this.calcFontSize(),
-            subSize: this.calcSubSize()
+            fontSize: this.calcFontSize()
         });
 
     },

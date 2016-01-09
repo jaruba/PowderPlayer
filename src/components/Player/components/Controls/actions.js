@@ -4,6 +4,7 @@ import _ from 'lodash';
 import ls from 'local-storage';
 import PlayerStore from '../../store';
 import PlayerActions from '../../actions';
+import SubtitleActions from '../SubtitleText/actions';
 
 var throttlers = {};
 
@@ -19,6 +20,11 @@ class ControlActions {
             'scrobble',
             'delayScrobbleGUI'
         );
+    }
+    
+    pushTime(time) {
+        this.actions.time(time);
+        SubtitleActions.time(time); // print subtitle text if a subtitle is selected
     }
 
     handlePausePlay() {

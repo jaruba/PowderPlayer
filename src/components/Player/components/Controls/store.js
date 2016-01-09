@@ -123,13 +123,6 @@ class ControlStore {
                 currentTime: handleTime(time, this.length)
             });
 
-        // print subtitle text if a subtitle is selected
-//        if (this.subtitle.length > 0)
-//            subUtil.findLine(this.subtitle, this.trackSub, this.subDelay, time).then(result => {
-//                if (result)
-//                    this.setState(result);
-//            });
-
     }
 
     onPosition(pos) {

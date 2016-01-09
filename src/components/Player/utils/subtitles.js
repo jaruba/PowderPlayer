@@ -320,12 +320,12 @@ subtitles.findLine = (subLines, trackSub, subDelay, time) => {
                         subLines[line].t = subLines[line].t.replace(/<\/?[^>]+(>|$)/g, "");
                         
                     resolve({
-                        subText: subLines[line].t,
+                        text: subLines[line].t,
                         trackSub: line
                     });
                 } else if (subLines[line].o < nowSecond)
                     resolve({
-                        subText: ''
+                        text: ''
                     });
 
             } else resolve();

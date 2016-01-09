@@ -5,9 +5,9 @@ import {handleTime} from './utils/time';
 import alt from '../../alt';
 import playerActions from './actions';
 import ControlActions from './components/Controls/actions';
+import SubtitleActions from './components/SubtitleText/actions';
 import needle from 'needle';
 import traktUtil from './utils/trakt';
-import subUtil from './utils/subtitles';
 import LinkSupport from './utils/supportedLinks';
 import events from 'events';
 import ui from './utils/ui';
@@ -51,20 +51,14 @@ class playerStore {
         this.foundTrakt = false;
 
         this.fontSize = 21.3;
-        this.subSize = 21.3;
 
         this.foundSubs = false;
-        this.subtitle = [];
-        this.trackSub = -1;
-        this.subDelay = 0;
-        this.subBottom = '70px';
-        this.selectedSub = 1;
+
         this.audioDelay = 0;
         this.audioTrack = 1;
 
         this.notifier = false;
 
-        this.subText = '';
         this.announce = '';
         this.announceEffect = '';
 
@@ -97,14 +91,6 @@ class playerStore {
                 return false;
             }
         });
-    }
-
-    onSetSubtitle(parsedSub) {
-        this.setState({
-            subtitle: parsedSub,
-            trackSub: -1
-        });
-        this.subDelayField.refs['input'].defaultValue = '0 ms';
     }
     
     onToggleMenu(menu) {
@@ -211,12 +197,18 @@ class playerStore {
 
     onStopped() {
         console.log('Player stopped');
+
+        _.defer(() => {
+            SubtitleActions.settingChange({
+                text: ''
+            });
+        });
+
         this.setState({
             buffering: false,
             playing: false,
             paused: false,
-            foundTrakt: false,
-            subText: ''
+            foundTrakt: false
         });
     }
 
@@ -252,7 +244,7 @@ class playerStore {
                     foundSubs: true
                 });
             } else if (itemDesc.path && (!ls.isSet('findSubs') || ls('findSubs'))) {
-                playerActions.findSubs(itemDesc);
+                SubtitleActions.findSubs(itemDesc);
             }
 
         } else {
@@ -272,14 +264,20 @@ class playerStore {
                 totalTime: '00:00'
             });
         });
+
+        _.defer(() => {
+            SubtitleActions.settingChange({
+                subtitle: [],
+                selectedSub: 1,
+                trackSub: -1,
+                text: ''
+            });
+        });
+
         this.setState({
             firstPlay: false,
             foundSubs: false,
-            subtitle: [],
-            trackSub: -1,
-            selectedSub: 1,
             subtitlesOpen: false,
-            subText: '',
             audioChannel: 1,
             audioTrack: 1,
             aspectRatio: 'Default',
@@ -377,13 +375,6 @@ class playerStore {
 
     }
 
-    onSetSubDelay(newDelay) {
-        this.wcjs.subtitles.delay = newDelay;
-        this.setState({
-            subDelay: newDelay
-        });
-    }
-
     onSetAudioDelay(newDelay) {
         this.wcjs.audio.delay = newDelay;
         this.setState({
@@ -434,6 +425,16 @@ class playerStore {
                 totalTime: '00:00',
             });
         });
+        
+        _.defer(() => {
+            SubtitleActions.settingChange({
+                subtitle: [],
+                trackSub: -1,
+                selectedSub: 1,
+                text: ''
+            });
+        });
+
         this.setState({
             playing: false,
             paused: false,
@@ -449,9 +450,6 @@ class playerStore {
             pendingFiles: [],
 
             foundSubs: false,
-            subtitle: [],
-            trackSub: -1,
-            selectedSub: 1,
 
             audioChannel: 1,
             audioTrack: 1,

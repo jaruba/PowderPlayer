@@ -6,7 +6,7 @@ import PlayerRender from './components/Renderer.react';
 import Playlist from './components/Playlist.react';
 import Settings from './components/Settings.react';
 import SubtitleList from './components/Subtitles.react';
-import SubtitleText from './components/SubtitleText.react';
+import SubtitleText from './components/SubtitleText';
 import Announcement from './components/Announcement.react';
 
 import webFrame from 'web-frame';
@@ -15,6 +15,7 @@ import ls from 'local-storage';
 
 import PlayerStore from './store';
 import PlayerActions from './actions';
+import SubtitleActions from './components/SubtitleText/actions';
 
 import ControlStore from './components/Controls/store';
 import ControlActions from './components/Controls/actions';
@@ -190,7 +191,7 @@ const Player = React.createClass({
             var subDelayField = PlayerStore.getState().subDelayField;
             var newValue = parseInt(subDelayField.getValue())-50;
             subDelayField.refs['input'].defaultValue = newValue + ' ms';
-            PlayerActions.setSubDelay(newValue);
+            SubtitleActions.setSubDelay(newValue);
             PlayerActions.announcement('Subtitle Delay: ' + newValue + ' ms');
         });
     
@@ -198,7 +199,7 @@ const Player = React.createClass({
             var subDelayField = PlayerStore.getState().subDelayField;
             var newValue = parseInt(subDelayField.getValue())+50;
             subDelayField.refs['input'].defaultValue = newValue + ' ms';
-            PlayerActions.setSubDelay(newValue);
+            SubtitleActions.setSubDelay(newValue);
             PlayerActions.announcement('Subtitle Delay: ' + newValue + ' ms');
         });
 

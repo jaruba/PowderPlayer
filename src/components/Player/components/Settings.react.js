@@ -8,6 +8,7 @@ const {
 } = MUI;
 import PlayerStore from '../store';
 import PlayerActions from '../actions';
+import SubtitleActions from './SubtitleText/actions';
 import traktUtil from '../utils/trakt';
 import ModalActions from '../../Modal/dark/actions';
 import Register from '../../../utils/registerUtil';
@@ -244,13 +245,13 @@ default React.createClass({
     _handleSubDelayDown(event) {
        this.refs['subDelayInput'].refs['input'].defaultValue = (parseInt(this.refs['subDelayInput'].getValue()) - 50) + ' ms';
         if (event)
-            PlayerActions.setSubDelay(parseInt(this.refs['subDelayInput'].getValue()));
+            SubtitleActions.setSubDelay(parseInt(this.refs['subDelayInput'].getValue()));
     },
 
     _handleSubDelayUp(event) {
        this.refs['subDelayInput'].refs['input'].defaultValue = (parseInt(this.refs['subDelayInput'].getValue()) + 50) + ' ms';
        if (event)
-            PlayerActions.setSubDelay(parseInt(this.refs['subDelayInput'].getValue()));
+            SubtitleActions.setSubDelay(parseInt(this.refs['subDelayInput'].getValue()));
     },
     
     _handleSubDelayKeys(event) {
@@ -272,7 +273,7 @@ default React.createClass({
             newValue = 0;
 
         this.refs['subDelayInput'].refs['input'].defaultValue = newValue + ' ms';
-        PlayerActions.setSubDelay(newValue);
+        SubtitleActions.setSubDelay(newValue);
     },
 
     _handleAudioDelayDown(event) {
