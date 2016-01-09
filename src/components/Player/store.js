@@ -4,6 +4,7 @@ import ls from 'local-storage';
 import {handleTime} from './utils/time';
 import alt from '../../alt';
 import playerActions from './actions';
+import ControlActions from './components/Controls/actions';
 import needle from 'needle';
 import traktUtil from './utils/trakt';
 import subUtil from './utils/subtitles';
@@ -27,12 +28,7 @@ class playerStore {
         this.clickPause = ls.isSet('clickPause') ? ls('clickPause') : false;
         this.rippleEffects = ls.isSet('playerRippleEffects') ? ls('playerRippleEffects') : true;
 
-        this.muted = false;
-        this.volume = ls.isSet('volume') ? ls('volume') : 100;
-        this.position = 0;
         this.buffering = false;
-        this.time = 0;
-        this.length = 0;
         this.seekable = false;
 
         this.pendingFiles = [];
@@ -45,11 +41,6 @@ class playerStore {
         this.playlistOpen = false;
         this.subtitlesOpen = false;
         this.settingsOpen = false;
-
-        this.currentTime = '00:00';
-        this.totalTime = '00:00';
-
-        this.scrobbling = false;
 
         this.itemDesc = i => {
             return false
@@ -78,11 +69,6 @@ class playerStore {
         this.announceEffect = '';
 
         this.speed = 1;
-
-        this.forceTime = false;
-        this.overTime = false;
-        this.scrobbleKeys = false;
-        this.seekPerc = 0;
 
         this.aspectRatio = 'Default';
         this.crop = 'Default';
@@ -143,41 +129,10 @@ class playerStore {
         });
     }
 
-    onPosition(pos) {
-        this.setState({
-            position: pos
-        });
-    }
-
     onSeekable(state) {
         this.setState({
             seekable: state
         });
-    }
-
-    onLength(length) {
-        if (ls('speedPulsing') && ls('speedPulsing') == 'enabled') {
-            _.defer(playerActions.pulse);
-        }
-        this.setState({
-            length: length,
-            totalTime: handleTime(length, length)
-        });
-    }
-
-    onTime(time) {
-        this.setState({
-            time: time,
-            currentTime: handleTime(time, this.length)
-        });
-
-        // print subtitle text if a subtitle is selected
-        if (this.subtitle.length > 0) {
-            subUtil.findLine(this.subtitle, this.trackSub, this.subDelay, time).then(result => {
-                if (result)
-                    this.setState(result);
-            });
-        }
     }
 
     onBuffering(perc) {
@@ -254,32 +209,6 @@ class playerStore {
 
     }
 
-    onScrobble(time) {
-
-        time = parseInt(time);
-
-        if (time < 0) time = 0;
-        else if (this.length && time > this.length) time = this.length - 2000;
-
-        if (!this.playing) {
-            this.setState({
-                position: time / this.length,
-                currentTime: handleTime(time, this.length)
-            });
-        }
-
-        this.wcjs.time = time;
-
-        traktUtil.handleScrobble('start', this.itemDesc(), this.wcjs.position);
-
-    }
-
-    onScrobbleState(toState) {
-        this.setState({
-            scrobbling: toState
-        });
-    }
-
     onStopped() {
         console.log('Player stopped');
         this.setState({
@@ -288,41 +217,6 @@ class playerStore {
             paused: false,
             foundTrakt: false,
             subText: ''
-        });
-    }
-
-    onVolume(value) {
-
-        if (value > 200) // don't allow volume higher than 200%
-            value = 200;
-
-        if (value < 0)
-            value = 0;
-
-        if (this.muted) {
-            if (this.wcjs)
-                this.wcjs.mute = false;
-            this.setState({
-                muted: false
-            });
-        }
-
-        this.setState({
-            volume: value
-        });
-
-        ls('volume', value);
-
-        if (this.wcjs)
-            this.wcjs.volume = value
-
-    }
-
-    onMute(mute) {
-        if (this.wcjs)
-            this.wcjs.mute = mute;
-        this.setState({
-            muted: mute
         });
     }
 
@@ -372,6 +266,12 @@ class playerStore {
     }
 
     onMediaChanged() {
+        _.defer(() => {
+            ControlActions.settingChange({
+                position: 0,
+                totalTime: '00:00'
+            });
+        });
         this.setState({
             firstPlay: false,
             foundSubs: false,
@@ -384,60 +284,10 @@ class playerStore {
             audioTrack: 1,
             aspectRatio: 'Default',
             crop: 'Default',
-            zoom: 1,
-            totalTime: '00:00'
+            zoom: 1
         });
 
         ui.defaultSettings();
-    }
-
-    onDelayTime(q) {
-        var t = q.jump;
-        var d = q.delay;
-
-        if (this.forceTime) {
-            var forceProgress = ((this.seekPerc * this.length) + t) / this.length;
-        } else {
-            var forceProgress = ((this.wcjs.position * this.length) + t) / this.length;
-        }
-
-        if (forceProgress < 0) forceProgress = 0;
-        else if (forceProgress > 1) forceProgress = 1;
-
-        this.setState({
-            keepScrobble: true,
-            seekPerc: forceProgress,
-            forceTime: true,
-            overTime: handleTime((forceProgress * this.length), this.length),
-            uiShown: true
-        });
-
-        if (this.scrobbleKeys) clearTimeout(this.scrobbleKeys);
-
-        var scrobbleFunc = () => {
-            this.wcjs.position = this.seekPerc;
-            this.setState({
-                forceTime: false,
-                position: this.seekPerc,
-                time: this.seekPerc * this.length,
-                currentTime: handleTime((this.seekPerc * this.length), this.length)
-            });
-            _.delay(() => {
-                playerActions.settingChange({
-                    keepScrobble: false
-                });
-                _.delay(() => {
-                    playerActions.settingChange({
-                        uiShown: false
-                    });
-                }, 1000);
-            }, 1500);
-        };
-
-        this.setState({
-            scrobbleKeys: setTimeout(scrobbleFunc.bind(this), d)
-        });
-
     }
 
     onPlay() {
@@ -473,9 +323,13 @@ class playerStore {
 
     onPrev() {
         if (this.wcjs.playlist.currentItem > 0) {
+            _.defer(() => {
+                ControlActions.settingChange({
+                    position: 0
+                });
+            });
             this.setState({
                 lastItem: -1,
-                position: 0,
                 foundTrakt: false
             });
 
@@ -487,9 +341,13 @@ class playerStore {
 
     onNext() {
         if (this.wcjs.playlist.currentItem + 1 < this.wcjs.playlist.items.count) {
+            _.defer(() => {
+                ControlActions.settingChange({
+                    position: 0
+                });
+            });
             this.setState({
                 lastItem: -1,
-                position: 0,
                 foundTrakt: false
             });
 
@@ -547,39 +405,44 @@ class playerStore {
             foundTrakt: false
         });
 
-        traktUtil.handleScrobble('stop', this.itemDesc(), this.wcjs.position);
+        var position = ControlStore.getState().position;
 
+        traktUtil.handleScrobble('stop', this.itemDesc(), position);
+        
         if (this.wcjs.time > 0) {
-            if (typeof this.lastItem !== 'undefined' && this.position && this.position < 0.95) {
+            if (typeof this.lastItem !== 'undefined' && position && position < 0.95) {
 
                 console.log('Playback Ended Prematurely');
-                console.log('Last Known Position: ', this.position);
+                console.log('Last Known Position: ', position);
                 console.log('Last Known Item: ', this.lastItem);
                 console.log('Reconnecting ...');
 
                 this.wcjs.playlist.currentItem = this.lastItem;
                 this.wcjs.playlist.play();
-                this.wcjs.position = this.position;
+                this.wcjs.position = position;
             }
         }
     }
 
     onClose() {
+        _.defer(() => {
+            ControlActions.settingChange({
+                length: 0,
+                position: 0,
+                volume: 100,
+                currentTime: '00:00',
+                totalTime: '00:00',
+            });
+        });
         this.setState({
             playing: false,
             paused: false,
             buffering: false,
-            time: 0,
-            length: 0,
-            position: 0,
-            volume: 100,
 
             title: '',
             fullscreen: false,
             uiShown: true,
             uri: false,
-            currentTime: '00:00',
-            totalTime: '00:00',
 
             lastItem: -1,
 

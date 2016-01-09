@@ -1,7 +1,7 @@
 ﻿import React from 'react';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 import PlayerHeader from './components/Header.react';
-import PlayerControls from './components/Controls.react';
+import PlayerControls from './components/Controls';
 import PlayerRender from './components/Renderer.react';
 import Playlist from './components/Playlist.react';
 import Settings from './components/Settings.react';
@@ -16,6 +16,9 @@ import ls from 'local-storage';
 import PlayerStore from './store';
 import PlayerActions from './actions';
 
+import ControlStore from './components/Controls/store';
+import ControlActions from './components/Controls/actions';
+
 import ReactNotify from 'react-notify';
 
 import {mouseTrap} from 'react-mousetrap';
@@ -28,8 +31,6 @@ const Player = React.createClass({
         return {
             uri: playerState.uri,
 
-            volume: playerState.volume,
-            position: playerState.position,
             buffering: playerState.buffering,
             uiShown: playerState.uiShown,
             
@@ -61,16 +62,16 @@ const Player = React.createClass({
         });
 
         this.props.bindShortcut('ctrl+up', (event) => {
-            var volume = Math.round((this.state.volume + 5) / 5) * 5;
+            var volume = Math.round((PlayerStore.getState().wcjs.volume + 5) / 5) * 5;
             if (volume > 200) volume = 200;
-            PlayerActions.volume(volume);
+            ControlActions.setVolume(volume);
             PlayerActions.announcement('Volume '+volume+'%');
         });
 
         this.props.bindShortcut('ctrl+down', (event) => {
-            var volume = Math.round((this.state.volume - 5) / 5) * 5;
+            var volume = Math.round((PlayerStore.getState().wcjs.volume - 5) / 5) * 5;
             if (volume < 0) volume = 0;
-            PlayerActions.volume(volume);
+            ControlActions.setVolume(volume);
             PlayerActions.announcement('Volume '+volume+'%');
         });
 
@@ -79,7 +80,7 @@ const Player = React.createClass({
             if (["ended","stopping","error"].indexOf(wjsPlayer.wcjs.state) == -1) {
                 if (wjsPlayer.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
                 else var wjsDelay = 700;
-                PlayerActions.delayTime({
+                ControlActions.delayTime({
                     jump: 60000,
                     delay: wjsDelay
                 });
@@ -91,7 +92,7 @@ const Player = React.createClass({
             if (["ended","stopping","error"].indexOf(wjsPlayer.wcjs.state) == -1) {
                 if (wjsPlayer.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
                 else var wjsDelay = 700;
-                PlayerActions.delayTime({
+                ControlActions.delayTime({
                     jump: -60000,
                     delay: wjsDelay
                 });
@@ -103,7 +104,7 @@ const Player = React.createClass({
             if (["ended","stopping","error"].indexOf(wjsPlayer.wcjs.state) == -1) {
                 if (wjsPlayer.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
                 else var wjsDelay = 700;
-                PlayerActions.delayTime({
+                ControlActions.delayTime({
                     jump: 10000,
                     delay: wjsDelay
                 });
@@ -115,7 +116,7 @@ const Player = React.createClass({
             if (["ended","stopping","error"].indexOf(wjsPlayer.wcjs.state) == -1) {
                 if (wjsPlayer.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
                 else var wjsDelay = 700;
-                PlayerActions.delayTime({
+                ControlActions.delayTime({
                     jump: -10000,
                     delay: wjsDelay
                 });
@@ -127,7 +128,7 @@ const Player = React.createClass({
             if (["ended","stopping","error"].indexOf(wjsPlayer.wcjs.state) == -1) {
                 if (wjsPlayer.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
                 else var wjsDelay = 700;
-                PlayerActions.delayTime({
+                ControlActions.delayTime({
                     jump: 3000,
                     delay: wjsDelay
                 });
@@ -139,7 +140,7 @@ const Player = React.createClass({
             if (["ended","stopping","error"].indexOf(wjsPlayer.wcjs.state) == -1) {
                 if (wjsPlayer.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
                 else var wjsDelay = 700;
-                PlayerActions.delayTime({
+                ControlActions.delayTime({
                     jump: -3000,
                     delay: wjsDelay
                 });
@@ -151,7 +152,7 @@ const Player = React.createClass({
             if (["ended","stopping","error"].indexOf(wjsPlayer.wcjs.state) == -1) {
                 if (wjsPlayer.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
                 else var wjsDelay = 700;
-                PlayerActions.delayTime({
+                ControlActions.delayTime({
                     jump: (PlayerStore.getState().length / 60),
                     delay: wjsDelay
                 });
@@ -163,7 +164,7 @@ const Player = React.createClass({
             if (["ended","stopping","error"].indexOf(wjsPlayer.wcjs.state) == -1) {
                 if (wjsPlayer.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
                 else var wjsDelay = 700;
-                PlayerActions.delayTime({
+                ControlActions.delayTime({
                     jump: (-1) * (PlayerStore.getState().length / 60),
                     delay: wjsDelay
                 });
@@ -174,7 +175,7 @@ const Player = React.createClass({
             var wjsPlayer = PlayerStore.getState();
             if (["ended","stopping","error"].indexOf(wjsPlayer.wcjs.state) == -1) {
                 PlayerActions.pause();
-                PlayerActions.delayTime({
+                ControlActions.delayTime({
                     jump: 500,
                     delay: 0
                 });
@@ -328,12 +329,13 @@ const Player = React.createClass({
         });
 
         this.props.bindShortcut('m', (event) => {
-            var playerState = PlayerStore.getState();
-            PlayerActions.mute(!playerState.muted);
-            if (!playerState.muted)
+            var controlState = ControlStore.getState();
+            var muted = !controlState.muted;
+            ControlActions.mute(muted);
+            if (muted)
                 PlayerActions.announcement('Muted');
             else
-                PlayerActions.announcement('Volume ' + playerState.wcjs.volume + '%');
+                PlayerActions.announcement('Volume ' + PlayerStore.getState().wcjs.volume + '%');
         });
 
         this.props.bindShortcut('ctrl+l', (event) => {
@@ -500,8 +502,6 @@ const Player = React.createClass({
             this.setState({
                 uri: playerState.uri,
 
-                volume: playerState.volume,
-                position: playerState.position,
                 buffering: playerState.buffering,
                 uiShown: playerState.uiShown,
                 
@@ -513,7 +513,7 @@ const Player = React.createClass({
         }
     },
     hideUI() {
-        if (!PlayerStore.getState().scrobbling) {
+        if (!ControlStore.getState().scrobbling) {
             PlayerActions.uiShown(false);
         } else {
             this.hoverTimeout = setTimeout(this.hideUI, 3000);

@@ -13,6 +13,7 @@ const appPath = require('remote').require('app');
 
 import PlayerActions from '../actions';
 import PlayerStore from '../store';
+import ControlActions from './Controls/actions';
 
 try {
     var wcjs_path = (process.env.NODE_ENV === 'development') ? path.join(__dirname, '../../../../bin/', 'WebChimera.js.node') : path.join(appPath.getAppPath(), '../bin/', 'WebChimera.js.node');
@@ -140,7 +141,7 @@ default React.createClass({
         });
 
         this.player.onPositionChanged = _.throttle((pos) => {
-            PlayerActions.position(pos);
+            ControlActions.position(pos);
             initializeSize();
         }, 500);
 
@@ -149,11 +150,11 @@ default React.createClass({
             PlayerActions.opening();
         };
 
-        this.player.onTimeChanged = PlayerActions.time;
+        this.player.onTimeChanged = ControlActions.time;
 
         this.player.onBuffering = _.throttle(PlayerActions.buffering, 500);
 
-        this.player.onLengthChanged = PlayerActions.length;
+        this.player.onLengthChanged = ControlActions.length;
 
         this.player.onSeekableChanged = PlayerActions.seekable;
 
@@ -363,7 +364,7 @@ default React.createClass({
     },
     wheel(event) {
         var volume = (event.deltaY < 0) ? this.player.volume + 5 : this.player.volume - 5;
-        PlayerActions.volume(volume);
+        ControlActions.setVolume(volume);
         if (volume >= 0 && volume <= 200)
             PlayerActions.announcement('Volume ' + volume + '%');
     },
@@ -383,9 +384,9 @@ default React.createClass({
             }
         };
         return (
-            <div className='render-holder'>
+            <div className='render-holder' onWheel={this.wheel}>
                 <RaisedButton id={'canvasEffect'} onClick={this.handleTogglePlay} onDoubleClick={PlayerActions.toggleFullscreen.bind(this, !this.state.fullscreen)} iconClassName="material-icons" className={this.state.rippleEffects ? this.state.clickPause ? 'over-canvas' : 'over-canvas no-ripples' : 'over-canvas no-ripples' } label="Canvas Overlay" />
-                <div ref="canvas-holder" className="canvas-holder" onWheel={this.wheel} style={renderStyles.container}>
+                <div ref="canvas-holder" className="canvas-holder" style={renderStyles.container}>
                     <canvas id={'playerCanvas'} style={renderStyles.canvas} onClick={this.handleTogglePlay} onDoubleClick={PlayerActions.toggleFullscreen.bind(this, !this.state.fullscreen)} ref="wcjs-render" />
                 </div>
             </div>
