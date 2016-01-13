@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import _ from 'lodash';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 import MUI from 'material-ui';
@@ -8,10 +8,13 @@ const {
 } = MUI;
 import PlayerStore from '../store';
 import PlayerActions from '../actions';
+
+import SubtitleStore from './SubtitleText/store';
 import SubtitleActions from './SubtitleText/actions';
 import traktUtil from '../utils/trakt';
 import ModalActions from '../../Modal/dark/actions';
 import Register from '../../../utils/registerUtil';
+import config from '../utils/config';
 import ls from 'local-storage';
 
 var injectTapEventPlugin = require("react-tap-event-plugin");
@@ -33,39 +36,40 @@ default React.createClass({
             muiTheme: MUI.Styles.ThemeManager.getMuiTheme(MUI.Styles['DarkRawTheme'])
         };
     },
-    
+
     mixins: [PureRenderMixin],
 
     getInitialState() {
-        var playerState = PlayerStore.getState();
         return {
-            open: false,
-            uiHidden: playerState.uiHidden,
-            alwaysOnTop: playerState.alwaysOnTop,
-            clickPause: playerState.clickPause,
-            playerRippleEffects: playerState.rippleEffects,
+            alwaysOnTop: config.alwaysOnTop,
+            clickPause: ls.isSet('clickPause') ? ls('clickPause') : true,
+            playerRippleEffects: ls.isSet('playerRippleEffects') ? ls('playerRippleEffects') : true,
             playerNotifs: ls.isSet('playerNotifs') ? ls('playerNotifs') : true,
             trakt: traktUtil.loggedIn ? true : false,
             traktScrobble: ls.isSet('traktScrobble') ? ls('traktScrobble') : true,
             findSubs: ls.isSet('findSubs') ? ls('findSubs') : true,
             autoSub: ls.isSet('autoSub') ? ls('autoSub') : true,
             menuFlags: ls.isSet('menuFlags') ? ls('menuFlags') : true,
-            defaultSubDelay: playerState.subDelay,
-            defaultAudioDelay: playerState.audioDelay,
-            speed: playerState.speed,
+            subDelay: config.subDelay,
+            speed: config.speed,
+            audioChannel: config.audioChannel,
+            audioTrack: config.audioTrack,
+            audioDelay: config.audioDelay,
             customSubSize: ls('customSubSize'),
             zoomLevel: ls.isSet('zoomLevel') ? ls('zoomLevel') : 0,
-            audioChannels: ['Error', 'Stereo', 'Reverse Stereo', 'Left', 'Right', 'Dolby'],
-            defaultAudioChannel: playerState.audioChannel,
             subColor: ls.isSet('subColor') ? ls('subColor') : 0,
-            subColors: ['White', 'Yellow', 'Green', 'Cyan', 'Blue'],
-            defaultAudioTrack: playerState.audioTrack,
             encoding: ls.isSet('selectedEncoding') ? ls('selectedEncoding') : 0,
-            defaultPort: ls('peerPort'),
-            defaultPeers: ls('maxPeers'),
+            port: ls('peerPort'),
+            peers: ls('maxPeers'),
             downloadFolder: ls('downloadFolder') ? ls('downloadFolder') : 'Temp',
             bufferSize: parseInt(ls('bufferSize') / 1000).toFixed(1),
             speedPulsing: ls('speedPulsing') ? ls('speedPulsing') : 'disabled',
+
+            aspectRatios: ['Default','1:1','4:3','16:9','16:10','2.21:1','2.35:1','2.39:1','5:4'],
+            crops: ['Default','16:10','16:9','1.85:1','2.21:1','2.35:1','2.39:1','5:3','4:3','5:4','1:1'],
+            zooms: [['Default',1],['2x Double',2],['0.25x Quarter',0.25],['0.5x Half',0.5]],
+            subColors: ['White', 'Yellow', 'Green', 'Cyan', 'Blue'],
+            audioChannels: ['Error', 'Stereo', 'Reverse Stereo', 'Left', 'Right', 'Dolby'],
             subEncodings: [
                 ['Auto Detect', 'auto'],
                 ['Universal (UTF-8)', 'utf8'],
@@ -110,59 +114,58 @@ default React.createClass({
                 ['Vietnamese (VISCII)', 'viscii'],
                 ['Vietnamese (Windows-1258)', 'windows1258']
             ],
-            
-            aspectRatios: ['Default','1:1','4:3','16:9','16:10','2.21:1','2.35:1','2.39:1','5:4'],
-            crops: ['Default','16:10','16:9','1.85:1','2.21:1','2.35:1','2.39:1','5:3','4:3','5:4','1:1'],
-            zooms: [['Default',1],['2x Double',2],['0.25x Quarter',0.25],['0.5x Half',0.5]],
-            aspectRatio: playerState.aspectRatio,
-            crop: playerState.crop,
-            zoom: playerState.zoom
         }
     },
     componentWillMount() {
-        PlayerStore.listen(this.update);
+
     },
 
     componentWillUnmount() {
-        PlayerStore.unlisten(this.update);
+
+        PlayerStore.getState().events.removeListener('settingsUpdate', this.update);
     },
     
     componentDidMount() {
-        PlayerActions.settingChange({
-            subDelayField: this.refs['subDelayInput'],
-            audioDelayField: this.refs['audioDelayInput'],
-            audioChannelField: this.refs['audioChannelInput'],
-            speedField: this.refs['speedInput'],
-            audioTrackField: this.refs['audioTrackInput'],
-            subSizeField: this.refs['subSizeInput'],
-            aspectField: this.refs['aspectInput'],
-            cropField: this.refs['cropInput'],
-            zoomField: this.refs['zoomInput']
+        config.set({
+            fields: {
+                subDelay: this.refs['subDelayInput'],
+                audioDelay: this.refs['audioDelayInput'],
+                audioChannel: this.refs['audioChannelInput'],
+                speed: this.refs['speedInput'],
+                audioTrack: this.refs['audioTrackInput'],
+                subSize: this.refs['subSizeInput'],
+                aspect: this.refs['aspectInput'],
+                crop: this.refs['cropInput'],
+                zoom: this.refs['zoomInput']
+            }
         });
+        PlayerStore.getState().events.on('settingsUpdate', this.update);
     },
-        
+
     update() {
+        console.log('settings update');
         if (this.isMounted()) {
             var playerState = PlayerStore.getState();
             this.setState({
                 open: playerState.settingsOpen,
                 uiHidden: playerState.uiHidden,
-                alwaysOnTop: playerState.alwaysOnTop,
-                clickPause: playerState.clickPause,
-                playerRippleEffects: playerState.rippleEffects,
+                alwaysOnTop: config.alwaysOnTop,
+                clickPause: ls.isSet('clickPause') ? ls('clickPause') : true,
+                playerRippleEffects: ls.isSet('playerRippleEffects') ? ls('playerRippleEffects') : true,
                 trakt: traktUtil.loggedIn ? true : false,
-                defaultSubDelay: playerState.subDelay,
-                defaultAudioDelay: playerState.audioDelay,
-                speed: playerState.speed,
+                audioDelay: config.audioDelay,
+                subDelay: config.subDelay,
+                speed: config.speed,
                 customSubSize: ls('customSubSize'),
                 zoomLevel: ls.isSet('zoomLevel') ? ls('zoomLevel') : 0,
-                defaultAudioChannel: playerState.audioChannel,
+                bufferSize: parseInt(ls('bufferSize') / 1000).toFixed(1),
+                audioChannel: config.audioChannel,
                 subColor: ls.isSet('subColor') ? ls('subColor') : 0,
-                defaultAudioTrack: playerState.audioTrack,
+                audioTrack: config.audioTrack,
                 encoding: ls.isSet('selectedEncoding') ? ls('selectedEncoding') : 0,
-                aspectRatio: playerState.aspectRatio,
-                crop: playerState.crop,
-                zoom: playerState.zoom
+                findSubs: ls.isSet('findSubs') ? ls('findSubs') : true,
+                autoSub: ls.isSet('autoSub') ? ls('autoSub') : true,
+                menuFlags: ls.isSet('menuFlags') ? ls('menuFlags') : true
             });
         }
     },
@@ -170,13 +173,12 @@ default React.createClass({
     close() {
         PlayerActions.openSettings(false);
     },
-    openTraktLogin(event) {
+    
+    _openTraktLogin(event) {
         if (traktUtil.loggedIn) {
             traktUtil.logOut();
             PlayerStore.getState().notifier.info('Logout Successful', '', 4000);
-            this.setState({
-                trakt: false
-            });
+            this.update();
         } else {
             ModalActions.open({
                 title: 'Login to Trakt',
@@ -186,81 +188,47 @@ default React.createClass({
         }
     },
 
-    handleAlwaysOnTop(event, toggled) {
-        PlayerActions.settingChange({
+    _handleAlwaysOnTop(event, toggled) {
+        config.set({
             alwaysOnTop: toggled
         });
         PlayerActions.toggleAlwaysOnTop(toggled);
     },
-
-    handlePlayerRippleEffects(event, toggled) {
-        ls('playerRippleEffects', toggled);
-        PlayerActions.settingChange({
-            rippleEffects: toggled
-        });
-    },
-
-    handleFindSubs(event, toggled) {
-        ls('findSubs', toggled);
-        this.setState({
-            findSubs: toggled
-        });
-    },
-
-    handleScrobbler(event, toggled) {
-        ls('traktScrobble', toggled);
-        this.setState({
-            traktScrobble: toggled
-        });
-    },
-
-    handlePlayerNotifs(event, toggled) {
-        ls('playerNotifs', toggled);
-        this.setState({
-            playerNotifs: toggled
-        });
-    },
     
-    handleAutoSub(event, toggled) {
-        ls('autoSub', toggled);
-        this.setState({
-            autoSub: toggled
-        });
+    _handleToggler(event, toggled, type) {
+        ls(type, toggled);
     },
 
-    handleMenuFlags(event, toggled) {
-        ls('menuFlags', toggled);
-        this.setState({
-            menuFlags: toggled
-        });
+    _handleClickPause(event, toggled, type) {
+        ls(type, toggled);
+        PlayerStore.getState().events.emit('rendererUpdate');
     },
 
-    handleClickPause(event, toggled) {
-        ls('clickPause', toggled);
-        PlayerActions.settingChange({
-            clickPause: toggled
-        });
+    _handleRippleEffects(event, toggled, type) {
+        ls(type, toggled);
+        var playerEvents = PlayerStore.getState().events;
+        playerEvents.emit('rendererUpdate');
+        playerEvents.emit('controlsUpdate');
     },
 
-    _handleSubDelayDown(event) {
-       this.refs['subDelayInput'].refs['input'].defaultValue = (parseInt(this.refs['subDelayInput'].getValue()) - 50) + ' ms';
-        if (event)
-            SubtitleActions.setSubDelay(parseInt(this.refs['subDelayInput'].getValue()));
-    },
-
-    _handleSubDelayUp(event) {
-       this.refs['subDelayInput'].refs['input'].defaultValue = (parseInt(this.refs['subDelayInput'].getValue()) + 50) + ' ms';
-       if (event)
-            SubtitleActions.setSubDelay(parseInt(this.refs['subDelayInput'].getValue()));
+    _handleSubDelay(event, direction) {
+       var newValue = parseInt(this.refs['subDelayInput'].getValue()) + (direction * 50);
+       this.refs['subDelayInput'].refs['input'].value = newValue + ' ms';
+       if (event) {
+            PlayerStore.getState().wcjs.subtitles.delay = newValue;
+            config.set({
+                subDelay: newValue
+            });
+       }
     },
     
     _handleSubDelayKeys(event) {
         if (event.keyCode == 38) {
             event.preventDefault();
-            this._handleSubDelayUp();
+            this._handleSubDelay(null, 1);
         } else if (event.keyCode == 40) {
             event.preventDefault();
-            this._handleSubDelayDown();
+            this._handleSubDelay(null, -1);
         } else if ([13, 27].indexOf(event.keyCode) > -1) {
             event.preventDefault();
             this.refs['subDelayInput'].blur();
@@ -272,31 +240,29 @@ default React.createClass({
         if (isNaN(newValue))
             newValue = 0;
 
-        this.refs['subDelayInput'].refs['input'].defaultValue = newValue + ' ms';
-        SubtitleActions.setSubDelay(newValue);
+        this.refs['subDelayInput'].refs['input'].value = newValue + ' ms';
+        PlayerStore.getState().wcjs.subtitles.delay = newValue;
+        config.set({
+            subDelay: newValue
+        });
     },
 
-    _handleAudioDelayDown(event) {
-        var newValue = parseInt(this.refs['audioDelayInput'].getValue()) - 50;
-        this.refs['audioDelayInput'].refs['input'].defaultValue = newValue + ' ms';
-        if (event)
-            PlayerActions.setAudioDelay(newValue);
-    },
-    
-    _handleAudioDelayUp(event) {
-        var newValue = parseInt(this.refs['audioDelayInput'].getValue()) + 50;
-        this.refs['audioDelayInput'].refs['input'].defaultValue = newValue + ' ms';
-        if (event)
-            PlayerActions.setAudioDelay(newValue);
+    _handleAudioDelay(event, direction) {
+        var newValue = parseInt(this.refs['audioDelayInput'].getValue()) + (direction * 50);
+        this.refs['audioDelayInput'].refs['input'].value = newValue + ' ms';
+        config.set({
+            audioDelay: newValue
+        });
+        PlayerStore.getState().wcjs.audio.delay = newValue;
     },
     
     _handleAudioDelayKeys(event) {
         if (event.keyCode == 38) {
             event.preventDefault();
-            this._handleAudioDelayUp();
+            this._handleAudioDelay(null, 1);
         } else if (event.keyCode == 40) {
             event.preventDefault();
-            this._handleAudioDelayDown();
+            this._handleAudioDelay(null, -1);
         } else if ([13, 27].indexOf(event.keyCode) > -1) {
             event.preventDefault();
             this.refs['audioDelayInput'].blur();
@@ -308,60 +274,55 @@ default React.createClass({
         if (isNaN(newValue))
             newValue = 0;
 
-        this.refs['audioDelayInput'].refs['input'].defaultValue = newValue + ' ms';
-        PlayerActions.setAudioDelay(newValue);
+        this.refs['audioDelayInput'].refs['input'].value = newValue + ' ms';
+        config.set({
+            audioDelay: newValue
+        });
+        PlayerStore.getState().wcjs.audio.delay = newValue;
     },
-
-    _handleSpeedDown(event) {
-        
-        var newRate = 0;
-        var playerState = PlayerStore.getState();
-        var curRate = parseFloat(playerState.wcjs.input.rate);
-        
-        if (curRate >= 0.25 && curRate <= 0.5) newRate = 0.125;
-        else if (curRate > 0.5 && curRate <= 1) newRate = 0.25;
-        else if (curRate > 1 && curRate <= 2) newRate = 0.5;
-        else if (curRate > 2 && curRate <= 4) newRate = 1;
-        else if (curRate > 4) newRate = curRate /2;
-
-        if ((curRate + newRate) >= 0.125) {
-            playerState.wcjs.input.rate = curRate - newRate;
-
-            var newValue = parseFloat(Math.round(playerState.wcjs.input.rate * 100) / 100).toFixed(2);
     
-            this.refs['speedInput'].refs['input'].defaultValue = newValue + 'x';
+    _handleSpeed(event, direction) {
+
+        var newRate = 0,
+            wcjs = PlayerStore.getState().wcjs,
+            curRate = parseFloat(wcjs.input.rate);
+        
+        if (direction < 0) {
+            if (curRate >= 0.25 && curRate <= 0.5) newRate = 0.125;
+            else if (curRate > 0.5 && curRate <= 1) newRate = 0.25;
+            else if (curRate > 1 && curRate <= 2) newRate = 0.5;
+            else if (curRate > 2 && curRate <= 4) newRate = 1;
+            else if (curRate > 4) newRate = curRate /2;
+    
+            var logic = ((curRate + newRate) >= 0.125);
+        } else {
+            if (curRate < 0.25) newRate = 0.125;
+            else if (curRate >= 0.25 && curRate < 0.5) newRate = 0.125;
+            else if (curRate >= 0.5 && curRate < 1) newRate = 0.25;
+            else if (curRate >= 1 && curRate < 2) newRate = 0.5;
+            else if (curRate >= 2 && curRate < 4) newRate = 1;
+            else if (curRate >= 4) newRate = curRate;
+            var logic = ((curRate + newRate) < 100);
         }
-    },
-    
-    _handleSpeedUp(event) {
 
-        var newRate = 0;
-        var playerState = PlayerStore.getState();
-        var curRate = parseFloat(playerState.wcjs.input.rate);
-        
-        if (curRate < 0.25) newRate = 0.125;
-        else if (curRate >= 0.25 && curRate < 0.5) newRate = 0.125;
-        else if (curRate >= 0.5 && curRate < 1) newRate = 0.25;
-        else if (curRate >= 1 && curRate < 2) newRate = 0.5;
-        else if (curRate >= 2 && curRate < 4) newRate = 1;
-        else if (curRate >= 4) newRate = curRate;
-
-        if ((curRate + newRate) < 100) {
-            playerState.wcjs.input.rate = curRate + newRate;
-
-            var newValue = parseFloat(Math.round(playerState.wcjs.input.rate * 100) / 100).toFixed(2);
-    
-            this.refs['speedInput'].refs['input'].defaultValue = newValue + 'x';
+        if (logic) {
+            var newValue = curRate + (newRate * direction);
+            wcjs.input.rate = newValue;
+            config.set({
+                speed: newValue
+            });
+            newValue = parseFloat(Math.round(newValue * 100) / 100).toFixed(2);
+            this.refs['speedInput'].refs['input'].value = newValue + 'x';
         }
     },
     
     _handleSpeedKeys(event) {
         if (event.keyCode == 38) {
             event.preventDefault();
-            this._handleSpeedUp();
+            this._handleSpeed(1);
         } else if (event.keyCode == 40) {
             event.preventDefault();
-            this._handleSpeedDown();
+            this._handleSpeed(-1);
         } else if ([13, 27].indexOf(event.keyCode) > -1) {
             event.preventDefault();
             this.refs['speedInput'].blur();
@@ -380,39 +341,30 @@ default React.createClass({
 
         var newValue = parseFloat(Math.round(newValue * 100) / 100).toFixed(2);
 
-        this.refs['speedInput'].refs['input'].defaultValue = newValue + 'x';
+        this.refs['speedInput'].refs['input'].value = newValue + 'x';
         PlayerStore.getState().wcjs.input.rate = newValue;
     },
     
-    _handleSubSizeDown(event) {
-        var newValue = parseInt(this.refs['subSizeInput'].getValue()) - 5;
-        this.refs['subSizeInput'].refs['input'].defaultValue = newValue + '%';
+    _handleSubSize(event, direction) {
+        var newValue = parseInt(this.refs['subSizeInput'].getValue()) + (direction * 5);
+        if (newValue < 5)
+            newValue = 5;
+        else if (newValue > 400)
+            newValue = 400;
+        this.refs['subSizeInput'].refs['input'].value = newValue + '%';
         if (event) {
             ls('customSubSize', newValue);
-            this.setState({
-                customSubSize: newValue
-            });
-        }
-    },
-    
-    _handleSubSizeUp(event) {
-        var newValue = parseInt(this.refs['subSizeInput'].getValue()) + 5;
-        this.refs['subSizeInput'].refs['input'].defaultValue = newValue + '%';
-        if (event) {
-            ls('customSubSize', newValue);
-            this.setState({
-                customSubSize: newValue
-            });
+            PlayerStore.getState().events.emit('subtitleUpdate');
         }
     },
     
     _handleSubSizeKeys(event) {
         if (event.keyCode == 38) {
             event.preventDefault();
-            this._handleSubDelayUp();
+            this._handleSubSize(null, 1);
         } else if (event.keyCode == 40) {
             event.preventDefault();
-            this._handleSubDelayDown();
+            this._handleSubSize(null, -1);
         } else if ([13, 27].indexOf(event.keyCode) > -1) {
             event.preventDefault();
             this.refs['subSizeInput'].blur();
@@ -429,144 +381,90 @@ default React.createClass({
         else if (newValue > 400)
             newValue = 400;
 
-        this.refs['subSizeInput'].refs['input'].defaultValue = newValue + '%';
+        this.refs['subSizeInput'].refs['input'].value = newValue + '%';
         
-        ls('customSubSize', newValue);
-        this.setState({
-            customSubSize: newValue
-        });
+        if (event) {
+            ls('customSubSize', newValue);
+            PlayerStore.getState().events.emit('subtitleUpdate');
+        }
     },
 
-    _handleZoomLevelDown(event) {
-        var newValue = parseFloat(this.refs['zoomLevelInput'].getValue()) - 0.5;
-        this.refs['zoomLevelInput'].refs['input'].defaultValue = newValue;
-        webFrame.setZoomLevel(newValue);
+    _handleZoomLevel(event, direction) {
+        var newValue = parseFloat(this.refs['zoomLevelInput'].getValue()) + (direction / 2);
+        this.refs['zoomLevelInput'].refs['input'].value = newValue;
         ls('zoomLevel', newValue);
-    },
-
-    _handleZoomLevelUp(event) {
-        var newValue = parseFloat(this.refs['zoomLevelInput'].getValue()) + 0.5;
-        this.refs['zoomLevelInput'].refs['input'].defaultValue = newValue;
         webFrame.setZoomLevel(newValue);
-        ls('zoomLevel', newValue);
     },
     
-    _handleAudioChannelDown(event) {
-        var newChannel = parseInt(this.state.defaultAudioChannel) - 1;
+    _handleAudioChannel(event, direction) {
+        var newChannel = parseInt(config.audioChannel) + direction;
         if (newChannel == 0)
-            newChannel = this.state.audioChannels.length -1;
-        PlayerStore.getState().wcjs.audio.channel = newChannel;
-        PlayerActions.settingChange({
-            audioChannel: newChannel
-        });
-        this.refs['audioChannelInput'].refs['input'].defaultValue = this.state.audioChannels[newChannel];
-    },
-    
-    _handleAudioChannelUp(event) {
-        var newChannel = parseInt(this.state.defaultAudioChannel) + 1;
+            newChannel = this.state.audioChannels.length - 1;
         if (newChannel == this.state.audioChannels.length)
             newChannel = 1;
         PlayerStore.getState().wcjs.audio.channel = newChannel;
-        PlayerActions.settingChange({
+        config.set({
             audioChannel: newChannel
         });
-        this.refs['audioChannelInput'].refs['input'].defaultValue = this.state.audioChannels[newChannel];
+        this.refs['audioChannelInput'].refs['input'].value = this.state.audioChannels[newChannel];
     },
     
-    _handleSubColorDown(event) {
+    _handleSubColor(event, direction) {
         if (!ls.isSet('subColor')) ls('subColor', 0);
-        var newColor = ls('subColor') - 1;
+        var newColor = ls('subColor') + direction;
+
         if (newColor == -1)
             newColor = this.state.subColors.length -1;
-        ls('subColor', newColor);
-        this.setState({
-            subColor: newColor
-        });
-        this.refs['subColorInput'].refs['input'].defaultValue = this.state.subColors[newColor];
-    },
-    
-    _handleSubColorUp(event) {
-        if (!ls.isSet('subColor')) ls('subColor', 0);
-        var newColor = ls('subColor') + 1;
+
         if (newColor == this.state.subColors.length)
             newColor = 0;
+
         ls('subColor', newColor);
-        this.setState({
-            subColor: newColor
-        });
-        this.refs['subColorInput'].refs['input'].defaultValue = this.state.subColors[newColor];
+        PlayerStore.getState().events.emit('subtitleUpdate');
+        this.refs['subColorInput'].refs['input'].value = this.state.subColors[newColor];
     },
     
-    _handleAudioTracksDown(event) {
-        var newTrack = parseInt(this.state.defaultAudioTrack) - 1;
+    _handleAudioTrack(event, direction) {
+        var newTrack = parseInt(config.audioTrack) + direction;
         var wcjs = PlayerStore.getState().wcjs;
+        
         if (newTrack == -1)
             newTrack = wcjs.audio.count -1;
 
-        PlayerActions.settingChange({
-            audioTrack: newTrack
-        });
-        wcjs.audio.track = newTrack;
-        this.refs['audioTrackInput'].refs['input'].defaultValue = wcjs.audio[newTrack];
-    },
-    
-    _handleAudioTracksUp(event) {
-        var newTrack = parseInt(this.state.defaultAudioTrack) + 1;
-        var wcjs = PlayerStore.getState().wcjs;
         if (newTrack == wcjs.audio.count)
             newTrack = 0;
 
-        PlayerActions.settingChange({
+        wcjs.audio.track = newTrack;
+        
+        config.set({
             audioTrack: newTrack
         });
-        wcjs.audio.track = newTrack;
-        this.refs['audioTrackInput'].refs['input'].defaultValue = wcjs.audio[newTrack];
+        this.refs['audioTrackInput'].refs['input'].value = wcjs.audio[newTrack];
     },
     
-    _handleSubEncodingDown(event) {
+    _handleSubEncoding(event, direction) {
         if (!ls.isSet('selectedEncoding')) ls('selectedEncoding', 0);
-        var newEncoding = ls('selectedEncoding') - 1;
+        var newEncoding = ls('selectedEncoding') + direction;
+
         if (newEncoding == -1)
             newEncoding = this.state.subEncodings.length -1;
-
-        ls('selectedEncoding', newEncoding);
-        ls('subEncoding', this.state.subEncodings[newEncoding][1]);
-        PlayerActions.settingChange({
-            encoding: newEncoding
-        });
-        this.refs['subEncodingInput'].refs['input'].defaultValue = this.state.subEncodings[newEncoding][0];
-    },
-    
-    _handleSubEncodingUp(event) {
-        if (!ls.isSet('selectedEncoding')) ls('selectedEncoding', 0);
-        var newEncoding = ls('selectedEncoding') + 1;
         if (newEncoding == this.state.subEncodings.length)
             newEncoding = 0;
 
         ls('selectedEncoding', newEncoding);
         ls('subEncoding', this.state.subEncodings[newEncoding][1]);
-        PlayerActions.settingChange({
-            encoding: newEncoding
-        });
-        this.refs['subEncodingInput'].refs['input'].defaultValue = this.state.subEncodings[newEncoding][0];
+        
+        this.refs['subEncodingInput'].refs['input'].value = this.state.subEncodings[newEncoding][0];
     },
     
-    _handlePortDown(event) {
-        var newValue = parseInt(this.refs['portInput'].getValue())-1;
+    _handlePort(event, direction) {
+        var newValue = parseInt(this.refs['portInput'].getValue()) + direction;
         if (newValue < 1)
             newValue = 1;
         if (newValue > 65535)
             newValue = 65535;
-        this.refs['portInput'].refs['input'].defaultValue = newValue;
-        if (event)
-            ls('peerPort', newValue);
-    },
-
-    _handlePortUp(event) {
-        var newValue = parseInt(this.refs['portInput'].getValue())+1;
-        if (newValue > 65535)
-            newValue = 65535;
-        this.refs['portInput'].refs['input'].defaultValue = newValue;
+        
+        this.refs['portInput'].refs['input'].value = newValue;
         if (event)
             ls('peerPort', newValue);
     },
@@ -574,10 +472,10 @@ default React.createClass({
     _handlePortKeys(event) {
         if (event.keyCode == 38) {
             event.preventDefault();
-            this._handlePortUp();
+            this._handlePort(null, -1);
         } else if (event.keyCode == 40) {
             event.preventDefault();
-            this._handlePortDown();
+            this._handlePort(null, 1);
         } else if ([13, 27].indexOf(event.keyCode) > -1) {
             event.preventDefault();
             this.refs['portInput'].blur();
@@ -591,26 +489,17 @@ default React.createClass({
         if (newValue > 65535)
             newValue = 65535;
 
-        this.refs['portInput'].refs['input'].defaultValue = newValue;
+        this.refs['portInput'].refs['input'].value = newValue;
         ls('peerPort', newValue);
     },
     
-    _handlePeersDown(event) {
-        var newValue = parseInt(this.refs['peerInput'].getValue())-1;
+    _handlePeers(event, direction) {
+        var newValue = parseInt(this.refs['peersInput'].getValue()) + direction;
         if (newValue < 1)
             newValue = 1;
         if (newValue > 100000)
             newValue = 100000;
-        this.refs['peerInput'].refs['input'].defaultValue = newValue;
-        if (event)
-            ls('maxPeers', newValue);
-    },
-
-    _handlePeersUp(event) {
-        var newValue = parseInt(this.refs['peerInput'].getValue())+1;
-        if (newValue > 100000)
-            newValue = 100000;
-        this.refs['peerInput'].refs['input'].defaultValue = newValue;
+        this.refs['peersInput'].refs['input'].value = newValue;
         if (event)
             ls('maxPeers', newValue);
     },
@@ -618,43 +507,34 @@ default React.createClass({
     _handlePeersKeys(event) {
         if (event.keyCode == 38) {
             event.preventDefault();
-            this._handlePeersUp();
+            this._handlePeers(null, 1);
         } else if (event.keyCode == 40) {
             event.preventDefault();
-            this._handlePeersDown();
+            this._handlePeers(null, -1);
         } else if ([13, 27].indexOf(event.keyCode) > -1) {
             event.preventDefault();
-            this.refs['peerInput'].blur();
+            this.refs['peersInput'].blur();
         }
     },
     
     _handlePeersBlur(event) {
-        var newValue = parseInt(this.refs['peerInput'].getValue());
+        var newValue = parseInt(this.refs['peersInput'].getValue());
         if (isNaN(newValue) || newValue < 1)
             newValue = 1;
         if (newValue > 100000)
             newValue = 100000;
 
-        this.refs['peerInput'].refs['input'].defaultValue = newValue;
+        this.refs['peersInput'].refs['input'].value = newValue;
         ls('maxPeers', newValue);
     },
 
-    _handleBufferSizeDown(event) {
-        var newValue = (parseFloat(this.refs['bufferInput'].getValue()) * 1000) - 500;
+    _handleBufferSize(event, direction) {
+        var newValue = (parseFloat(this.refs['bufferSizeInput'].getValue()) * 1000) + (direction * 500);
         if (newValue < 0)
             newValue = 0;
         if (newValue > 60000)
             newValue = 60000;
-        this.refs['bufferInput'].refs['input'].defaultValue = (newValue/1000).toFixed(1) + ' sec';
-        if (event)
-            ls('bufferSize', newValue);
-    },
-
-    _handleBufferSizeUp(event) {
-        var newValue = (parseFloat(this.refs['bufferInput'].getValue()) * 1000) + 500;
-        if (newValue > 60000)
-            newValue = 60000;
-        this.refs['bufferInput'].refs['input'].defaultValue = (newValue/1000).toFixed(1) + ' sec';
+        this.refs['bufferSizeInput'].refs['input'].value = (newValue/1000).toFixed(1) + ' sec';
         if (event)
             ls('bufferSize', newValue);
     },
@@ -662,32 +542,32 @@ default React.createClass({
     _handleBufferSizeKeys(event) {
         if (event.keyCode == 38) {
             event.preventDefault();
-            this._handleBufferSizeUp();
+            this._handleBufferSize(null, 1);
         } else if (event.keyCode == 40) {
             event.preventDefault();
-            this._handleBufferSizeDown();
+            this._handleBufferSize(null, -1);
         } else if ([13, 27].indexOf(event.keyCode) > -1) {
             event.preventDefault();
-            this.refs['bufferInput'].blur();
+            this.refs['bufferSizeInput'].blur();
         }
     },
 
     _handleBufferSizeBlur(event) {
-        var newValue = parseFloat(this.refs['bufferInput'].getValue()) * 1000;
+        var newValue = parseFloat(this.refs['bufferSizeInput'].getValue()) * 1000;
         if (isNaN(newValue) || newValue < 0)
             newValue = 0;
         if (newValue > 60000)
             newValue = 60000;
 
-        this.refs['bufferInput'].refs['input'].defaultValue = (newValue/1000).toFixed(1) + ' sec';
+        this.refs['bufferSizeInput'].refs['input'].value = (newValue/1000).toFixed(1) + ' sec';
         ls('bufferSize', newValue);
     },
 
     _handleClearDownload(event) {
         ls.remove('downloadFolder');
-        this.refs['downloadInput'].refs['input'].defaultValue = 'Temp';
+        this.refs['downloadInput'].refs['input'].value = 'Temp';
     },
-    
+
     _handleDownloadFocus(event) {
         this.refs['downloadInput'].blur();
         dialog.showOpenDialog({
@@ -696,7 +576,7 @@ default React.createClass({
         }, (folder) => {
             if (folder && folder.length) {
                 ls('downloadFolder', folder[0]);
-                this.refs['downloadInput'].refs['input'].defaultValue = folder[0];
+                this.refs['downloadInput'].refs['input'].value = folder[0];
             }
         });
     },
@@ -711,761 +591,471 @@ default React.createClass({
             PlayerActions.flood();
         }
         ls('speedPulsing', newValue);
-        this.setState({
-            speedPulsing: newValue
+        this.refs['pulseInput'].refs['input'].value = newValue;
+    },
+    
+    _videoField(field, value) {
+        this.refs[field + 'Input'].refs['input'].value = value;
+        var obj = {
+            aspect: true,
+            crop: true,
+            zoom: true
+        };
+        obj[field] = false;
+        _.each(obj, (el, ij) => {
+            if (el)
+                this.refs[ij + 'Input'].refs['input'].value = 'Default';
         });
-        this.refs['pulseInput'].refs['input'].defaultValue = newValue;
     },
 
-    _handleAspectUp(event) {
+    _handleAspect(event, direction) {
 
-        var aspectRatio = this.state.aspectRatio;
+        var aspectRatio = config.aspect;
         var aspectRatios = this.state.aspectRatios;
-        var zoomInput = this.refs['zoomInput'];
-        var aspectInput = this.refs['aspectInput'];
-        var cropInput = this.refs['cropInput'];
 
         aspectRatios.some((el, ij) => {
             if (el == aspectRatio) {
-                if (aspectRatios.length == ij+1)
-                    var newValue = 0;
-                else
-                    var newValue = ij + 1;
-
-                PlayerActions.settingChange({
-                    aspectRatio: aspectRatios[newValue],
-                    crop: 'Default',
-                    zoom: 1
-                });
-
-                aspectInput.refs['input'].defaultValue = aspectRatios[newValue];
-                zoomInput.refs['input'].defaultValue = 'Default';
-                cropInput.refs['input'].defaultValue = 'Default';
-                _.defer(() => {
-                    PlayerStore.getState().events.emit('resizeNow');
-                });
-
-                return true;
-            } else return false;
-        });
-    },
-
-    _handleAspectDown(event) {
-
-        var aspectRatio = this.state.aspectRatio;
-        var aspectRatios = this.state.aspectRatios;
-        var zoomInput = this.refs['zoomInput'];
-        var aspectInput = this.refs['aspectInput'];
-        var cropInput = this.refs['cropInput'];
-
-        aspectRatios.some((el, ij) => {
-            if (el == aspectRatio) {
-                if (ij - 1 < 0)
-                    var newValue = aspectRatios.length - 1;
-                else
-                    var newValue = ij - 1;
-
-                PlayerActions.settingChange({
-                    aspectRatio: aspectRatios[newValue],
-                    crop: 'Default',
-                    zoom: 1
-                });
-
-                aspectInput.refs['input'].defaultValue = aspectRatios[newValue];
-                zoomInput.refs['input'].defaultValue = 'Default';
-                cropInput.refs['input'].defaultValue = 'Default';
-                _.defer(() => {
-                    PlayerStore.getState().events.emit('resizeNow');
-                });
-
-                return true;
-            } else return false;
-        });
-    },
-
-    _handleCropUp(event) {
-
-        var crop = this.state.crop;
-        var crops = this.state.crops;
-        var zoomInput = this.refs['zoomInput'];
-        var aspectInput = this.refs['aspectInput'];
-        var cropInput = this.refs['cropInput'];
-
-        crops.some((el, ij) => {
-            if (el == crop) {
-                if (crops.length == ij+1)
-                    var newValue = 0;
-                else
-                    var newValue = ij + 1;
-
-                PlayerActions.settingChange({
-                    crop: crops[newValue],
-                    aspectRatio: 'Default',
-                    zoom: 1
-                });
-
-                cropInput.refs['input'].defaultValue = crops[newValue];
-                zoomInput.refs['input'].defaultValue = 'Default';
-                aspectInput.refs['input'].defaultValue = 'Default';
-                _.defer(() => {
-                    PlayerStore.getState().events.emit('resizeNow');
-                });
-
-                return true;
-            } else return false;
-        });
-    },
-
-    _handleCropDown(event) {
-
-        var crop = this.state.crop;
-        var crops = this.state.crops;
-        var zoomInput = this.refs['zoomInput'];
-        var aspectInput = this.refs['aspectInput'];
-        var cropInput = this.refs['cropInput'];
-
-        crops.some((el, ij) => {
-            if (el == crop) {
-                if (ij - 1 < 0)
-                    var newValue = crops.length - 1;
-                else
-                    var newValue = ij - 1;
-
-                PlayerActions.settingChange({
-                    crop: crops[newValue],
-                    aspectRatio: 'Default',
-                    zoom: 1
-                });
-
-                cropInput.refs['input'].defaultValue = crops[newValue];
-                zoomInput.refs['input'].defaultValue = 'Default';
-                aspectInput.refs['input'].defaultValue = 'Default';
-                _.defer(() => {
-                    PlayerStore.getState().events.emit('resizeNow');
-                });
-
-                return true;
-            } else return false;
-        });
-    },
-
-    _handleZoomUp(event) {
-
-        var zoom = this.state.zoom;
-        var zooms = this.state.zooms;
-        var zoomInput = this.refs['zoomInput'];
-        var aspectInput = this.refs['aspectInput'];
-        var cropInput = this.refs['cropInput'];
-
-        zooms.some((el, ij) => {
-            if (el[1] == zoom) {
-                if (zooms.length == ij+1)
-                    var newValue = 0;
-                else
-                    var newValue = ij + 1;
-
-                PlayerActions.settingChange({
-                    zoom: zooms[newValue][1],
-                    crop: 'Default',
-                    aspectRatio: 'Default'
-                });
-
-                zoomInput.refs['input'].defaultValue = zooms[newValue][0];
-                cropInput.refs['input'].defaultValue = 'Default';
-                aspectInput.refs['input'].defaultValue = 'Default';
-                _.defer(() => {
-                    PlayerStore.getState().events.emit('resizeNow');
-                });
                 
+                var newValue;
+                
+                if (direction < 0)
+                    newValue = ij - 1 < 0 ? aspectRatios.length - 1 : ij - 1;
+                else
+                    newValue = aspectRatios.length == ij + 1 ? 0 : ij + 1;
+
+                this._videoField('aspect', aspectRatios[newValue]);
+
+                _.defer(() => {
+                    PlayerStore.getState().events.emit('resizeNow', {
+                        aspect: aspectRatios[newValue],
+                        crop: 'Default',
+                        zoom: 1
+                    });
+                });
+
                 return true;
             } else return false;
         });
     },
 
-    _handleZoomDown(event) {
+    _handleCrop(event, direction) {
 
-        var zoom = this.state.zoom;
-        var zooms = this.state.zooms;
-        var zoomInput = this.refs['zoomInput'];
-        var aspectInput = this.refs['aspectInput'];
-        var cropInput = this.refs['cropInput'];
+        var crop = config.crop;
+        var crops = this.state.crops;
 
-        zooms.some((el, ij) => {
-            if (el[1] == zoom) {
-                if (ij - 1 < 0)
-                    var newValue = zooms.length - 1;
+        crops.some((el, ij) => {
+            if (el == crop) {
+
+                var newValue;
+
+                if (direction < 0)
+                    newValue = ij - 1 < 0 ? crops.length - 1 : ij - 1;
                 else
-                    var newValue = ij - 1;
+                    newValue = crops.length == ij + 1 ? 0 : ij + 1;
 
-                PlayerActions.settingChange({
-                    zoom: zooms[newValue][1],
-                    crop: 'Default',
-                    aspectRatio: 'Default'
-                });
+                this._videoField('crop', crops[newValue]);
 
-                zoomInput.refs['input'].defaultValue = zooms[newValue][0];
-                cropInput.refs['input'].defaultValue = 'Default';
-                aspectInput.refs['input'].defaultValue = 'Default';
                 _.defer(() => {
-                    PlayerStore.getState().events.emit('resizeNow');
+                    PlayerStore.getState().events.emit('resizeNow', {
+                        crop: crops[newValue],
+                        aspect: 'Default',
+                        zoom: 1
+                    });
                 });
 
                 return true;
             } else return false;
+        });
+    },
+
+    _handleZoom(event, direction) {
+
+        var zoom = config.zoom;
+        var zooms = this.state.zooms;
+
+        zooms.some((el, ij) => {
+            if (el[1] == zoom) {
+
+                if (direction < 0)
+                    var newValue = ij - 1 < 0 ? zooms.length - 1 : ij - 1;
+                else
+                    var newValue = zooms.length == ij + 1 ? 0 : ij + 1;
+
+                this._videoField('zoom', zooms[newValue][0]);
+                _.defer(() => {
+                    PlayerStore.getState().events.emit('resizeNow', {
+                        zoom: zooms[newValue][1],
+                        crop: 'Default',
+                        aspect: 'Default'
+                    });
+                });
+
+                return true;
+            } else return false;
+
         });
     },
 
     render() {
 
+        var renderObj = {
+
+            'General': [{
+                type: 'header',
+                label: 'Interface'
+            }, {
+                type: 'toggle',
+                title: 'Always on Top',
+                tag: 'alwaysOnTop',
+                func: 'AlwaysOnTop'
+            }, {
+                type: 'toggle',
+                title: 'Click to Pause',
+                tag: 'clickPause',
+                func: 'ClickPause'
+            }, {
+                type: 'toggle',
+                title: 'Player Ripple Effects',
+                tag: 'playerRippleEffects',
+                func: 'RippleEffects'
+            }, {
+                type: 'toggle',
+                title: 'Notifications',
+                tag: 'playerNotifs'
+            }, {
+                type: 'select',
+                title: 'Zoom Level',
+                tag: 'zoomLevel',
+                default: this.state.zoomLevel + '',
+                disabled: true,
+                width: '30px'
+            }, {
+                type: 'header',
+                label: 'Playback'
+            }, {
+                type: 'select',
+                title: 'Speed',
+                tag: 'speed',
+                default: parseFloat(Math.round(this.state.speed * 100) / 100).toFixed(2) + 'x',
+                width: '60px'
+            }, {
+                type: 'select',
+                title: 'Buffer Size',
+                tag: 'bufferSize',
+                default: this.state.bufferSize+' sec',
+                width: '60px'
+            }, {
+                type: 'header',
+                label: 'Video'
+            }, {
+                type: 'select',
+                title: 'Aspect Ratio',
+                tag: 'aspect',
+                default: config.aspect,
+                width: '60px',
+                disabled: true
+            }, {
+                type: 'select',
+                title: 'Crop',
+                tag: 'crop',
+                default: config.crop,
+                width: '60px',
+                disabled: true
+            }, {
+                type: 'select',
+                title: 'Zoom',
+                tag: 'zoom',
+                default: 'Default',
+                width: '90px',
+                disabled: true
+            }, {
+                type: 'header',
+                label: 'Associations'
+            }, {
+                type: 'button',
+                title: 'Magnet Links',
+                func: Register.magnet
+            }, {
+                type: 'button',
+                title: 'Video Files',
+                func: Register.videos
+            }, {
+                type: 'button',
+                title: 'Torrent Files',
+                func: Register.torrent
+            }, {
+                type: 'clear'
+            }, {
+                type: 'header',
+                label: 'Trakt'
+            }, {
+                type: 'traktSettings'
+            }],
+
+
+            'Audio / Subs': [{
+                type: 'header',
+                label: 'Audio'
+            }, {
+                type: 'select',
+                title: 'Audio Channel',
+                tag: 'audioChannel',
+                disabled: true,
+                width: '110px',
+                default: this.state.audioChannels[this.state.audioChannel]
+            }, {
+                type: 'select',
+                title: 'Audio Tracks',
+                tag: 'audioTrack',
+                disabled: true,
+                width: '110px',
+                default: 'Track 1'
+            }, {
+                type: 'select',
+                title: 'Audio Delay',
+                tag: 'audioDelay',
+                width: '86px',
+                default: this.state.audioDelay + ' ms'
+            }, {
+                type: 'header',
+                label: 'Subtitles'
+            }, {
+                type: 'toggle',
+                title: 'Find Subtitles',
+                tag: 'findSubs'
+            }, {
+                type: 'toggle',
+                title: 'Auto-select Subtitle',
+                tag: 'autoSub'
+            }, {
+                type: 'toggle',
+                title: 'Flags in Menu',
+                tag: 'menuFlags'
+            }, {
+                type: 'select',
+                title: 'Subtitle Size',
+                tag: 'subSize',
+                width: '50px',
+                default: this.state.customSubSize + '%'
+            }, {
+                type: 'select',
+                title: 'Subtitle Delay',
+                tag: 'subDelay',
+                width: '86px',
+                default: this.state.subDelay + ' ms'
+            }, {
+                type: 'select',
+                title: 'Subtitle Color',
+                tag: 'subColor',
+                width: '60px',
+                disabled: true,
+                default: this.state.subColors[this.state.subColor]
+            }, {
+                type: 'select',
+                title: 'Encoding',
+                tag: 'subEncoding',
+                width: '280px',
+                disabled: true,
+                default: this.state.subEncodings[this.state.encoding][0]
+            }],
+
+
+            'Torrents': [{
+                type: 'header',
+                label: 'Connections'
+            }, {
+                type: 'select',
+                title: 'Maximum Peers',
+                tag: 'peers',
+                width: '86px',
+                default: this.state.peers+''
+            }, {
+                type: 'select',
+                title: 'Peer Port',
+                tag: 'port',
+                width: '86px',
+                default: this.state.port
+            }, {
+                type: 'header',
+                label: 'Downloading'
+            }, {
+                type: 'selectFolder',
+                title: 'Download Folder',
+                tag: 'download',
+                default: this.state.downloadFolder,
+                width: '280px'
+            }, {
+                type: 'select',
+                title: 'Speed Pulsing',
+                func: 'PulsingToggle',
+                tag: 'pulse',
+                width: '110px',
+                default: this.state.speedPulsing,
+                disabled: true
+            }]
+        };
+        
+        var indents = {
+            'General': [],
+            'Audio / Subs': [],
+            'Torrents': []
+        };
+        
+        var klm = 1000;
+        var renderSettings = [];
+        
+        _.each(indents, (el, ij) => {
+            renderObj[ij].forEach(el => {
+                
+                klm++;
+                
+                if (el.type == 'header') {
+            
+                    indents[ij].push(
+                        <div className="setting-header" key={klm}>
+                            {el.label}
+                        </div>
+                    );
+
+                } else if (el.type == 'toggle') {
+
+                    if (!el.func) el.func = 'Toggler';
+
+                    indents[ij].push(
+                        <Toggle
+                            key={klm}
+                            name={el.tag}
+                            onToggle={(event, toggled) => this['_handle' + el.func](event, toggled, el.tag)}
+                            defaultToggled={this.state[el.tag]}
+                            label={el.title + ":"}
+                            style={{marginBottom: '7px'}} />
+                    );
+
+                } else if (el.type == 'select') {
+
+                    if (!el.func) el.func = el.tag.charAt(0).toUpperCase() + el.tag.slice(1);
+
+                    if (el.disabled)
+
+                        var newTextField = (
+                            <TextField
+                                disabled={true}
+                                ref={el.tag + 'Input'}
+                                defaultValue={el.default}
+                                style={{float: 'right', height: '32px', width: el.width, top: '-5px', marginRight: '4px'}} />
+                        );
+
+                    else
+
+                        var newTextField = (
+                            <TextField
+                                onKeyDown={this['_handle' + el.func + 'Keys']}
+                                onBlur={this['_handle' + el.func + 'Blur']}
+                                ref={el.tag + 'Input'}
+                                defaultValue={el.default}
+                                onChange={this.onChangeFunction}
+                                style={{float: 'right', height: '32px', width: el.width, top: '-5px', marginRight: '4px'}} />
+                        );
+
+                    indents[ij].push(
+                        <div key={klm}>
+                            <div className="sub-delay-setting">
+                                <span style={{color: '#fff'}}>
+                                    {el.title + ':'}
+                                </span>
+                                <IconButton
+                                    onClick={(event) => this['_handle' + el.func](event, -1)}
+                                    iconClassName="material-icons"
+                                    iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
+                                    keyboard_arrow_down
+                                </IconButton>
+                                <IconButton
+                                    onClick={(event) => this['_handle' + el.func](event, 1)}
+                                    iconClassName="material-icons"
+                                    iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
+                                    keyboard_arrow_up
+                                </IconButton>
+                                {newTextField}
+                            </div>
+                            <div style={{clear: 'both'}} />
+                        </div>
+                    );
+
+                } else if (el.type == 'selectFolder') {
+
+                    if (!el.func) el.func = el.tag.charAt(0).toUpperCase() + el.tag.slice(1);
+
+                    indents[ij].push(
+                        <div key={klm}>
+                            <div className="sub-delay-setting">
+                                <span style={{color: '#fff'}}>
+                                    {el.title + ':'}
+                                </span>
+                                <IconButton
+                                    className={'clear-button'}
+                                    onClick={this['_handleClear' + el.func]}
+                                    iconClassName="material-icons"
+                                    iconStyle={{color: '#0097a7', fontSize: '18px', float: 'right'}}>
+                                    clear
+                                </IconButton>
+                                <TextField
+                                    ref={el.tag + 'Input'}
+                                    defaultValue={el.default}
+                                    onFocus={this['_handle' + el.func + 'Focus']}
+                                    style={{float: 'right', height: '32px', width: el.width, top: '-5px', marginRight: '4px'}}
+                                    inputStyle={{cursor: 'pointer'}} />
+                            </div>
+                            <div style={{clear: 'both'}} />
+                        </div>
+                    );
+
+                } else if (el.type == 'button') {
+                    
+                    indents[ij].push(
+                        <RaisedButton
+                            key={klm}
+                            style={{marginBottom: '15px', marginRight: '11px', float: 'left'}}
+                            className='long-buttons'
+                            onClick={el.func}
+                            label={el.title} />
+                    );
+
+                } else if (el.type == 'clear') {
+                    
+                    indents[ij].push(<div key={klm} style={{clear: 'both'}} />);
+                    
+                } else if (el.type == 'traktSettings') {
+
+                    indents[ij].push(
+                        <div key={klm}>
+                            <Toggle
+                                name="trakt-scrobble"
+                                onToggle={(event, toggled) => ls('traktScrobble', toggled)}
+                                defaultToggled={this.state.traktScrobble}
+                                style={{ 'display': (this.state.trakt ? 'block' : 'none') }}
+                                label="Trakt Scrobble:"
+                                style={{marginBottom: '7px'}} />
+                            <RaisedButton className='long-buttons' onClick={this._openTraktLogin} label={ this.state.trakt ? 'Trakt Logout' : 'Trakt Login' } />
+                        </div>
+                    );
+
+                }
+            })
+            
+            renderSettings.push(
+                <Tab key={klm + 1000} label={ij} style={{height: '100%'}}>
+                    <div className="playlist-inner" style={{maxWidth: '700px', maxHeight: 'calc(100% - 130px)'}}>
+                        {indents[ij]}
+                    </div>
+                </Tab>
+            );
+        })
+
         return (
-            <div className={this.state.uiHidden ? 'playlist-container' : this.state.open ? 'playlist-container show' : 'playlist-container'}>
-                <div className="playlist-controls" / >
-                <div className="playlist-holder settings-holder" style={{marginLeft: '0', height: '100%'}}>
-                    <Tabs style={{width: '70vw', maxWidth: '700px', marginTop: '11%', marginLeft: 'auto', marginRight: 'auto', height: '100%'}}>
-
-                        <Tab label="General" style={{height: '100%'}}>
-                            <div className="playlist-inner" style={{maxWidth: '700px', maxHeight: 'calc(100% - 130px)'}}>
-                                <div className="setting-header">
-                                    Interface
-                                </div>
-                                <Toggle
-                                    name="always-on-top"
-                                    onToggle={this.handleAlwaysOnTop}
-                                    defaultToggled={this.state.alwaysOnTop}
-                                    label="Always on top:"
-                                    style={{marginBottom: '7px'}}/>
-
-                                <Toggle
-                                    name="click-to-pause"
-                                    onToggle={this.handleClickPause}
-                                    defaultToggled={this.state.clickPause}
-                                    label="Click to Pause:"
-                                    style={{marginBottom: '7px'}}/>
-
-                                <Toggle
-                                    name="player-ripple-effects"
-                                    onToggle={this.handlePlayerRippleEffects}
-                                    defaultToggled={this.state.playerRippleEffects}
-                                    label="Player Ripple Effects:"
-                                    style={{marginBottom: '7px'}}/>
-
-                                <Toggle
-                                    name="player-notifs"
-                                    onToggle={this.handlePlayerNotifs}
-                                    defaultToggled={this.state.playerNotifs}
-                                    label="Notifications:"
-                                    style={{marginBottom: '7px'}}/>
-
-                                <div className="sub-delay-setting">
-                                    <span style={{color: '#fff'}}>
-                                        UI Zoom Level:
-                                    </span>
-                                    <IconButton
-                                        onClick={this._handleZoomLevelDown}
-                                        iconClassName="material-icons"
-                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
-                                        keyboard_arrow_down
-                                    </IconButton>
-                                    <IconButton
-                                        onClick={this._handleZoomLevelUp}
-                                        iconClassName="material-icons"
-                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
-                                        keyboard_arrow_up
-                                    </IconButton>
-                                    <TextField
-                                        disabled={true}
-                                        ref="zoomLevelInput"
-                                        defaultValue={this.state.zoomLevel + ''}
-                                        style={{float: 'right', height: '32px', width: '30px', top: '-5px', marginRight: '4px'}} />
-                                </div>
-
-                                <div style={{clear: 'both'}} />
-
-                                <div className="setting-header">
-                                    Playback
-                                </div>
-
-                                <div className="sub-delay-setting">
-                                    <span style={{color: '#fff'}}>
-                                        Speed:
-                                    </span>
-                                    <IconButton
-                                        onClick={this._handleSpeedDown}
-                                        iconClassName="material-icons"
-                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
-                                        keyboard_arrow_down
-                                    </IconButton>
-                                    <IconButton
-                                        onClick={this._handleSpeedUp}
-                                        iconClassName="material-icons"
-                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
-                                        keyboard_arrow_up
-                                    </IconButton>
-                                    <TextField
-                                        ref="speedInput"
-                                        defaultValue={parseFloat(Math.round(this.state.speed * 100) / 100).toFixed(2) + 'x'}
-                                        onKeyDown={this._handleSpeedKeys}
-                                        onBlur={this._handleSpeedBlur}
-                                        style={{float: 'right', height: '32px', width: '60px', top: '-5px', marginRight: '4px'}} />
-
-                                </div>
-
-                                <div style={{clear: 'both'}} />
-
-                                <div className="sub-delay-setting">
-                                    <span style={{color: '#fff'}}>
-                                        Buffer Size:
-                                    </span>
-                                    <IconButton
-                                        onClick={this._handleBufferSizeDown}
-                                        iconClassName="material-icons"
-                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
-                                        keyboard_arrow_down
-                                    </IconButton>
-                                    <IconButton
-                                        onClick={this._handleBufferSizeUp}
-                                        iconClassName="material-icons"
-                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
-                                        keyboard_arrow_up
-                                    </IconButton>
-                                    <TextField
-                                        ref="bufferInput"
-                                        onKeyDown={this._handleBufferSizeKeys}
-                                        onBlur={this._handleBufferSizeBlur}
-                                        defaultValue={this.state.bufferSize+' sec'}
-                                        style={{float: 'right', height: '32px', width: '60px', top: '-5px', marginRight: '4px'}} />
-                                </div>
-
-                                <div style={{clear: 'both'}} />
-
-                                <div className="setting-header">
-                                    Video
-                                </div>
-
-                                <div className="sub-delay-setting">
-                                    <span style={{color: '#fff'}}>
-                                        Aspect Ratio:
-                                    </span>
-                                    <IconButton
-                                        onClick={this._handleAspectDown}
-                                        iconClassName="material-icons"
-                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
-                                        keyboard_arrow_down
-                                    </IconButton>
-                                    <IconButton
-                                        onClick={this._handleAspectUp}
-                                        iconClassName="material-icons"
-                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
-                                        keyboard_arrow_up
-                                    </IconButton>
-                                    <TextField
-                                        disabled={true}
-                                        ref="aspectInput"
-                                        defaultValue={this.state.aspectRatio}
-                                        style={{float: 'right', height: '32px', width: '60px', top: '-5px', marginRight: '4px'}} />
-                                </div>
-
-                                <div style={{clear: 'both'}} />
-
-                                <div className="sub-delay-setting">
-                                    <span style={{color: '#fff'}}>
-                                        Crop:
-                                    </span>
-                                    <IconButton
-                                        onClick={this._handleCropDown}
-                                        iconClassName="material-icons"
-                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
-                                        keyboard_arrow_down
-                                    </IconButton>
-                                    <IconButton
-                                        onClick={this._handleCropUp}
-                                        iconClassName="material-icons"
-                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
-                                        keyboard_arrow_up
-                                    </IconButton>
-                                    <TextField
-                                        disabled={true}
-                                        ref="cropInput"
-                                        defaultValue={this.state.crop}
-                                        style={{float: 'right', height: '32px', width: '60px', top: '-5px', marginRight: '4px'}} />
-                                </div>
-
-                                <div style={{clear: 'both'}} />
-
-                                <div className="sub-delay-setting">
-                                    <span style={{color: '#fff'}}>
-                                        Zoom:
-                                    </span>
-                                    <IconButton
-                                        onClick={this._handleZoomDown}
-                                        iconClassName="material-icons"
-                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
-                                        keyboard_arrow_down
-                                    </IconButton>
-                                    <IconButton
-                                        onClick={this._handleZoomUp}
-                                        iconClassName="material-icons"
-                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
-                                        keyboard_arrow_up
-                                    </IconButton>
-                                    <TextField
-                                        disabled={true}
-                                        ref="zoomInput"
-                                        defaultValue={'Default'}
-                                        style={{float: 'right', height: '32px', width: '90px', top: '-5px', marginRight: '4px'}} />
-                                </div>
-
-                                <div style={{clear: 'both'}} />
-
-                                <div className="setting-header">
-                                    Associations
-                                </div>
-
-                                <RaisedButton style={{marginBottom: '15px', marginRight: '11px', float: 'left'}} className='long-buttons' onClick={Register.magnet} label={'Magnet Links'} />
-
-                                <RaisedButton style={{marginBottom: '15px', marginRight: '11px', float: 'left'}} className='long-buttons' onClick={Register.videos} label={'Video Files'} />
-
-                                <RaisedButton style={{marginBottom: '15px'}} className='long-buttons' onClick={Register.torrent} label={'Torrent Files'} />
-
-                                <div className="setting-header">
-                                    Trakt
-                                </div>
-
-                                <Toggle
-                                    name="trakt-scrobble"
-                                    onToggle={this.handleScrobbler}
-                                    defaultToggled={this.state.traktScrobble}
-                                    style={{ 'display': (this.state.trakt ? 'block' : 'none') }}
-                                    label="Trakt Scrobble:"
-                                    style={{marginBottom: '7px'}}/>
-                                <RaisedButton className='long-buttons' onClick={this.openTraktLogin} label={ this.state.trakt ? 'Trakt Logout' : 'Trakt Login' } />
-
-                            </div>
-                        </Tab>
-
-                        <Tab label="Audio / Subs" style={{height: '100%'}}>
-                            <div className="playlist-inner" style={{maxWidth: '700px', maxHeight: 'calc(100% - 130px)'}}>
-                                <div className="setting-header">
-                                    Audio
-                                </div>
-                                <div className="sub-delay-setting">
-                                    <span style={{color: '#fff'}}>
-                                        Audio Channel:
-                                    </span>
-                                    <IconButton
-                                        onClick={this._handleAudioChannelDown}
-                                        iconClassName="material-icons"
-                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
-                                        keyboard_arrow_down
-                                    </IconButton>
-                                    <IconButton
-                                        onClick={this._handleAudioChannelUp}
-                                        iconClassName="material-icons"
-                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
-                                        keyboard_arrow_up
-                                    </IconButton>
-                                    <TextField
-                                        disabled={true}
-                                        ref="audioChannelInput"
-                                        defaultValue={this.state.audioChannels[this.state.defaultAudioChannel]}
-                                        style={{float: 'right', height: '32px', width: '110px', top: '-5px', marginRight: '4px'}} />
-                                </div>
-
-                                <div style={{clear: 'both'}} />
-
-                                <div className="sub-delay-setting">
-                                    <span style={{color: '#fff'}}>
-                                        Audio Tracks:
-                                    </span>
-                                    <IconButton
-                                        onClick={this._handleAudioTracksDown}
-                                        iconClassName="material-icons"
-                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
-                                        keyboard_arrow_down
-                                    </IconButton>
-                                    <IconButton
-                                        onClick={this._handleAudioTracksUp}
-                                        iconClassName="material-icons"
-                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
-                                        keyboard_arrow_up
-                                    </IconButton>
-                                    <TextField
-                                        disabled={true}
-                                        ref="audioTrackInput"
-                                        defaultValue={'Track 1'}
-                                        style={{float: 'right', height: '32px', width: '110px', top: '-5px', marginRight: '4px'}} />
-                                </div>
-
-                                <div style={{clear: 'both'}} />
-
-                                <div className="sub-delay-setting">
-                                    <span style={{color: '#fff'}}>
-                                        Audio Delay:
-                                    </span>
-                                    <IconButton
-                                        onClick={this._handleAudioDelayDown}
-                                        iconClassName="material-icons"
-                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
-                                        keyboard_arrow_down
-                                    </IconButton>
-                                    <IconButton
-                                        onClick={this._handleAudioDelayUp}
-                                        iconClassName="material-icons"
-                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
-                                        keyboard_arrow_up
-                                    </IconButton>
-                                    <TextField
-                                        ref="audioDelayInput"
-                                        defaultValue={this.state.defaultAudioDelay+' ms'}
-                                        onKeyDown={this._handleAudioDelayKeys}
-                                        onBlur={this._handleAudioDelayBlur}
-                                        style={{float: 'right', height: '32px', width: '86px', top: '-5px', marginRight: '4px'}} />
-                                </div>
-                                
-                                <div style={{clear: 'both'}} />
-
-                                <div className="setting-header">
-                                    Subtitles
-                                </div>
-
-                                <Toggle
-                                    name="find-subs"
-                                    onToggle={this.handleFindSubs}
-                                    defaultToggled={this.state.findSubs}
-                                    label="Find Subtitles:"
-                                    style={{marginBottom: '7px'}}/>
-
-                                <Toggle
-                                    name="auto-select-subs"
-                                    onToggle={this.handleAutoSub}
-                                    defaultToggled={this.state.autoSub}
-                                    label="Auto-select Subtitle:"
-                                    style={{marginBottom: '7px'}}/>
-
-                                <Toggle
-                                    name="menu-flags"
-                                    onToggle={this.handleMenuFlags}
-                                    defaultToggled={this.state.menuFlags}
-                                    label="Flags in Menu:"
-                                    style={{marginBottom: '7px'}}/>
-
-                                <div className="sub-delay-setting">
-                                    <span style={{color: '#fff'}}>
-                                        Subtitle Size:
-                                    </span>
-                                    <IconButton
-                                        onClick={this._handleSubSizeDown}
-                                        iconClassName="material-icons"
-                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
-                                        keyboard_arrow_down
-                                    </IconButton>
-                                    <IconButton
-                                        onClick={this._handleSubSizeUp}
-                                        iconClassName="material-icons"
-                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
-                                        keyboard_arrow_up
-                                    </IconButton>
-                                    <TextField
-                                        ref="subSizeInput"
-                                        defaultValue={this.state.customSubSize+'%'}
-                                        onKeyDown={this._handleSubSizeKeys}
-                                        onBlur={this._handleSubSizeBlur}
-                                        style={{float: 'right', height: '32px', width: '50px', top: '-5px', marginRight: '4px'}} />
-                                </div>
-
-                                <div style={{clear: 'both'}} />
-
-                                <div className="sub-delay-setting">
-                                    <span style={{color: '#fff'}}>
-                                        Subtitle Delay:
-                                    </span>
-                                    <IconButton
-                                        onClick={this._handleSubDelayDown}
-                                        iconClassName="material-icons"
-                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
-                                        keyboard_arrow_down
-                                    </IconButton>
-                                    <IconButton
-                                        onClick={this._handleSubDelayUp}
-                                        iconClassName="material-icons"
-                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
-                                        keyboard_arrow_up
-                                    </IconButton>
-                                    <TextField
-                                        ref="subDelayInput"
-                                        defaultValue={this.state.defaultSubDelay+' ms'}
-                                        onKeyDown={this._handleSubDelayKeys}
-                                        onBlur={this._handleSubDelayBlur}
-                                        style={{float: 'right', height: '32px', width: '86px', top: '-5px', marginRight: '4px'}} />
-                                </div>
-
-                                <div style={{clear: 'both'}} />
-
-                                <div className="sub-delay-setting">
-                                    <span style={{color: '#fff'}}>
-                                        Subtitle Color:
-                                    </span>
-                                    <IconButton
-                                        onClick={this._handleSubColorDown}
-                                        iconClassName="material-icons"
-                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
-                                        keyboard_arrow_down
-                                    </IconButton>
-                                    <IconButton
-                                        onClick={this._handleSubColorUp}
-                                        iconClassName="material-icons"
-                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
-                                        keyboard_arrow_up
-                                    </IconButton>
-                                    <TextField
-                                        disabled={true}
-                                        ref="subColorInput"
-                                        defaultValue={this.state.subColors[this.state.subColor]}
-                                        style={{float: 'right', height: '32px', width: '60px', top: '-5px', marginRight: '4px'}} />
-                                </div>
-
-                                <div style={{clear: 'both'}} />
-
-                                <div className="sub-delay-setting">
-                                    <span style={{color: '#fff'}}>
-                                        Encoding:
-                                    </span>
-                                    <IconButton
-                                        onClick={this._handleSubEncodingDown}
-                                        iconClassName="material-icons"
-                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
-                                        keyboard_arrow_down
-                                    </IconButton>
-                                    <IconButton
-                                        onClick={this._handleSubEncodingUp}
-                                        iconClassName="material-icons"
-                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
-                                        keyboard_arrow_up
-                                    </IconButton>
-                                    <TextField
-                                        disabled={true}
-                                        ref="subEncodingInput"
-                                        defaultValue={this.state.subEncodings[this.state.encoding][0]}
-                                        style={{float: 'right', height: '32px', width: '280px', top: '-5px', marginRight: '4px'}} />
-                                </div>
-                            </div>
-                        </Tab>
-
-                        <Tab label="Torrents" style={{height: '100%'}}>
-                            <div className="playlist-inner" style={{maxWidth: '700px', maxHeight: 'calc(100% - 130px)'}}>
-
-                                <div className="setting-header">
-                                    Connections
-                                </div>
-
-                                <div className="sub-delay-setting">
-                                    <span style={{color: '#fff'}}>
-                                        Maximum Peers:
-                                    </span>
-                                    <IconButton
-                                        onClick={this._handlePeersDown}
-                                        iconClassName="material-icons"
-                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
-                                        keyboard_arrow_down
-                                    </IconButton>
-                                    <IconButton
-                                        onClick={this._handlePeersUp}
-                                        iconClassName="material-icons"
-                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
-                                        keyboard_arrow_up
-                                    </IconButton>
-                                    <TextField
-                                        ref="peerInput"
-                                        defaultValue={this.state.defaultPeers+''}
-                                        onKeyDown={this._handlePeersKeys}
-                                        onBlur={this._handlePeersBlur}
-                                        style={{float: 'right', height: '32px', width: '86px', top: '-5px', marginRight: '4px'}} />
-                                </div>
-                                
-                                <div style={{clear: 'both'}}/>
-                                
-                                <div className="sub-delay-setting">
-                                    <span style={{color: '#fff'}}>
-                                        Peer Port:
-                                    </span>
-                                    <IconButton
-                                        onClick={this._handlePortDown}
-                                        iconClassName="material-icons"
-                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
-                                        keyboard_arrow_down
-                                    </IconButton>
-                                    <IconButton
-                                        onClick={this._handlePortUp}
-                                        iconClassName="material-icons"
-                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
-                                        keyboard_arrow_up
-                                    </IconButton>
-                                    <TextField
-                                        ref="portInput"
-                                        defaultValue={this.state.defaultPort+''}
-                                        onKeyDown={this._handlePortKeys}
-                                        onBlur={this._handlePortBlur}
-                                        style={{float: 'right', height: '32px', width: '86px', top: '-5px', marginRight: '4px'}} />
-                                </div>
-
-                                <div style={{clear: 'both'}} />
-
-                                <div className="setting-header">
-                                    Downloading
-                                </div>
-
-                                <div className="sub-delay-setting">
-                                    <span style={{color: '#fff'}}>
-                                        Download Folder:
-                                    </span>
-                                    <IconButton
-                                        className={'clear-button'}
-                                        onClick={this._handleClearDownload}
-                                        iconClassName="material-icons"
-                                        iconStyle={{color: '#0097a7', fontSize: '18px', float: 'right'}}>
-                                        clear
-                                    </IconButton>
-                                    <TextField
-                                        ref="downloadInput"
-                                        defaultValue={this.state.downloadFolder}
-                                        onFocus={this._handleDownloadFocus}
-                                        style={{float: 'right', height: '32px', width: '280px', top: '-5px', marginRight: '4px'}}
-                                        inputStyle={{cursor: 'pointer'}} />
-                                </div>
-                                
-                                <div style={{clear: 'both'}} />
-
-                                <div className="sub-delay-setting">
-                                    <span style={{color: '#fff'}}>
-                                        Speed Pulsing:
-                                    </span>
-                                    <IconButton
-                                        onClick={this._handlePulsingToggle}
-                                        iconClassName="material-icons"
-                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
-                                        keyboard_arrow_down
-                                    </IconButton>
-                                    <IconButton
-                                        onClick={this._handlePulsingToggle}
-                                        iconClassName="material-icons"
-                                        iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
-                                        keyboard_arrow_up
-                                    </IconButton>
-                                    <TextField
-                                        disabled={true}
-                                        ref="pulseInput"
-                                        defaultValue={this.state.speedPulsing}
-                                        style={{float: 'right', height: '32px', width: '110px', top: '-5px', marginRight: '4px'}} />
-                                </div>
-
-                            </div>
-                        </Tab>
-
-                    </Tabs>
-                </div> 
-            </div>
+            <Tabs style={{width: '70vw', maxWidth: '700px', marginTop: '11%', marginLeft: 'auto', marginRight: 'auto', height: '100%'}}>
+                {renderSettings}
+            </Tabs>
         );
     }
 
-    
 });

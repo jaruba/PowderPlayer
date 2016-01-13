@@ -21,11 +21,13 @@ default React.createClass({
     componentWillMount() {
         PlayerStore.listen(this.update);
         SubStore.listen(this.update);
+        PlayerStore.getState().events.on('subtitleUpdate', this.update);
     },
 
     componentWillUnmount() {
         PlayerStore.unlisten(this.update);
         SubStore.unlisten(this.update);
+        PlayerStore.getState().events.removeListener('subtitleUpdate', this.update);
     },
     update() {
         if (this.isMounted()) {

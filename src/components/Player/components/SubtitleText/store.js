@@ -11,7 +11,6 @@ class SubtitleStore {
         this.subtitle = [];
         this.text = '';
         this.size = 21.3;
-        this.delay = 0;
         this.marginBottom = '70px';
         this.selectedSub = 1;
         this.trackSub = -1;
@@ -20,13 +19,6 @@ class SubtitleStore {
 
     onSettingChange(setting) {
         this.setState(setting);
-    }
-
-    onSetSubDelay(newDelay) {
-        PlayerStore.getState().wcjs.subtitles.delay = newDelay;
-        this.setState({
-            subDelay: newDelay
-        });
     }
 
 }

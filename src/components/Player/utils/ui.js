@@ -2,6 +2,8 @@ import PlayerActions from '../actions';
 import PlayerStore from '../store';
 import SubtitleActions from '../components/SubtitleText/actions';
 import _ from 'lodash';
+import videoSize from './videoSize';
+import config from './config';
 
 module.exports = {
     
@@ -10,21 +12,33 @@ module.exports = {
     },
     
     defaultSettings: () => {
-        _.defer(() => {
-            SubtitleActions.setSubDelay(0);
-            PlayerActions.setAudioDelay(0);
-            PlayerActions.setRate(1);
-        });
-        
+
         var playerState = PlayerStore.getState();
-        if (playerState.speedField.refs['input']) {
-            playerState.speedField.refs['input'].defaultValue = '1.00x';
-            playerState.subDelayField.refs['input'].defaultValue = '0 ms';
-            playerState.audioDelayField.refs['input'].defaultValue = '0 ms';
-            playerState.audioChannelField.refs['input'].defaultValue = 'Stereo';
-            playerState.aspectField.refs['input'].defaultValue = 'Default';
-            playerState.cropField.refs['input'].defaultValue = 'Default';
-            playerState.zoomField.refs['input'].defaultValue = 'Default';
+        var wcjs = playerState.wcjs;
+
+        wcjs.audio.delay = 0;
+        wcjs.subtitles.delay = 0;
+
+        config.set({
+            audioDelay: 0,
+            subDelay: 0
+        });
+
+        playerState.events.emit('subtitleUpdate');
+
+        var configState = config.fields;
+        if (configState.speed.refs['input']) {
+            configState.subDelay.refs['input'].value = '0 ms';
+            configState.audioDelay.refs['input'].value = '0 ms';
+            configState.audioChannel.refs['input'].value = 'Stereo';
+            configState.aspect.refs['input'].value = 'Default';
+            configState.crop.refs['input'].value = 'Default';
+            configState.zoom.refs['input'].value = 'Default';
         }
+        videoSize.set({
+            aspect: 'Default',
+            crop: 'Default',
+            zoom: 1
+        });
     }
 }

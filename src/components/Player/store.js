@@ -11,6 +11,7 @@ import traktUtil from './utils/trakt';
 import LinkSupport from './utils/supportedLinks';
 import events from 'events';
 import ui from './utils/ui';
+import config from './utils/config';
 
 class playerStore {
 
@@ -23,10 +24,6 @@ class playerStore {
 
         this.playing = false;
         this.paused = false;
-
-        this.alwaysOnTop = false;
-        this.clickPause = ls.isSet('clickPause') ? ls('clickPause') : false;
-        this.rippleEffects = ls.isSet('playerRippleEffects') ? ls('playerRippleEffects') : true;
 
         this.buffering = false;
         this.seekable = false;
@@ -47,26 +44,13 @@ class playerStore {
         };
 
         this.firstPlay = false;
-
         this.foundTrakt = false;
-
         this.fontSize = 21.3;
-
         this.foundSubs = false;
-
-        this.audioDelay = 0;
-        this.audioTrack = 1;
-
         this.notifier = false;
 
         this.announce = '';
         this.announceEffect = '';
-
-        this.speed = 1;
-
-        this.aspectRatio = 'Default';
-        this.crop = 'Default';
-        this.zoom = 1;
 
         this.events = new events.EventEmitter();
     }
@@ -250,7 +234,7 @@ class playerStore {
         } else {
             traktUtil.handleScrobble('start', this.itemDesc(), this.wcjs.position);
         }
-        this.audioTrackField.refs['input'].defaultValue = this.wcjs.audio[1];
+        config.fields.audioTrack.refs['input'].value = this.wcjs.audio[1];
     }
 
     onPaused() {
@@ -314,6 +298,7 @@ class playerStore {
             playing: false,
             paused: true
         })
+
         this.wcjs.pause();
 
         traktUtil.handleScrobble('pause', this.itemDesc(), this.wcjs.position);
@@ -373,20 +358,6 @@ class playerStore {
 
         }
 
-    }
-
-    onSetAudioDelay(newDelay) {
-        this.wcjs.audio.delay = newDelay;
-        this.setState({
-            audioDelay: newDelay
-        });
-    }
-
-    onSetRate(newRate) {
-        this.wcjs.input.rate = newRate;
-        this.setState({
-            rate: newRate
-        });
     }
 
     onEnded() {

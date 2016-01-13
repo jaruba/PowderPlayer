@@ -2,6 +2,7 @@
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 import path from 'path';
 import wcjsRenderer from '../utils/wcjs-renderer';
+import config from '../utils/config';
 import _ from 'lodash';
 import ls from 'local-storage';
 import {
@@ -49,18 +50,13 @@ default React.createClass({
         return {
             initialResize: false,
 
-            volume: playerState.volume,
             playing: playerState.playing,
             paused: playerState.paused,
             fullscreen: playerState.fullscreen,
 
-            rippleEffects: playerState.rippleEffects,
-            clickPause: playerState.clickPause,
-            firstPlay: true,
-
-            aspectRatio: playerState.aspectRatio,
-            crop: playerState.crop,
-            zoom: playerState.zoom
+            rippleEffects: ls.isSet('playerRippleEffects') ? ls('playerRippleEffects') : true,
+            clickPause: ls.isSet('clickPause') ? ls('clickPause') : true,
+            firstPlay: true
         }
     },
     componentWillMount() {
@@ -76,12 +72,8 @@ default React.createClass({
                 canvasParent: renderParent
             });
         });
-        PlayerStore.getState().events.on('resizeNow', () => {
-            this.handleResize({
-                canvas: renderRef,
-                canvasParent: renderParent
-            });
-        });
+        PlayerStore.getState().events.on('resizeNow', this.updateSize);
+        PlayerStore.getState().events.on('rendererUpdate', this.update);
         if (!PlayerStore.getState().wcjs) {
             PlayerActions.wcjsInit(wcjsRenderer.init(this.refs['wcjs-render'], [
                 "--network-caching=" + ls('bufferSize'),
@@ -101,6 +93,9 @@ default React.createClass({
     componentWillUnmount() {
         wcjsRenderer.clearCanvas();
         PlayerStore.unlisten(this.update);
+		var playerEvents = PlayerStore.getState().events;
+        playerEvents.removeListener('resizeNow', this.updateSize);
+        playerEvents.removeListener('rendererUpdate', this.update);
         window.removeEventListener('resize', this.handleResize);
     },
     update() {
@@ -112,15 +107,18 @@ default React.createClass({
                 uri: playerState.uri,
                 playing: playerState.playing,
                 fullscreen: playerState.fullscreen,
-                volume: playerState.volume,
-                rippleEffects: playerState.rippleEffects,
-                clickPause: playerState.clickPause,
-                aspectRatio: playerState.aspectRatio,
-                crop: playerState.crop,
-                zoom: playerState.zoom
+                rippleEffects: ls.isSet('playerRippleEffects') ? ls('playerRippleEffects') : true,
+	            clickPause: ls.isSet('clickPause') ? ls('clickPause') : true,
             });
         }
     },
+	updateSize(newValue) {
+		config.set(newValue);
+		this.handleResize({
+			canvas: this.refs['wcjs-render'],
+			canvasParent: this.refs['canvas-holder']
+		});
+	},
     initPlayer() {
 
         var renderer = this;
@@ -224,9 +222,8 @@ default React.createClass({
                     this.player.playlist.add(this.pendingFiles[i]);
                 } else if (this.pendingFiles[i].uri) {
                     this.player.playlist.add(this.pendingFiles[i].uri);
-                    if (this.pendingFiles[i].title) {
+                    if (this.pendingFiles[i].title)
                         this.player.playlist.items[this.player.playlist.items.count - 1].title = this.pendingFiles[i].title;
-                    }
 
                     if (this.pendingFiles[i].byteSize && this.pendingFiles[i].torrentHash)
                         PlayerActions.setDesc({
@@ -240,7 +237,6 @@ default React.createClass({
                             idx: this.player.playlist.items.count - 1,
                             path: this.pendingFiles[i].path
                         });
-
 
                 }
             }
@@ -305,8 +301,8 @@ default React.createClass({
         var height = canvas.height;
         var sourceAspect = width / height;
 
-        if (this.state.aspectRatio != "Default" && this.state.aspectRatio.indexOf(":") > -1) {
-            var res = this.state.aspectRatio.split(":");
+        if (config.aspect != "Default" && config.aspect.indexOf(":") > -1) {
+            var res = config.aspect.split(":");
             var ratio = gcd(width, height);
         }
 
@@ -315,15 +311,15 @@ default React.createClass({
         if (ratio) var sourceAspect = (ratio * parseFloat(res[0])) / (ratio * parseFloat(res[1]));
         else var sourceAspect = width / height;
 
-        if (this.state.crop != "Default" && this.state.crop.indexOf(":") > -1) {
-            var res = this.state.crop.split(":");
+        if (config.crop != "Default" && config.crop.indexOf(":") > -1) {
+            var res = config.crop.split(":");
             var ratio = gcd(width, height);
             var sourceAspect = (ratio * parseFloat(res[0])) / (ratio * parseFloat(res[1]));
         }
 
         var cond = destAspect > sourceAspect;
 
-        if (this.state.crop != "Default" && this.state.crop.indexOf(":") > -1) {
+        if (config.crop != "Default" && config.crop.indexOf(":") > -1) {
             if (cond) {
                 canvasParent.style.height = "100%";
                 canvasParent.style.width = (((container.clientHeight * sourceAspect) / container.clientWidth) * 100) + "%";
@@ -343,11 +339,11 @@ default React.createClass({
             }
         } else {
             if (cond) {
-                canvasParent.style.height = (100 * this.state.zoom) + "%";
-                canvasParent.style.width = (((container.clientHeight * sourceAspect) / container.clientWidth) * 100 * this.state.zoom) + "%";
+                canvasParent.style.height = (100 * config.zoom) + "%";
+                canvasParent.style.width = (((container.clientHeight * sourceAspect) / container.clientWidth) * 100 * config.zoom) + "%";
             } else {
-                canvasParent.style.height = (((container.clientWidth / sourceAspect) / container.clientHeight) * 100 * this.state.zoom) + "%";
-                canvasParent.style.width = (100 * this.state.zoom) + "%";
+                canvasParent.style.height = (((container.clientWidth / sourceAspect) / container.clientHeight) * 100 * config.zoom) + "%";
+                canvasParent.style.width = (100 * config.zoom) + "%";
             }
             canvas.style.height = "100%";
             canvas.style.width = "100%";

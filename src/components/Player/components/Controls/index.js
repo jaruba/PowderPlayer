@@ -29,7 +29,7 @@ default React.createClass({
             uiShown: playerState.uiShown || playerState.playlistOpen || playerState.settingsOpen,
             uiHidden: playerState.uiHidden,
             subtitlesOpen: playerState.subtitlesOpen,
-            rippleEffects: playerState.rippleEffects,
+            rippleEffects: ls.isSet('playerRippleEffects') ? ls('playerRippleEffects') : true,
 
             position: 0,
             scrobbling: false,
@@ -60,10 +60,12 @@ default React.createClass({
         ControlActions.settingChange({
             volumeSlider: this.refs['volume-slider']
         });
+        PlayerStore.getState().events.on('controlsUpdate', this.update);
     },
     componentWillUnmount() {
         PlayerStore.unlisten(this.update);
         ControlStore.unlisten(this.update);
+        PlayerStore.getState().events.removeListener('controlsUpdate', this.update);
     },
     update() {
         if (this.isMounted()) {
@@ -76,7 +78,7 @@ default React.createClass({
                 uiShown: playerState.uiShown || playerState.playlistOpen || playerState.settingsOpen,
                 uiHidden: playerState.uiHidden,
                 subtitlesOpen: playerState.subtitlesOpen,
-                rippleEffects: playerState.rippleEffects,
+                rippleEffects: ls.isSet('playerRippleEffects') ? ls('playerRippleEffects') : true,
 
                 position: controlState.position,
                 scrobbling: controlState.scrobbling,

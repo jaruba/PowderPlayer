@@ -4,12 +4,12 @@ import PlayerActions from '../../actions';
 import subUtil from '../../utils/subtitles';
 import ls from 'local-storage';
 import _ from 'lodash';
+import config from '../../utils/config';
 
 class SubtitleActions {
 
     constructor() {
         this.generateActions(
-            'setSubDelay',
             'settingChange'
         );
     }
@@ -19,7 +19,7 @@ class SubtitleActions {
         // print subtitle text if a subtitle is selected
         var subtitleState = this.alt.stores.SubtitleStore.state;
         if (subtitleState.subtitle.length > 0)
-            subUtil.findLine(subtitleState.subtitle, subtitleState.trackSub, subtitleState.delay, time).then(result => {
+            subUtil.findLine(subtitleState.subtitle, subtitleState.trackSub, config.subDelay, time).then(result => {
                 if (result && result.text != subtitleState.text)
                     this.actions.settingChange(result);
             });
@@ -99,9 +99,8 @@ class SubtitleActions {
                     delay: 0,
                     trackSub: -1
                 });
-                var playerState = PlayerStore.getState();
-                playerState.subDelayField.refs['input'].defaultValue = '0 ms';
-                playerState.wcjs.subtitles.delay = 0;
+                config.fields.subDelay.refs['input'].defaultValue = '0 ms';
+                PlayerStore.getState().wcjs.subtitles.delay = 0;
             }
         });
     }

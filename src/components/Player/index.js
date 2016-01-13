@@ -4,7 +4,7 @@ import PlayerHeader from './components/Header.react';
 import PlayerControls from './components/Controls';
 import PlayerRender from './components/Renderer.react';
 import Playlist from './components/Playlist.react';
-import Settings from './components/Settings.react';
+import Settings from './components/MenuHolders/Settings';
 import SubtitleList from './components/Subtitles.react';
 import SubtitleText from './components/SubtitleText';
 import Announcement from './components/Announcement.react';
@@ -12,6 +12,7 @@ import Announcement from './components/Announcement.react';
 import webFrame from 'web-frame';
 import remote from 'remote';
 import ls from 'local-storage';
+import config from './utils/config';
 
 import PlayerStore from './store';
 import PlayerActions from './actions';
@@ -188,34 +189,46 @@ const Player = React.createClass({
         });
 
         this.props.bindShortcut('g', (event) => {
-            var subDelayField = PlayerStore.getState().subDelayField;
-            var newValue = parseInt(subDelayField.getValue())-50;
-            subDelayField.refs['input'].defaultValue = newValue + ' ms';
-            SubtitleActions.setSubDelay(newValue);
+            var subDelayField = config.fields.subDelay;
+            var newValue = parseInt(subDelayField.getValue()) - 50;
+            PlayerStore.getState().wcjs.subtitles.delay = newValue;
+            config.set({
+                subDelay: newValue
+            });
+            subDelayField.refs['input'].value = newValue + ' ms';
             PlayerActions.announcement('Subtitle Delay: ' + newValue + ' ms');
         });
     
         this.props.bindShortcut('h', (event) => {
-            var subDelayField = PlayerStore.getState().subDelayField;
-            var newValue = parseInt(subDelayField.getValue())+50;
-            subDelayField.refs['input'].defaultValue = newValue + ' ms';
-            SubtitleActions.setSubDelay(newValue);
+            var subDelayField = config.fields.subDelay;
+            var newValue = parseInt(subDelayField.getValue()) + 50;
+            PlayerStore.getState().wcjs.subtitles.delay = newValue;
+            config.set({
+                subDelay: newValue
+            });
+            subDelayField.refs['input'].value = newValue + ' ms';
             PlayerActions.announcement('Subtitle Delay: ' + newValue + ' ms');
         });
 
         this.props.bindShortcut('j', (event) => {
-            var audioDelayField = PlayerStore.getState().audioDelayField;
-            var newValue = parseInt(audioDelayField.getValue())-50;
-            audioDelayField.refs['input'].defaultValue = newValue + ' ms';
-            PlayerActions.setAudioDelay(newValue);
+            var audioDelayField = config.fields.audioDelay;
+            var newValue = parseInt(audioDelayField.getValue()) - 50;
+            PlayerStore.getState().wcjs.audio.delay = newValue;
+            config.set({
+                audioDelay: newValue
+            });
+            audioDelayField.refs['input'].value = newValue + ' ms';
             PlayerActions.announcement('Audio Delay: ' + newValue + ' ms');
         });
     
         this.props.bindShortcut('k', (event) => {
-            var audioDelayField = PlayerStore.getState().audioDelayField;
-            var newValue = parseInt(audioDelayField.getValue())+50;
-            audioDelayField.refs['input'].defaultValue = newValue + ' ms';
-            PlayerActions.setAudioDelay(newValue);
+            var audioDelayField = config.fields.audioDelay;
+            var newValue = parseInt(audioDelayField.getValue()) + 50;
+            audioDelayField.refs['input'].value = newValue + ' ms';
+            PlayerStore.getState().wcjs.audio.delay = newValue;
+            config.set({
+                audioDelay: newValue
+            });
             PlayerActions.announcement('Audio Delay: ' + newValue + ' ms');
         });
 
@@ -224,7 +237,7 @@ const Player = React.createClass({
             if (newValue > 500) newValue = 500;
             ls('customSubSize', newValue);
             PlayerActions.announcement('Subtitle Size ' + newValue + '%');
-            PlayerStore.getState().subSizeField.refs['input'].defaultValue = newValue + '%';
+            config.fields.subSize.refs['input'].value = newValue + '%';
         });
 
         this.props.bindShortcut('alt+down', (event) => {
@@ -232,7 +245,7 @@ const Player = React.createClass({
             if (newValue < 5) newValue = 5;
             ls('customSubSize', newValue);
             PlayerActions.announcement('Subtitle Size ' + newValue + '%');
-            PlayerStore.getState().subSizeField.refs['input'].defaultValue = newValue + '%';
+            config.fields.subSize.refs['input'].value = newValue + '%';
         });
 
         this.props.bindShortcut('shift+up', (event) => {
@@ -271,7 +284,7 @@ const Player = React.createClass({
     
                 var newValue = parseFloat(Math.round(playerState.wcjs.input.rate * 100) / 100).toFixed(2);
         
-                playerState.speedField.refs['input'].defaultValue = newValue + 'x';
+                config.fields.speed.refs['input'].value = newValue + 'x';
                 
                 PlayerActions.announcement('Speed: ' + newValue + 'x');
             }
@@ -295,7 +308,7 @@ const Player = React.createClass({
     
                 var newValue = parseFloat(Math.round(playerState.wcjs.input.rate * 100) / 100).toFixed(2);
         
-                playerState.speedField.refs['input'].defaultValue = newValue + 'x';
+                config.fields.speed.refs['input'].value = newValue + 'x';
                 
                 PlayerActions.announcement('Speed: ' + newValue + 'x');
             }
@@ -310,7 +323,7 @@ const Player = React.createClass({
 
             var newValue = parseFloat(Math.round(playerState.wcjs.input.rate * 100) / 100).toFixed(2);
     
-            playerState.speedField.refs['input'].defaultValue = newValue + 'x';
+            config.fields.speed.refs['input'].value = newValue + 'x';
             
             PlayerActions.announcement('Speed: ' + newValue + 'x');
 
@@ -384,21 +397,20 @@ const Player = React.createClass({
         var aspectRatios = ['Default','1:1','4:3','16:9','16:10','2.21:1','2.35:1','2.39:1','5:4'];
         
         this.props.bindShortcut('a', (event) => {
-            var playerState = PlayerStore.getState();
             aspectRatios.some((el, ij) => {
-                if (el == playerState.aspectRatio) {
-                    if (aspectRatios.length == ij+1)
+                if (el == config.aspect) {
+                    if (aspectRatios.length == ij + 1)
                         var newValue = 0;
                     else
                         var newValue = ij + 1;
 
-                    PlayerActions.settingChange({
-                        aspectRatio: aspectRatios[newValue],
+                    config.set({
+                        aspect: aspectRatios[newValue],
                         crop: 'Default',
                         zoom: 1
                     });
                     PlayerActions.announcement('Aspect Ratio: ' + aspectRatios[newValue]);
-                    playerState.events.emit('resizeNow');
+                    PlayerStore.getState().events.emit('resizeNow');
                     return true;
                 } else return false;
             });
@@ -407,21 +419,20 @@ const Player = React.createClass({
         var crops = ['Default','16:10','16:9','1.85:1','2.21:1','2.35:1','2.39:1','5:3','4:3','5:4','1:1'];
         
         this.props.bindShortcut('c', (event) => {
-            var playerState = PlayerStore.getState();
             crops.some((el, ij) => {
-                if (el == playerState.crop) {
-                    if (crops.length == ij+1)
+                if (el == config.crop) {
+                    if (crops.length == ij + 1)
                         var newValue = 0;
                     else
                         var newValue = ij + 1;
 
-                    PlayerActions.settingChange({
+                    config.set({
                         crop: crops[newValue],
-                        aspectRatio: 'Default',
+                        aspect: 'Default',
                         zoom: 1
                     });
                     PlayerActions.announcement('Crop: ' + crops[newValue]);
-                    playerState.events.emit('resizeNow');
+                    PlayerStore.getState().events.emit('resizeNow');
                     return true;
                 } else return false;
             });
@@ -430,21 +441,20 @@ const Player = React.createClass({
         var zooms = [['Default',1],['2x Double',2],['0.25x Quarter',0.25],['0.5x Half',0.5]];
         
         this.props.bindShortcut('z', (event) => {
-            var playerState = PlayerStore.getState();
             zooms.some((el, ij) => {
-                if (el[1] == playerState.zoom) {
+                if (el[1] == config.zoom) {
                     if (zooms.length == ij+1)
                         var newValue = 0;
                     else
                         var newValue = ij + 1;
 
-                    PlayerActions.settingChange({
+                    config.set({
                         zoom: zooms[newValue][1],
                         crop: 'Default',
-                        aspectRatio: 'Default'
+                        aspect: 'Default'
                     });
                     PlayerActions.announcement('Zoom: ' + zooms[newValue][0]);
-                    playerState.events.emit('resizeNow');
+                    PlayerStore.getState().events.emit('resizeNow');
                     return true;
                 } else return false;
             });
@@ -498,6 +508,7 @@ const Player = React.createClass({
         });
     },
     update() {
+        console.log('player update');
         if (this.isMounted()) {
             var playerState = PlayerStore.getState();
             this.setState({

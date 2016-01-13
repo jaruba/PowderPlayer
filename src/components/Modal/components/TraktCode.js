@@ -4,6 +4,7 @@ import {
 }
 from 'material-ui';
 import clipboard from 'clipboard';
+import _ from 'lodash';
 
 import ModalActions from '../dark/actions';
 import PlayerActions from '../../Player/actions';
@@ -26,6 +27,9 @@ default React.createClass({
             try {
                 traktUtil.exchangePin(inputvalue);
                 PlayerStore.getState().notifier.info('Login Successful', '', 4000);
+                _.delay(() => {
+                    PlayerStore.getState().events.emit('settingsUpdate');
+                },1000);
             } catch(e) {
                 PlayerStore.getState().notifier.info('Error: '+e.message, '', 7000);
             }

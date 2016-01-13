@@ -33,11 +33,9 @@ class PlayerActions {
             'close',
             'toggleMenu',
             'setPlaylist',
-            'setAudioDelay',
 
             'itemCount',
             'itemDesc',
-            'setRate',
 
             'announcement'
         );
