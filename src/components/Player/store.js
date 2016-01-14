@@ -40,7 +40,6 @@ class playerStore {
         };
 
         this.firstPlay = false;
-        this.foundTrakt = false;
         this.fontSize = 21.3;
         this.foundSubs = false;
         this.notifier = false;
@@ -145,16 +144,19 @@ class playerStore {
                 } catch (e) {}
             }
 
-            _.delay(() => {
+            _.defer(() => {
                 playerActions.updateImage(image);
+                ControlActions.settingChange({
+                    position: 0
+                });
+                this.events.emit('setTitle', this.wcjs.playlist.items[this.wcjs.playlist.currentItem].title);
             });
 
             this.setState({
-                title: this.wcjs.playlist.items[this.wcjs.playlist.currentItem].title,
                 lastItem: this.wcjs.playlist.currentItem,
-                position: 0,
                 pendingFiles: []
             });
+
         }
 
     }
@@ -166,13 +168,13 @@ class playerStore {
             SubtitleActions.settingChange({
                 text: ''
             });
+            this.events.emit('foundTrakt', false);
         });
 
         this.setState({
             buffering: false,
             playing: false,
-            paused: false,
-            foundTrakt: false
+            paused: false
         });
     }
 
@@ -183,15 +185,19 @@ class playerStore {
             if (this.wcjs.volume != ls('volume'))
                 this.wcjs.volume = ls('volume');
             var newObj = {
-                title: this.wcjs.playlist.items[this.wcjs.playlist.currentItem].title,
                 firstPlay: true,
                 buffering: false,
                 playing: true,
                 paused: false
             };
+            _.defer(() => {
+                this.events.emit('setTitle', this.wcjs.playlist.items[this.wcjs.playlist.currentItem].title);
+            });
             var itemDesc = this.itemDesc();
-            if (itemDesc.setting && itemDesc.setting.trakt && !this.foundTrakt) {
-                newObj.foundTrakt = true;
+            if (itemDesc.setting && itemDesc.setting.trakt && !config.foundTrakt) {
+                _.defer(() => {
+                    this.events.emit('foundTrakt', true);
+                });
                 var shouldScrobble = traktUtil.loggedIn ? ls.isSet('traktScrobble') ? ls('traktScrobble') : true : false;
                 if (shouldScrobble) {
                     traktUtil.handleScrobble('start', itemDesc, this.wcjs.position);
@@ -227,15 +233,22 @@ class playerStore {
                 position: 0,
                 totalTime: '00:00'
             });
-        });
-
-        _.defer(() => {
             SubtitleActions.settingChange({
                 subtitle: [],
                 selectedSub: 1,
                 trackSub: -1,
                 text: ''
             });
+            this.events.emit('resizeNow', {
+                aspect: 'Default',
+                crop: 'Default',
+                zoom: 1
+            });
+            this.events.emit('foundTrakt', false);
+        });
+        // this needs to be here
+        config.set({
+            foundTrakt: false
         });
 
         this.setState({
@@ -243,10 +256,7 @@ class playerStore {
             foundSubs: false,
             subtitlesOpen: false,
             audioChannel: 1,
-            audioTrack: 1,
-            aspectRatio: 'Default',
-            crop: 'Default',
-            zoom: 1
+            audioTrack: 1
         });
 
         ui.defaultSettings();
@@ -263,13 +273,17 @@ class playerStore {
 
     onPlayItem(idx) {
         this.setState({
-            buffering: false,
-            foundTrakt: false
+            buffering: false
         })
+        if (idx != this.wcjs.playlist.currentItem) {
+            _.defer(() => {
+                this.events.emit('foundTrakt', false);
+            });
 
-        traktUtil.handleScrobble('stop', this.itemDesc(), this.wcjs.position);
+            traktUtil.handleScrobble('stop', this.itemDesc(), this.wcjs.position);
 
-        this.wcjs.playlist.playItem(idx[0]);
+            this.wcjs.playlist.playItem(idx[0]);
+        }
     }
 
     onPause() {
@@ -387,6 +401,12 @@ class playerStore {
                 subtitles: false,
                 settings: false
             });
+            this.events.emit('setTitle', '');
+            this.events.emit('resizeNow', {
+                aspect: 'Default',
+                crop: 'Default',
+                zoom: 1
+            });
         });
 
         this.setState({
@@ -394,7 +414,6 @@ class playerStore {
             paused: false,
             buffering: false,
 
-            title: '',
             fullscreen: false,
             uri: false,
 
@@ -407,15 +426,8 @@ class playerStore {
             audioChannel: 1,
             audioTrack: 1
         });
-        
-        config.set({
-            aspect: 'Default',
-            crop: 'Default',
-            zoom: 1
-        });
 
         ui.defaultSettings();
-
         if (this.wcjs) {
 
             traktUtil.handleScrobble('stop', this.itemDesc(), this.wcjs.position);

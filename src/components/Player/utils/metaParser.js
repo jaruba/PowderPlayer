@@ -5,6 +5,7 @@ import parseVideo from 'video-name-parser';
 import nameToImdb from 'name-to-imdb';
 import parser from './parser';
 import traktUtil from './trakt';
+import config from './config';
 import PlayerStore from '../store';
 import PlayerActions from '../actions';
 import ls from 'local-storage';
@@ -41,11 +42,8 @@ var parserQueue = async.queue((task, cb) => {
                     image: client.image
                 });
 
-                if (idx == wcjs.playlist.currentItem) {
-                    PlayerActions.settingChange({
-                        title: client.title
-                    });
-                }
+                if (idx == wcjs.playlist.currentItem)
+                    PlayerStore.getState().events.emit('setTitle', client.title);
 
             }
             _.delay(() => {
@@ -161,12 +159,10 @@ var parserQueue = async.queue((task, cb) => {
 
                         PlayerActions.setDesc(newObj);
                         if (idx == wcjs.playlist.currentItem) {
-                            PlayerActions.settingChange({
-                                title: newObj.title
-                            });
-                            if (!player.foundTrakt) {
-                                PlayerActions.settingChange({
-                                    foundTrakt: true
+                            PlayerStore.getState().events.emit('setTitle', newObj.title);
+                            if (!config.foundTrakt) {
+                                _.defer(() => {
+                                    PlayerStore.getState().events.emit('foundTrakt', true);
                                 });
 
                                 var shouldScrobble = traktUtil.loggedIn && (ls.isSet('traktScrobble') ? ls('traktScrobble') : true);

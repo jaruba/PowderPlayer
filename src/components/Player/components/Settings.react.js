@@ -621,12 +621,10 @@ default React.createClass({
 
                 this._videoField('aspect', aspectRatios[newValue]);
 
-                _.defer(() => {
-                    PlayerStore.getState().events.emit('resizeNow', {
-                        aspect: aspectRatios[newValue],
-                        crop: 'Default',
-                        zoom: 1
-                    });
+                PlayerStore.getState().events.emit('resizeNow', {
+                    aspect: aspectRatios[newValue],
+                    crop: 'Default',
+                    zoom: 1
                 });
 
                 return true;
@@ -651,12 +649,10 @@ default React.createClass({
 
                 this._videoField('crop', crops[newValue]);
 
-                _.defer(() => {
-                    PlayerStore.getState().events.emit('resizeNow', {
-                        crop: crops[newValue],
-                        aspect: 'Default',
-                        zoom: 1
-                    });
+                PlayerStore.getState().events.emit('resizeNow', {
+                    crop: crops[newValue],
+                    aspect: 'Default',
+                    zoom: 1
                 });
 
                 return true;
@@ -678,12 +674,10 @@ default React.createClass({
                     var newValue = zooms.length == ij + 1 ? 0 : ij + 1;
 
                 this._videoField('zoom', zooms[newValue][0]);
-                _.defer(() => {
-                    PlayerStore.getState().events.emit('resizeNow', {
-                        zoom: zooms[newValue][1],
-                        crop: 'Default',
-                        aspect: 'Default'
-                    });
+                PlayerStore.getState().events.emit('resizeNow', {
+                    zoom: zooms[newValue][1],
+                    crop: 'Default',
+                    aspect: 'Default'
                 });
 
                 return true;

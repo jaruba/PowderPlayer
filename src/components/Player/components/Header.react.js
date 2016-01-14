@@ -14,6 +14,7 @@ import PlayerActions from '../actions';
 import VisibilityStore from './Visibility/store';
 import ModalActions from '../../Modal/dark/actions';
 import ui from '../utils/ui';
+import config from '../utils/config';
 
 export
 default React.createClass({
@@ -21,40 +22,50 @@ default React.createClass({
     mixins: [History, PureRenderMixin],
 
     getInitialState() {
-        
-        var playerState = PlayerStore.getState();
         var visibilityState = VisibilityStore.getState();
-        
         return {
-            title: playerState.title,
+            title: '',
             uiShown: visibilityState.uiShown && !visibilityState.playlist && !visibilityState.settings,
             uiHidden: visibilityState.uiHidden,
             playlistOpen: visibilityState.playlist,
             settingsOpen: visibilityState.settings,
-            foundTrakt: playerState.foundTrakt
+            foundTrakt: false
         }
     },
     componentWillMount() {
-        PlayerStore.listen(this.update);
         VisibilityStore.listen(this.update);
+        PlayerStore.getState().events.on('foundTrakt', this.showTrakt);
+        PlayerStore.getState().events.on('setTitle', this.setTitle);
     },
     componentWillUnmount() {
-        PlayerStore.unlisten(this.update);
         VisibilityStore.unlisten(this.update);
+        PlayerStore.getState().events.removeListener('foundTrakt', this.showTrakt);
+        PlayerStore.getState().events.removeListener('setTitle', this.setTitle);
     },
     update() {
         if (this.isMounted()) {
-            var playerState = PlayerStore.getState();
+            console.log('header update');
             var visibilityState = VisibilityStore.getState();
             this.setState({
-                title: playerState.title,
                 uiShown: visibilityState.uiShown && !visibilityState.playlist && !visibilityState.settings,
                 uiHidden: visibilityState.uiHidden,
                 playlistOpen: visibilityState.playlist,
-                settingsOpen: visibilityState.settings,
-                foundTrakt: playerState.foundTrakt
+                settingsOpen: visibilityState.settings
             });
         }
+    },
+    showTrakt(state) {
+        this.setState({
+            foundTrakt: state
+        });
+        config.set({
+            foundTrakt: state
+        });
+    },
+    setTitle(title) {
+        this.setState({
+            title: title
+        });
     },
     handleClose() {
         PlayerActions.close();

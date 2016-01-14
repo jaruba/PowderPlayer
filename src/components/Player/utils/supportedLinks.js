@@ -83,13 +83,12 @@ class supportedLinks {
                     var links = [];
 
                     if (client.links.absolute) {
-                        if (client.links.absolute.http && client.links.absolute.https) {
+                        if (client.links.absolute.http && client.links.absolute.https)
                             links = client.links.absolute.http.concat(client.links.absolute.https);
-                        } else if (client.links.absolute.http) {
+                        else if (client.links.absolute.http)
                             links = client.links.absolute.http;
-                        } else if (client.links.absolute.https) {
+                        else if (client.links.absolute.https)
                             links = client.links.absolute.https;
-                        }
                     }
 
                     var iframes = client.iframes;
