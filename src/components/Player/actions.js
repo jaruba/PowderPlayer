@@ -211,6 +211,8 @@ class PlayerActions {
     toggleFullscreen(state) {
         this.dispatch();
 
+        if (typeof state !== 'boolean') state = !this.alt.stores.playerStore.getState().fullscreen;
+
         window.document.querySelector(".render-holder > div:first-of-type").style.display = 'none';
         _.delay(() => {
             window.document.querySelector(".render-holder > div:first-of-type").style.display = 'block';

@@ -44,23 +44,15 @@ default React.createClass({
     mixins: [PureRenderMixin],
 
     getInitialState() {
-
-        var playerState = PlayerStore.getState();
-
         return {
             initialResize: false,
-
-            playing: playerState.playing,
-            paused: playerState.paused,
-            fullscreen: playerState.fullscreen,
-
             rippleEffects: ls.isSet('playerRippleEffects') ? ls('playerRippleEffects') : true,
             clickPause: ls.isSet('clickPause') ? ls('clickPause') : true,
             firstPlay: true
         }
     },
     componentWillMount() {
-        PlayerStore.listen(this.update);
+
     },
     componentDidMount() {
         var renderRef = this.refs['wcjs-render'];
@@ -92,33 +84,26 @@ default React.createClass({
     },
     componentWillUnmount() {
         wcjsRenderer.clearCanvas();
-        PlayerStore.unlisten(this.update);
-		var playerEvents = PlayerStore.getState().events;
+        var playerEvents = PlayerStore.getState().events;
         playerEvents.removeListener('resizeNow', this.updateSize);
         playerEvents.removeListener('rendererUpdate', this.update);
         window.removeEventListener('resize', this.handleResize);
     },
     update() {
         if (this.isMounted()) {
-
-            var playerState = PlayerStore.getState();
-
             this.setState({
-                uri: playerState.uri,
-                playing: playerState.playing,
-                fullscreen: playerState.fullscreen,
                 rippleEffects: ls.isSet('playerRippleEffects') ? ls('playerRippleEffects') : true,
-	            clickPause: ls.isSet('clickPause') ? ls('clickPause') : true,
+                clickPause: ls.isSet('clickPause') ? ls('clickPause') : true,
             });
         }
     },
-	updateSize(newValue) {
-		config.set(newValue);
-		this.handleResize({
-			canvas: this.refs['wcjs-render'],
-			canvasParent: this.refs['canvas-holder']
-		});
-	},
+    updateSize(newValue) {
+        config.set(newValue);
+        this.handleResize({
+            canvas: this.refs['wcjs-render'],
+            canvasParent: this.refs['canvas-holder']
+        });
+    },
     initPlayer() {
 
         var renderer = this;
@@ -360,7 +345,7 @@ default React.createClass({
     },
     handleTogglePlay() {
         if (this.state.clickPause)
-            this.state.playing ? PlayerActions.pause() : PlayerActions.play();
+            PlayerStore.getState().playing ? PlayerActions.pause() : PlayerActions.play();
     },
     wheel(event) {
         var volume = (event.deltaY < 0) ? this.player.volume + 5 : this.player.volume - 5;
@@ -385,9 +370,9 @@ default React.createClass({
         };
         return (
             <div className='render-holder' onWheel={this.wheel}>
-                <RaisedButton id={'canvasEffect'} onClick={this.handleTogglePlay} onDoubleClick={PlayerActions.toggleFullscreen.bind(this, !this.state.fullscreen)} iconClassName="material-icons" className={this.state.rippleEffects ? this.state.clickPause ? 'over-canvas' : 'over-canvas no-ripples' : 'over-canvas no-ripples' } label="Canvas Overlay" />
+                <RaisedButton id={'canvasEffect'} onClick={this.handleTogglePlay} onDoubleClick={PlayerActions.toggleFullscreen} iconClassName="material-icons" className={this.state.rippleEffects ? this.state.clickPause ? 'over-canvas' : 'over-canvas no-ripples' : 'over-canvas no-ripples' } label="Canvas Overlay" />
                 <div ref="canvas-holder" className="canvas-holder" style={renderStyles.container}>
-                    <canvas id={'playerCanvas'} style={renderStyles.canvas} onClick={this.handleTogglePlay} onDoubleClick={PlayerActions.toggleFullscreen.bind(this, !this.state.fullscreen)} ref="wcjs-render" />
+                    <canvas id={'playerCanvas'} style={renderStyles.canvas} onClick={this.handleTogglePlay} onDoubleClick={PlayerActions.toggleFullscreen} ref="wcjs-render" />
                 </div>
             </div>
         );
