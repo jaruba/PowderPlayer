@@ -4,6 +4,7 @@ import ipc from 'ipc';
 import subUtil from './utils/subtitles';
 import HistoryStore from '../../stores/historyStore';
 import torrentUtil from '../../utils/stream/torrentUtil';
+import config from './utils/config';
 import ls from 'local-storage';
 
 class PlayerActions {
@@ -33,10 +34,33 @@ class PlayerActions {
             'setPlaylist',
 
             'itemCount',
-            'itemDesc',
-
-            'announcement'
+            'itemDesc'
         );
+    }
+    
+    announcement(obj) {
+        var announcer = {};
+        if (typeof obj === 'string') obj = {
+            text: obj
+        };
+        announcer.text = obj.text;
+        if (!obj.delay) obj.delay = 2000;
+
+        clearTimeout(config.announceTimer);
+        var playerState = this.alt.stores.playerStore.state;
+        config.announceTimer = setTimeout(() => {
+            if (!config.announceEffect) {
+                playerState.events.emit('announce', {
+                    effect: !config.announceEffect
+                });
+            }
+        }, obj.delay);
+
+        if (config.announceEffect)
+            obj.effect = !config.announceEffect;
+
+        if (Object.keys(announcer).length)
+            playerState.events.emit('announce', obj);
     }
 
     setDesc(obj) {

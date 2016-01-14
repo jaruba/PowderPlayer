@@ -10,7 +10,8 @@ var config = {
     audioDelay: 0,
     subDelay: 0,
     alwaysOnTop: false,
-    fields: {}
+    fields: {},
+    foundTrakt: false
 };
 
 config.set = newObj =>  _.each(newObj, (el, ij) => config[ij] = el);

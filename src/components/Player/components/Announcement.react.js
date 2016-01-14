@@ -1,35 +1,39 @@
 ﻿import React from 'react';
 import PlayerStore from '../store';
 import VisibilityStore from './Visibility/store';
+import config from '../utils/config';
 
 export
 default React.createClass({
 
     getInitialState() {
-        var playerState = PlayerStore.getState();
         var visibilityState = VisibilityStore.getState();
         return {
             text: '',
-            size: playerState.fontSize,
-            effect: playerState.announceEffect,
+            size: 21.3,
+            effect: '',
             visibility: !(visibilityState.playlist || visibilityState.settings)
         }
     },
     componentWillMount() {
         VisibilityStore.listen(this.update);
+        PlayerStore.getState().events.on('announce', this.announcement);
     },
-
     componentWillUnmount() {
         VisibilityStore.unlisten(this.update);
+        PlayerStore.getState().events.removeListener('announce', this.announcement);
+    },
+    announcement(obj) {
+        if (typeof obj.effect !== 'undefined')
+            config.set({
+                announceEffect: obj.effect
+            });
+        this.setState(obj);
     },
     update() {
         if (this.isMounted()) {
-            var playerState = PlayerStore.getState();
             var visibilityState = VisibilityStore.getState();
             this.setState({
-                text: playerState.announce,
-                size: playerState.fontSize,
-                effect: playerState.announceEffect,
                 visibility: !(visibilityState.playlist || visibilityState.settings)
             });
         }

@@ -40,12 +40,8 @@ class playerStore {
         };
 
         this.firstPlay = false;
-        this.fontSize = 21.3;
         this.foundSubs = false;
         this.notifier = false;
-
-        this.announce = '';
-        this.announceEffect = '';
 
         this.events = new events.EventEmitter();
     }
@@ -89,48 +85,22 @@ class playerStore {
         var isLocal = (itemDesc.mrl && itemDesc.mrl.indexOf('file://') == 0);
         if (!isLocal) {
             var announcer = {};
-            announcer.announce = 'Buffering ' + perc + '%';
-            clearTimeout(this.announceTimer);
+            announcer.text = 'Buffering ' + perc + '%';
+            clearTimeout(config.announceTimer);
 
-            if (perc === 100) {
-                announcer.buffering = false;
-                if (!this.announceEffect)
-                    announcer.announceEffect = true;
-            } else {
-                announcer.buffering = perc;
-                if (this.announceEffect)
-                    announcer.announceEffect = false;
-            }
+            if (perc === 100)
+                if (!config.announceEffect)
+                    announcer.effect = true;
+            else
+                if (config.announceEffect)
+                    announcer.effect = false;
 
             if (Object.keys(announcer).length)
-                this.setState(announcer);
+                _.defer(() => {
+                    this.events.emit('announce', announcer);
+                });
         }
 
-    }
-
-    onAnnouncement(obj) {
-
-        var announcer = {};
-        if (typeof obj === 'string') obj = {
-            text: obj
-        };
-        announcer.announce = obj.text;
-        if (!obj.delay) obj.delay = 2000;
-
-        clearTimeout(this.announceTimer);
-        var playerState = this;
-        announcer.announceTimer = setTimeout(() => {
-            if (!playerState.announceEffect)
-                playerState.setState({
-                    announceEffect: !playerState.announceEffect
-                });
-        }, obj.delay);
-
-        if (this.announceEffect)
-            announcer.announceEffect = false;
-
-        if (Object.keys(announcer).length)
-            this.setState(announcer);
     }
 
     onOpening() {
@@ -217,9 +187,9 @@ class playerStore {
                 SubtitleActions.findSubs(itemDesc);
             }
 
-        } else {
+        } else
             traktUtil.handleScrobble('start', this.itemDesc(), this.wcjs.position);
-        }
+
         config.fields.audioTrack.refs['input'].value = this.wcjs.audio[1];
     }
 

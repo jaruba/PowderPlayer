@@ -338,8 +338,8 @@ default React.createClass({
             size: this.calcSubSize()
         });
 
-        PlayerActions.settingChange({
-            fontSize: this.calcFontSize()
+        PlayerStore.getState().events.emit('announce', {
+            size: this.calcFontSize()
         });
 
     },
