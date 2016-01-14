@@ -11,6 +11,7 @@ from 'material-ui';
 
 import PlayerStore from '../store';
 import PlayerActions from '../actions';
+import VisibilityStore from './Visibility/store';
 import ModalActions from '../../Modal/dark/actions';
 import ui from '../utils/ui';
 
@@ -22,33 +23,35 @@ default React.createClass({
     getInitialState() {
         
         var playerState = PlayerStore.getState();
+        var visibilityState = VisibilityStore.getState();
         
         return {
             title: playerState.title,
-            uiShown: playerState.uiShown && !playerState.playlistOpen && !playerState.settingsOpen,
-            uiHidden: playerState.uiHidden,
-            playlistOpen: playerState.playlistOpen,
-            settingsOpen: playerState.setingsOpen,
+            uiShown: visibilityState.uiShown && !visibilityState.playlist && !visibilityState.settings,
+            uiHidden: visibilityState.uiHidden,
+            playlistOpen: visibilityState.playlist,
+            settingsOpen: visibilityState.settings,
             foundTrakt: playerState.foundTrakt
         }
     },
     componentWillMount() {
         PlayerStore.listen(this.update);
+        VisibilityStore.listen(this.update);
     },
     componentWillUnmount() {
         PlayerStore.unlisten(this.update);
+        VisibilityStore.unlisten(this.update);
     },
     update() {
         if (this.isMounted()) {
-
             var playerState = PlayerStore.getState();
-
+            var visibilityState = VisibilityStore.getState();
             this.setState({
                 title: playerState.title,
-                uiShown: playerState.uiShown && !playerState.playlistOpen && !playerState.settingsOpen,
-                uiHidden: playerState.uiHidden,
-                playlistOpen: playerState.playlistOpen,
-                settingsOpen: playerState.settingsOpen,
+                uiShown: visibilityState.uiShown && !visibilityState.playlist && !visibilityState.settings,
+                uiHidden: visibilityState.uiHidden,
+                playlistOpen: visibilityState.playlist,
+                settingsOpen: visibilityState.settings,
                 foundTrakt: playerState.foundTrakt
             });
         }

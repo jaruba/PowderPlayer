@@ -121,7 +121,6 @@ default React.createClass({
     },
 
     componentWillUnmount() {
-
         PlayerStore.getState().events.removeListener('settingsUpdate', this.update);
     },
     
@@ -145,10 +144,7 @@ default React.createClass({
     update() {
         console.log('settings update');
         if (this.isMounted()) {
-            var playerState = PlayerStore.getState();
             this.setState({
-                open: playerState.settingsOpen,
-                uiHidden: playerState.uiHidden,
                 alwaysOnTop: config.alwaysOnTop,
                 clickPause: ls.isSet('clickPause') ? ls('clickPause') : true,
                 playerRippleEffects: ls.isSet('playerRippleEffects') ? ls('playerRippleEffects') : true,

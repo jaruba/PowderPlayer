@@ -21,6 +21,9 @@ import SubtitleActions from './components/SubtitleText/actions';
 import ControlStore from './components/Controls/store';
 import ControlActions from './components/Controls/actions';
 
+import VisibilityStore from './components/Visibility/store';
+import VisibilityActions from './components/Visibility/actions';
+
 import ReactNotify from 'react-notify';
 
 import {mouseTrap} from 'react-mousetrap';
@@ -30,11 +33,12 @@ const Player = React.createClass({
 
     getInitialState() {
         var playerState = PlayerStore.getState();
+        var visibilityState = VisibilityStore.getState();
         return {
             uri: playerState.uri,
 
             buffering: playerState.buffering,
-            uiShown: playerState.uiShown,
+            uiShown: visibilityState.uiShown,
             
             rippleEffects: playerState.rippleEffects
         }
@@ -43,6 +47,7 @@ const Player = React.createClass({
         if (!ls.isSet('customSubSize'))
             ls('customSubSize', 100);
         PlayerStore.listen(this.update);
+        VisibilityStore.listen(this.update);
         remote.getCurrentWindow().setMinimumSize(392, 228);
         webFrame.setZoomLevel(ls.isSet('zoomLevel') ? ls('zoomLevel') : 0);
         
@@ -361,29 +366,30 @@ const Player = React.createClass({
         });
 
         this.props.bindShortcut('ctrl+h', (event) => {
-            var playerState = PlayerStore.getState();
-            if (playerState.uiHidden)
+            var visibilityState = VisibilityStore.getState();
+            if (visibilityState.uiHidden)
                 PlayerActions.announcement('UI Visible');
             else
                 PlayerActions.announcement('UI Hidden');
-            PlayerActions.settingChange({
-                uiHidden: !playerState.uiHidden
+            VisibilityActions.settingChange({
+                uiHidden: !visibilityState.uiHidden
             });
         });
 
         this.props.bindShortcut('esc', (event) => {
             var playerState = PlayerStore.getState();
-            if (playerState.playlistOpen) {
-                PlayerActions.settingChange({
-                    playlistOpen: false
+            var visibilityState = VisibilityStore.getState();
+            if (visibilityState.playlist) {
+                VisibilityActions.settingChange({
+                    playlist: false
                 });
-            } else if (playerState.settingsOpen) {
-                PlayerActions.settingChange({
-                    settingsOpen: false
+            } else if (visibilityState.settings) {
+                VisibilityActions.settingChange({
+                    settings: false
                 });
-            } else if (playerState.subtitlesOpen) {
-                PlayerActions.settingChange({
-                    subtitlesOpen: false
+            } else if (visibilityState.subtitles) {
+                VisibilityActions.settingChange({
+                    subtitles: false
                 });
             } else if (playerState.fullscreen) {
                 PlayerActions.toggleFullscreen(false);
@@ -497,6 +503,7 @@ const Player = React.createClass({
         this.props.unbindShortcut('c');
         this.props.unbindShortcut('z');
         PlayerStore.unlisten(this.update);
+        VisibilityStore.unlisten(this.update);
     },
     componentDidMount() {
         var announcer = document.getElementsByClassName('wcjs-announce')[0];
@@ -511,11 +518,12 @@ const Player = React.createClass({
         console.log('player update');
         if (this.isMounted()) {
             var playerState = PlayerStore.getState();
+            var visibilityState = VisibilityStore.getState();
             this.setState({
                 uri: playerState.uri,
 
                 buffering: playerState.buffering,
-                uiShown: playerState.uiShown,
+                uiShown: visibilityState.uiShown,
                 
                 fontSize: playerState.fontSize,
                 subSize: playerState.subSize,
@@ -526,14 +534,14 @@ const Player = React.createClass({
     },
     hideUI() {
         if (!ControlStore.getState().scrobbling) {
-            PlayerActions.uiShown(false);
+            VisibilityActions.uiShown(false);
         } else {
             this.hoverTimeout = setTimeout(this.hideUI, 3000);
         }
     },
     hover(event) {
         this.hoverTimeout && clearTimeout(this.hoverTimeout);
-        this.state.uiShown || PlayerActions.uiShown(true);
+        this.state.uiShown || VisibilityActions.uiShown(true);
         this.hoverTimeout = setTimeout(this.hideUI, 3000);
     },
     render() {

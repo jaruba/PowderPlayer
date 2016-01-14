@@ -19,7 +19,6 @@ class PlayerActions {
             'stopped',
 
             'playing',
-            'uiShown',
             'buffering',
             'seekable',
             'opening',
@@ -31,7 +30,6 @@ class PlayerActions {
             'settingChange',
             'wcjsInit',
             'close',
-            'toggleMenu',
             'setPlaylist',
 
             'itemCount',

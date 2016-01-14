@@ -5,6 +5,7 @@ import {handleTime} from './utils/time';
 import alt from '../../alt';
 import playerActions from './actions';
 import ControlActions from './components/Controls/actions';
+import VisibilityActions from './components/Visibility/actions';
 import SubtitleActions from './components/SubtitleText/actions';
 import needle from 'needle';
 import traktUtil from './utils/trakt';
@@ -33,11 +34,6 @@ class playerStore {
         this.playlist = {};
 
         this.fullscreen = false;
-        this.uiShown = true;
-        this.uiHidden = false;
-        this.playlistOpen = false;
-        this.subtitlesOpen = false;
-        this.settingsOpen = false;
 
         this.itemDesc = i => {
             return false
@@ -74,22 +70,6 @@ class playerStore {
                 }
                 return false;
             }
-        });
-    }
-    
-    onToggleMenu(menu) {
-        var obj = {
-            playlistOpen: false,
-            settingsOpen: false,
-            subtitlesOpen: false
-        };
-        obj[menu + 'Open'] = !this[menu + 'Open'];
-        this.setState(obj);
-    }
-
-    onUiShown(toggle) {
-        this.setState({
-            uiShown: toggle
         });
     }
 
@@ -395,14 +375,17 @@ class playerStore {
                 currentTime: '00:00',
                 totalTime: '00:00',
             });
-        });
-        
-        _.defer(() => {
             SubtitleActions.settingChange({
                 subtitle: [],
                 trackSub: -1,
                 selectedSub: 1,
                 text: ''
+            });
+            VisibilityActions.settingChange({
+                uiShown: true,
+                playlist: false,
+                subtitles: false,
+                settings: false
             });
         });
 
@@ -413,7 +396,6 @@ class playerStore {
 
             title: '',
             fullscreen: false,
-            uiShown: true,
             uri: false,
 
             lastItem: -1,
@@ -423,13 +405,11 @@ class playerStore {
             foundSubs: false,
 
             audioChannel: 1,
-            audioTrack: 1,
-
-            playlistOpen: false,
-            subtitlesOpen: false,
-            settingsOpen: false,
-
-            aspectRatio: 'Default',
+            audioTrack: 1
+        });
+        
+        config.set({
+            aspect: 'Default',
             crop: 'Default',
             zoom: 1
         });

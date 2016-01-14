@@ -1,14 +1,13 @@
-import PlayerActions from '../actions';
+import VisibilityActions from '../components/Visibility/actions';
 import PlayerStore from '../store';
 import SubtitleActions from '../components/SubtitleText/actions';
 import _ from 'lodash';
-import videoSize from './videoSize';
 import config from './config';
 
 module.exports = {
     
     toggleMenu: (arg) => {
-        PlayerActions.toggleMenu(arg);
+        VisibilityActions.toggleMenu(arg);
     },
     
     defaultSettings: () => {
@@ -35,7 +34,7 @@ module.exports = {
             configState.crop.refs['input'].value = 'Default';
             configState.zoom.refs['input'].value = 'Default';
         }
-        videoSize.set({
+        config.set({
             aspect: 'Default',
             crop: 'Default',
             zoom: 1

@@ -16,6 +16,8 @@ import PlayerStore from '../store';
 import PlayerActions from '../actions';
 import SubtitleStore from './SubtitleText/store';
 import SubtitleActions from './SubtitleText/actions';
+import VisibilityStore from './Visibility/store';
+import VisibilityActions from './Visibility/actions';
 import path from 'path';
 
 const lang2country = {
@@ -51,17 +53,19 @@ default React.createClass({
     },
     componentWillMount() {
         PlayerStore.listen(this.update);
+        VisibilityStore.listen(this.update);
         SubtitleStore.listen(this.update);
     },
 
     componentWillUnmount() {
         PlayerStore.unlisten(this.update);
+        VisibilityStore.unlisten(this.update);
         SubtitleStore.unlisten(this.update);
     },
     update() {
         if (this.isMounted()) {
             this.setState({
-                open: PlayerStore.getState().subtitlesOpen,
+                open: VisibilityStore.getState().subtitles,
                 playlist: PlayerStore.getState().wcjs.playlist || false,
                 playlistSelected: SubtitleStore.getState().selectedSub
             });
@@ -95,8 +99,8 @@ default React.createClass({
                 subText: ''
             });
         }
-        PlayerActions.settingChange({
-            subtitlesOpen: false
+        VisibilityActions.settingChange({
+            subtitles: false
         });
     },
 
@@ -109,8 +113,8 @@ default React.createClass({
                 subtitle: [],
                 subText: ''
             });
-            PlayerActions.settingChange({
-                subtitlesOpen: false
+            VisibilityActions.settingChange({
+                subtitles: false
             });
         }
     },

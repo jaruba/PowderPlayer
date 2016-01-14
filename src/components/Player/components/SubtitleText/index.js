@@ -1,6 +1,7 @@
 import React from 'react';
 import PlayerStore from '../../store';
 import SubStore from './store';
+import VisibilityStore from '../Visibility/store';
 import ls from 'local-storage';
 
 export
@@ -8,11 +9,12 @@ default React.createClass({
 
     getInitialState() {
         var playerState = PlayerStore.getState();
+        var visibilityState = VisibilityStore.getState();
         var subState = SubStore.getState();
         return {
             text: '',
             size: (subState.size * (ls('customSubSize') / 100)),
-            visibility: !(playerState.playlistOpen || playerState.settingsOpen),
+            visibility: !(visibilityState.playlist || visibilityState.settings),
             color: ls.isSet('subColor') ? ls('subColor') : 0,
             hex: ['#fff', '#ebcb00', '#00e78f', '#00ffff', '#00b6ea'],
             subBottom: subState.marginBottom
@@ -20,23 +22,26 @@ default React.createClass({
     },
     componentWillMount() {
         PlayerStore.listen(this.update);
+        VisibilityStore.listen(this.update);
         SubStore.listen(this.update);
         PlayerStore.getState().events.on('subtitleUpdate', this.update);
     },
 
     componentWillUnmount() {
         PlayerStore.unlisten(this.update);
+        VisibilityStore.unlisten(this.update);
         SubStore.unlisten(this.update);
         PlayerStore.getState().events.removeListener('subtitleUpdate', this.update);
     },
     update() {
         if (this.isMounted()) {
             var playerState = PlayerStore.getState();
+            var visibilityState = VisibilityStore.getState();
             var subState = SubStore.getState();
             this.setState({
                 text: subState.text,
                 size: (subState.size * (ls('customSubSize') / 100)),
-                visibility: !(playerState.playlistOpen || playerState.settingsOpen),
+                visibility: !(visibilityState.playlist || visibilityState.settings),
                 color: ls.isSet('subColor') ? ls('subColor') : 0,
                 subBottom: subState.marginBottom
             });

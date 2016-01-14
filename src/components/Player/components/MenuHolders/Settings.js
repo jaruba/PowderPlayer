@@ -1,25 +1,26 @@
 import React from 'react';
 
 import SettingsPanel from '../Settings.react';
-import PlayerStore from '../../store';
 import PlayerActions from '../../actions';
+import VisibilityStore from '../Visibility/store';
+import VisibilityActions from '../Visibility/actions';
 
 export
 default React.createClass({
 
     getInitialState() {
-        var playerState = PlayerStore.getState();
+        var visibilityState = VisibilityStore.getState();
         return {
             open: false,
-            uiHidden: playerState.uiHidden,
-		}
+            uiHidden: visibilityState.uiHidden,
+        }
     },
     componentWillMount() {
-        PlayerStore.listen(this.update);
+        VisibilityStore.listen(this.update);
     },
 
     componentWillUnmount() {
-        PlayerStore.unlisten(this.update);
+        VisibilityStore.unlisten(this.update);
     },
     
     componentDidMount() {
@@ -27,12 +28,12 @@ default React.createClass({
     },
 
     update() {
-		console.log('settings holder update');
+        console.log('settings holder update');
         if (this.isMounted()) {
-            var playerState = PlayerStore.getState();
+            var visibilityState = VisibilityStore.getState();
             this.setState({
-                open: playerState.settingsOpen,
-                uiHidden: playerState.uiHidden
+                open: visibilityState.settings,
+                uiHidden: visibilityState.uiHidden
             });
         }
     },

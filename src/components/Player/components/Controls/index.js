@@ -12,6 +12,7 @@ import PlayerStore from '../../store';
 import PlayerActions from '../../actions';
 import ControlStore from './store';
 import ControlActions from './actions';
+import VisibilityStore from '../Visibility/store';
 
 import ls from 'local-storage';
 import ui from '../../utils/ui';
@@ -22,13 +23,14 @@ default React.createClass({
 
     getInitialState() {
         var playerState = PlayerStore.getState();
+        var visibilityState = VisibilityStore.getState();
         
         return {
             playing: playerState.playing,
             fullscreen: playerState.fullscreen,
-            uiShown: playerState.uiShown || playerState.playlistOpen || playerState.settingsOpen,
-            uiHidden: playerState.uiHidden,
-            subtitlesOpen: playerState.subtitlesOpen,
+            uiShown: visibilityState.uiShown || visibilityState.playlist || visibilityState.settings,
+            uiHidden: visibilityState.uiHidden,
+            subtitlesOpen: visibilityState.subtitles,
             rippleEffects: ls.isSet('playerRippleEffects') ? ls('playerRippleEffects') : true,
 
             position: 0,
@@ -50,6 +52,7 @@ default React.createClass({
     },
     componentWillMount() {
         PlayerStore.listen(this.update);
+        VisibilityStore.listen(this.update);
         ControlStore.listen(this.update);
     },
     componentDidMount() {
@@ -64,6 +67,7 @@ default React.createClass({
     },
     componentWillUnmount() {
         PlayerStore.unlisten(this.update);
+        VisibilityStore.unlisten(this.update);
         ControlStore.unlisten(this.update);
         PlayerStore.getState().events.removeListener('controlsUpdate', this.update);
     },
@@ -71,13 +75,14 @@ default React.createClass({
         if (this.isMounted()) {
             var controlState = ControlStore.getState();
             var playerState = PlayerStore.getState();
+            var visibilityState = VisibilityStore.getState();
 
             this.setState({
                 playing: playerState.playing,
                 fullscreen: playerState.fullscreen,
-                uiShown: playerState.uiShown || playerState.playlistOpen || playerState.settingsOpen,
-                uiHidden: playerState.uiHidden,
-                subtitlesOpen: playerState.subtitlesOpen,
+                uiShown: visibilityState.uiShown || visibilityState.playlist || visibilityState.settings,
+                uiHidden: visibilityState.uiHidden,
+                subtitlesOpen: visibilityState.subtitles,
                 rippleEffects: ls.isSet('playerRippleEffects') ? ls('playerRippleEffects') : true,
 
                 position: controlState.position,

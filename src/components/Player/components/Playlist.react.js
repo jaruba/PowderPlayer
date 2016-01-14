@@ -7,6 +7,7 @@ import {
 from 'material-ui';
 import PlayerStore from '../store';
 import PlayerActions from '../actions';
+import VisibilityStore from './Visibility/store';
 import path from 'path';
 
 export
@@ -15,27 +16,26 @@ default React.createClass({
     mixins: [PureRenderMixin],
 
     getInitialState() {
-        var playerState = PlayerStore.getState();
         return {
             open: false,
-            playlist: playerState.wcjs.playlist || false,
-            uiHidden: playerState.uiHidden
+            playlist: PlayerStore.getState().wcjs.playlist || false,
+            uiHidden: VisibilityStore.getState().uiHidden
         }
     },
     componentWillMount() {
-        PlayerStore.listen(this.update);
+        VisibilityStore.listen(this.update);
     },
 
     componentWillUnmount() {
-        PlayerStore.unlisten(this.update);
+        VisibilityStore.unlisten(this.update);
     },
     update() {
         if (this.isMounted()) {
-            var playerState = PlayerStore.getState();
+            var visibilityState = VisibilityStore.getState();
             this.setState({
-                open: playerState.playlistOpen,
-                playlist: playerState.wcjs.playlist || false,
-                uiHidden: playerState.uiHidden
+                open: visibilityState.playlist,
+                playlist: PlayerStore.getState().wcjs.playlist || false,
+                uiHidden: visibilityState.uiHidden
             });
         }
     },

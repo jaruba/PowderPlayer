@@ -1,33 +1,36 @@
 ﻿import React from 'react';
 import PlayerStore from '../store';
+import VisibilityStore from './Visibility/store';
 
 export
 default React.createClass({
 
     getInitialState() {
         var playerState = PlayerStore.getState();
+        var visibilityState = VisibilityStore.getState();
         return {
-            text: playerState.announce,
+            text: '',
             size: playerState.fontSize,
             effect: playerState.announceEffect,
-            visibility: !(playerState.playlistOpen || playerState.settingsOpen)
+            visibility: !(visibilityState.playlist || visibilityState.settings)
         }
     },
     componentWillMount() {
-        PlayerStore.listen(this.update);
+        VisibilityStore.listen(this.update);
     },
 
     componentWillUnmount() {
-        PlayerStore.unlisten(this.update);
+        VisibilityStore.unlisten(this.update);
     },
     update() {
         if (this.isMounted()) {
             var playerState = PlayerStore.getState();
+            var visibilityState = VisibilityStore.getState();
             this.setState({
                 text: playerState.announce,
                 size: playerState.fontSize,
                 effect: playerState.announceEffect,
-                visibility: !(playerState.playlistOpen || playerState.settingsOpen)
+                visibility: !(visibilityState.playlist || visibilityState.settings)
             });
         }
     },
