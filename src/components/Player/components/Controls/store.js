@@ -29,6 +29,7 @@ class ControlStore {
         this.scrobbleHeight = 'scrobbler';
         this.scrobbleTooltip = 'none';
         this.progressHover = false;
+        this.foundSubs = false;
 
         this.scrobbling = false;
         this.seekable = true;

@@ -96,9 +96,8 @@ subtitles.byExactHash = (hash, fileSize, tag) => {
                     objective = {};
                 });
 
-            } else {
+            } else
                 objective.cb(null);
-            }
             return subData;
         }).catch(function(err){
             subtitles.tryLater(15000);
@@ -206,9 +205,8 @@ subtitles.loadSubtitle = (subtitleElement, cb) => {
 //              window.torrent.flood.start();
                 subtitles.processSub(res, subtitleElement.split('.').pop(), cb);
             },{ charset: ls('subEncoding') });
-        } else {
-            cb('');
-        }
+        } else
+            cb(null);
         return '';
     } else {
         retriever.retrieveSrt(subtitleElement, (err, res) => {
@@ -221,14 +219,13 @@ subtitles.loadSubtitle = (subtitleElement, cb) => {
 //  window.torrent.flood.pause();
     var req = http.request(callOpts, res => {
         if ([501,410,404].indexOf(res.statusCode) > -1) {
-            if (subtitleElement.indexOf('http://dl.opensubtitles.org/en/download/subencoding-utf8/') == 0) {
+            if (subtitleElement.indexOf('http://dl.opensubtitles.org/en/download/subencoding-utf8/') == 0)
                 retriever.retrieveSrt(subtitleElement.replace('/subencoding-utf8/','/file/'), (err, res) => {
 //                  window.torrent.flood.start();
                     subtitles.processSub(res, subtitleElement.split('.').pop(), cb);
                 },{ charset: ls('subEncoding') });
-            } else {
-                cb('');
-            }
+            else
+                cb(null);
         } else {
             
             res.on('data', data => {
@@ -295,7 +292,7 @@ subtitles.processSub = (srt, extension, cb) => {
     if (parsedSub)
         cb(parsedSub);
     else
-        cb('');
+        cb(null);
 }
 
 subtitles.findLine = (subLines, trackSub, subDelay, time) => {

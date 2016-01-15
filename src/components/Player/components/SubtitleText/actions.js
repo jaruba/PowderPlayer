@@ -1,6 +1,7 @@
 import alt from '../../../../alt'
 import PlayerStore from '../../store';
 import PlayerActions from '../../actions';
+import ControlActions from '../Controls/actions';
 import subUtil from '../../utils/subtitles';
 import ls from 'local-storage';
 import _ from 'lodash';
@@ -44,49 +45,55 @@ class SubtitleActions {
         }
 
         subQuery.cb = subs => {
-
             if (!subs) {
                 if (!ls.isSet('playerNotifs') || ls('playerNotifs'))
                     player.notifier.info('Subtitles Not Found', '', 6000);
             } else {
-                PlayerActions.settingChange({
-                    foundSubs: true
-                });
-                PlayerActions.setDesc({
-                    subtitles: subs
-                });
-                if (!ls.isSet('playerNotifs') || ls('playerNotifs'))
-                    player.notifier.info('Found Subtitles', '', 6000);
-
-                if (!ls.isSet('autoSub') || ls('autoSub')) {
-                    if (ls('lastLanguage') && ls('lastLanguage') != 'none') {
-                        if (subs[ls('lastLanguage')]) {
-                            this.actions.loadSub(subs[ls('lastLanguage')]);
-                            // select it in the menu too
-                            if (player.wcjs.subtitles.count > 0)
-                                var itemIdx = player.wcjs.subtitles.count;
-                            else
-                                var itemIdx = 1;
-
-                            _.some(subs, (el, ij) => {
-                                itemIdx++;
-                                if (ij == ls('lastLanguage')) {
-                                    this.actions.settingChange({
-                                        selectedSub: itemIdx
-                                    });
-                                    return true;
-                                } else {
-                                    return false;
-                                }
-                            })
-                        }
-                    }
-                }
+                this.actions.foundSubs(subs, true);
             }
         }
 
         subUtil.fetchSubs(subQuery);
 
+    }
+    
+    foundSubs(subs, announce) {
+
+        var player = PlayerStore.getState();
+
+        ControlActions.settingChange({
+            foundSubs: true
+        });
+        PlayerActions.setDesc({
+            subtitles: subs
+        });
+        if ((!ls.isSet('playerNotifs') || ls('playerNotifs')) && announce)
+            player.notifier.info('Found Subtitles', '', 6000);
+
+        if (!ls.isSet('autoSub') || ls('autoSub')) {
+            if (ls('lastLanguage') && ls('lastLanguage') != 'none') {
+                if (subs[ls('lastLanguage')]) {
+                    this.actions.loadSub(subs[ls('lastLanguage')]);
+                    // select it in the menu too
+                    if (player.wcjs.subtitles.count > 0)
+                        var itemIdx = player.wcjs.subtitles.count;
+                    else
+                        var itemIdx = 1;
+
+                    _.some(subs, (el, ij) => {
+                        itemIdx++;
+                        if (ij == ls('lastLanguage')) {
+                            this.actions.settingChange({
+                                selectedSub: itemIdx
+                            });
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    })
+                }
+            }
+        }
     }
 
     loadSub(subLink) {

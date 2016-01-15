@@ -26,7 +26,8 @@ const lang2country = {
     pb: 'br',
     he: 'il',
     el: 'gr',
-    uk: 'ua'
+    uk: 'ua',
+    fa: 'ir'
 }
 
 export

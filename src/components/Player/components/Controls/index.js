@@ -47,7 +47,9 @@ default React.createClass({
             overTime: false,
 
             volume: ls.isSet('volume') ? ls('volume') : 100,
-            muted: false
+            muted: false,
+            
+            foundSubs: false
         }
     },
     componentWillMount() {
@@ -103,7 +105,9 @@ default React.createClass({
                 overTime: controlState.overTime,
 
                 volume: controlState.volume,
-                muted: controlState.muted
+                muted: controlState.muted,
+                
+                foundSubs: controlState.foundSubs
             });
         }
     },

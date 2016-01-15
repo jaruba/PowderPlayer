@@ -40,7 +40,6 @@ class playerStore {
         };
 
         this.firstPlay = false;
-        this.foundSubs = false;
         this.notifier = false;
 
         this.events = new events.EventEmitter();
@@ -179,13 +178,15 @@ class playerStore {
 
             var itemDesc = itemDesc.setting;
 
-            if (itemDesc.subtitles) {
-                this.setState({
-                    foundSubs: true
+            if (itemDesc.subtitles)
+                _.defer(() => {
+                    ControlActions.settingChange({ foundSubs: true });
+                    SubtitleActions.foundSubs(itemDesc.subtitles, false);
                 });
-            } else if (itemDesc.path && (!ls.isSet('findSubs') || ls('findSubs'))) {
-                SubtitleActions.findSubs(itemDesc);
-            }
+            else if (itemDesc.path && (!ls.isSet('findSubs') || ls('findSubs')))
+                _.defer(() => {
+                    SubtitleActions.findSubs(itemDesc);
+                });
 
         } else
             traktUtil.handleScrobble('start', this.itemDesc(), this.wcjs.position);
@@ -201,13 +202,17 @@ class playerStore {
         _.defer(() => {
             ControlActions.settingChange({
                 position: 0,
-                totalTime: '00:00'
+                totalTime: '00:00',
+                foundSubs: false
             });
             SubtitleActions.settingChange({
                 subtitle: [],
                 selectedSub: 1,
                 trackSub: -1,
                 text: ''
+            });
+            VisibilityActions.settingChange({
+                subtitles: false
             });
             this.events.emit('resizeNow', {
                 aspect: 'Default',
@@ -223,8 +228,6 @@ class playerStore {
 
         this.setState({
             firstPlay: false,
-            foundSubs: false,
-            subtitlesOpen: false,
             audioChannel: 1,
             audioTrack: 1
         });
@@ -355,9 +358,9 @@ class playerStore {
             ControlActions.settingChange({
                 length: 0,
                 position: 0,
-                volume: 100,
                 currentTime: '00:00',
                 totalTime: '00:00',
+                foundSubs: false
             });
             SubtitleActions.settingChange({
                 subtitle: [],
@@ -390,8 +393,6 @@ class playerStore {
             lastItem: -1,
 
             pendingFiles: [],
-
-            foundSubs: false,
 
             audioChannel: 1,
             audioTrack: 1

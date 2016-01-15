@@ -191,7 +191,7 @@ class ControlActions {
 
     handleMute(event) {
         var controlState = this.alt.stores.ControlStore.state;
-        this.actions.mute(!controlState.mute);
+        this.actions.mute(!controlState.muted);
     }
 
     mute(mute) {
