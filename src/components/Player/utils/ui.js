@@ -13,7 +13,7 @@ module.exports = {
     defaultSettings: () => {
 
         var playerState = PlayerStore.getState();
-        var wcjs = playerState.wcjs;
+        var wcjs = player.wcjs;
 
         wcjs.audio.delay = 0;
         wcjs.subtitles.delay = 0;

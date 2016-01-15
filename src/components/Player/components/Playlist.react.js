@@ -9,6 +9,7 @@ import PlayerStore from '../store';
 import PlayerActions from '../actions';
 import VisibilityStore from './Visibility/store';
 import path from 'path';
+import player from '../utils/player';
 
 export
 default React.createClass({
@@ -18,7 +19,7 @@ default React.createClass({
     getInitialState() {
         return {
             open: false,
-            playlist: PlayerStore.getState().wcjs.playlist || false,
+            playlist: player.wcjs.playlist || false,
             uiHidden: VisibilityStore.getState().uiHidden
         }
     },
@@ -34,7 +35,7 @@ default React.createClass({
             var visibilityState = VisibilityStore.getState();
             this.setState({
                 open: visibilityState.playlist,
-                playlist: PlayerStore.getState().wcjs.playlist || false,
+                playlist: player.wcjs.playlist || false,
                 uiHidden: visibilityState.uiHidden
             });
         }
@@ -54,7 +55,7 @@ default React.createClass({
         if (!this.state.playlist) return items;
 
         for (var i = 0; i < this.state.playlist.items.count; i++) {
-            items.push(PlayerStore.getState().itemDesc(i));
+            items.push(player.itemDesc(i));
         }
 
         return items;

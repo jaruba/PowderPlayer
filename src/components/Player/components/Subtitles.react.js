@@ -18,6 +18,7 @@ import SubtitleStore from './SubtitleText/store';
 import SubtitleActions from './SubtitleText/actions';
 import VisibilityStore from './Visibility/store';
 import VisibilityActions from './Visibility/actions';
+import player from '../utils/player';
 import path from 'path';
 
 const lang2country = {
@@ -48,7 +49,7 @@ default React.createClass({
     getInitialState() {
         return {
             open: false,
-            playlist: PlayerStore.getState().wcjs.playlist || false,
+            playlist: player.wcjs.playlist || false,
             playlistSelected: SubtitleStore.getState().selectedSub
         }
     },
@@ -67,7 +68,7 @@ default React.createClass({
         if (this.isMounted()) {
             this.setState({
                 open: VisibilityStore.getState().subtitles,
-                playlist: PlayerStore.getState().wcjs.playlist || false,
+                playlist: player.wcjs.playlist || false,
                 playlistSelected: SubtitleStore.getState().selectedSub
             });
         }
@@ -78,7 +79,7 @@ default React.createClass({
     },
 
     getItems() {
-        var itemDesc = PlayerStore.getState().itemDesc();
+        var itemDesc = player.itemDesc();
         if (itemDesc && itemDesc.setting && itemDesc.setting.subtitles) {
             return itemDesc.setting.subtitles;
         } else return [];
@@ -86,7 +87,7 @@ default React.createClass({
     
     select(idx, item, itemId) {
         ls('lastLanguage', idx);
-        PlayerStore.getState().wcjs.subtitles.track = 0;
+        player.wcjs.subtitles.track = 0;
         if (item) {
             SubtitleActions.loadSub(item);
             SubtitleActions.settingChange({
@@ -106,7 +107,7 @@ default React.createClass({
     },
 
     selectInternal(idx, item, itemId) {
-        var wcjs = PlayerStore.getState().wcjs;
+        var wcjs = player.wcjs;
         if (item && (itemId - 1) < wcjs.subtitles.count) {
             wcjs.subtitles.track = idx;
             SubtitleActions.settingChange({
@@ -121,7 +122,7 @@ default React.createClass({
     },
 
     getInternalSubs() {
-        var wcjs = PlayerStore.getState().wcjs;
+        var wcjs = player.wcjs;
         var internalSubs = [];
         if (wcjs.subtitles && wcjs.subtitles.count > 0) {
             for (var i = 1; i < wcjs.subtitles.count; i++)

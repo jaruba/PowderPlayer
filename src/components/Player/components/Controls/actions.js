@@ -5,6 +5,7 @@ import ls from 'local-storage';
 import PlayerStore from '../../store';
 import PlayerActions from '../../actions';
 import SubtitleActions from '../SubtitleText/actions';
+import player from '../../utils/player';
 
 var throttlers = {};
 
@@ -172,7 +173,7 @@ class ControlActions {
         if (t < 0)
             t = 0;
 
-        var wcjs = this.alt.stores.playerStore.state.wcjs,
+        var wcjs = player.wcjs,
             obj = {};
 
         if (this.alt.stores.ControlStore.muted) {
@@ -195,7 +196,7 @@ class ControlActions {
     }
 
     mute(mute) {
-        var wcjs = PlayerStore.getState().wcjs;
+        var wcjs = player.wcjs;
 
         if (wcjs)
             wcjs.mute = mute;

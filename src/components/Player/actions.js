@@ -29,12 +29,9 @@ class PlayerActions {
 
             'fullscreen',
             'settingChange',
-            'wcjsInit',
             'close',
-            'setPlaylist',
 
-            'itemCount',
-            'itemDesc'
+            'itemCount'
         );
     }
     
@@ -65,7 +62,7 @@ class PlayerActions {
 
     setDesc(obj) {
         var playerState = this.alt.stores.playerStore.getState();
-        var wcjs = playerState.wcjs;
+        var wcjs = player.wcjs;
         if (typeof obj.idx === 'undefined')
             obj.idx = wcjs.playlist.currentItem;
 
@@ -95,7 +92,7 @@ class PlayerActions {
         HistoryStore.getState().history.replaceState(null, 'player');
 
         var playerState = this.alt.stores.playerStore.getState();
-        var wcjs = playerState.wcjs;
+        var wcjs = player.wcjs;
 
         if (!wcjs) {
             if (data.length)
@@ -152,7 +149,7 @@ class PlayerActions {
     replaceMRL(newObj) {
 
         var playerState = this.alt.stores.playerStore.getState();
-        var wcjs = playerState.wcjs;
+        var wcjs = player.wcjs;
 
         var newX = newObj.x;
         var newMRL = newObj.mrl;
@@ -182,12 +179,11 @@ class PlayerActions {
     }
 
     pulse() {
-        var playerState = this.alt.stores.playerStore.getState();
-        var wcjs = playerState.wcjs;
+        var wcjs = player.wcjs;
 
         if (wcjs) {
             var length = wcjs.length;
-            var itemDesc = playerState.itemDesc();
+            var itemDesc = player.itemDesc();
             if (length && itemDesc.setting && itemDesc.setting.torrentHash && itemDesc.setting.byteSize) {
                 var newPulse = Math.round(itemDesc.setting.byteSize / (length / 1000) * 2);
                 torrentUtil.setPulse(itemDesc.setting.torrentHash, newPulse);
@@ -196,11 +192,10 @@ class PlayerActions {
     }
 
     flood() {
-        var playerState = this.alt.stores.playerStore.getState();
-        var wcjs = playerState.wcjs;
+        var wcjs = player.wcjs;
 
         if (wcjs) {
-            var itemDesc = playerState.itemDesc();
+            var itemDesc = player.itemDesc();
             if (itemDesc.setting && itemDesc.setting.torrentHash)
                 torrentUtil.flood(itemDesc.setting.torrentHash);
         }
@@ -208,7 +203,7 @@ class PlayerActions {
 
     updateImage(image) {
         if (document.getElementById('canvasEffect')) {
-            var wcjs = this.alt.stores.playerStore.getState().wcjs;
+            var wcjs = player.wcjs;
             if (wcjs.playlist.items[wcjs.playlist.currentItem].mrl.indexOf('soundcloud.com') > -1 && image) {
                 var image = image.replace('large', 't500x500');
                 document.getElementById('canvasEffect').parentNode.style.cssText = "background-color: transparent !important";

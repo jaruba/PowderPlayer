@@ -25,7 +25,7 @@ export
 default React.createClass({
 
     getInitialState() {
-        var itemDesc = PlayerStore.getState().itemDesc();
+        var itemDesc = player.itemDesc();
         return {
             parsedTitle: '',
             parsedRating: '',
@@ -36,7 +36,7 @@ default React.createClass({
     },
     
     update() {
-        var setting = PlayerStore.getState().itemDesc().setting;
+        var setting = player.itemDesc().setting;
         this.setState({
             parsedTitle: setting.parsed.name.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()})+(setting.trakt.season ? "\u00a0\u00a0-\u00a0\u00a0S"+('0' + setting.trakt.season).slice(-2) + ' E' + ('0' + setting.trakt.number).slice(-2) : setting.trakt.year ? '\u00a0\u00a0-\u00a0\u00a0'+setting.trakt.year : ''),
             parsedRating: (Math.round(setting.trakt.rating * 100) / 100)+' / 10 (' + setting.trakt.votes + ')',

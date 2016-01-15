@@ -211,7 +211,7 @@ default React.createClass({
        var newValue = parseInt(this.refs['subDelayInput'].getValue()) + (direction * 50);
        this.refs['subDelayInput'].refs['input'].value = newValue + ' ms';
        if (event) {
-            PlayerStore.getState().wcjs.subtitles.delay = newValue;
+            player.wcjs.subtitles.delay = newValue;
             player.set({
                 subDelay: newValue
             });
@@ -237,7 +237,7 @@ default React.createClass({
             newValue = 0;
 
         this.refs['subDelayInput'].refs['input'].value = newValue + ' ms';
-        PlayerStore.getState().wcjs.subtitles.delay = newValue;
+        player.wcjs.subtitles.delay = newValue;
         player.set({
             subDelay: newValue
         });
@@ -249,7 +249,7 @@ default React.createClass({
         player.set({
             audioDelay: newValue
         });
-        PlayerStore.getState().wcjs.audio.delay = newValue;
+        player.wcjs.audio.delay = newValue;
     },
     
     _handleAudioDelayKeys(event) {
@@ -274,13 +274,13 @@ default React.createClass({
         player.set({
             audioDelay: newValue
         });
-        PlayerStore.getState().wcjs.audio.delay = newValue;
+        player.wcjs.audio.delay = newValue;
     },
     
     _handleSpeed(event, direction) {
 
         var newRate = 0,
-            wcjs = PlayerStore.getState().wcjs,
+            wcjs = player.wcjs,
             curRate = parseFloat(wcjs.input.rate);
         
         if (direction < 0) {
@@ -338,7 +338,7 @@ default React.createClass({
         var newValue = parseFloat(Math.round(newValue * 100) / 100).toFixed(2);
 
         this.refs['speedInput'].refs['input'].value = newValue + 'x';
-        PlayerStore.getState().wcjs.input.rate = newValue;
+        player.wcjs.input.rate = newValue;
     },
     
     _handleSubSize(event, direction) {
@@ -398,7 +398,7 @@ default React.createClass({
             newChannel = this.state.audioChannels.length - 1;
         if (newChannel == this.state.audioChannels.length)
             newChannel = 1;
-        PlayerStore.getState().wcjs.audio.channel = newChannel;
+        player.wcjs.audio.channel = newChannel;
         player.set({
             audioChannel: newChannel
         });
@@ -422,7 +422,7 @@ default React.createClass({
     
     _handleAudioTrack(event, direction) {
         var newTrack = parseInt(player.audioTrack) + direction;
-        var wcjs = PlayerStore.getState().wcjs;
+        var wcjs = player.wcjs;
         
         if (newTrack == -1)
             newTrack = wcjs.audio.count -1;

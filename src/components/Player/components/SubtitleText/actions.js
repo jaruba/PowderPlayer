@@ -31,7 +31,7 @@ class SubtitleActions {
 
         var subQuery = {
             filepath: itemDesc.path,
-            fps: PlayerStore.getState().wcjs.input.fps
+            fps: player.wcjs.input.fps
         };
 
         if (itemDesc.byteSize)
@@ -73,8 +73,8 @@ class SubtitleActions {
                 if (subs[ls('lastLanguage')]) {
                     this.actions.loadSub(subs[ls('lastLanguage')]);
                     // select it in the menu too
-                    if (playerState.wcjs.subtitles.count > 0)
-                        var itemIdx = playerState.wcjs.subtitles.count;
+                    if (player.wcjs.subtitles.count > 0)
+                        var itemIdx = player.wcjs.subtitles.count;
                     else
                         var itemIdx = 1;
 
@@ -105,7 +105,7 @@ class SubtitleActions {
                     trackSub: -1
                 });
                 player.fields.subDelay.refs['input'].defaultValue = '0 ms';
-                PlayerStore.getState().wcjs.subtitles.delay = 0;
+                player.wcjs.subtitles.delay = 0;
             }
         });
     }

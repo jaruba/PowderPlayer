@@ -12,7 +12,7 @@ import ls from 'local-storage';
 
 var parserQueue = async.queue((task, cb) => {
     var playerState = PlayerStore.getState();
-    var wcjs = PlayerStore.getState().wcjs;
+    var wcjs = player.wcjs;
     if (task.url && !task.filename) {
         var client = new MetaInspector(task.url, {
             timeout: 5000
@@ -20,7 +20,7 @@ var parserQueue = async.queue((task, cb) => {
 
         client.on("fetch", function() {
             var idx = task.idx;
-            var itemDesc = playerState.itemDesc(task.idx);
+            var itemDesc = player.itemDesc(task.idx);
             if (!(itemDesc && itemDesc.mrl == task.url)) {
                 for (var i = 1; i < wcjs.playlist.items.count; i++) {
                     if (playerState.itemDesc(i).mrl == task.url) {
@@ -110,12 +110,12 @@ var parserQueue = async.queue((task, cb) => {
 
                     var idx = task.idx;
 
-                    var itemDesc = playerState.itemDesc(task.idx);
+                    var itemDesc = player.itemDesc(task.idx);
 
                     if (!(itemDesc && itemDesc.mrl == task.url)) {
 
                         for (var i = 1; i < wcjs.playlist.items.count; i++) {
-                            if (playerState.itemDesc(i).mrl.endsWith(task.url)) {
+                            if (player.itemDesc(i).mrl.endsWith(task.url)) {
                                 idx = i;
                                 break;
                             }

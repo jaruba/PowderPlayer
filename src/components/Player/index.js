@@ -69,14 +69,14 @@ const Player = React.createClass({
         });
 
         this.props.bindShortcut('ctrl+up', (event) => {
-            var volume = Math.round((PlayerStore.getState().wcjs.volume + 5) / 5) * 5;
+            var volume = Math.round((player.wcjs.volume + 5) / 5) * 5;
             if (volume > 200) volume = 200;
             ControlActions.setVolume(volume);
             PlayerActions.announcement('Volume '+volume+'%');
         });
 
         this.props.bindShortcut('ctrl+down', (event) => {
-            var volume = Math.round((PlayerStore.getState().wcjs.volume - 5) / 5) * 5;
+            var volume = Math.round((player.wcjs.volume - 5) / 5) * 5;
             if (volume < 0) volume = 0;
             ControlActions.setVolume(volume);
             PlayerActions.announcement('Volume '+volume+'%');
@@ -84,8 +84,8 @@ const Player = React.createClass({
 
         this.props.bindShortcut('ctrl+right', (event) => {
             var wjsPlayer = PlayerStore.getState();
-            if (["ended","stopping","error"].indexOf(wjsPlayer.wcjs.state) == -1) {
-                if (wjsPlayer.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
+            if (["ended","stopping","error"].indexOf(player.wcjs.state) == -1) {
+                if (player.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
                 else var wjsDelay = 700;
                 ControlActions.delayTime({
                     jump: 60000,
@@ -96,8 +96,8 @@ const Player = React.createClass({
 
         this.props.bindShortcut('ctrl+left', (event) => {
             var wjsPlayer = PlayerStore.getState();
-            if (["ended","stopping","error"].indexOf(wjsPlayer.wcjs.state) == -1) {
-                if (wjsPlayer.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
+            if (["ended","stopping","error"].indexOf(player.wcjs.state) == -1) {
+                if (player.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
                 else var wjsDelay = 700;
                 ControlActions.delayTime({
                     jump: -60000,
@@ -108,8 +108,8 @@ const Player = React.createClass({
 
         this.props.bindShortcut('alt+right', (event) => {
             var wjsPlayer = PlayerStore.getState();
-            if (["ended","stopping","error"].indexOf(wjsPlayer.wcjs.state) == -1) {
-                if (wjsPlayer.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
+            if (["ended","stopping","error"].indexOf(player.wcjs.state) == -1) {
+                if (player.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
                 else var wjsDelay = 700;
                 ControlActions.delayTime({
                     jump: 10000,
@@ -120,8 +120,8 @@ const Player = React.createClass({
 
         this.props.bindShortcut('alt+left', (event) => {
             var wjsPlayer = PlayerStore.getState();
-            if (["ended","stopping","error"].indexOf(wjsPlayer.wcjs.state) == -1) {
-                if (wjsPlayer.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
+            if (["ended","stopping","error"].indexOf(player.wcjs.state) == -1) {
+                if (player.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
                 else var wjsDelay = 700;
                 ControlActions.delayTime({
                     jump: -10000,
@@ -132,8 +132,8 @@ const Player = React.createClass({
         
         this.props.bindShortcut('shift+right', (event) => {
             var wjsPlayer = PlayerStore.getState();
-            if (["ended","stopping","error"].indexOf(wjsPlayer.wcjs.state) == -1) {
-                if (wjsPlayer.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
+            if (["ended","stopping","error"].indexOf(player.wcjs.state) == -1) {
+                if (player.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
                 else var wjsDelay = 700;
                 ControlActions.delayTime({
                     jump: 3000,
@@ -144,8 +144,8 @@ const Player = React.createClass({
 
         this.props.bindShortcut('shift+left', (event) => {
             var wjsPlayer = PlayerStore.getState();
-            if (["ended","stopping","error"].indexOf(wjsPlayer.wcjs.state) == -1) {
-                if (wjsPlayer.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
+            if (["ended","stopping","error"].indexOf(player.wcjs.state) == -1) {
+                if (player.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
                 else var wjsDelay = 700;
                 ControlActions.delayTime({
                     jump: -3000,
@@ -156,8 +156,8 @@ const Player = React.createClass({
         
         this.props.bindShortcut('right', (event) => {
             var wjsPlayer = PlayerStore.getState();
-            if (["ended","stopping","error"].indexOf(wjsPlayer.wcjs.state) == -1) {
-                if (wjsPlayer.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
+            if (["ended","stopping","error"].indexOf(player.wcjs.state) == -1) {
+                if (player.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
                 else var wjsDelay = 700;
                 ControlActions.delayTime({
                     jump: (PlayerStore.getState().length / 60),
@@ -168,8 +168,8 @@ const Player = React.createClass({
 
         this.props.bindShortcut('left', (event) => {
             var wjsPlayer = PlayerStore.getState();
-            if (["ended","stopping","error"].indexOf(wjsPlayer.wcjs.state) == -1) {
-                if (wjsPlayer.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
+            if (["ended","stopping","error"].indexOf(player.wcjs.state) == -1) {
+                if (player.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
                 else var wjsDelay = 700;
                 ControlActions.delayTime({
                     jump: (-1) * (PlayerStore.getState().length / 60),
@@ -180,7 +180,7 @@ const Player = React.createClass({
 
         this.props.bindShortcut('e', (event) => {
             var wjsPlayer = PlayerStore.getState();
-            if (["ended","stopping","error"].indexOf(wjsPlayer.wcjs.state) == -1) {
+            if (["ended","stopping","error"].indexOf(player.wcjs.state) == -1) {
                 PlayerActions.pause();
                 ControlActions.delayTime({
                     jump: 500,
@@ -196,7 +196,7 @@ const Player = React.createClass({
         this.props.bindShortcut('g', (event) => {
             var subDelayField = player.fields.subDelay;
             var newValue = parseInt(subDelayField.getValue()) - 50;
-            PlayerStore.getState().wcjs.subtitles.delay = newValue;
+            player.wcjs.subtitles.delay = newValue;
             player.set({
                 subDelay: newValue
             });
@@ -207,7 +207,7 @@ const Player = React.createClass({
         this.props.bindShortcut('h', (event) => {
             var subDelayField = player.fields.subDelay;
             var newValue = parseInt(subDelayField.getValue()) + 50;
-            PlayerStore.getState().wcjs.subtitles.delay = newValue;
+            player.wcjs.subtitles.delay = newValue;
             player.set({
                 subDelay: newValue
             });
@@ -218,7 +218,7 @@ const Player = React.createClass({
         this.props.bindShortcut('j', (event) => {
             var audioDelayField = player.fields.audioDelay;
             var newValue = parseInt(audioDelayField.getValue()) - 50;
-            PlayerStore.getState().wcjs.audio.delay = newValue;
+            player.wcjs.audio.delay = newValue;
             player.set({
                 audioDelay: newValue
             });
@@ -230,7 +230,7 @@ const Player = React.createClass({
             var audioDelayField = player.fields.audioDelay;
             var newValue = parseInt(audioDelayField.getValue()) + 50;
             audioDelayField.refs['input'].value = newValue + ' ms';
-            PlayerStore.getState().wcjs.audio.delay = newValue;
+            player.wcjs.audio.delay = newValue;
             player.set({
                 audioDelay: newValue
             });
@@ -276,7 +276,7 @@ const Player = React.createClass({
             
             var newRate = 0;
             var playerState = PlayerStore.getState();
-            var curRate = parseFloat(playerState.wcjs.input.rate);
+            var curRate = parseFloat(player.wcjs.input.rate);
             
             if (curRate >= 0.25 && curRate <= 0.5) newRate = 0.125;
             else if (curRate > 0.5 && curRate <= 1) newRate = 0.25;
@@ -285,9 +285,9 @@ const Player = React.createClass({
             else if (curRate > 4) newRate = curRate /2;
     
             if ((curRate + newRate) >= 0.125) {
-                playerState.wcjs.input.rate = curRate - newRate;
+                player.wcjs.input.rate = curRate - newRate;
     
-                var newValue = parseFloat(Math.round(playerState.wcjs.input.rate * 100) / 100).toFixed(2);
+                var newValue = parseFloat(Math.round(player.wcjs.input.rate * 100) / 100).toFixed(2);
         
                 player.fields.speed.refs['input'].value = newValue + 'x';
                 
@@ -299,7 +299,7 @@ const Player = React.createClass({
     
             var newRate = 0;
             var playerState = PlayerStore.getState();
-            var curRate = parseFloat(playerState.wcjs.input.rate);
+            var curRate = parseFloat(player.wcjs.input.rate);
             
             if (curRate < 0.25) newRate = 0.125;
             else if (curRate >= 0.25 && curRate < 0.5) newRate = 0.125;
@@ -309,9 +309,9 @@ const Player = React.createClass({
             else if (curRate >= 4) newRate = curRate;
     
             if ((curRate + newRate) < 100) {
-                playerState.wcjs.input.rate = curRate + newRate;
+                player.wcjs.input.rate = curRate + newRate;
     
-                var newValue = parseFloat(Math.round(playerState.wcjs.input.rate * 100) / 100).toFixed(2);
+                var newValue = parseFloat(Math.round(player.wcjs.input.rate * 100) / 100).toFixed(2);
         
                 player.fields.speed.refs['input'].value = newValue + 'x';
                 
@@ -324,9 +324,9 @@ const Player = React.createClass({
             var newRate = 0;
             var playerState = PlayerStore.getState();
 
-            playerState.wcjs.input.rate = 1.0;
+            player.wcjs.input.rate = 1.0;
 
-            var newValue = parseFloat(Math.round(playerState.wcjs.input.rate * 100) / 100).toFixed(2);
+            var newValue = parseFloat(Math.round(player.wcjs.input.rate * 100) / 100).toFixed(2);
     
             player.fields.speed.refs['input'].value = newValue + 'x';
             
@@ -354,7 +354,7 @@ const Player = React.createClass({
             if (muted)
                 PlayerActions.announcement('Muted');
             else
-                PlayerActions.announcement('Volume ' + PlayerStore.getState().wcjs.volume + '%');
+                PlayerActions.announcement('Volume ' + player.wcjs.volume + '%');
         });
 
         this.props.bindShortcut('ctrl+l', (event) => {
@@ -397,7 +397,7 @@ const Player = React.createClass({
         });
 
         this.props.bindShortcut('p', (event) => {
-            PlayerStore.getState().wcjs.time = 0;
+            player.wcjs.time = 0;
         });
         
         var aspectRatios = ['Default','1:1','4:3','16:9','16:10','2.21:1','2.35:1','2.39:1','5:4'];

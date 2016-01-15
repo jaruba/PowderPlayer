@@ -21,7 +21,6 @@ class playerStore {
 
         this.uri = false;
         this.title = '';
-        this.wcjs = false;
 
         this.playing = false;
         this.paused = false;
@@ -35,10 +34,6 @@ class playerStore {
 
         this.fullscreen = false;
 
-        this.itemDesc = i => {
-            return false
-        };
-
         this.firstPlay = false;
 
         this.events = new events.EventEmitter();
@@ -46,24 +41,6 @@ class playerStore {
 
     onSettingChange(setting) {
         this.setState(setting);
-    }
-
-    onWcjsInit(wcjs) {
-        this.setState({
-            wcjs: wcjs,
-            itemDesc: i => {
-                if (typeof i === 'undefined') i = wcjs.playlist.currentItem;
-                if (typeof i === 'number') {
-                    if (i > -1 && i < wcjs.playlist.items.count) {
-                        var wjsDesc = Object.assign({}, wcjs.playlist.items[i]);
-                        if (!wjsDesc.setting) wjsDesc.setting = "{}";
-                        wjsDesc.setting = JSON.parse(wjsDesc.setting);
-                        return wjsDesc;
-                    }
-                }
-                return false;
-            }
-        });
     }
 
     onFullscreen(state) {
@@ -79,7 +56,7 @@ class playerStore {
     }
 
     onBuffering(perc) {
-        var itemDesc = this.itemDesc();
+        var itemDesc = player.itemDesc();
         var isLocal = (itemDesc.mrl && itemDesc.mrl.indexOf('file://') == 0);
         if (!isLocal) {
             var announcer = {};
@@ -103,12 +80,12 @@ class playerStore {
 
     onOpening() {
 
-        if (this.wcjs.playlist.currentItem != this.lastItem) {
-            if (this.wcjs.playlist.items[this.wcjs.playlist.currentItem].artworkURL) {
-                var image = this.wcjs.playlist.items[this.wcjs.playlist.currentItem].artworkURL;
+        if (player.wcjs.playlist.currentItem != this.lastItem) {
+            if (player.wcjs.playlist.items[player.wcjs.playlist.currentItem].artworkURL) {
+                var image = player.wcjs.playlist.items[player.wcjs.playlist.currentItem].artworkURL;
             } else {
                 try {
-                    var image = JSON.parse(this.wcjs.playlist.items[this.wcjs.playlist.currentItem].setting).image;
+                    var image = JSON.parse(player.wcjs.playlist.items[player.wcjs.playlist.currentItem].setting).image;
                 } catch (e) {}
             }
 
@@ -117,11 +94,11 @@ class playerStore {
                 ControlActions.settingChange({
                     position: 0
                 });
-                this.events.emit('setTitle', this.wcjs.playlist.items[this.wcjs.playlist.currentItem].title);
+                this.events.emit('setTitle', player.wcjs.playlist.items[player.wcjs.playlist.currentItem].title);
             });
 
             this.setState({
-                lastItem: this.wcjs.playlist.currentItem,
+                lastItem: player.wcjs.playlist.currentItem,
                 pendingFiles: []
             });
 
@@ -149,9 +126,9 @@ class playerStore {
     onPlaying() {
         if (!this.firstPlay) {
             // catch first play event
-            this.wcjs.subtitles.track = 0;
-            if (this.wcjs.volume != ls('volume'))
-                this.wcjs.volume = ls('volume');
+            player.wcjs.subtitles.track = 0;
+            if (player.wcjs.volume != ls('volume'))
+                player.wcjs.volume = ls('volume');
             var newObj = {
                 firstPlay: true,
                 buffering: false,
@@ -159,16 +136,16 @@ class playerStore {
                 paused: false
             };
             _.defer(() => {
-                this.events.emit('setTitle', this.wcjs.playlist.items[this.wcjs.playlist.currentItem].title);
+                this.events.emit('setTitle', player.wcjs.playlist.items[player.wcjs.playlist.currentItem].title);
             });
-            var itemDesc = this.itemDesc();
+            var itemDesc = player.itemDesc();
             if (itemDesc.setting && itemDesc.setting.trakt && !player.foundTrakt) {
                 _.defer(() => {
                     this.events.emit('foundTrakt', true);
                 });
                 var shouldScrobble = traktUtil.loggedIn ? ls.isSet('traktScrobble') ? ls('traktScrobble') : true : false;
                 if (shouldScrobble) {
-                    traktUtil.handleScrobble('start', itemDesc, this.wcjs.position);
+                    traktUtil.handleScrobble('start', itemDesc, player.wcjs.position);
                     if (!ls.isSet('playerNotifs') || ls('playerNotifs'))
                         player.notifier.info('Scrobbling', '', 4000);
                 }
@@ -188,13 +165,13 @@ class playerStore {
                 });
 
         } else
-            traktUtil.handleScrobble('start', this.itemDesc(), this.wcjs.position);
+            traktUtil.handleScrobble('start', player.itemDesc(), player.wcjs.position);
 
-        player.fields.audioTrack.refs['input'].value = this.wcjs.audio[1];
+        player.fields.audioTrack.refs['input'].value = player.wcjs.audio[1];
     }
 
     onPaused() {
-        traktUtil.handleScrobble('pause', this.itemDesc(), this.wcjs.position);
+        traktUtil.handleScrobble('pause', player.itemDesc(), player.wcjs.position);
     }
 
     onMediaChanged() {
@@ -240,21 +217,21 @@ class playerStore {
             playing: true,
             paused: false
         })
-        this.wcjs.play();
+        player.wcjs.play();
     }
 
     onPlayItem(idx) {
         this.setState({
             buffering: false
         })
-        if (idx != this.wcjs.playlist.currentItem) {
+        if (idx != player.wcjs.playlist.currentItem) {
             _.defer(() => {
                 this.events.emit('foundTrakt', false);
             });
 
-            traktUtil.handleScrobble('stop', this.itemDesc(), this.wcjs.position);
+            traktUtil.handleScrobble('stop', player.itemDesc(), player.wcjs.position);
 
-            this.wcjs.playlist.playItem(idx[0]);
+            player.wcjs.playlist.playItem(idx[0]);
         }
     }
 
@@ -265,13 +242,13 @@ class playerStore {
             paused: true
         })
 
-        this.wcjs.pause();
+        player.wcjs.pause();
 
-        traktUtil.handleScrobble('pause', this.itemDesc(), this.wcjs.position);
+        traktUtil.handleScrobble('pause', player.itemDesc(), player.wcjs.position);
     }
 
     onPrev() {
-        if (this.wcjs.playlist.currentItem > 0) {
+        if (player.wcjs.playlist.currentItem > 0) {
             _.defer(() => {
                 ControlActions.settingChange({
                     position: 0
@@ -282,14 +259,14 @@ class playerStore {
                 foundTrakt: false
             });
 
-            traktUtil.handleScrobble('stop', this.itemDesc(), this.wcjs.position);
+            traktUtil.handleScrobble('stop', player.itemDesc(), player.wcjs.position);
 
-            this.wcjs.playlist.prev();
+            player.wcjs.playlist.prev();
         }
     }
 
     onNext() {
-        if (this.wcjs.playlist.currentItem + 1 < this.wcjs.playlist.items.count) {
+        if (player.wcjs.playlist.currentItem + 1 < player.wcjs.playlist.items.count) {
             _.defer(() => {
                 ControlActions.settingChange({
                     position: 0
@@ -300,9 +277,9 @@ class playerStore {
                 foundTrakt: false
             });
 
-            traktUtil.handleScrobble('stop', this.itemDesc(), this.wcjs.position);
+            traktUtil.handleScrobble('stop', player.itemDesc(), player.wcjs.position);
 
-            this.wcjs.playlist.next();
+            player.wcjs.playlist.next();
         }
     }
 
@@ -310,9 +287,9 @@ class playerStore {
 
         console.log('Player encountered an error.');
 
-        var itemDesc = this.itemDesc();
+        var itemDesc = player.itemDesc();
 
-        traktUtil.handleScrobble('stop', itemDesc, this.wcjs.position);
+        traktUtil.handleScrobble('stop', itemDesc, player.wcjs.position);
 
         if (itemDesc.mrl.startsWith('https://player.vimeo.com/')) {
 
@@ -320,7 +297,7 @@ class playerStore {
             
             var Linky = new LinkSupport;
             
-            Linky.fixVimeo(this.wcjs, this.lastItem, itemDesc);
+            Linky.fixVimeo(player.wcjs, this.lastItem, itemDesc);
 
         }
 
@@ -335,9 +312,9 @@ class playerStore {
 
         var position = ControlStore.getState().position;
 
-        traktUtil.handleScrobble('stop', this.itemDesc(), position);
+        traktUtil.handleScrobble('stop', player.itemDesc(), position);
         
-        if (this.wcjs.time > 0) {
+        if (player.wcjs.time > 0) {
             if (typeof this.lastItem !== 'undefined' && position && position < 0.95) {
 
                 console.log('Playback Ended Prematurely');
@@ -345,9 +322,9 @@ class playerStore {
                 console.log('Last Known Item: ', this.lastItem);
                 console.log('Reconnecting ...');
 
-                this.wcjs.playlist.currentItem = this.lastItem;
-                this.wcjs.playlist.play();
-                this.wcjs.position = position;
+                player.wcjs.playlist.currentItem = this.lastItem;
+                player.wcjs.playlist.play();
+                player.wcjs.position = position;
             }
         }
     }
@@ -398,12 +375,12 @@ class playerStore {
         });
 
         ui.defaultSettings();
-        if (this.wcjs) {
+        if (player.wcjs) {
 
-            traktUtil.handleScrobble('stop', this.itemDesc(), this.wcjs.position);
+            traktUtil.handleScrobble('stop', player.itemDesc(), player.wcjs.position);
 
-            this.wcjs.stop();
-            this.wcjs.playlist.clear();
+            player.wcjs.stop();
+            player.wcjs.playlist.clear();
         }
         playerActions.togglePowerSave(false);
     }

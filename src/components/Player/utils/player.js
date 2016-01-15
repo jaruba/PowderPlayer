@@ -12,9 +12,28 @@ var player = {
     alwaysOnTop: false,
     fields: {},
     foundTrakt: false,
-    notifier: false
+    notifier: false,
+	wcjs: false
 };
 
 player.set = newObj =>  _.each(newObj, (el, ij) => player[ij] = el);
+
+player.wcjsInit = wcjs => {
+	player.wcjs = wcjs;
+}
+
+player.itemDesc = i => {
+	if (!player.wcjs) return false;
+	if (typeof i === 'undefined') i = player.wcjs.playlist.currentItem;
+	if (typeof i === 'number') {
+		if (i > -1 && i < player.wcjs.playlist.items.count) {
+			var wjsDesc = Object.assign({}, player.wcjs.playlist.items[i]);
+			if (!wjsDesc.setting) wjsDesc.setting = "{}";
+			wjsDesc.setting = JSON.parse(wjsDesc.setting);
+			return wjsDesc;
+		}
+	}
+	return false;
+}
 
 module.exports = player;

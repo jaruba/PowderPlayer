@@ -66,8 +66,8 @@ default React.createClass({
         });
         PlayerStore.getState().events.on('resizeNow', this.updateSize);
         PlayerStore.getState().events.on('rendererUpdate', this.update);
-        if (!PlayerStore.getState().wcjs) {
-            PlayerActions.wcjsInit(wcjsRenderer.init(this.refs['wcjs-render'], [
+        if (!player.wcjs) {
+            player.wcjsInit(wcjsRenderer.init(this.refs['wcjs-render'], [
                 "--network-caching=" + ls('bufferSize'),
                 "--no-sub-autodetect-file"
             ], {
@@ -75,7 +75,7 @@ default React.createClass({
                 preserveDrawingBuffer: true
             }, wcjs));
         } else {
-            wcjsRenderer.reinit(this.refs['wcjs-render'], PlayerStore.getState().wcjs, {
+            wcjsRenderer.reinit(this.refs['wcjs-render'], player.wcjs, {
                 fallbackRenderer: false,
                 preserveDrawingBuffer: true
             });
@@ -108,7 +108,7 @@ default React.createClass({
 
         var renderer = this;
 
-        this.player = PlayerStore.getState().wcjs;
+        this.player = player.wcjs;
         this.pendingFiles = PlayerStore.getState().pendingFiles;
 
         var initializeSize = _.once(() => {

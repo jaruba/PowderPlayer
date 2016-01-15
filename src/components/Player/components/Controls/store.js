@@ -6,6 +6,7 @@ import controlActions from './actions';
 import PlayerStore from '../../store';
 import PlayerActions from '../../actions';
 import traktUtil from '../../utils/trakt';
+import player from '../../utils/player';
 
 var throttlers = {
     scrobbleKeys: false
@@ -53,9 +54,9 @@ class ControlStore {
                 currentTime: handleTime(time, this.length)
             });
 
-        playerState.wcjs.time = time;
+        player.wcjs.time = time;
 
-        traktUtil.handleScrobble('start', playerState.itemDesc(), playerState.wcjs.position);
+        traktUtil.handleScrobble('start', player.itemDesc(), player.wcjs.position);
 
     }
 
@@ -63,7 +64,7 @@ class ControlStore {
         var t = q.jump,
             d = q.delay;
 
-        var wcjs = PlayerStore.getState().wcjs;
+        var wcjs = player.wcjs;
 
         if (this.forceTime)
             var forceProgress = ((this.seekPerc * this.length) + t) / this.length;
@@ -108,7 +109,7 @@ class ControlStore {
             }, 1500);
             throttlers.scrobbleKeys = false;
 
-            traktUtil.handleScrobble('start', PlayerStore.getState().itemDesc(), this.seekPerc);
+            traktUtil.handleScrobble('start', player.itemDesc(), this.seekPerc);
         };
 
         throttlers.scrobbleKeys = setTimeout(scrobbleFunc.bind(this), d);
