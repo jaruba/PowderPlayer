@@ -15,8 +15,8 @@ import parser from '../../components/Player/utils/parser';
 const temp = path.join(app.getPath('temp'), 'Powder-Player');
 
 const supported = {
-    all: [".mkv", ".avi", ".mp4", ".mpg", ".mpeg", ".webm", ".flv", ".ogg", ".ogv", ".mov", ".wmv", ".3gp", ".3g2", ".m4a", ".mp3", ".flac"],
-    video: ["mkv", "avi", "mp4", "mpg", "mpeg", "webm", "flv", "ogg", "ogv", "mov", "wmv", "3gp", "3g2"],
+    all: [".mkv", ".avi", ".mp4", "m4v", ".mpg", ".mpeg", ".webm", ".flv", ".ogg", ".ogv", ".mov", ".wmv", ".3gp", ".3g2", ".m4a", ".mp3", ".flac"],
+    video: ["mkv", "avi", "mp4", "m4v", "mpg", "mpeg", "webm", "flv", "ogg", "ogv", "mov", "wmv", "3gp", "3g2"],
     audio: ["m4a", "mp3", "flac"]
 };
 
