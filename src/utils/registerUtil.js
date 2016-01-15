@@ -72,10 +72,27 @@ register.videos = () => {
         child.exec('"'+powderPath+'src/duti/duti" -s media.powder.player .mpeg viewer');
         alert("Successfully Associated with Video Files");
     } else {
-        fs.writeFile(dataPath + '\\register-videos.reg', 'REGEDIT4\r\n'+'[HKEY_CURRENT_USER\\Software\\Classes\\powder.player.v1\\DefaultIcon]\r\n'+'@="'+process.execPath.split("\\").join("\\\\")+'"\r\n'+'[HKEY_CURRENT_USER\\Software\\Classes\\powder.player.v1\\shell\\open\\command]\r\n'+'@="\\"'+process.execPath.split("\\").join("\\\\")+'\\" \\"%1\\""\r\n'+'[HKEY_CURRENT_USER\\Software\\Classes\\.avi]\r\n'+'@="powder.player.v1"\r\n'+'"Content Type"="video/avi"\r\n'+'[HKEY_CURRENT_USER\\Software\\Classes\\.mkv]\r\n'+'@="powder.player.v1"\r\n'+'"Content Type"="video/x-matroska"\r\n'+'[HKEY_CURRENT_USER\\Software\\Classes\\.mp4]\r\n'+'@="powder.player.v1"\r\n'+'"Content Type"="video/mp4"', err => {
-            if (err) throw err;
-            shell.openItem(dataPath+'\\register-videos.reg'); 
-        });
+        fs.writeFile(dataPath + '\\register-videos.reg', 'REGEDIT4\r\n'+
+            '[HKEY_CURRENT_USER\\Software\\Classes\\powder.player.v1\\DefaultIcon]\r\n'+
+            '@="' + process.execPath.split("\\").join("\\\\") + '"\r\n'+
+
+            '[HKEY_CURRENT_USER\\Software\\Classes\\powder.player.v1\\shell\\open\\command]\r\n'+
+            '@="\\"' + process.execPath.split("\\").join("\\\\") + '\\" \\"%1\\""\r\n'+
+
+            '[HKEY_CURRENT_USER\\Software\\Classes\\.avi]\r\n'+
+            '@="powder.player.v1"\r\n'+
+            '"Content Type"="video/avi"\r\n'+
+
+            '[HKEY_CURRENT_USER\\Software\\Classes\\.mkv]\r\n'+
+            '@="powder.player.v1"\r\n'+
+            '"Content Type"="video/x-matroska"\r\n'+
+
+            '[HKEY_CURRENT_USER\\Software\\Classes\\.mp4]\r\n'+
+            '@="powder.player.v1"\r\n'+
+            '"Content Type"="video/mp4"', err => {
+                if (err) throw err;
+                shell.openItem(dataPath+'\\register-videos.reg'); 
+            });
     }
 };
 
