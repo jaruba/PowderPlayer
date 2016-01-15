@@ -2,7 +2,7 @@
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 import path from 'path';
 import wcjsRenderer from '../utils/wcjs-renderer';
-import config from '../utils/config';
+import player from '../utils/player';
 import _ from 'lodash';
 import ls from 'local-storage';
 import {
@@ -98,7 +98,7 @@ default React.createClass({
         }
     },
     updateSize(newValue) {
-        config.set(newValue);
+        player.set(newValue);
         this.handleResize({
             canvas: this.refs['wcjs-render'],
             canvasParent: this.refs['canvas-holder']
@@ -286,8 +286,8 @@ default React.createClass({
         var height = canvas.height;
         var sourceAspect = width / height;
 
-        if (config.aspect != "Default" && config.aspect.indexOf(":") > -1) {
-            var res = config.aspect.split(":");
+        if (player.aspect != "Default" && player.aspect.indexOf(":") > -1) {
+            var res = player.aspect.split(":");
             var ratio = gcd(width, height);
         }
 
@@ -296,15 +296,15 @@ default React.createClass({
         if (ratio) var sourceAspect = (ratio * parseFloat(res[0])) / (ratio * parseFloat(res[1]));
         else var sourceAspect = width / height;
 
-        if (config.crop != "Default" && config.crop.indexOf(":") > -1) {
-            var res = config.crop.split(":");
+        if (player.crop != "Default" && player.crop.indexOf(":") > -1) {
+            var res = player.crop.split(":");
             var ratio = gcd(width, height);
             var sourceAspect = (ratio * parseFloat(res[0])) / (ratio * parseFloat(res[1]));
         }
 
         var cond = destAspect > sourceAspect;
 
-        if (config.crop != "Default" && config.crop.indexOf(":") > -1) {
+        if (player.crop != "Default" && player.crop.indexOf(":") > -1) {
             if (cond) {
                 canvasParent.style.height = "100%";
                 canvasParent.style.width = (((container.clientHeight * sourceAspect) / container.clientWidth) * 100) + "%";
@@ -324,11 +324,11 @@ default React.createClass({
             }
         } else {
             if (cond) {
-                canvasParent.style.height = (100 * config.zoom) + "%";
-                canvasParent.style.width = (((container.clientHeight * sourceAspect) / container.clientWidth) * 100 * config.zoom) + "%";
+                canvasParent.style.height = (100 * player.zoom) + "%";
+                canvasParent.style.width = (((container.clientHeight * sourceAspect) / container.clientWidth) * 100 * player.zoom) + "%";
             } else {
-                canvasParent.style.height = (((container.clientWidth / sourceAspect) / container.clientHeight) * 100 * config.zoom) + "%";
-                canvasParent.style.width = (100 * config.zoom) + "%";
+                canvasParent.style.height = (((container.clientWidth / sourceAspect) / container.clientHeight) * 100 * player.zoom) + "%";
+                canvasParent.style.width = (100 * player.zoom) + "%";
             }
             canvas.style.height = "100%";
             canvas.style.width = "100%";

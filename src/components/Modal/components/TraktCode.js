@@ -7,11 +7,11 @@ import clipboard from 'clipboard';
 import _ from 'lodash';
 
 import ModalActions from '../dark/actions';
-import PlayerActions from '../../Player/actions';
 import PlayerStore from '../../Player/store'
 
 import linkUtil from '../../../utils/linkUtil';
 import traktUtil from '../../Player/utils/trakt';
+import player from '../../Player/utils/player';
 
 export
 default React.createClass({
@@ -26,16 +26,16 @@ default React.createClass({
             ModalActions.close();
             try {
                 traktUtil.exchangePin(inputvalue);
-                PlayerStore.getState().notifier.info('Login Successful', '', 4000);
+                player.notifier.info('Login Successful', '', 4000);
                 _.delay(() => {
                     PlayerStore.getState().events.emit('settingsUpdate');
                 },1000);
             } catch(e) {
-                PlayerStore.getState().notifier.info('Error: '+e.message, '', 7000);
+                player.notifier.info('Error: '+e.message, '', 7000);
             }
         } else {
             this.refs['codeInput'].focus();
-            PlayerStore.getState().notifier.info('Error: Trakt Code is Required', '', 7000);
+            player.notifier.info('Error: Trakt Code is Required', '', 7000);
         }
     },
     pasteClipboard() {

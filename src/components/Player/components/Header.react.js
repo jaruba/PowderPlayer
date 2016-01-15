@@ -14,7 +14,7 @@ import PlayerActions from '../actions';
 import VisibilityStore from './Visibility/store';
 import ModalActions from '../../Modal/dark/actions';
 import ui from '../utils/ui';
-import config from '../utils/config';
+import player from '../utils/player';
 
 export
 default React.createClass({
@@ -58,7 +58,7 @@ default React.createClass({
         this.setState({
             foundTrakt: state
         });
-        config.set({
+        player.set({
             foundTrakt: state
         });
     },

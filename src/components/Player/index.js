@@ -12,7 +12,7 @@ import Announcement from './components/Announcement.react';
 import webFrame from 'web-frame';
 import remote from 'remote';
 import ls from 'local-storage';
-import config from './utils/config';
+import player from './utils/player';
 
 import PlayerStore from './store';
 import PlayerActions from './actions';
@@ -194,10 +194,10 @@ const Player = React.createClass({
         });
 
         this.props.bindShortcut('g', (event) => {
-            var subDelayField = config.fields.subDelay;
+            var subDelayField = player.fields.subDelay;
             var newValue = parseInt(subDelayField.getValue()) - 50;
             PlayerStore.getState().wcjs.subtitles.delay = newValue;
-            config.set({
+            player.set({
                 subDelay: newValue
             });
             subDelayField.refs['input'].value = newValue + ' ms';
@@ -205,10 +205,10 @@ const Player = React.createClass({
         });
     
         this.props.bindShortcut('h', (event) => {
-            var subDelayField = config.fields.subDelay;
+            var subDelayField = player.fields.subDelay;
             var newValue = parseInt(subDelayField.getValue()) + 50;
             PlayerStore.getState().wcjs.subtitles.delay = newValue;
-            config.set({
+            player.set({
                 subDelay: newValue
             });
             subDelayField.refs['input'].value = newValue + ' ms';
@@ -216,10 +216,10 @@ const Player = React.createClass({
         });
 
         this.props.bindShortcut('j', (event) => {
-            var audioDelayField = config.fields.audioDelay;
+            var audioDelayField = player.fields.audioDelay;
             var newValue = parseInt(audioDelayField.getValue()) - 50;
             PlayerStore.getState().wcjs.audio.delay = newValue;
-            config.set({
+            player.set({
                 audioDelay: newValue
             });
             audioDelayField.refs['input'].value = newValue + ' ms';
@@ -227,11 +227,11 @@ const Player = React.createClass({
         });
     
         this.props.bindShortcut('k', (event) => {
-            var audioDelayField = config.fields.audioDelay;
+            var audioDelayField = player.fields.audioDelay;
             var newValue = parseInt(audioDelayField.getValue()) + 50;
             audioDelayField.refs['input'].value = newValue + ' ms';
             PlayerStore.getState().wcjs.audio.delay = newValue;
-            config.set({
+            player.set({
                 audioDelay: newValue
             });
             PlayerActions.announcement('Audio Delay: ' + newValue + ' ms');
@@ -242,7 +242,7 @@ const Player = React.createClass({
             if (newValue > 500) newValue = 500;
             ls('customSubSize', newValue);
             PlayerActions.announcement('Subtitle Size ' + newValue + '%');
-            config.fields.subSize.refs['input'].value = newValue + '%';
+            player.fields.subSize.refs['input'].value = newValue + '%';
         });
 
         this.props.bindShortcut('alt+down', (event) => {
@@ -250,7 +250,7 @@ const Player = React.createClass({
             if (newValue < 5) newValue = 5;
             ls('customSubSize', newValue);
             PlayerActions.announcement('Subtitle Size ' + newValue + '%');
-            config.fields.subSize.refs['input'].value = newValue + '%';
+            player.fields.subSize.refs['input'].value = newValue + '%';
         });
 
         this.props.bindShortcut('shift+up', (event) => {
@@ -289,7 +289,7 @@ const Player = React.createClass({
     
                 var newValue = parseFloat(Math.round(playerState.wcjs.input.rate * 100) / 100).toFixed(2);
         
-                config.fields.speed.refs['input'].value = newValue + 'x';
+                player.fields.speed.refs['input'].value = newValue + 'x';
                 
                 PlayerActions.announcement('Speed: ' + newValue + 'x');
             }
@@ -313,7 +313,7 @@ const Player = React.createClass({
     
                 var newValue = parseFloat(Math.round(playerState.wcjs.input.rate * 100) / 100).toFixed(2);
         
-                config.fields.speed.refs['input'].value = newValue + 'x';
+                player.fields.speed.refs['input'].value = newValue + 'x';
                 
                 PlayerActions.announcement('Speed: ' + newValue + 'x');
             }
@@ -328,7 +328,7 @@ const Player = React.createClass({
 
             var newValue = parseFloat(Math.round(playerState.wcjs.input.rate * 100) / 100).toFixed(2);
     
-            config.fields.speed.refs['input'].value = newValue + 'x';
+            player.fields.speed.refs['input'].value = newValue + 'x';
             
             PlayerActions.announcement('Speed: ' + newValue + 'x');
 
@@ -404,13 +404,13 @@ const Player = React.createClass({
         
         this.props.bindShortcut('a', (event) => {
             aspectRatios.some((el, ij) => {
-                if (el == config.aspect) {
+                if (el == player.aspect) {
                     if (aspectRatios.length == ij + 1)
                         var newValue = 0;
                     else
                         var newValue = ij + 1;
 
-                    config.set({
+                    player.set({
                         aspect: aspectRatios[newValue],
                         crop: 'Default',
                         zoom: 1
@@ -426,13 +426,13 @@ const Player = React.createClass({
         
         this.props.bindShortcut('c', (event) => {
             crops.some((el, ij) => {
-                if (el == config.crop) {
+                if (el == player.crop) {
                     if (crops.length == ij + 1)
                         var newValue = 0;
                     else
                         var newValue = ij + 1;
 
-                    config.set({
+                    player.set({
                         crop: crops[newValue],
                         aspect: 'Default',
                         zoom: 1
@@ -448,13 +448,13 @@ const Player = React.createClass({
         
         this.props.bindShortcut('z', (event) => {
             zooms.some((el, ij) => {
-                if (el[1] == config.zoom) {
+                if (el[1] == player.zoom) {
                     if (zooms.length == ij+1)
                         var newValue = 0;
                     else
                         var newValue = ij + 1;
 
-                    config.set({
+                    player.set({
                         zoom: zooms[newValue][1],
                         crop: 'Default',
                         aspect: 'Default'
@@ -510,7 +510,7 @@ const Player = React.createClass({
         if (['', '0'].indexOf(announcer.style.opacity) > -1) {
             PlayerActions.buffering(0);
         }
-        PlayerActions.settingChange({
+        player.set({
             notifier: this.refs.notificator
         });
     },

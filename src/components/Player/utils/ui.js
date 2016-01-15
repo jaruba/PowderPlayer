@@ -2,7 +2,7 @@ import VisibilityActions from '../components/Visibility/actions';
 import PlayerStore from '../store';
 import SubtitleActions from '../components/SubtitleText/actions';
 import _ from 'lodash';
-import config from './config';
+import player from './player';
 
 module.exports = {
     
@@ -18,23 +18,23 @@ module.exports = {
         wcjs.audio.delay = 0;
         wcjs.subtitles.delay = 0;
 
-        config.set({
+        player.set({
             audioDelay: 0,
             subDelay: 0
         });
 
         playerState.events.emit('subtitleUpdate');
 
-        var configState = config.fields;
-        if (configState.speed.refs['input']) {
-            configState.subDelay.refs['input'].value = '0 ms';
-            configState.audioDelay.refs['input'].value = '0 ms';
-            configState.audioChannel.refs['input'].value = 'Stereo';
-            configState.aspect.refs['input'].value = 'Default';
-            configState.crop.refs['input'].value = 'Default';
-            configState.zoom.refs['input'].value = 'Default';
+        var playerState = player.fields;
+        if (playerState.speed.refs['input']) {
+            playerState.subDelay.refs['input'].value = '0 ms';
+            playerState.audioDelay.refs['input'].value = '0 ms';
+            playerState.audioChannel.refs['input'].value = 'Stereo';
+            playerState.aspect.refs['input'].value = 'Default';
+            playerState.crop.refs['input'].value = 'Default';
+            playerState.zoom.refs['input'].value = 'Default';
         }
-        config.set({
+        player.set({
             aspect: 'Default',
             crop: 'Default',
             zoom: 1

@@ -5,13 +5,13 @@ import parseVideo from 'video-name-parser';
 import nameToImdb from 'name-to-imdb';
 import parser from './parser';
 import traktUtil from './trakt';
-import config from './config';
+import player from './player';
 import PlayerStore from '../store';
 import PlayerActions from '../actions';
 import ls from 'local-storage';
 
 var parserQueue = async.queue((task, cb) => {
-    var player = PlayerStore.getState();
+    var playerState = PlayerStore.getState();
     var wcjs = PlayerStore.getState().wcjs;
     if (task.url && !task.filename) {
         var client = new MetaInspector(task.url, {
@@ -20,10 +20,10 @@ var parserQueue = async.queue((task, cb) => {
 
         client.on("fetch", function() {
             var idx = task.idx;
-            var itemDesc = player.itemDesc(task.idx);
+            var itemDesc = playerState.itemDesc(task.idx);
             if (!(itemDesc && itemDesc.mrl == task.url)) {
                 for (var i = 1; i < wcjs.playlist.items.count; i++) {
-                    if (player.itemDesc(i).mrl == task.url) {
+                    if (playerState.itemDesc(i).mrl == task.url) {
                         idx = i;
                         break;
                     }
@@ -110,12 +110,12 @@ var parserQueue = async.queue((task, cb) => {
 
                     var idx = task.idx;
 
-                    var itemDesc = player.itemDesc(task.idx);
+                    var itemDesc = playerState.itemDesc(task.idx);
 
                     if (!(itemDesc && itemDesc.mrl == task.url)) {
 
                         for (var i = 1; i < wcjs.playlist.items.count; i++) {
-                            if (player.itemDesc(i).mrl.endsWith(task.url)) {
+                            if (playerState.itemDesc(i).mrl.endsWith(task.url)) {
                                 idx = i;
                                 break;
                             }
@@ -160,7 +160,7 @@ var parserQueue = async.queue((task, cb) => {
                         PlayerActions.setDesc(newObj);
                         if (idx == wcjs.playlist.currentItem) {
                             PlayerStore.getState().events.emit('setTitle', newObj.title);
-                            if (!config.foundTrakt) {
+                            if (!player.foundTrakt) {
                                 _.defer(() => {
                                     PlayerStore.getState().events.emit('foundTrakt', true);
                                 });

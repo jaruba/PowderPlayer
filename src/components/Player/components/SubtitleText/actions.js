@@ -5,7 +5,7 @@ import ControlActions from '../Controls/actions';
 import subUtil from '../../utils/subtitles';
 import ls from 'local-storage';
 import _ from 'lodash';
-import config from '../../utils/config';
+import player from '../../utils/player';
 
 class SubtitleActions {
 
@@ -20,7 +20,7 @@ class SubtitleActions {
         // print subtitle text if a subtitle is selected
         var subtitleState = this.alt.stores.SubtitleStore.state;
         if (subtitleState.subtitle.length > 0)
-            subUtil.findLine(subtitleState.subtitle, subtitleState.trackSub, config.subDelay, time).then(result => {
+            subUtil.findLine(subtitleState.subtitle, subtitleState.trackSub, player.subDelay, time).then(result => {
                 if (result && result.text != subtitleState.text)
                     this.actions.settingChange(result);
             });
@@ -29,11 +29,9 @@ class SubtitleActions {
 
     findSubs(itemDesc) {
 
-        var player = PlayerStore.getState();
-
         var subQuery = {
             filepath: itemDesc.path,
-            fps: player.wcjs.input.fps
+            fps: PlayerStore.getState().wcjs.input.fps
         };
 
         if (itemDesc.byteSize)
@@ -59,7 +57,7 @@ class SubtitleActions {
     
     foundSubs(subs, announce) {
 
-        var player = PlayerStore.getState();
+        var playerState = PlayerStore.getState();
 
         ControlActions.settingChange({
             foundSubs: true
@@ -75,8 +73,8 @@ class SubtitleActions {
                 if (subs[ls('lastLanguage')]) {
                     this.actions.loadSub(subs[ls('lastLanguage')]);
                     // select it in the menu too
-                    if (player.wcjs.subtitles.count > 0)
-                        var itemIdx = player.wcjs.subtitles.count;
+                    if (playerState.wcjs.subtitles.count > 0)
+                        var itemIdx = playerState.wcjs.subtitles.count;
                     else
                         var itemIdx = 1;
 
@@ -106,7 +104,7 @@ class SubtitleActions {
                     delay: 0,
                     trackSub: -1
                 });
-                config.fields.subDelay.refs['input'].defaultValue = '0 ms';
+                player.fields.subDelay.refs['input'].defaultValue = '0 ms';
                 PlayerStore.getState().wcjs.subtitles.delay = 0;
             }
         });

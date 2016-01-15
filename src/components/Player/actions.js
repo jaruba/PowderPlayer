@@ -4,7 +4,7 @@ import ipc from 'ipc';
 import subUtil from './utils/subtitles';
 import HistoryStore from '../../stores/historyStore';
 import torrentUtil from '../../utils/stream/torrentUtil';
-import config from './utils/config';
+import player from './utils/player';
 import ls from 'local-storage';
 
 class PlayerActions {
@@ -46,18 +46,18 @@ class PlayerActions {
         announcer.text = obj.text;
         if (!obj.delay) obj.delay = 2000;
 
-        clearTimeout(config.announceTimer);
+        clearTimeout(player.announceTimer);
         var playerState = this.alt.stores.playerStore.state;
-        config.announceTimer = setTimeout(() => {
-            if (!config.announceEffect) {
+        player.announceTimer = setTimeout(() => {
+            if (!player.announceEffect) {
                 playerState.events.emit('announce', {
-                    effect: !config.announceEffect
+                    effect: !player.announceEffect
                 });
             }
         }, obj.delay);
 
-        if (config.announceEffect)
-            obj.effect = !config.announceEffect;
+        if (player.announceEffect)
+            obj.effect = !player.announceEffect;
 
         if (Object.keys(announcer).length)
             playerState.events.emit('announce', obj);

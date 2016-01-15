@@ -1,7 +1,7 @@
 ﻿import React from 'react';
 import PlayerStore from '../store';
 import VisibilityStore from './Visibility/store';
-import config from '../utils/config';
+import player from '../utils/player';
 
 export
 default React.createClass({
@@ -25,7 +25,7 @@ default React.createClass({
     },
     announcement(obj) {
         if (typeof obj.effect !== 'undefined')
-            config.set({
+            player.set({
                 announceEffect: obj.effect
             });
         this.setState(obj);

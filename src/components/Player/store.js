@@ -12,7 +12,7 @@ import traktUtil from './utils/trakt';
 import LinkSupport from './utils/supportedLinks';
 import events from 'events';
 import ui from './utils/ui';
-import config from './utils/config';
+import player from './utils/player';
 
 class playerStore {
 
@@ -40,7 +40,6 @@ class playerStore {
         };
 
         this.firstPlay = false;
-        this.notifier = false;
 
         this.events = new events.EventEmitter();
     }
@@ -85,13 +84,13 @@ class playerStore {
         if (!isLocal) {
             var announcer = {};
             announcer.text = 'Buffering ' + perc + '%';
-            clearTimeout(config.announceTimer);
+            clearTimeout(player.announceTimer);
 
             if (perc === 100)
-                if (!config.announceEffect)
+                if (!player.announceEffect)
                     announcer.effect = true;
             else
-                if (config.announceEffect)
+                if (player.announceEffect)
                     announcer.effect = false;
 
             if (Object.keys(announcer).length)
@@ -163,7 +162,7 @@ class playerStore {
                 this.events.emit('setTitle', this.wcjs.playlist.items[this.wcjs.playlist.currentItem].title);
             });
             var itemDesc = this.itemDesc();
-            if (itemDesc.setting && itemDesc.setting.trakt && !config.foundTrakt) {
+            if (itemDesc.setting && itemDesc.setting.trakt && !player.foundTrakt) {
                 _.defer(() => {
                     this.events.emit('foundTrakt', true);
                 });
@@ -171,7 +170,7 @@ class playerStore {
                 if (shouldScrobble) {
                     traktUtil.handleScrobble('start', itemDesc, this.wcjs.position);
                     if (!ls.isSet('playerNotifs') || ls('playerNotifs'))
-                        this.notifier.info('Scrobbling', '', 4000);
+                        player.notifier.info('Scrobbling', '', 4000);
                 }
             }
             this.setState(newObj);
@@ -191,7 +190,7 @@ class playerStore {
         } else
             traktUtil.handleScrobble('start', this.itemDesc(), this.wcjs.position);
 
-        config.fields.audioTrack.refs['input'].value = this.wcjs.audio[1];
+        player.fields.audioTrack.refs['input'].value = this.wcjs.audio[1];
     }
 
     onPaused() {
@@ -222,7 +221,7 @@ class playerStore {
             this.events.emit('foundTrakt', false);
         });
         // this needs to be here
-        config.set({
+        player.set({
             foundTrakt: false
         });
 

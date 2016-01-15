@@ -14,6 +14,7 @@ import PlayerStore from '../../Player/store';
 
 import linkUtil from '../../../utils/linkUtil';
 import traktUtil from '../../Player/utils/trakt';
+import player from '../../Player/utils/player';
 
 import MetaInspector from 'node-metainspector';
 
@@ -24,12 +25,13 @@ export
 default React.createClass({
 
     getInitialState() {
+        var itemDesc = PlayerStore.getState().itemDesc();
         return {
             parsedTitle: '',
             parsedRating: '',
-            trakt: PlayerStore.getState().itemDesc().setting.trakt,
-            parsed: PlayerStore.getState().itemDesc().setting.parsed,
-            image: PlayerStore.getState().itemDesc().setting.image
+            trakt: itemDesc.setting.trakt,
+            parsed: itemDesc.setting.parsed,
+            image: itemDesc.setting.image
         }
     },
     
@@ -37,7 +39,7 @@ default React.createClass({
         var setting = PlayerStore.getState().itemDesc().setting;
         this.setState({
             parsedTitle: setting.parsed.name.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()})+(setting.trakt.season ? "\u00a0\u00a0-\u00a0\u00a0S"+('0' + setting.trakt.season).slice(-2) + ' E' + ('0' + setting.trakt.number).slice(-2) : setting.trakt.year ? '\u00a0\u00a0-\u00a0\u00a0'+setting.trakt.year : ''),
-            parsedRating: (Math.round(setting.trakt.rating * 100) / 100)+' / 10 ('+setting.trakt.votes+')',
+            parsedRating: (Math.round(setting.trakt.rating * 100) / 100)+' / 10 (' + setting.trakt.votes + ')',
             trakt: setting.trakt,
             parsed: setting.parsed,
             image: setting.image
@@ -89,7 +91,7 @@ default React.createClass({
 //            console.log(trailer_url);
             if (trailer_url == 'http://www.imdb.comundefined') {
 
-                PlayerStore.getState().notifier.info('Trailer Not Found', '', 4000);
+                player.notifier.info('Trailer Not Found', '', 4000);
 
             } else {
 
@@ -112,7 +114,7 @@ default React.createClass({
         });
 
         client.on("error", function(err){
-            PlayerStore.getState().notifier.info('Trailer Error: '+err, '', 4000);
+            player.notifier.info('Trailer Error: '+err, '', 4000);
 //            console.log(err);
         });
 

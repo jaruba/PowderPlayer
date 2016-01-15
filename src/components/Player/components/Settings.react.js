@@ -14,7 +14,7 @@ import SubtitleActions from './SubtitleText/actions';
 import traktUtil from '../utils/trakt';
 import ModalActions from '../../Modal/dark/actions';
 import Register from '../../../utils/registerUtil';
-import config from '../utils/config';
+import player from '../utils/player';
 import ls from 'local-storage';
 
 var injectTapEventPlugin = require("react-tap-event-plugin");
@@ -41,7 +41,7 @@ default React.createClass({
 
     getInitialState() {
         return {
-            alwaysOnTop: config.alwaysOnTop,
+            alwaysOnTop: player.alwaysOnTop,
             clickPause: ls.isSet('clickPause') ? ls('clickPause') : true,
             playerRippleEffects: ls.isSet('playerRippleEffects') ? ls('playerRippleEffects') : true,
             playerNotifs: ls.isSet('playerNotifs') ? ls('playerNotifs') : true,
@@ -50,11 +50,11 @@ default React.createClass({
             findSubs: ls.isSet('findSubs') ? ls('findSubs') : true,
             autoSub: ls.isSet('autoSub') ? ls('autoSub') : true,
             menuFlags: ls.isSet('menuFlags') ? ls('menuFlags') : true,
-            subDelay: config.subDelay,
-            speed: config.speed,
-            audioChannel: config.audioChannel,
-            audioTrack: config.audioTrack,
-            audioDelay: config.audioDelay,
+            subDelay: player.subDelay,
+            speed: player.speed,
+            audioChannel: player.audioChannel,
+            audioTrack: player.audioTrack,
+            audioDelay: player.audioDelay,
             customSubSize: ls('customSubSize'),
             zoomLevel: ls.isSet('zoomLevel') ? ls('zoomLevel') : 0,
             subColor: ls.isSet('subColor') ? ls('subColor') : 0,
@@ -125,7 +125,7 @@ default React.createClass({
     },
     
     componentDidMount() {
-        config.set({
+        player.set({
             fields: {
                 subDelay: this.refs['subDelayInput'],
                 audioDelay: this.refs['audioDelayInput'],
@@ -145,19 +145,19 @@ default React.createClass({
         console.log('settings update');
         if (this.isMounted()) {
             this.setState({
-                alwaysOnTop: config.alwaysOnTop,
+                alwaysOnTop: player.alwaysOnTop,
                 clickPause: ls.isSet('clickPause') ? ls('clickPause') : true,
                 playerRippleEffects: ls.isSet('playerRippleEffects') ? ls('playerRippleEffects') : true,
                 trakt: traktUtil.loggedIn ? true : false,
-                audioDelay: config.audioDelay,
-                subDelay: config.subDelay,
-                speed: config.speed,
+                audioDelay: player.audioDelay,
+                subDelay: player.subDelay,
+                speed: player.speed,
                 customSubSize: ls('customSubSize'),
                 zoomLevel: ls.isSet('zoomLevel') ? ls('zoomLevel') : 0,
                 bufferSize: parseInt(ls('bufferSize') / 1000).toFixed(1),
-                audioChannel: config.audioChannel,
+                audioChannel: player.audioChannel,
                 subColor: ls.isSet('subColor') ? ls('subColor') : 0,
-                audioTrack: config.audioTrack,
+                audioTrack: player.audioTrack,
                 encoding: ls.isSet('selectedEncoding') ? ls('selectedEncoding') : 0,
                 findSubs: ls.isSet('findSubs') ? ls('findSubs') : true,
                 autoSub: ls.isSet('autoSub') ? ls('autoSub') : true,
@@ -173,7 +173,7 @@ default React.createClass({
     _openTraktLogin(event) {
         if (traktUtil.loggedIn) {
             traktUtil.logOut();
-            PlayerStore.getState().notifier.info('Logout Successful', '', 4000);
+            player.notifier.info('Logout Successful', '', 4000);
             this.update();
         } else {
             ModalActions.open({
@@ -185,7 +185,7 @@ default React.createClass({
     },
 
     _handleAlwaysOnTop(event, toggled) {
-        config.set({
+        player.set({
             alwaysOnTop: toggled
         });
         PlayerActions.toggleAlwaysOnTop(toggled);
@@ -212,7 +212,7 @@ default React.createClass({
        this.refs['subDelayInput'].refs['input'].value = newValue + ' ms';
        if (event) {
             PlayerStore.getState().wcjs.subtitles.delay = newValue;
-            config.set({
+            player.set({
                 subDelay: newValue
             });
        }
@@ -238,7 +238,7 @@ default React.createClass({
 
         this.refs['subDelayInput'].refs['input'].value = newValue + ' ms';
         PlayerStore.getState().wcjs.subtitles.delay = newValue;
-        config.set({
+        player.set({
             subDelay: newValue
         });
     },
@@ -246,7 +246,7 @@ default React.createClass({
     _handleAudioDelay(event, direction) {
         var newValue = parseInt(this.refs['audioDelayInput'].getValue()) + (direction * 50);
         this.refs['audioDelayInput'].refs['input'].value = newValue + ' ms';
-        config.set({
+        player.set({
             audioDelay: newValue
         });
         PlayerStore.getState().wcjs.audio.delay = newValue;
@@ -271,7 +271,7 @@ default React.createClass({
             newValue = 0;
 
         this.refs['audioDelayInput'].refs['input'].value = newValue + ' ms';
-        config.set({
+        player.set({
             audioDelay: newValue
         });
         PlayerStore.getState().wcjs.audio.delay = newValue;
@@ -304,7 +304,7 @@ default React.createClass({
         if (logic) {
             var newValue = curRate + (newRate * direction);
             wcjs.input.rate = newValue;
-            config.set({
+            player.set({
                 speed: newValue
             });
             newValue = parseFloat(Math.round(newValue * 100) / 100).toFixed(2);
@@ -393,13 +393,13 @@ default React.createClass({
     },
     
     _handleAudioChannel(event, direction) {
-        var newChannel = parseInt(config.audioChannel) + direction;
+        var newChannel = parseInt(player.audioChannel) + direction;
         if (newChannel == 0)
             newChannel = this.state.audioChannels.length - 1;
         if (newChannel == this.state.audioChannels.length)
             newChannel = 1;
         PlayerStore.getState().wcjs.audio.channel = newChannel;
-        config.set({
+        player.set({
             audioChannel: newChannel
         });
         this.refs['audioChannelInput'].refs['input'].value = this.state.audioChannels[newChannel];
@@ -421,7 +421,7 @@ default React.createClass({
     },
     
     _handleAudioTrack(event, direction) {
-        var newTrack = parseInt(config.audioTrack) + direction;
+        var newTrack = parseInt(player.audioTrack) + direction;
         var wcjs = PlayerStore.getState().wcjs;
         
         if (newTrack == -1)
@@ -432,7 +432,7 @@ default React.createClass({
 
         wcjs.audio.track = newTrack;
         
-        config.set({
+        player.set({
             audioTrack: newTrack
         });
         this.refs['audioTrackInput'].refs['input'].value = wcjs.audio[newTrack];
@@ -606,7 +606,7 @@ default React.createClass({
 
     _handleAspect(event, direction) {
 
-        var aspectRatio = config.aspect;
+        var aspectRatio = player.aspect;
         var aspectRatios = this.state.aspectRatios;
 
         aspectRatios.some((el, ij) => {
@@ -634,7 +634,7 @@ default React.createClass({
 
     _handleCrop(event, direction) {
 
-        var crop = config.crop;
+        var crop = player.crop;
         var crops = this.state.crops;
 
         crops.some((el, ij) => {
@@ -662,7 +662,7 @@ default React.createClass({
 
     _handleZoom(event, direction) {
 
-        var zoom = config.zoom;
+        var zoom = player.zoom;
         var zooms = this.state.zooms;
 
         zooms.some((el, ij) => {
@@ -741,14 +741,14 @@ default React.createClass({
                 type: 'select',
                 title: 'Aspect Ratio',
                 tag: 'aspect',
-                default: config.aspect,
+                default: player.aspect,
                 width: '60px',
                 disabled: true
             }, {
                 type: 'select',
                 title: 'Crop',
                 tag: 'crop',
-                default: config.crop,
+                default: player.crop,
                 width: '60px',
                 disabled: true
             }, {
