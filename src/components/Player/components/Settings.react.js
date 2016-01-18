@@ -121,7 +121,7 @@ default React.createClass({
     },
 
     componentWillUnmount() {
-        PlayerStore.getState().events.removeListener('settingsUpdate', this.update);
+        player.events.removeListener('settingsUpdate', this.update);
     },
     
     componentDidMount() {
@@ -138,7 +138,7 @@ default React.createClass({
                 zoom: this.refs['zoomInput']
             }
         });
-        PlayerStore.getState().events.on('settingsUpdate', this.update);
+        player.events.on('settingsUpdate', this.update);
     },
 
     update() {
@@ -197,12 +197,12 @@ default React.createClass({
 
     _handleClickPause(event, toggled, type) {
         ls(type, toggled);
-        PlayerStore.getState().events.emit('rendererUpdate');
+        player.events.emit('rendererUpdate');
     },
 
     _handleRippleEffects(event, toggled, type) {
         ls(type, toggled);
-        var playerEvents = PlayerStore.getState().events;
+        var playerEvents = player.events;
         playerEvents.emit('rendererUpdate');
         playerEvents.emit('controlsUpdate');
     },
@@ -350,7 +350,7 @@ default React.createClass({
         this.refs['subSizeInput'].refs['input'].value = newValue + '%';
         if (event) {
             ls('customSubSize', newValue);
-            PlayerStore.getState().events.emit('subtitleUpdate');
+            player.events.emit('subtitleUpdate');
         }
     },
     
@@ -381,7 +381,7 @@ default React.createClass({
         
         if (event) {
             ls('customSubSize', newValue);
-            PlayerStore.getState().events.emit('subtitleUpdate');
+            player.events.emit('subtitleUpdate');
         }
     },
 
@@ -416,7 +416,7 @@ default React.createClass({
             newColor = 0;
 
         ls('subColor', newColor);
-        PlayerStore.getState().events.emit('subtitleUpdate');
+        player.events.emit('subtitleUpdate');
         this.refs['subColorInput'].refs['input'].value = this.state.subColors[newColor];
     },
     
@@ -621,7 +621,7 @@ default React.createClass({
 
                 this._videoField('aspect', aspectRatios[newValue]);
 
-                PlayerStore.getState().events.emit('resizeNow', {
+                player.events.emit('resizeNow', {
                     aspect: aspectRatios[newValue],
                     crop: 'Default',
                     zoom: 1
@@ -649,7 +649,7 @@ default React.createClass({
 
                 this._videoField('crop', crops[newValue]);
 
-                PlayerStore.getState().events.emit('resizeNow', {
+                player.events.emit('resizeNow', {
                     crop: crops[newValue],
                     aspect: 'Default',
                     zoom: 1
@@ -674,7 +674,7 @@ default React.createClass({
                     var newValue = zooms.length == ij + 1 ? 0 : ij + 1;
 
                 this._videoField('zoom', zooms[newValue][0]);
-                PlayerStore.getState().events.emit('resizeNow', {
+                player.events.emit('resizeNow', {
                     zoom: zooms[newValue][1],
                     crop: 'Default',
                     aspect: 'Default'

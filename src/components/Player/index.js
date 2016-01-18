@@ -16,6 +16,7 @@ import player from './utils/player';
 
 import PlayerStore from './store';
 import PlayerActions from './actions';
+import SubtitleStore from './components/SubtitleText/store';
 import SubtitleActions from './components/SubtitleText/actions';
 
 import ControlStore from './components/Controls/store';
@@ -32,40 +33,32 @@ const Player = React.createClass({
     mixins: [PureRenderMixin],
 
     getInitialState() {
-        var playerState = PlayerStore.getState();
         var visibilityState = VisibilityStore.getState();
         return {
-            uri: playerState.uri,
-
-            buffering: playerState.buffering,
-            uiShown: visibilityState.uiShown,
-            
-            rippleEffects: playerState.rippleEffects
+            uiShown: visibilityState.uiShown
         }
     },
     componentWillMount() {
         if (!ls.isSet('customSubSize'))
             ls('customSubSize', 100);
-        PlayerStore.listen(this.update);
         VisibilityStore.listen(this.update);
         remote.getCurrentWindow().setMinimumSize(392, 228);
         webFrame.setZoomLevel(ls.isSet('zoomLevel') ? ls('zoomLevel') : 0);
         
         this.props.bindShortcut('space', (event) => {
             event.preventDefault();
-            if (PlayerStore.getState().playing) {
+            if (player.wcjs.playing) {
                 PlayerActions.announcement({
                     text: 'Paused',
                     delay: 500
                 });
-                PlayerActions.pause()
             } else {
                 PlayerActions.announcement({
                     text: 'Playing', 
                     delay: 500
                 });
-                PlayerActions.play();
             }
+            player.wcjs.togglePause();
         });
 
         this.props.bindShortcut('ctrl+up', (event) => {
@@ -160,7 +153,7 @@ const Player = React.createClass({
                 if (player.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
                 else var wjsDelay = 700;
                 ControlActions.delayTime({
-                    jump: (PlayerStore.getState().length / 60),
+                    jump: (ControlStore.getState().length / 60),
                     delay: wjsDelay
                 });
             }
@@ -172,7 +165,7 @@ const Player = React.createClass({
                 if (player.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
                 else var wjsDelay = 700;
                 ControlActions.delayTime({
-                    jump: (-1) * (PlayerStore.getState().length / 60),
+                    jump: (-1) * (ControlStore.getState().length / 60),
                     delay: wjsDelay
                 });
             }
@@ -181,13 +174,14 @@ const Player = React.createClass({
         this.props.bindShortcut('e', (event) => {
             var wjsPlayer = PlayerStore.getState();
             if (["ended","stopping","error"].indexOf(player.wcjs.state) == -1) {
-                PlayerActions.pause();
+                if (player.wcjs.playing)
+                    player.wcjs.togglePause();
                 ControlActions.delayTime({
                     jump: 500,
                     delay: 0
                 });
-                PlayerActions.settingChange({
-                    subText: ''
+                SubtitleActions.settingChange({
+                    text: ''
                 });
                 PlayerActions.announcement('Next Frame');
             }
@@ -243,6 +237,7 @@ const Player = React.createClass({
             ls('customSubSize', newValue);
             PlayerActions.announcement('Subtitle Size ' + newValue + '%');
             player.fields.subSize.refs['input'].value = newValue + '%';
+            player.events.emit('subtitleUpdate');
         });
 
         this.props.bindShortcut('alt+down', (event) => {
@@ -251,31 +246,30 @@ const Player = React.createClass({
             ls('customSubSize', newValue);
             PlayerActions.announcement('Subtitle Size ' + newValue + '%');
             player.fields.subSize.refs['input'].value = newValue + '%';
+            player.events.emit('subtitleUpdate');
         });
 
         this.props.bindShortcut('shift+up', (event) => {
-            var playerState = PlayerStore.getState();
-            var newValue = parseInt(playerState.subBottom) + 5;
+            var subState = SubtitleStore.getState();
+            var newValue = parseInt(subState.marginBottom) + 5;
             PlayerActions.announcement('Moved Subtitles Up');
-            PlayerActions.settingChange({
-                subBottom: newValue + 'px'
+            SubtitleActions.settingChange({
+                marginBottom: newValue + 'px'
             });
         });
 
         this.props.bindShortcut('shift+down', (event) => {
-            var playerState = PlayerStore.getState();
-            var newValue = parseInt(playerState.subBottom) - 5;
+            var subState = SubtitleStore.getState();
+            var newValue = parseInt(subState.marginBottom) - 5;
             if (newValue < 0) newValue = 0;
             PlayerActions.announcement('Moved Subtitles Down');
-            PlayerActions.settingChange({
-                subBottom: newValue + 'px'
+            SubtitleActions.settingChange({
+                marginBottom: newValue + 'px'
             });
         });
 
         this.props.bindShortcut('[', (event) => {
-            
             var newRate = 0;
-            var playerState = PlayerStore.getState();
             var curRate = parseFloat(player.wcjs.input.rate);
             
             if (curRate >= 0.25 && curRate <= 0.5) newRate = 0.125;
@@ -286,19 +280,14 @@ const Player = React.createClass({
     
             if ((curRate + newRate) >= 0.125) {
                 player.wcjs.input.rate = curRate - newRate;
-    
                 var newValue = parseFloat(Math.round(player.wcjs.input.rate * 100) / 100).toFixed(2);
-        
                 player.fields.speed.refs['input'].value = newValue + 'x';
-                
                 PlayerActions.announcement('Speed: ' + newValue + 'x');
             }
         });
 
         this.props.bindShortcut(']', (event) => {
-    
             var newRate = 0;
-            var playerState = PlayerStore.getState();
             var curRate = parseFloat(player.wcjs.input.rate);
             
             if (curRate < 0.25) newRate = 0.125;
@@ -310,41 +299,31 @@ const Player = React.createClass({
     
             if ((curRate + newRate) < 100) {
                 player.wcjs.input.rate = curRate + newRate;
-    
                 var newValue = parseFloat(Math.round(player.wcjs.input.rate * 100) / 100).toFixed(2);
-        
                 player.fields.speed.refs['input'].value = newValue + 'x';
-                
                 PlayerActions.announcement('Speed: ' + newValue + 'x');
             }
         });
 
         this.props.bindShortcut('=', (event) => {
-    
             var newRate = 0;
-            var playerState = PlayerStore.getState();
-
             player.wcjs.input.rate = 1.0;
-
             var newValue = parseFloat(Math.round(player.wcjs.input.rate * 100) / 100).toFixed(2);
-    
             player.fields.speed.refs['input'].value = newValue + 'x';
-            
             PlayerActions.announcement('Speed: ' + newValue + 'x');
-
         });
 
         this.props.bindShortcut('t', (event) => {
-            var playerState = PlayerStore.getState();
-            PlayerActions.announcement(playerState.currentTime + ' / ' + playerState.totalTime);
+            var controlState = ControlStore.getState();
+            PlayerActions.announcement(controlState.currentTime + ' / ' + controlState.totalTime);
         });
 
         this.props.bindShortcut('f', (event) => {
-            PlayerActions.toggleFullscreen(!PlayerStore.getState().fullscreen);
+            ControlActions.toggleFullscreen();
         });
 
         this.props.bindShortcut('f11', (event) => {
-            PlayerActions.toggleFullscreen(!PlayerStore.getState().fullscreen);
+            ControlActions.toggleFullscreen();
         });
 
         this.props.bindShortcut('m', (event) => {
@@ -358,11 +337,11 @@ const Player = React.createClass({
         });
 
         this.props.bindShortcut('ctrl+l', (event) => {
-            PlayerActions.togglePlaylist();
+            VisibilityActions.toggleMenu('playlist');
         });
 
         this.props.bindShortcut('n', (event) => {
-            PlayerActions.next();
+            player.next();
         });
 
         this.props.bindShortcut('ctrl+h', (event) => {
@@ -377,7 +356,7 @@ const Player = React.createClass({
         });
 
         this.props.bindShortcut('esc', (event) => {
-            var playerState = PlayerStore.getState();
+            var controlState = ControlStore.getState();
             var visibilityState = VisibilityStore.getState();
             if (visibilityState.playlist) {
                 VisibilityActions.settingChange({
@@ -391,13 +370,16 @@ const Player = React.createClass({
                 VisibilityActions.settingChange({
                     subtitles: false
                 });
-            } else if (playerState.fullscreen) {
-                PlayerActions.toggleFullscreen(false);
+            } else if (controlState.fullscreen) {
+                ControlActions.toggleFullscreen(false);
             }
         });
 
         this.props.bindShortcut('p', (event) => {
             player.wcjs.time = 0;
+            SubtitleActions.settingChange({
+                text: ''
+            });
         });
         
         var aspectRatios = ['Default','1:1','4:3','16:9','16:10','2.21:1','2.35:1','2.39:1','5:4'];
@@ -416,7 +398,7 @@ const Player = React.createClass({
                         zoom: 1
                     });
                     PlayerActions.announcement('Aspect Ratio: ' + aspectRatios[newValue]);
-                    PlayerStore.getState().events.emit('resizeNow');
+                    player.events.emit('resizeNow');
                     return true;
                 } else return false;
             });
@@ -438,7 +420,7 @@ const Player = React.createClass({
                         zoom: 1
                     });
                     PlayerActions.announcement('Crop: ' + crops[newValue]);
-                    PlayerStore.getState().events.emit('resizeNow');
+                    player.events.emit('resizeNow');
                     return true;
                 } else return false;
             });
@@ -460,7 +442,7 @@ const Player = React.createClass({
                         aspect: 'Default'
                     });
                     PlayerActions.announcement('Zoom: ' + zooms[newValue][0]);
-                    PlayerStore.getState().events.emit('resizeNow');
+                    player.events.emit('resizeNow');
                     return true;
                 } else return false;
             });
@@ -507,9 +489,9 @@ const Player = React.createClass({
     },
     componentDidMount() {
         var announcer = document.getElementsByClassName('wcjs-announce')[0];
-        if (['', '0'].indexOf(announcer.style.opacity) > -1) {
-            PlayerActions.buffering(0);
-        }
+//        if (['', '0'].indexOf(announcer.style.opacity) > -1) {
+//            events.buffering(0);
+//        }
         player.set({
             notifier: this.refs.notificator
         });
@@ -517,18 +499,9 @@ const Player = React.createClass({
     update() {
         console.log('player update');
         if (this.isMounted()) {
-            var playerState = PlayerStore.getState();
             var visibilityState = VisibilityStore.getState();
             this.setState({
-                uri: playerState.uri,
-
-                buffering: playerState.buffering,
-                uiShown: visibilityState.uiShown,
-                
-                fontSize: playerState.fontSize,
-                subSize: playerState.subSize,
-                
-                rippleEffects: playerState.rippleEffects
+                uiShown: visibilityState.uiShown
             });
         }
     },
@@ -536,13 +509,13 @@ const Player = React.createClass({
         if (!ControlStore.getState().scrobbling) {
             VisibilityActions.uiShown(false);
         } else {
-            this.hoverTimeout = setTimeout(this.hideUI, 3000);
+            player.hoverTimeout = setTimeout(this.hideUI, 3000);
         }
     },
     hover(event) {
-        this.hoverTimeout && clearTimeout(this.hoverTimeout);
+        player.hoverTimeout && clearTimeout(player.hoverTimeout);
         this.state.uiShown || VisibilityActions.uiShown(true);
-        this.hoverTimeout = setTimeout(this.hideUI, 3000);
+        player.hoverTimeout = setTimeout(this.hideUI, 3000);
     },
     render() {
         var cursorStyle = {

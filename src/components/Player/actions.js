@@ -9,32 +9,6 @@ import ls from 'local-storage';
 
 class PlayerActions {
 
-    constructor() {
-        this.generateActions(
-            'play',
-            'playItem',
-            'pause',
-            'prev',
-            'next',
-            'stop',
-            'stopped',
-
-            'playing',
-            'buffering',
-            'seekable',
-            'opening',
-            'error',
-            'ended',
-            'mediaChanged',
-
-            'fullscreen',
-            'settingChange',
-            'close',
-
-            'itemCount'
-        );
-    }
-    
     announcement(obj) {
         var announcer = {};
         if (typeof obj === 'string') obj = {
@@ -44,10 +18,9 @@ class PlayerActions {
         if (!obj.delay) obj.delay = 2000;
 
         clearTimeout(player.announceTimer);
-        var playerState = this.alt.stores.playerStore.state;
         player.announceTimer = setTimeout(() => {
             if (!player.announceEffect) {
-                playerState.events.emit('announce', {
+                player.events.emit('announce', {
                     effect: !player.announceEffect
                 });
             }
@@ -57,7 +30,7 @@ class PlayerActions {
             obj.effect = !player.announceEffect;
 
         if (Object.keys(announcer).length)
-            playerState.events.emit('announce', obj);
+            player.events.emit('announce', obj);
     }
 
     setDesc(obj) {
@@ -96,17 +69,17 @@ class PlayerActions {
 
         if (!wcjs) {
             if (data.length)
-                this.actions.settingChange({
+                player.set({
                     pendingFiles: data,
-                    files: playerState.files.concat(data)
+                    files: player.files.concat(data)
                 });
 
             this.actions.togglePowerSave(true);
 
         } else {
 
-            this.actions.settingChange({
-                files: playerState.files.concat(data)
+            player.set({
+                files: player.files.concat(data)
             });
 
             if (wcjs.playlist.items.count == 0)
@@ -154,8 +127,8 @@ class PlayerActions {
         var newX = newObj.x;
         var newMRL = newObj.mrl;
 
-        this.actions.settingChange({
-            files: playerState.files.concat([newMRL])
+        player.set({
+            files: player.files.concat([newMRL])
         });
 
         wcjs.playlist.add(newMRL.uri);
@@ -225,19 +198,6 @@ class PlayerActions {
         ipc.send('app:powerSaveBlocker', state);
     }
 
-    toggleFullscreen(state) {
-        this.dispatch();
-
-        if (typeof state !== 'boolean') state = !this.alt.stores.playerStore.getState().fullscreen;
-
-        window.document.querySelector(".render-holder > div:first-of-type").style.display = 'none';
-        _.delay(() => {
-            window.document.querySelector(".render-holder > div:first-of-type").style.display = 'block';
-        }, 1000);
-
-        ipc.send('app:fullscreen', state);
-        this.actions.fullscreen(state);
-    }
 }
 
 

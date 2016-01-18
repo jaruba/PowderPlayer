@@ -8,8 +8,8 @@ import {
     History
 }
 from 'react-router';
-import PlayerStore from '../../store';
 import PlayerActions from '../../actions';
+import player from '../../utils/player';
 import ControlStore from './store';
 import ControlActions from './actions';
 import VisibilityStore from '../Visibility/store';
@@ -22,12 +22,11 @@ default React.createClass({
     mixins: [PureRenderMixin],
 
     getInitialState() {
-        var playerState = PlayerStore.getState();
         var visibilityState = VisibilityStore.getState();
         
         return {
-            playing: playerState.playing,
-            fullscreen: playerState.fullscreen,
+            playing: player.wcjs.playing,
+            fullscreen: false,
             uiShown: visibilityState.uiShown || visibilityState.playlist || visibilityState.settings,
             uiHidden: visibilityState.uiHidden,
             subtitlesOpen: visibilityState.subtitles,
@@ -53,7 +52,6 @@ default React.createClass({
         }
     },
     componentWillMount() {
-        PlayerStore.listen(this.update);
         VisibilityStore.listen(this.update);
         ControlStore.listen(this.update);
     },
@@ -65,23 +63,25 @@ default React.createClass({
         ControlActions.settingChange({
             volumeSlider: this.refs['volume-slider']
         });
-        PlayerStore.getState().events.on('controlsUpdate', this.update);
+        player.events.on('controlsUpdate', this.update);
+        player.events.on('resetPosition', this.resetPosition);
     },
     componentWillUnmount() {
-        PlayerStore.unlisten(this.update);
         VisibilityStore.unlisten(this.update);
         ControlStore.unlisten(this.update);
-        PlayerStore.getState().events.removeListener('controlsUpdate', this.update);
+        player.events.removeListener('controlsUpdate', this.update);
+        player.events.removeListener('resetPosition', this.resetPosition);
+    },
+    resetPosition() {
+        ControlActions.position(0);
     },
     update() {
         if (this.isMounted()) {
             var controlState = ControlStore.getState();
-            var playerState = PlayerStore.getState();
             var visibilityState = VisibilityStore.getState();
 
             this.setState({
-                playing: playerState.playing,
-                fullscreen: playerState.fullscreen,
+                playing: player.wcjs.playing,
                 uiShown: visibilityState.uiShown || visibilityState.playlist || visibilityState.settings,
                 uiHidden: visibilityState.uiHidden,
                 subtitlesOpen: visibilityState.subtitles,
@@ -107,7 +107,9 @@ default React.createClass({
                 volume: controlState.volume,
                 muted: controlState.muted,
                 
-                foundSubs: controlState.foundSubs
+                foundSubs: controlState.foundSubs,
+                
+                fullscreen: controlState.fullscreen
             });
         }
     },
@@ -145,13 +147,13 @@ default React.createClass({
 
                 <IconButton onClick={ControlActions.handlePausePlay} iconClassName="material-icons" iconStyle={{top: '-5px', left: '-1px'}} className={this.state.rippleEffects ? 'play-toggle' : 'play-toggle no-ripples'}>{this.state.playing ? 'pause' : 'play_arrow'}</IconButton>
 
-                <IconButton onClick={PlayerActions.prev} iconClassName="material-icons" iconStyle={{top: '-6px'}} className={'prev-button'}>{'skip_previous'}</IconButton>
+                <IconButton onClick={player.prev} iconClassName="material-icons" iconStyle={{top: '-6px'}} className={'prev-button'}>{'skip_previous'}</IconButton>
 
-                <IconButton onClick={PlayerActions.next} iconClassName="material-icons" iconStyle={{top: '-6px'}} className={'next-button'}>{'skip_next'}</IconButton>
+                <IconButton onClick={player.next} iconClassName="material-icons" iconStyle={{top: '-6px'}} className={'next-button'}>{'skip_next'}</IconButton>
 
                 <IconButton onClick={ControlActions.handleMute} iconClassName="material-icons" iconStyle={{color: '#e7e7e7'}} className="volume-button">{this.state.muted ? 'volume_off' : this.state.volume <= 0 ? 'volume_mute' : this.state.volume <= 120 ? 'volume_down' : 'volume_up' }</IconButton>
                 <Slider name="volume-slider" ref="volume-slider" defaultValue={this.state.volume} step={1} min={0} max={200} onChange={ControlActions.handleVolume} value={this.state.muted ? 0 : this.state.volume} onMouseEnter={ControlActions.volumeRippleEffect} onMouseLeave={ControlActions.volumeRippleEffect} onDragStart={ControlActions.volumeDragStart} onDragStop={ControlActions.volumeDragStop} />
-                <IconButton onClick={ControlActions.handleFullscreen} iconClassName="material-icons" iconStyle={{color: '#e7e7e7', fontSize: '30px', top: '-5px', left: '-1px'}} className="fullscreen-toggle">{this.state.fullscreen ? 'fullscreen_exit' : 'fullscreen'}</IconButton>
+                <IconButton onClick={ControlActions.toggleFullscreen} iconClassName="material-icons" iconStyle={{color: '#e7e7e7', fontSize: '30px', top: '-5px', left: '-1px'}} className="fullscreen-toggle">{this.state.fullscreen ? 'fullscreen_exit' : 'fullscreen'}</IconButton>
                 <IconButton onClick={ui.toggleMenu.bind(null, 'subtitles')} iconClassName="material-icons" iconStyle={{color: this.state.subtitlesOpen ? '#00acff' : '#e7e7e7', fontSize: '26px', top: '-5px', left: '-1px'}} className="subtitles-toggle" style={{display: 'inline-block'}}>closed_caption</IconButton>
 
             </div>

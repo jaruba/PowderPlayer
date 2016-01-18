@@ -17,11 +17,11 @@ default React.createClass({
     },
     componentWillMount() {
         VisibilityStore.listen(this.update);
-        PlayerStore.getState().events.on('announce', this.announcement);
+        player.events.on('announce', this.announcement);
     },
     componentWillUnmount() {
         VisibilityStore.unlisten(this.update);
-        PlayerStore.getState().events.removeListener('announce', this.announcement);
+        player.events.removeListener('announce', this.announcement);
     },
     announcement(obj) {
         if (typeof obj.effect !== 'undefined')

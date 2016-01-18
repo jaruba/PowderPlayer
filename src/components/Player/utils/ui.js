@@ -12,18 +12,12 @@ module.exports = {
     
     defaultSettings: () => {
 
-        var playerState = PlayerStore.getState();
         var wcjs = player.wcjs;
 
         wcjs.audio.delay = 0;
         wcjs.subtitles.delay = 0;
 
-        player.set({
-            audioDelay: 0,
-            subDelay: 0
-        });
-
-        playerState.events.emit('subtitleUpdate');
+        player.events.emit('subtitleUpdate');
 
         var playerState = player.fields;
         if (playerState.speed.refs['input']) {
@@ -37,7 +31,9 @@ module.exports = {
         player.set({
             aspect: 'Default',
             crop: 'Default',
-            zoom: 1
+            zoom: 1,
+            audioDelay: 0,
+            subDelay: 0
         });
     }
 }

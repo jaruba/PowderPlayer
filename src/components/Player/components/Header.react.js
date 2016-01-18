@@ -15,6 +15,7 @@ import VisibilityStore from './Visibility/store';
 import ModalActions from '../../Modal/dark/actions';
 import ui from '../utils/ui';
 import player from '../utils/player';
+import events from '../utils/events';
 
 export
 default React.createClass({
@@ -34,13 +35,13 @@ default React.createClass({
     },
     componentWillMount() {
         VisibilityStore.listen(this.update);
-        PlayerStore.getState().events.on('foundTrakt', this.showTrakt);
-        PlayerStore.getState().events.on('setTitle', this.setTitle);
+        player.events.on('foundTrakt', this.showTrakt);
+        player.events.on('setTitle', this.setTitle);
     },
     componentWillUnmount() {
         VisibilityStore.unlisten(this.update);
-        PlayerStore.getState().events.removeListener('foundTrakt', this.showTrakt);
-        PlayerStore.getState().events.removeListener('setTitle', this.setTitle);
+        player.events.removeListener('foundTrakt', this.showTrakt);
+        player.events.removeListener('setTitle', this.setTitle);
     },
     update() {
         if (this.isMounted()) {
@@ -68,7 +69,7 @@ default React.createClass({
         });
     },
     handleClose() {
-        PlayerActions.close();
+        events.close();
         this.history.replaceState(null, '');
     },
     handleOpenSettings() {

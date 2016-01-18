@@ -43,7 +43,7 @@ var parserQueue = async.queue((task, cb) => {
                 });
 
                 if (idx == wcjs.playlist.currentItem)
-                    PlayerStore.getState().events.emit('setTitle', client.title);
+                    player.events.emit('setTitle', client.title);
 
             }
             _.delay(() => {
@@ -159,10 +159,10 @@ var parserQueue = async.queue((task, cb) => {
 
                         PlayerActions.setDesc(newObj);
                         if (idx == wcjs.playlist.currentItem) {
-                            PlayerStore.getState().events.emit('setTitle', newObj.title);
+                            player.events.emit('setTitle', newObj.title);
                             if (!player.foundTrakt) {
                                 _.defer(() => {
-                                    PlayerStore.getState().events.emit('foundTrakt', true);
+                                    player.events.emit('foundTrakt', true);
                                 });
 
                                 var shouldScrobble = traktUtil.loggedIn && (ls.isSet('traktScrobble') ? ls('traktScrobble') : true);

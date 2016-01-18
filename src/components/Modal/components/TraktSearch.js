@@ -9,10 +9,10 @@ import ModalActions from '../dark/actions';
 
 import MessageActions from '../../Message/actions';
 import PlayerActions from '../../Player/actions';
-import PlayerStore from '../../Player/store';
 
 import linkUtil from '../../../utils/linkUtil';
 import traktUtil from '../../Player/utils/trakt';
+import player from '../../Player/utils/player';
 
 import _ from 'lodash';
 import ls from 'local-storage';
@@ -71,7 +71,7 @@ default React.createClass({
         
         this.state.traktResult.some( el => {
             if (el[el.type].ids.trakt == traktID) {
-                var desc = PlayerStore.getState().itemDesc();
+                var desc = player.itemDesc();
                 var parsed = desc.setting.parsed;
                 var prevTrakt = '';
                 if (desc.setting.trakt) {
@@ -107,7 +107,7 @@ default React.createClass({
                     
                     summary(buildQuery).then( results => {
 
-                        var idx = PlayerStore.getState().wcjs.playlist.currentItem;
+                        var idx = player.wcjs.playlist.currentItem;
 
                         if (idx > -1 && results && results.title) {
                                         
@@ -149,10 +149,10 @@ default React.createClass({
                                 if (shouldScrobble) {
                                     var newType = '';
                                     if (prevTrakt)
-                                        traktUtil.scrobble('stop', PlayerStore.getState().wcjs.position, prevTrakt);
+                                        traktUtil.scrobble('stop', player.wcjs.position, prevTrakt);
 
                                     if (results)
-                                        traktUtil.scrobble('start', PlayerStore.getState().wcjs.position, results);
+                                        traktUtil.scrobble('start', player.wcjs.position, results);
                                 }
                             }
                         }

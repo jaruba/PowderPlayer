@@ -3,6 +3,7 @@ import PureRenderMixin from 'react-addons-pure-render-mixin';
 import path from 'path';
 import wcjsRenderer from '../utils/wcjs-renderer';
 import player from '../utils/player';
+import events from '../utils/events';
 import _ from 'lodash';
 import ls from 'local-storage';
 import {
@@ -64,8 +65,8 @@ default React.createClass({
                 canvasParent: renderParent
             });
         });
-        PlayerStore.getState().events.on('resizeNow', this.updateSize);
-        PlayerStore.getState().events.on('rendererUpdate', this.update);
+        player.events.on('resizeNow', this.updateSize);
+        player.events.on('rendererUpdate', this.update);
         if (!player.wcjs) {
             player.wcjsInit(wcjsRenderer.init(this.refs['wcjs-render'], [
                 "--network-caching=" + ls('bufferSize'),
@@ -84,13 +85,14 @@ default React.createClass({
     },
     componentWillUnmount() {
         wcjsRenderer.clearCanvas();
-        var playerEvents = PlayerStore.getState().events;
+        var playerEvents = player.events;
         playerEvents.removeListener('resizeNow', this.updateSize);
         playerEvents.removeListener('rendererUpdate', this.update);
         window.removeEventListener('resize', this.handleResize);
     },
     update() {
         if (this.isMounted()) {
+            console.log('renderer update');
             this.setState({
                 rippleEffects: ls.isSet('playerRippleEffects') ? ls('playerRippleEffects') : true,
                 clickPause: ls.isSet('clickPause') ? ls('clickPause') : true,
@@ -109,7 +111,7 @@ default React.createClass({
         var renderer = this;
 
         this.player = player.wcjs;
-        this.pendingFiles = PlayerStore.getState().pendingFiles;
+        this.pendingFiles = player.pendingFiles;
 
         var initializeSize = _.once(() => {
             if (!this.state.initialResize) {
@@ -131,16 +133,16 @@ default React.createClass({
 
         this.player.onOpening = () => {
             wcjsRenderer.clearCanvas();
-            PlayerActions.opening();
+            events.opening();
         };
 
         this.player.onTimeChanged = ControlActions.pushTime;
 
-        this.player.onBuffering = _.throttle(PlayerActions.buffering, 500);
+        this.player.onBuffering = _.throttle(events.buffering, 500);
 
         this.player.onLengthChanged = ControlActions.length;
 
-        this.player.onSeekableChanged = PlayerActions.seekable;
+        this.player.onSeekableChanged = ControlActions.seekable;
 
         this.player.onPlaying = () => {
             if (renderer.state.firstPlay) {
@@ -156,18 +158,17 @@ default React.createClass({
                     });
                 });
             }
-            PlayerActions.playing();
+            events.playing();
         }
 
-        this.player.onPaused = PlayerActions.paused;
+        this.player.onPaused = events.paused;
 
         this.player.onStopped = () => {
-            if (renderer.isMounted()) {
+            if (renderer.isMounted())
                 renderer.setState({
                     firstPlay: true
                 });
-            }
-            PlayerActions.stopped();
+            events.stopped();
         }
 
         this.player.onEndReached = () => {
@@ -176,25 +177,23 @@ default React.createClass({
                     firstPlay: true
                 });
             }
-            PlayerActions.ended();
+            events.ended();
         }
 
         this.player.onEncounteredError = () => {
-            if (renderer.isMounted()) {
+            if (renderer.isMounted())
                 renderer.setState({
                     firstPlay: true
                 });
-            }
-            PlayerActions.error();
+            events.error();
         }
 
         this.player.onMediaChanged = () => {
-            if (renderer.isMounted()) {
+            if (renderer.isMounted())
                 renderer.setState({
                     firstPlay: true
                 });
-            }
-            PlayerActions.mediaChanged();
+            events.mediaChanged();
         }
 
         if (this.pendingFiles && this.pendingFiles.length) {
@@ -226,7 +225,7 @@ default React.createClass({
                 }
             }
 
-            if (playAfter) PlayerActions.play();
+            if (playAfter) player.wcjs.play();
 
         }
 
@@ -338,14 +337,14 @@ default React.createClass({
             size: this.calcSubSize()
         });
 
-        PlayerStore.getState().events.emit('announce', {
+        player.events.emit('announce', {
             size: this.calcFontSize()
         });
 
     },
     handleTogglePlay() {
         if (this.state.clickPause)
-            PlayerStore.getState().playing ? PlayerActions.pause() : PlayerActions.play();
+            player.wcjs.togglePause();
     },
     wheel(event) {
         var volume = (event.deltaY < 0) ? this.player.volume + 5 : this.player.volume - 5;
@@ -370,9 +369,9 @@ default React.createClass({
         };
         return (
             <div className='render-holder' onWheel={this.wheel}>
-                <RaisedButton id={'canvasEffect'} onClick={this.handleTogglePlay} onDoubleClick={PlayerActions.toggleFullscreen} iconClassName="material-icons" className={this.state.rippleEffects ? this.state.clickPause ? 'over-canvas' : 'over-canvas no-ripples' : 'over-canvas no-ripples' } label="Canvas Overlay" />
+                <RaisedButton id={'canvasEffect'} onClick={this.handleTogglePlay} onDoubleClick={ControlActions.toggleFullscreen} iconClassName="material-icons" className={this.state.rippleEffects ? this.state.clickPause ? 'over-canvas' : 'over-canvas no-ripples' : 'over-canvas no-ripples' } label="Canvas Overlay" />
                 <div ref="canvas-holder" className="canvas-holder" style={renderStyles.container}>
-                    <canvas id={'playerCanvas'} style={renderStyles.canvas} onClick={this.handleTogglePlay} onDoubleClick={PlayerActions.toggleFullscreen} ref="wcjs-render" />
+                    <canvas id={'playerCanvas'} style={renderStyles.canvas} onClick={this.handleTogglePlay} onDoubleClick={ControlActions.toggleFullscreen} ref="wcjs-render" />
                 </div>
             </div>
         );

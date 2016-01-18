@@ -1,5 +1,5 @@
 import React from 'react';
-import PlayerStore from '../../store';
+import player from '../../utils/player';
 import SubStore from './store';
 import VisibilityStore from '../Visibility/store';
 import ls from 'local-storage';
@@ -8,7 +8,6 @@ export
 default React.createClass({
 
     getInitialState() {
-        var playerState = PlayerStore.getState();
         var visibilityState = VisibilityStore.getState();
         var subState = SubStore.getState();
         return {
@@ -21,21 +20,18 @@ default React.createClass({
         }
     },
     componentWillMount() {
-        PlayerStore.listen(this.update);
         VisibilityStore.listen(this.update);
         SubStore.listen(this.update);
-        PlayerStore.getState().events.on('subtitleUpdate', this.update);
+        player.events.on('subtitleUpdate', this.update);
     },
 
     componentWillUnmount() {
-        PlayerStore.unlisten(this.update);
         VisibilityStore.unlisten(this.update);
         SubStore.unlisten(this.update);
-        PlayerStore.getState().events.removeListener('subtitleUpdate', this.update);
+        player.events.removeListener('subtitleUpdate', this.update);
     },
     update() {
         if (this.isMounted()) {
-            var playerState = PlayerStore.getState();
             var visibilityState = VisibilityStore.getState();
             var subState = SubStore.getState();
             this.setState({

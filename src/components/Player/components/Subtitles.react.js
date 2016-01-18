@@ -12,7 +12,6 @@ import {SelectableContainerEnhance} from 'material-ui/lib/hoc/selectable-enhance
 
 const SelectableList = SelectableContainerEnhance(List);
 
-import PlayerStore from '../store';
 import PlayerActions from '../actions';
 import SubtitleStore from './SubtitleText/store';
 import SubtitleActions from './SubtitleText/actions';
@@ -54,13 +53,11 @@ default React.createClass({
         }
     },
     componentWillMount() {
-        PlayerStore.listen(this.update);
         VisibilityStore.listen(this.update);
         SubtitleStore.listen(this.update);
     },
 
     componentWillUnmount() {
-        PlayerStore.unlisten(this.update);
         VisibilityStore.unlisten(this.update);
         SubtitleStore.unlisten(this.update);
     },

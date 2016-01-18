@@ -5,6 +5,8 @@ import {handleTime} from '../../utils/time';
 import controlActions from './actions';
 import PlayerStore from '../../store';
 import PlayerActions from '../../actions';
+import VisibilityStore from '../Visibility/store';
+import VisibilityActions from '../Visibility/actions';
 import traktUtil from '../../utils/trakt';
 import player from '../../utils/player';
 
@@ -31,6 +33,7 @@ class ControlStore {
         this.scrobbleTooltip = 'none';
         this.progressHover = false;
         this.foundSubs = false;
+        this.fullscreen = false;
 
         this.scrobbling = false;
         this.seekable = true;
@@ -41,6 +44,12 @@ class ControlStore {
         this.setState(setting);
     }
 
+    onSeekable(state) {
+        this.setState({
+            seekable: state
+        });
+    }
+
     onScrobble(time) {
 
         if (time < 0) time = 0;
@@ -48,7 +57,7 @@ class ControlStore {
 
         var playerState = PlayerStore.getState();
 
-        if (!playerState.playing)
+        if (!player.wcjs.playing)
             this.setState({
                 position: time / this.length,
                 currentTime: handleTime(time, this.length)
@@ -82,9 +91,10 @@ class ControlStore {
         });
 
         _.defer(() => {
-            PlayerActions.settingChange({
-                uiShown: true
-            });
+            if (!VisibilityStore.getState().uiShown)
+                VisibilityActions.settingChange({
+                    uiShown: true
+                });
         });
 
         if (throttlers.scrobbleKeys) clearTimeout(throttlers.scrobbleKeys);
@@ -102,9 +112,10 @@ class ControlStore {
                     keepScrobble: false
                 });
                 _.delay(() => {
-                    PlayerActions.settingChange({
-                        uiShown: false
-                    });
+                    if (VisibilityStore.getState().uiShown)
+                        VisibilityActions.settingChange({
+                            uiShown: false
+                        });
                 }, 1000);
             }, 1500);
             throttlers.scrobbleKeys = false;

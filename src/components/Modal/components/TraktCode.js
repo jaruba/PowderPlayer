@@ -28,7 +28,7 @@ default React.createClass({
                 traktUtil.exchangePin(inputvalue);
                 player.notifier.info('Login Successful', '', 4000);
                 _.delay(() => {
-                    PlayerStore.getState().events.emit('settingsUpdate');
+                    player.events.emit('settingsUpdate');
                 },1000);
             } catch(e) {
                 player.notifier.info('Error: '+e.message, '', 7000);
