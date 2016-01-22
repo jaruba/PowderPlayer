@@ -26,19 +26,14 @@ default React.createClass({
     componentDidMount() {
         window.addEventListener('mousemove', this.globalMouseMoved);
         window.addEventListener('mouseup', ProgressActions.handleGlobalMouseUp);
-        player.events.on('resetPosition', this.resetPosition);
     },
     componentWillUnmount() {
         ProgressStore.unlisten(this.update);
         window.removeEventListener('mousemove', this.globalMouseMoved);
         window.removeEventListener('mouseup', ProgressActions.handleGlobalMouseUp);
-        player.events.removeListener('resetPosition', this.resetPosition);
     },
     globalMouseMoved(evt) {
         ProgressActions.handleGlobalMouseMove(evt.pageX);
-    },
-    resetPosition() {
-        ProgressActions.position(0);
     },
     throttleScrobblerHover(evt) {
         ProgressActions.handleScrobblerHover(evt.pageX);

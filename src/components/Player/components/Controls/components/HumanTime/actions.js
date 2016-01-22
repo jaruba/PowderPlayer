@@ -13,10 +13,13 @@ class TimeActions {
     }
     
     pushTime(time) {
-        var timeState = this.alt.stores.TimeStore.state;
-        var newTime = handleTime(time, timeState.length);
-        if (newTime != timeState.currentTime)
-            this.actions.time(time);
+        var visibilityState = this.alt.stores.VisibilityStore.state;
+        if (visibilityState.uiShown && !visibilityState.uiHidden) {
+            var timeState = this.alt.stores.TimeStore.state;
+            var newTime = handleTime(time, timeState.length);
+            if (newTime != timeState.currentTime)
+                this.actions.time(time);
+        }
 
         SubtitleActions.time(time); // print subtitle text if a subtitle is selected
     }

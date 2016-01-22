@@ -9,7 +9,6 @@ import clipboard from 'clipboard';
 import ModalActions from '../dark/actions';
 
 import MessageActions from '../../Message/actions';
-import PlayerActions from '../../Player/actions';
 import PlayerStore from '../../Player/store';
 
 import linkUtil from '../../../utils/linkUtil';
@@ -106,7 +105,8 @@ default React.createClass({
                 win.webContents.on('did-finish-load', () => {
                     win.show();
                     win.focus();
-                    PlayerActions.pause();
+                    if (player.wcjs.playing)
+                        player.wcjs.togglePause();
                 });
                 
             }

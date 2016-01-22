@@ -48,8 +48,6 @@ player.itemDesc = i => {
 
 player.prev = () => {
     if (player.wcjs.playlist.currentItem > 0) {
-        player.events.emit('resetPosition');
-
         player.set({
             lastItem: -1,
             firstPlay: false,
@@ -65,8 +63,6 @@ player.prev = () => {
 
 player.next = () => {
     if (player.wcjs.playlist.currentItem + 1 < player.wcjs.playlist.items.count) {
-        player.events.emit('resetPosition');
-
         player.set({
             lastItem: -1,
             firstPlay: false,

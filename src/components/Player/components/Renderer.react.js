@@ -15,6 +15,7 @@ const appPath = require('remote').require('app');
 
 import PlayerActions from '../actions';
 import PlayerStore from '../store';
+import VisibilityStore from './Visibility/store';
 import ControlActions from './Controls/actions';
 import ProgressActions from './Controls/components/ProgressBar/actions';
 import VolumeActions from './Controls/components/Volume/actions';
@@ -130,7 +131,9 @@ default React.createClass({
         });
 
         this.player.onPositionChanged = _.throttle((pos) => {
-            ProgressActions.position(pos);
+            var visibilityState = VisibilityStore.getState();
+            if (visibilityState.uiShown && !visibilityState.uiHidden)
+                ProgressActions.position(pos);
             initializeSize();
         }, 500);
 

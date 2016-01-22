@@ -10,6 +10,8 @@ import PlayerActions from '../actions';
 import ProgressStore from '../components/Controls/components/ProgressBar/store';
 import ControlStore from '../components/Controls/store';
 import ControlActions from '../components/Controls/actions';
+import TimeActions from '../components/Controls/components/HumanTime/actions';
+import ProgressActions from '../components/Controls/components/ProgressBar/actions';
 import VisibilityActions from '../components/Visibility/actions';
 import SubtitleActions from '../components/SubtitleText/actions';
 
@@ -124,11 +126,17 @@ events.paused = () => {
     traktUtil.handleScrobble('pause', player.itemDesc(), player.wcjs.position);
 }
 
-events.mediaChanged = () => {
+events.resetUI = () => {
     ControlActions.settingChange({
-        position: 0,
-        totalTime: '00:00',
         foundSubs: false
+    });
+    TimeActions.settingChange({
+        currentTime: '00:00',
+        totalTime: '00:00',
+        length: 0
+    });
+    ProgressActions.settingChange({
+        position: 0
     });
     SubtitleActions.settingChange({
         subtitle: [],
@@ -136,15 +144,20 @@ events.mediaChanged = () => {
         trackSub: -1,
         text: ''
     });
-    VisibilityActions.settingChange({
-        subtitles: false
-    });
     player.events.emit('resizeNow', {
         aspect: 'Default',
         crop: 'Default',
         zoom: 1
     });
     player.events.emit('foundTrakt', false);
+}
+
+events.mediaChanged = () => {
+    events.resetUI();
+
+    VisibilityActions.settingChange({
+        subtitles: false
+    });
     player.set({
         foundTrakt: false,
         firstPlay: false,
@@ -199,19 +212,9 @@ events.ended = () => {
 }
 
 events.close = () => {
-    ControlActions.settingChange({
-        length: 0,
-        position: 0,
-        currentTime: '00:00',
-        totalTime: '00:00',
-        foundSubs: false
-    });
-    SubtitleActions.settingChange({
-        subtitle: [],
-        trackSub: -1,
-        selectedSub: 1,
-        text: ''
-    });
+    
+    events.resetUI();
+    
     VisibilityActions.settingChange({
         uiShown: true,
         playlist: false,
@@ -219,11 +222,6 @@ events.close = () => {
         settings: false
     });
     player.events.emit('setTitle', '');
-    player.events.emit('resizeNow', {
-        aspect: 'Default',
-        crop: 'Default',
-        zoom: 1
-    });
 
     if (ControlStore.getState().fullscreen)
         ControlActions.toggleFullscreen();
