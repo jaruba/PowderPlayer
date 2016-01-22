@@ -16,6 +16,9 @@ const appPath = require('remote').require('app');
 import PlayerActions from '../actions';
 import PlayerStore from '../store';
 import ControlActions from './Controls/actions';
+import ProgressActions from './Controls/components/ProgressBar/actions';
+import VolumeActions from './Controls/components/Volume/actions';
+import TimeActions from './Controls/components/HumanTime/actions';
 import SubtitleActions from './SubtitleText/actions';
 
 try {
@@ -127,7 +130,7 @@ default React.createClass({
         });
 
         this.player.onPositionChanged = _.throttle((pos) => {
-            ControlActions.position(pos);
+            ProgressActions.position(pos);
             initializeSize();
         }, 500);
 
@@ -136,13 +139,13 @@ default React.createClass({
             events.opening();
         };
 
-        this.player.onTimeChanged = ControlActions.pushTime;
+        this.player.onTimeChanged = TimeActions.pushTime;
 
         this.player.onBuffering = _.throttle(events.buffering, 500);
 
-        this.player.onLengthChanged = ControlActions.length;
+        this.player.onLengthChanged = TimeActions.length;
 
-        this.player.onSeekableChanged = ControlActions.seekable;
+        this.player.onSeekableChanged = ProgressActions.seekable;
 
         this.player.onPlaying = () => {
             if (renderer.state.firstPlay) {
@@ -348,7 +351,7 @@ default React.createClass({
     },
     wheel(event) {
         var volume = (event.deltaY < 0) ? this.player.volume + 5 : this.player.volume - 5;
-        ControlActions.setVolume(volume);
+        VolumeActions.setVolume(volume);
         if (volume >= 0 && volume <= 200)
             PlayerActions.announcement('Volume ' + volume + '%');
     },

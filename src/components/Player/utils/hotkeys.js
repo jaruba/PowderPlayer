@@ -7,6 +7,11 @@ import SubtitleStore from '../components/SubtitleText/store';
 import SubtitleActions from '../components/SubtitleText/actions';
 import ControlStore from '../components/Controls/store';
 import ControlActions from '../components/Controls/actions';
+import TimeStore from '../components/Controls/components/HumanTime/store';
+import VolumeStore from '../components/Controls/components/Volume/store';
+import VolumeActions from '../components/Controls/components/Volume/actions';
+import ProgressStore from '../components/Controls/components/ProgressBar/store';
+import ProgressActions from '../components/Controls/components/ProgressBar/actions';
 import VisibilityStore from '../components/Visibility/store';
 import VisibilityActions from '../components/Visibility/actions';
 
@@ -32,23 +37,22 @@ hotkeys.attach = (props) => {
     props.bindShortcut('ctrl+up', (event) => {
         var volume = Math.round((player.wcjs.volume + 5) / 5) * 5;
         if (volume > 200) volume = 200;
-        ControlActions.setVolume(volume);
+        VolumeActions.setVolume(volume);
         PlayerActions.announcement('Volume '+volume+'%');
     });
 
     props.bindShortcut('ctrl+down', (event) => {
         var volume = Math.round((player.wcjs.volume - 5) / 5) * 5;
         if (volume < 0) volume = 0;
-        ControlActions.setVolume(volume);
+        VolumeActions.setVolume(volume);
         PlayerActions.announcement('Volume '+volume+'%');
     });
 
     props.bindShortcut('ctrl+right', (event) => {
-        var wjsPlayer = PlayerStore.getState();
         if (["ended","stopping","error"].indexOf(player.wcjs.state) == -1) {
             if (player.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
             else var wjsDelay = 700;
-            ControlActions.delayTime({
+            ProgressActions.delayTime({
                 jump: 60000,
                 delay: wjsDelay
             });
@@ -56,11 +60,10 @@ hotkeys.attach = (props) => {
     });
 
     props.bindShortcut('ctrl+left', (event) => {
-        var wjsPlayer = PlayerStore.getState();
         if (["ended","stopping","error"].indexOf(player.wcjs.state) == -1) {
             if (player.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
             else var wjsDelay = 700;
-            ControlActions.delayTime({
+            ProgressActions.delayTime({
                 jump: -60000,
                 delay: wjsDelay
             });
@@ -68,11 +71,10 @@ hotkeys.attach = (props) => {
     });
 
     props.bindShortcut('alt+right', (event) => {
-        var wjsPlayer = PlayerStore.getState();
         if (["ended","stopping","error"].indexOf(player.wcjs.state) == -1) {
             if (player.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
             else var wjsDelay = 700;
-            ControlActions.delayTime({
+            ProgressActions.delayTime({
                 jump: 10000,
                 delay: wjsDelay
             });
@@ -80,11 +82,10 @@ hotkeys.attach = (props) => {
     });
 
     props.bindShortcut('alt+left', (event) => {
-        var wjsPlayer = PlayerStore.getState();
         if (["ended","stopping","error"].indexOf(player.wcjs.state) == -1) {
             if (player.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
             else var wjsDelay = 700;
-            ControlActions.delayTime({
+            ProgressActions.delayTime({
                 jump: -10000,
                 delay: wjsDelay
             });
@@ -92,11 +93,10 @@ hotkeys.attach = (props) => {
     });
     
     props.bindShortcut('shift+right', (event) => {
-        var wjsPlayer = PlayerStore.getState();
         if (["ended","stopping","error"].indexOf(player.wcjs.state) == -1) {
             if (player.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
             else var wjsDelay = 700;
-            ControlActions.delayTime({
+            ProgressActions.delayTime({
                 jump: 3000,
                 delay: wjsDelay
             });
@@ -104,11 +104,10 @@ hotkeys.attach = (props) => {
     });
 
     props.bindShortcut('shift+left', (event) => {
-        var wjsPlayer = PlayerStore.getState();
         if (["ended","stopping","error"].indexOf(player.wcjs.state) == -1) {
             if (player.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
             else var wjsDelay = 700;
-            ControlActions.delayTime({
+            ProgressActions.delayTime({
                 jump: -3000,
                 delay: wjsDelay
             });
@@ -116,24 +115,22 @@ hotkeys.attach = (props) => {
     });
     
     props.bindShortcut('right', (event) => {
-        var wjsPlayer = PlayerStore.getState();
         if (["ended","stopping","error"].indexOf(player.wcjs.state) == -1) {
             if (player.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
             else var wjsDelay = 700;
-            ControlActions.delayTime({
-                jump: (ControlStore.getState().length / 60),
+            ProgressActions.delayTime({
+                jump: (player.wcjs.length / 60),
                 delay: wjsDelay
             });
         }
     });
 
     props.bindShortcut('left', (event) => {
-        var wjsPlayer = PlayerStore.getState();
         if (["ended","stopping","error"].indexOf(player.wcjs.state) == -1) {
             if (player.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
             else var wjsDelay = 700;
-            ControlActions.delayTime({
-                jump: (-1) * (ControlStore.getState().length / 60),
+            ProgressActions.delayTime({
+                jump: (-1) * (player.wcjs.length / 60),
                 delay: wjsDelay
             });
         }
@@ -282,8 +279,8 @@ hotkeys.attach = (props) => {
     });
 
     props.bindShortcut('t', (event) => {
-        var controlState = ControlStore.getState();
-        PlayerActions.announcement(controlState.currentTime + ' / ' + controlState.totalTime);
+        var timeState = TimeStore.getState();
+        PlayerActions.announcement(timeState.currentTime + ' / ' + timeState.totalTime);
     });
 
     props.bindShortcut('f', (event) => {
@@ -295,9 +292,9 @@ hotkeys.attach = (props) => {
     });
 
     props.bindShortcut('m', (event) => {
-        var controlState = ControlStore.getState();
-        var muted = !controlState.muted;
-        ControlActions.mute(muted);
+        var volumeState = VolumeStore.getState();
+        var muted = !volumeState.muted;
+        VolumeActions.mute(muted);
         if (muted)
             PlayerActions.announcement('Muted');
         else

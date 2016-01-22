@@ -121,7 +121,7 @@ class PlayerActions {
 
     replaceMRL(newObj) {
 
-        var playerState = this.alt.stores.playerStore.getState();
+        var progressState = this.alt.stores.ProgressStore.getState();
         var wcjs = player.wcjs;
 
         var newX = newObj.x;
@@ -139,7 +139,7 @@ class PlayerActions {
         var swapDifference = wcjs.playlist.items.count - newX - 1;
 
         if (newX == wcjs.playlist.currentItem && [3, 4].indexOf(wcjs.state) > -1) {
-            var playerPos = playerState.position;
+            var playerPos = progressState.position;
             wcjs.stop();
             wcjs.playlist.advanceItem(newDifference, swapDifference * (-1));
             wcjs.playlist.playItem(newX);

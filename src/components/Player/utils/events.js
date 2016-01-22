@@ -7,6 +7,7 @@ import ui from './ui';
 import linkSupport from './supportedLinks';
 
 import PlayerActions from '../actions';
+import ProgressStore from '../components/Controls/components/ProgressBar/store';
 import ControlStore from '../components/Controls/store';
 import ControlActions from '../components/Controls/actions';
 import VisibilityActions from '../components/Visibility/actions';
@@ -177,7 +178,7 @@ events.error = () => {
 events.ended = () => {
     console.log('Playback ended');
 
-    var position = ControlStore.getState().position;
+    var position = ProgressStore.getState().position;
 
     player.events.emit('foundTrakt', false);
     traktUtil.handleScrobble('stop', player.itemDesc(), position);
