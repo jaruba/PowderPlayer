@@ -132,10 +132,10 @@ default React.createClass({
 
         this.player.onPositionChanged = _.throttle((pos) => {
             var visibilityState = VisibilityStore.getState();
-            if (ls('renderHidden') || (visibilityState.uiShown && !visibilityState.uiHidden))
+            if (ls('renderHidden') || ((visibilityState.uiShown && !visibilityState.uiHidden) || (visibilityState.playlist || visibilityState.settings)))
                 ProgressActions.position(pos);
             initializeSize();
-        }, 500);
+        }, ls('renderFreq'));
 
         this.player.onOpening = () => {
             wcjsRenderer.clearCanvas();
@@ -144,7 +144,7 @@ default React.createClass({
 
         this.player.onTimeChanged = TimeActions.pushTime;
 
-        this.player.onBuffering = _.throttle(events.buffering, 500);
+        this.player.onBuffering = _.throttle(events.buffering, ls('renderFreq'));
 
         this.player.onLengthChanged = TimeActions.length;
 

@@ -43,7 +43,6 @@ default React.createClass({
         return {
             alwaysOnTop: player.alwaysOnTop,
             clickPause: ls.isSet('clickPause') ? ls('clickPause') : true,
-            renderHidden: ls('renderHidden'),
             playerRippleEffects: ls.isSet('playerRippleEffects') ? ls('playerRippleEffects') : true,
             playerNotifs: ls.isSet('playerNotifs') ? ls('playerNotifs') : true,
             trakt: traktUtil.loggedIn ? true : false,
@@ -65,6 +64,8 @@ default React.createClass({
             downloadFolder: ls('downloadFolder') ? ls('downloadFolder') : 'Temp',
             bufferSize: parseInt(ls('bufferSize') / 1000).toFixed(1),
             speedPulsing: ls('speedPulsing') ? ls('speedPulsing') : 'disabled',
+            renderHidden: ls('renderHidden'),
+            renderFreq: ls('renderFreq'),
 
             aspectRatios: ['Default','1:1','4:3','16:9','16:10','2.21:1','2.35:1','2.39:1','5:4'],
             crops: ['Default','16:10','16:9','1.85:1','2.21:1','2.35:1','2.39:1','5:3','4:3','5:4','1:1'],
@@ -316,10 +317,10 @@ default React.createClass({
     _handleSpeedKeys(event) {
         if (event.keyCode == 38) {
             event.preventDefault();
-            this._handleSpeed(1);
+            this._handleSpeed(null, 1);
         } else if (event.keyCode == 40) {
             event.preventDefault();
-            this._handleSpeed(-1);
+            this._handleSpeed(null, -1);
         } else if ([13, 27].indexOf(event.keyCode) > -1) {
             event.preventDefault();
             this.refs['speedInput'].blur();
@@ -469,10 +470,10 @@ default React.createClass({
     _handlePortKeys(event) {
         if (event.keyCode == 38) {
             event.preventDefault();
-            this._handlePort(null, -1);
+            this._handlePort(null, 1);
         } else if (event.keyCode == 40) {
             event.preventDefault();
-            this._handlePort(null, 1);
+            this._handlePort(null, -1);
         } else if ([13, 27].indexOf(event.keyCode) > -1) {
             event.preventDefault();
             this.refs['portInput'].blur();
@@ -687,18 +688,47 @@ default React.createClass({
         });
     },
 
+    _handleRenderFreq(direction) {
+        var newFreq = parseInt(this.refs['renderFreqInput'].refs['input'].value);
+
+        if (direction < 0)
+            newFreq = newFreq - 50;
+        else
+            newFreq = newFreq + 50;
+
+        if (newFreq < 0) newFreq = 0;
+        
+        ls('renderFreq', newFreq);
+        this.refs['renderFreqInput'].refs['input'].value = newFreq + 'ms';
+    },
+    
+    _handleRenderFreqKeys(event) {
+        if (event.keyCode == 38) {
+            event.preventDefault();
+            this._handleRenderFreq(1);
+        } else if (event.keyCode == 40) {
+            event.preventDefault();
+            this._handleRenderFreq(-1);
+        } else if ([13, 27].indexOf(event.keyCode) > -1) {
+            event.preventDefault();
+            this.refs['renderFreqInput'].blur();
+        }
+    },
+    
+    _handleRenderFreqBlur(event) {
+        var newValue = parseInt(this.refs['renderFreqInput'].getValue());
+        if (newValue < 0)
+            newValue = 0;
+
+        ls('renderFreq', newValue);
+        this.refs['renderFreqInput'].refs['input'].value = newValue + 'ms';
+    },
+    
     render() {
 
         var renderObj = {
 
             'General': [{
-                type: 'header',
-                label: 'Performance'
-            }, {
-                type: 'toggle',
-                title: 'Render when UI Hidden',
-                tag: 'renderHidden'
-            }, {
                 type: 'header',
                 label: 'Interface'
             }, {
@@ -727,6 +757,19 @@ default React.createClass({
                 default: this.state.zoomLevel + '',
                 disabled: true,
                 width: '30px'
+            }, {
+                type: 'header',
+                label: 'Performance'
+            }, {
+                type: 'toggle',
+                title: 'Render when UI Hidden',
+                tag: 'renderHidden'
+            }, {
+                type: 'select',
+                title: 'Render Frequency',
+                tag: 'renderFreq',
+                default: this.state.renderFreq + 'ms',
+                width: '80px'
             }, {
                 type: 'header',
                 label: 'Playback'

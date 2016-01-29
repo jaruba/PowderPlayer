@@ -15,7 +15,7 @@ class TimeActions {
     
     pushTime(time) {
         var visibilityState = this.alt.stores.VisibilityStore.state;
-        if (ls('renderHidden') || (visibilityState.uiShown && !visibilityState.uiHidden)) {
+        if (ls('renderHidden') || ((visibilityState.uiShown && !visibilityState.uiHidden) || (visibilityState.playlist || visibilityState.settings))) {
             var timeState = this.alt.stores.TimeStore.state;
             var newTime = handleTime(time, timeState.length);
             if (newTime != timeState.currentTime)
