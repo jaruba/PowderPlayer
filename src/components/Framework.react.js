@@ -35,6 +35,7 @@ const Framework = React.createClass({
             }
         });
 
+        if (!ls.isSet('renderHidden')) ls('renderHidden', true);
         if (!ls.isSet('subEncoding')) ls('subEncoding', 'auto');
         if (!ls.isSet('peerPort')) ls('peerPort', 6881);
         if (!ls.isSet('maxPeers')) ls('maxPeers', 200);

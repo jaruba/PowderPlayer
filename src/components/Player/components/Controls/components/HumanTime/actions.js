@@ -1,6 +1,7 @@
 import alt from '../../../../../../alt'
 import SubtitleActions from '../../../SubtitleText/actions';
 import {handleTime} from '../../../../utils/time';
+import ls from 'local-storage';
 
 class TimeActions {
 
@@ -14,7 +15,7 @@ class TimeActions {
     
     pushTime(time) {
         var visibilityState = this.alt.stores.VisibilityStore.state;
-        if (visibilityState.uiShown && !visibilityState.uiHidden) {
+        if (ls('renderHidden') || (visibilityState.uiShown && !visibilityState.uiHidden)) {
             var timeState = this.alt.stores.TimeStore.state;
             var newTime = handleTime(time, timeState.length);
             if (newTime != timeState.currentTime)

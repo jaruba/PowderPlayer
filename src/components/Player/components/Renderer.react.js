@@ -132,7 +132,7 @@ default React.createClass({
 
         this.player.onPositionChanged = _.throttle((pos) => {
             var visibilityState = VisibilityStore.getState();
-            if (visibilityState.uiShown && !visibilityState.uiHidden)
+            if (ls('renderHidden') || (visibilityState.uiShown && !visibilityState.uiHidden))
                 ProgressActions.position(pos);
             initializeSize();
         }, 500);

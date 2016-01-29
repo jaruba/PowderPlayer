@@ -43,6 +43,7 @@ default React.createClass({
         return {
             alwaysOnTop: player.alwaysOnTop,
             clickPause: ls.isSet('clickPause') ? ls('clickPause') : true,
+            renderHidden: ls('renderHidden'),
             playerRippleEffects: ls.isSet('playerRippleEffects') ? ls('playerRippleEffects') : true,
             playerNotifs: ls.isSet('playerNotifs') ? ls('playerNotifs') : true,
             trakt: traktUtil.loggedIn ? true : false,
@@ -691,6 +692,13 @@ default React.createClass({
         var renderObj = {
 
             'General': [{
+                type: 'header',
+                label: 'Performance'
+            }, {
+                type: 'toggle',
+                title: 'Render when UI Hidden',
+                tag: 'renderHidden'
+            }, {
                 type: 'header',
                 label: 'Interface'
             }, {
