@@ -21,12 +21,19 @@ import subUtil from './Player/utils/subtitles';
 import remote from 'remote';
 import clArgs from '../utils/clArgs';
 import ls from 'local-storage';
+import Promise from 'bluebird';
 
 const Framework = React.createClass({
 
     mixins: [PureRenderMixin, RouteContext, History],
 
     componentWillMount() {
+
+        Promise.config({
+            warnings: {
+                wForgottenReturn: false
+            }
+        });
 
         if (!ls.isSet('subEncoding')) ls('subEncoding', 'auto');
         if (!ls.isSet('peerPort')) ls('peerPort', 6881);
