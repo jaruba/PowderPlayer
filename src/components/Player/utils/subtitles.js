@@ -102,9 +102,7 @@ subtitles.byExactHash = (hash, fileSize, tag) => {
         }).catch(function(err){
             subtitles.tryLater(15000);
         });
-        
-        return '';
-        
+
     }).catch(function(err){
         subtitles.tryLater(30000);
     });
@@ -161,7 +159,6 @@ subtitles.findHash = () => {
                     } else checkedFiles[filename][hash]++;
                 }
             }
-            return '';
         });
     } else {
         subtitles.os.extractInfo(filepath).then(function(infos) {
@@ -175,7 +172,6 @@ subtitles.findHash = () => {
                 if (!byteLength) byteLength = 0;
                 subtitles.byExactHash(infos.moviehash, byteLength, filename);
             }
-            return '';
         });
     }
 }
@@ -207,12 +203,10 @@ subtitles.loadSubtitle = (subtitleElement, cb) => {
             },{ charset: ls('subEncoding') });
         } else
             cb(null);
-        return '';
     } else {
         retriever.retrieveSrt(subtitleElement, (err, res) => {
             subtitles.processSub(res, subtitleElement.split('.').pop(), cb);
         },{ charset: ls('subEncoding') });
-        return '';
     }
     var resData = "";
 

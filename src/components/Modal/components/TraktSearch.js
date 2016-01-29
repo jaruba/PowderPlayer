@@ -10,7 +10,6 @@ import ModalActions from '../dark/actions';
 import MessageActions from '../../Message/actions';
 import PlayerActions from '../../Player/actions';
 
-import linkUtil from '../../../utils/linkUtil';
 import traktUtil from '../../Player/utils/trakt';
 import player from '../../Player/utils/player';
 
@@ -171,7 +170,7 @@ default React.createClass({
                 <AutoComplete
                   ref="searchInput"
                   fullWidth={true}
-                  showAllItems={true}
+                  filter={(searchText, key) => searchText !== ''}
                   animated={false}
                   dataSource={this.state.results}
                   onUpdateInput={_.throttle(this.searchTrakt, 500)}
