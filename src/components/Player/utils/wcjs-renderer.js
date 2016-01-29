@@ -162,17 +162,29 @@ module.exports = {
         vlc.onFrameSetup =
             function(width, height, pixelFormat) {
                 frameSetup(canvas, width, height, pixelFormat);
-
-                var draw = function() {
-                    drawLoop = window.requestAnimationFrame(function() {
-                        var gl = canvas.gl;
-                        if (newFrame && gl) gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-                        newFrame = false;
-                        draw();
-                    });
+                
+                var loopB = function() {
+                    var gl = canvas.gl;
+                    if (newFrame && gl) gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+                    newFrame = false;
+                    drawB();
                 };
-                draw();
+                
+                var loopA = function() {
+                    var gl = canvas.gl;
+                    if (newFrame && gl) gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+                    newFrame = false;
+                    drawA();
+                };
 
+                var drawA = function() {
+                    drawLoop = window.requestAnimationFrame(loopB);
+                };
+                var drawB = function() {
+                    drawLoop = window.requestAnimationFrame(loopA);
+                };
+                drawA();
+                
                 canvas.addEventListener("webglcontextlost",
                     function(event) {
                         event.preventDefault();
@@ -221,16 +233,28 @@ module.exports = {
         vlc.onFrameSetup =
             function(width, height, pixelFormat) {
                 frameSetup(canvas, width, height, pixelFormat);
-
-                var draw = function() {
-                    drawLoop = window.requestAnimationFrame(function() {
-                        var gl = canvas.gl;
-                        if (newFrame) gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-                        newFrame = false;
-                        draw();
-                    });
+                
+                var loopB = function() {
+                    var gl = canvas.gl;
+                    if (newFrame && gl) gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+                    newFrame = false;
+                    drawB();
                 };
-                draw();
+                
+                var loopA = function() {
+                    var gl = canvas.gl;
+                    if (newFrame && gl) gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+                    newFrame = false;
+                    drawA();
+                };
+
+                var drawA = function() {
+                    drawLoop = window.requestAnimationFrame(loopB);
+                };
+                var drawB = function() {
+                    drawLoop = window.requestAnimationFrame(loopA);
+                };
+                drawA();
 
                 canvas.addEventListener("webglcontextlost",
                     function(event) {
