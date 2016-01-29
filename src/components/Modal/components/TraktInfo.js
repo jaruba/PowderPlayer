@@ -11,7 +11,6 @@ import ModalActions from '../dark/actions';
 import MessageActions from '../../Message/actions';
 import PlayerStore from '../../Player/store';
 
-import linkUtil from '../../../utils/linkUtil';
 import traktUtil from '../../Player/utils/trakt';
 import player from '../../Player/utils/player';
 

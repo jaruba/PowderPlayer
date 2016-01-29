@@ -798,7 +798,7 @@ default React.createClass({
                 title: 'Audio Tracks',
                 tag: 'audioTrack',
                 disabled: true,
-                width: '110px',
+                width: '160px',
                 default: 'Track 1'
             }, {
                 type: 'select',

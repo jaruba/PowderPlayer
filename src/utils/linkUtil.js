@@ -37,21 +37,23 @@ module.exports = (inputvalue, cb) => {
                                         }), 1000);
                                     } else {
                                         // add the direct link anyway, maybe vlc will do some magic
-                                        resolve(parsed.url);
+                                        PlayerActions.addPlaylist([parsed.url]);
+                                         resolve(parsed.url);
                                     }
                                 });
                             } else {
                                 // it's not html, maybe it's some protocol vlc can handle
+                                PlayerActions.addPlaylist([parsed.url]);
                                 resolve(parsed.url);
                             }
                             break;
                         case 'error':
-                            reject('Error: Invalid URL');
+                            reject(new Error('Error: Invalid URL'));
                             break;
                     }
                 })
         } else {
-            reject('Error: No URL Given');
+            reject(new Error('Error: No URL Given'));
         }
     });
 }

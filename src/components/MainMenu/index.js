@@ -114,9 +114,11 @@ default React.createClass({
                     type: 'thinking'
                 });
 
-                linkUtil(droppedLink, error => {
+                linkUtil(droppedLink).then(url => {
                     ModalActions.thinking(false);
-                    MessageActions.open(error);
+                }).catch(error => {
+                    ModalActions.thinking(false);
+                    MessageActions.open(error.message);
                 });
 
             }

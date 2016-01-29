@@ -23,13 +23,15 @@ default React.createClass({
     handleURLAdd() {
         ModalActions.thinking(true);
         var inputvalue = this.refs.urlInput.getValue();
-        linkUtil(inputvalue, error => {
+        linkUtil(inputvalue).then(url => {
+            ModalActions.thinking(false);
+        }).catch(error => {
             ModalActions.thinking(false);
             ModalActions.open({
                 title: 'Add URL',
                 type: 'URLAdd'
             });
-            MessageActions.open(error);
+            MessageActions.open(error.message);
         });
     },
     pasteClipboard() {

@@ -23,7 +23,7 @@ var parserQueue = async.queue((task, cb) => {
             var itemDesc = player.itemDesc(task.idx);
             if (!(itemDesc && itemDesc.mrl == task.url)) {
                 for (var i = 1; i < wcjs.playlist.items.count; i++) {
-                    if (playerState.itemDesc(i).mrl == task.url) {
+                    if (player.itemDesc(i).mrl == task.url) {
                         idx = i;
                         break;
                     }
