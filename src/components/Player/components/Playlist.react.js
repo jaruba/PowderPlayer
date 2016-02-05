@@ -7,7 +7,9 @@ import {
 from 'material-ui';
 import PlayerStore from '../store';
 import PlayerActions from '../actions';
+import VisibilityStore from './Visibility/store';
 import path from 'path';
+import player from '../utils/player';
 
 export
 default React.createClass({
@@ -15,27 +17,26 @@ default React.createClass({
     mixins: [PureRenderMixin],
 
     getInitialState() {
-        var playerState = PlayerStore.getState();
         return {
             open: false,
-            playlist: playerState.wcjs.playlist || false,
-            uiHidden: playerState.uiHidden
+            playlist: player.wcjs.playlist || false,
+            uiHidden: VisibilityStore.getState().uiHidden
         }
     },
     componentWillMount() {
-        PlayerStore.listen(this.update);
+        VisibilityStore.listen(this.update);
     },
 
     componentWillUnmount() {
-        PlayerStore.unlisten(this.update);
+        VisibilityStore.unlisten(this.update);
     },
     update() {
         if (this.isMounted()) {
-            var playerState = PlayerStore.getState();
+            var visibilityState = VisibilityStore.getState();
             this.setState({
-                open: playerState.playlistOpen,
-                playlist: playerState.wcjs.playlist || false,
-                uiHidden: playerState.uiHidden
+                open: visibilityState.playlist,
+                playlist: player.wcjs.playlist || false,
+                uiHidden: visibilityState.uiHidden
             });
         }
     },
@@ -54,7 +55,7 @@ default React.createClass({
         if (!this.state.playlist) return items;
 
         for (var i = 0; i < this.state.playlist.items.count; i++) {
-            items.push(PlayerStore.getState().itemDesc(i));
+            items.push(player.itemDesc(i));
         }
 
         return items;
@@ -78,7 +79,7 @@ default React.createClass({
                                 }
 
                                 return (
-                                    <Paper onClick={PlayerActions.playItem.bind(this,idx)} id={'item'+idx} className="item" key={idx} zDepth={1} style={{background: 'url(' + item.image + ') no-repeat'}}>
+                                    <Paper onClick={player.playItem.bind(this,idx)} id={'item'+idx} className="item" key={idx} zDepth={1} style={{background: 'url(' + item.image + ') no-repeat'}}>
                                         <p id={'itemTitle'+idx} className="title">{(path.isAbsolute(item.title)) ? path.normalize(path.parse(item.title).name) : item.title }</p>
                                     </Paper>
                                     )

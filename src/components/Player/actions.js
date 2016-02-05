@@ -1,75 +1,40 @@
 import alt from '../../alt'
 import _ from 'lodash';
 import ipc from 'ipc';
-import subUtil from './utils/subtitles';
 import HistoryStore from '../../stores/historyStore';
 import torrentUtil from '../../utils/stream/torrentUtil';
+import player from './utils/player';
 import ls from 'local-storage';
 
 class PlayerActions {
 
-    constructor() {
-        this.generateActions(
-            'play',
-            'playItem',
-            'pause',
-            'prev',
-            'next',
-            'stop',
-            'stopped',
-            'volume',
-            'mute',
+    announcement(obj) {
+        var announcer = {};
+        if (typeof obj === 'string') obj = {
+            text: obj
+        };
+        announcer.text = obj.text;
+        if (!obj.delay) obj.delay = 2000;
 
-            'playing',
-            'uiShown',
-            'position',
-            'buffering',
-            'seekable',
-            'time',
-            'length',
-            'scrobble',
-            'scrobbleState',
-            'opening',
-            'error',
-            'ended',
-            'mediaChanged',
-
-            'fullscreen',
-            'settingChange',
-            'metaUpdate',
-            'wcjsInit',
-            'close',
-            'toggleMenu',
-            'setPlaylist',
-            'setSubtitle',
-            'setSubDelay',
-            'setAudioDelay',
-
-            'delayTime',
-            'scrobbleKeys',
-
-            'itemCount',
-            'itemDesc',
-            'setRate',
-
-            'announcement'
-        );
-    }
-
-    loadSub(subLink) {
-        subUtil.loadSubtitle(subLink, parsedSub => {
-            if (!parsedSub) {
-                this.actions.announcement('Subtitle Loading Failed');
-            } else {
-                this.actions.setSubtitle(parsedSub);
-                this.actions.setSubDelay(0);
+        clearTimeout(player.announceTimer);
+        player.announceTimer = setTimeout(() => {
+            if (!player.announceEffect) {
+                player.events.emit('announce', {
+                    effect: !player.announceEffect
+                });
             }
-        });
+        }, obj.delay);
+
+        if (player.announceEffect)
+            obj.effect = !player.announceEffect;
+
+        if (Object.keys(announcer).length)
+            player.events.emit('announce', obj);
     }
-    
+
     setDesc(obj) {
         var playerState = this.alt.stores.playerStore.getState();
-        var wcjs = playerState.wcjs;
+        var wcjs = player.wcjs;
         if (typeof obj.idx === 'undefined')
             obj.idx = wcjs.playlist.currentItem;
 
@@ -99,21 +64,21 @@ class PlayerActions {
         HistoryStore.getState().history.replaceState(null, 'player');
 
         var playerState = this.alt.stores.playerStore.getState();
-        var wcjs = playerState.wcjs;
+        var wcjs = player.wcjs;
 
         if (!wcjs) {
             if (data.length)
-                this.actions.settingChange({
+                player.set({
                     pendingFiles: data,
-                    files: playerState.files.concat(data)
+                    files: player.files.concat(data)
                 });
 
             this.actions.togglePowerSave(true);
 
         } else {
 
-            this.actions.settingChange({
-                files: playerState.files.concat(data)
+            player.set({
+                files: player.files.concat(data)
             });
 
             if (wcjs.playlist.items.count == 0)
@@ -155,14 +120,14 @@ class PlayerActions {
 
     replaceMRL(newObj) {
 
-        var playerState = this.alt.stores.playerStore.getState();
-        var wcjs = playerState.wcjs;
+        var progressState = this.alt.stores.ProgressStore.getState();
+        var wcjs = player.wcjs;
 
         var newX = newObj.x;
         var newMRL = newObj.mrl;
 
-        this.actions.settingChange({
-            files: playerState.files.concat([newMRL])
+        player.set({
+            files: player.files.concat([newMRL])
         });
 
         wcjs.playlist.add(newMRL.uri);
@@ -173,7 +138,7 @@ class PlayerActions {
         var swapDifference = wcjs.playlist.items.count - newX - 1;
 
         if (newX == wcjs.playlist.currentItem && [3, 4].indexOf(wcjs.state) > -1) {
-            var playerPos = playerState.position;
+            var playerPos = progressState.position;
             wcjs.stop();
             wcjs.playlist.advanceItem(newDifference, swapDifference * (-1));
             wcjs.playlist.playItem(newX);
@@ -186,12 +151,11 @@ class PlayerActions {
     }
 
     pulse() {
-        var playerState = this.alt.stores.playerStore.getState();
-        var wcjs = playerState.wcjs;
+        var wcjs = player.wcjs;
 
         if (wcjs) {
             var length = wcjs.length;
-            var itemDesc = playerState.itemDesc();
+            var itemDesc = player.itemDesc();
             if (length && itemDesc.setting && itemDesc.setting.torrentHash && itemDesc.setting.byteSize) {
                 var newPulse = Math.round(itemDesc.setting.byteSize / (length / 1000) * 2);
                 torrentUtil.setPulse(itemDesc.setting.torrentHash, newPulse);
@@ -200,11 +164,10 @@ class PlayerActions {
     }
 
     flood() {
-        var playerState = this.alt.stores.playerStore.getState();
-        var wcjs = playerState.wcjs;
+        var wcjs = player.wcjs;
 
         if (wcjs) {
-            var itemDesc = playerState.itemDesc();
+            var itemDesc = player.itemDesc();
             if (itemDesc.setting && itemDesc.setting.torrentHash)
                 torrentUtil.flood(itemDesc.setting.torrentHash);
         }
@@ -212,7 +175,7 @@ class PlayerActions {
 
     updateImage(image) {
         if (document.getElementById('canvasEffect')) {
-            var wcjs = this.alt.stores.playerStore.getState().wcjs;
+            var wcjs = player.wcjs;
             if (wcjs.playlist.items[wcjs.playlist.currentItem].mrl.indexOf('soundcloud.com') > -1 && image) {
                 var image = image.replace('large', 't500x500');
                 document.getElementById('canvasEffect').parentNode.style.cssText = "background-color: transparent !important";
@@ -225,68 +188,6 @@ class PlayerActions {
             }
         }
     }
-    
-    findSubs(itemDesc) {
-
-        var player = this.alt.stores.playerStore.getState();
-
-        var subQuery = {
-            filepath: itemDesc.path,
-            fps: player.wcjs.input.fps
-        };
-
-        if (itemDesc.byteSize)
-            subQuery.byteLength = itemDesc.byteSize;
-
-        if (itemDesc.torrentHash) {
-            subQuery.torrentHash = itemDesc.torrentHash;
-            subQuery.isFinished = false;
-        }
-        
-        subQuery.cb = subs => {
-            if (!subs) {
-                if (!ls.isSet('playerNotifs') || ls('playerNotifs'))
-                    player.notifier.info('Subtitles Not Found', '', 6000);
-            } else {
-                this.actions.settingChange({
-                    foundSubs: true
-                });
-                this.actions.setDesc({
-                    subtitles: subs
-                });
-                if (!ls.isSet('playerNotifs') || ls('playerNotifs'))
-                    player.notifier.info('Found Subtitles', '', 6000);
-    
-                if (!ls.isSet('autoSub') || ls('autoSub')) {
-                    if (ls('lastLanguage') && ls('lastLanguage') != 'none') {
-                        if (subs[ls('lastLanguage')]) {
-                            this.actions.loadSub(subs[ls('lastLanguage')]);
-                            // select it in the menu too
-                            if (player.wcjs.subtitles.count > 0)
-                                var itemIdx = player.wcjs.subtitles.count;
-                            else
-                                var itemIdx = 1;
-    
-                            _.some(subs, (el, ij) => {
-                                itemIdx++;
-                                if (ij == ls('lastLanguage')) {
-                                    this.actions.settingChange({
-                                        selectedSub: itemIdx
-                                    });
-                                    return true;
-                                } else {
-                                    return false;
-                                }
-                            })
-                        }
-                    }
-                }
-            }
-        }
-
-        subUtil.fetchSubs(subQuery);
-
-    }
 
     toggleAlwaysOnTop(state = true) {
         ipc.send('app:alwaysOnTop', state);
@@ -296,17 +197,6 @@ class PlayerActions {
         ipc.send('app:powerSaveBlocker', state);
     }
 
-    toggleFullscreen(state) {
-        this.dispatch();
-
-        window.document.querySelector(".render-holder > div:first-of-type").style.display = 'none';
-        _.delay(() => {
-            window.document.querySelector(".render-holder > div:first-of-type").style.display = 'block';
-        }, 1000);
-
-        ipc.send('app:fullscreen', state);
-        this.actions.fullscreen(state);
-    }
 }
 
 

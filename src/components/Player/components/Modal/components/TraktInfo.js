@@ -6,14 +6,12 @@ from 'material-ui';
 import shell from 'shell';
 import clipboard from 'clipboard';
 
-import ModalActions from '../dark/actions';
+import ModalActions from '../actions';
 
-import MessageActions from '../../Message/actions';
-import PlayerActions from '../../Player/actions';
-import PlayerStore from '../../Player/store';
+import PlayerStore from '../../../store';
 
-import linkUtil from '../../../utils/linkUtil';
-import traktUtil from '../../Player/utils/trakt';
+import traktUtil from '../../../utils/trakt';
+import player from '../../../utils/player';
 
 import MetaInspector from 'node-metainspector';
 
@@ -24,20 +22,21 @@ export
 default React.createClass({
 
     getInitialState() {
+        var itemDesc = player.itemDesc();
         return {
             parsedTitle: '',
             parsedRating: '',
-            trakt: PlayerStore.getState().itemDesc().setting.trakt,
-            parsed: PlayerStore.getState().itemDesc().setting.parsed,
-            image: PlayerStore.getState().itemDesc().setting.image
+            trakt: itemDesc.setting.trakt,
+            parsed: itemDesc.setting.parsed,
+            image: itemDesc.setting.image
         }
     },
     
     update() {
-        var setting = PlayerStore.getState().itemDesc().setting;
+        var setting = player.itemDesc().setting;
         this.setState({
             parsedTitle: setting.parsed.name.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()})+(setting.trakt.season ? "\u00a0\u00a0-\u00a0\u00a0S"+('0' + setting.trakt.season).slice(-2) + ' E' + ('0' + setting.trakt.number).slice(-2) : setting.trakt.year ? '\u00a0\u00a0-\u00a0\u00a0'+setting.trakt.year : ''),
-            parsedRating: (Math.round(setting.trakt.rating * 100) / 100)+' / 10 ('+setting.trakt.votes+')',
+            parsedRating: (Math.round(setting.trakt.rating * 100) / 100)+' / 10 (' + setting.trakt.votes + ')',
             trakt: setting.trakt,
             parsed: setting.parsed,
             image: setting.image
@@ -54,13 +53,13 @@ default React.createClass({
             ModalActions.close();
             try {
                 traktUtil.exchangePin(inputvalue);
-                MessageActions.open('Login Successful');
+                player.notifier.info('Login Successful');
             } catch(e) {
-                MessageActions.open('Error: '+e.message);
+                player.notifier.info('Error: '+e.message);
             }
         } else {
             this.refs['codeInput'].focus();
-            MessageActions.open('Error: Trakt Code is Required');
+            player.notifier.info('Error: Trakt Code is Required');
         }
     },
     pasteClipboard() {
@@ -89,7 +88,7 @@ default React.createClass({
 //            console.log(trailer_url);
             if (trailer_url == 'http://www.imdb.comundefined') {
 
-                PlayerStore.getState().notifier.info('Trailer Not Found', '', 4000);
+                player.notifier.info('Trailer Not Found', '', 4000);
 
             } else {
 
@@ -104,7 +103,8 @@ default React.createClass({
                 win.webContents.on('did-finish-load', () => {
                     win.show();
                     win.focus();
-                    PlayerActions.pause();
+                    if (player.wcjs.playing)
+                        player.wcjs.togglePause();
                 });
                 
             }
@@ -112,7 +112,7 @@ default React.createClass({
         });
 
         client.on("error", function(err){
-            PlayerStore.getState().notifier.info('Trailer Error: '+err, '', 4000);
+            player.notifier.info('Trailer Error: '+err, '', 4000);
 //            console.log(err);
         });
 

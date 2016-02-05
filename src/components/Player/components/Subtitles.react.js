@@ -12,8 +12,12 @@ import {SelectableContainerEnhance} from 'material-ui/lib/hoc/selectable-enhance
 
 const SelectableList = SelectableContainerEnhance(List);
 
-import PlayerStore from '../store';
 import PlayerActions from '../actions';
+import SubtitleStore from './SubtitleText/store';
+import SubtitleActions from './SubtitleText/actions';
+import VisibilityStore from './Visibility/store';
+import VisibilityActions from './Visibility/actions';
+import player from '../utils/player';
 import path from 'path';
 
 const lang2country = {
@@ -22,7 +26,8 @@ const lang2country = {
     pb: 'br',
     he: 'il',
     el: 'gr',
-    uk: 'ua'
+    uk: 'ua',
+    fa: 'ir'
 }
 
 export
@@ -43,23 +48,25 @@ default React.createClass({
     getInitialState() {
         return {
             open: false,
-            playlist: PlayerStore.getState().wcjs.playlist || false,
-            playlistSelected: PlayerStore.getState().selectedSub
+            playlist: player.wcjs.playlist || false,
+            playlistSelected: SubtitleStore.getState().selectedSub
         }
     },
     componentWillMount() {
-        PlayerStore.listen(this.update);
+        VisibilityStore.listen(this.update);
+        SubtitleStore.listen(this.update);
     },
 
     componentWillUnmount() {
-        PlayerStore.unlisten(this.update);
+        VisibilityStore.unlisten(this.update);
+        SubtitleStore.unlisten(this.update);
     },
     update() {
         if (this.isMounted()) {
             this.setState({
-                open: PlayerStore.getState().subtitlesOpen,
-                playlist: PlayerStore.getState().wcjs.playlist || false,
-                playlistSelected: PlayerStore.getState().selectedSub
+                open: VisibilityStore.getState().subtitles,
+                playlist: player.wcjs.playlist || false,
+                playlistSelected: SubtitleStore.getState().selectedSub
             });
         }
     },
@@ -69,7 +76,7 @@ default React.createClass({
     },
 
     getItems() {
-        var itemDesc = PlayerStore.getState().itemDesc();
+        var itemDesc = player.itemDesc();
         if (itemDesc && itemDesc.setting && itemDesc.setting.subtitles) {
             return itemDesc.setting.subtitles;
         } else return [];
@@ -77,40 +84,42 @@ default React.createClass({
     
     select(idx, item, itemId) {
         ls('lastLanguage', idx);
-        PlayerStore.getState().wcjs.subtitles.track = 0;
+        player.wcjs.subtitles.track = 0;
         if (item) {
-            PlayerActions.loadSub(item);
-            PlayerActions.settingChange({
+            SubtitleActions.loadSub(item);
+            SubtitleActions.settingChange({
                 selectedSub: itemId,
-                subtitlesOpen: false
             });
         } else {
-            PlayerActions.settingChange({
+            SubtitleActions.settingChange({
                 selectedSub: itemId,
-                subtitlesOpen: false,
                 subtitle: [],
                 trackSub: -1,
                 subText: ''
             });
         }
+        VisibilityActions.settingChange({
+            subtitles: false
+        });
     },
 
     selectInternal(idx, item, itemId) {
-        var wcjs = PlayerStore.getState().wcjs;
+        var wcjs = player.wcjs;
         if (item && (itemId - 1) < wcjs.subtitles.count) {
             wcjs.subtitles.track = idx;
-            PlayerActions.settingChange({
+            SubtitleActions.settingChange({
                 selectedSub: itemId,
-                subtitlesOpen: false,
                 subtitle: [],
                 subText: ''
             });
-            
+            VisibilityActions.settingChange({
+                subtitles: false
+            });
         }
     },
 
     getInternalSubs() {
-        var wcjs = PlayerStore.getState().wcjs;
+        var wcjs = player.wcjs;
         var internalSubs = [];
         if (wcjs.subtitles && wcjs.subtitles.count > 0) {
             for (var i = 1; i < wcjs.subtitles.count; i++)

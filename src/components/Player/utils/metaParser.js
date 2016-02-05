@@ -5,13 +5,14 @@ import parseVideo from 'video-name-parser';
 import nameToImdb from 'name-to-imdb';
 import parser from './parser';
 import traktUtil from './trakt';
+import player from './player';
 import PlayerStore from '../store';
 import PlayerActions from '../actions';
 import ls from 'local-storage';
 
 var parserQueue = async.queue((task, cb) => {
-    var player = PlayerStore.getState();
-    var wcjs = PlayerStore.getState().wcjs;
+    var playerState = PlayerStore.getState();
+    var wcjs = player.wcjs;
     if (task.url && !task.filename) {
         var client = new MetaInspector(task.url, {
             timeout: 5000
@@ -41,11 +42,8 @@ var parserQueue = async.queue((task, cb) => {
                     image: client.image
                 });
 
-                if (idx == wcjs.playlist.currentItem) {
-                    PlayerActions.settingChange({
-                        title: client.title
-                    });
-                }
+                if (idx == wcjs.playlist.currentItem)
+                    player.events.emit('setTitle', client.title);
 
             }
             _.delay(() => {
@@ -161,12 +159,10 @@ var parserQueue = async.queue((task, cb) => {
 
                         PlayerActions.setDesc(newObj);
                         if (idx == wcjs.playlist.currentItem) {
-                            PlayerActions.settingChange({
-                                title: newObj.title
-                            });
+                            player.events.emit('setTitle', newObj.title);
                             if (!player.foundTrakt) {
-                                PlayerActions.settingChange({
-                                    foundTrakt: true
+                                _.defer(() => {
+                                    player.events.emit('foundTrakt', true);
                                 });
 
                                 var shouldScrobble = traktUtil.loggedIn && (ls.isSet('traktScrobble') ? ls('traktScrobble') : true);

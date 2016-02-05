@@ -1,29 +1,39 @@
-import PlayerActions from '../actions';
+import VisibilityActions from '../components/Visibility/actions';
 import PlayerStore from '../store';
+import SubtitleActions from '../components/SubtitleText/actions';
 import _ from 'lodash';
+import player from './player';
 
 module.exports = {
     
     toggleMenu: (arg) => {
-        PlayerActions.toggleMenu(arg);
+        VisibilityActions.toggleMenu(arg);
     },
     
     defaultSettings: () => {
-        _.defer(() => {
-            PlayerActions.setSubDelay(0);
-            PlayerActions.setAudioDelay(0);
-            PlayerActions.setRate(1);
-        });
-        
-        var playerState = PlayerStore.getState();
-        if (playerState.speedField.refs['input']) {
-            playerState.speedField.refs['input'].defaultValue = '1.00x';
-            playerState.subDelayField.refs['input'].defaultValue = '0 ms';
-            playerState.audioDelayField.refs['input'].defaultValue = '0 ms';
-            playerState.audioChannelField.refs['input'].defaultValue = 'Stereo';
-            playerState.aspectField.refs['input'].defaultValue = 'Default';
-            playerState.cropField.refs['input'].defaultValue = 'Default';
-            playerState.zoomField.refs['input'].defaultValue = 'Default';
+
+        var wcjs = player.wcjs;
+
+        wcjs.audio.delay = 0;
+        wcjs.subtitles.delay = 0;
+
+        player.events.emit('subtitleUpdate');
+
+        var playerState = player.fields;
+        if (playerState.speed.refs['input']) {
+            playerState.subDelay.refs['input'].value = '0 ms';
+            playerState.audioDelay.refs['input'].value = '0 ms';
+            playerState.audioChannel.refs['input'].value = 'Stereo';
+            playerState.aspect.refs['input'].value = 'Default';
+            playerState.crop.refs['input'].value = 'Default';
+            playerState.zoom.refs['input'].value = 'Default';
         }
+        player.set({
+            aspect: 'Default',
+            crop: 'Default',
+            zoom: 1,
+            audioDelay: 0,
+            subDelay: 0
+        });
     }
 }

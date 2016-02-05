@@ -1,33 +1,40 @@
 ﻿import React from 'react';
 import PlayerStore from '../store';
+import VisibilityStore from './Visibility/store';
+import player from '../utils/player';
 
 export
 default React.createClass({
 
     getInitialState() {
-        var playerState = PlayerStore.getState();
+        var visibilityState = VisibilityStore.getState();
         return {
-            text: playerState.announce,
-            size: playerState.fontSize,
-            effect: playerState.announceEffect,
-            visibility: !(playerState.playlistOpen || playerState.settingsOpen)
+            text: '',
+            size: 21.3,
+            effect: '',
+            visibility: !(visibilityState.playlist || visibilityState.settings)
         }
     },
     componentWillMount() {
-        PlayerStore.listen(this.update);
+        VisibilityStore.listen(this.update);
+        player.events.on('announce', this.announcement);
     },
-
     componentWillUnmount() {
-        PlayerStore.unlisten(this.update);
+        VisibilityStore.unlisten(this.update);
+        player.events.removeListener('announce', this.announcement);
+    },
+    announcement(obj) {
+        if (typeof obj.effect !== 'undefined')
+            player.set({
+                announceEffect: obj.effect
+            });
+        this.setState(obj);
     },
     update() {
         if (this.isMounted()) {
-            var playerState = PlayerStore.getState();
+            var visibilityState = VisibilityStore.getState();
             this.setState({
-                text: playerState.announce,
-                size: playerState.fontSize,
-                effect: playerState.announceEffect,
-                visibility: !(playerState.playlistOpen || playerState.settingsOpen)
+                visibility: !(visibilityState.playlist || visibilityState.settings)
             });
         }
     },

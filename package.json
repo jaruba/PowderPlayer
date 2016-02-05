@@ -22,7 +22,7 @@
   "dependencies": {
     "alt": "^0.17.9",
     "async": "^1.5.0",
-    "bluebird": "^3.0.6",
+    "bluebird": "^3.1.5",
     "get-port": "^2.1.0",
     "history": "~1.17.0",
     "local-storage": "jaruba/local-storage",
@@ -52,7 +52,8 @@
     "subtitles-grouping": "^1.0.12",
     "trakt.tv": "^1.0.4",
     "video-name-parser": "^1.0.1",
-    "yargs": "^3.31.0"
+    "yargs": "^3.31.0",
+    "workerjs": "^0.1.1"
   },
   "devDependencies": {
     "babel": "^6.3.13",

@@ -2,6 +2,8 @@
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 import path from 'path';
 import wcjsRenderer from '../utils/wcjs-renderer';
+import player from '../utils/player';
+import events from '../utils/events';
 import _ from 'lodash';
 import ls from 'local-storage';
 import {
@@ -13,6 +15,12 @@ const appPath = require('remote').require('app');
 
 import PlayerActions from '../actions';
 import PlayerStore from '../store';
+import VisibilityStore from './Visibility/store';
+import ControlActions from './Controls/actions';
+import ProgressActions from './Controls/components/ProgressBar/actions';
+import VolumeActions from './Controls/components/Volume/actions';
+import TimeActions from './Controls/components/HumanTime/actions';
+import SubtitleActions from './SubtitleText/actions';
 
 try {
     var wcjs_path = (process.env.NODE_ENV === 'development') ? path.join(__dirname, '../../../../bin/', 'WebChimera.js.node') : path.join(appPath.getAppPath(), '../bin/', 'WebChimera.js.node');
@@ -41,28 +49,15 @@ default React.createClass({
     mixins: [PureRenderMixin],
 
     getInitialState() {
-
-        var playerState = PlayerStore.getState();
-
         return {
             initialResize: false,
-
-            volume: playerState.volume,
-            playing: playerState.playing,
-            paused: playerState.paused,
-            fullscreen: playerState.fullscreen,
-
-            rippleEffects: playerState.rippleEffects,
-            clickPause: playerState.clickPause,
-            firstPlay: true,
-
-            aspectRatio: playerState.aspectRatio,
-            crop: playerState.crop,
-            zoom: playerState.zoom
+            rippleEffects: ls.isSet('playerRippleEffects') ? ls('playerRippleEffects') : true,
+            clickPause: ls.isSet('clickPause') ? ls('clickPause') : true,
+            firstPlay: true
         }
     },
     componentWillMount() {
-        PlayerStore.listen(this.update);
+
     },
     componentDidMount() {
         var renderRef = this.refs['wcjs-render'];
@@ -74,14 +69,10 @@ default React.createClass({
                 canvasParent: renderParent
             });
         });
-        PlayerStore.getState().events.on('resizeNow', () => {
-            this.handleResize({
-                canvas: renderRef,
-                canvasParent: renderParent
-            });
-        });
-        if (!PlayerStore.getState().wcjs) {
-            PlayerActions.wcjsInit(wcjsRenderer.init(this.refs['wcjs-render'], [
+        player.events.on('resizeNow', this.updateSize);
+        player.events.on('rendererUpdate', this.update);
+        if (!player.wcjs) {
+            player.wcjsInit(wcjsRenderer.init(this.refs['wcjs-render'], [
                 "--network-caching=" + ls('bufferSize'),
                 "--no-sub-autodetect-file"
             ], {
@@ -89,7 +80,7 @@ default React.createClass({
                 preserveDrawingBuffer: true
             }, wcjs));
         } else {
-            wcjsRenderer.reinit(this.refs['wcjs-render'], PlayerStore.getState().wcjs, {
+            wcjsRenderer.reinit(this.refs['wcjs-render'], player.wcjs, {
                 fallbackRenderer: false,
                 preserveDrawingBuffer: true
             });
@@ -98,33 +89,33 @@ default React.createClass({
     },
     componentWillUnmount() {
         wcjsRenderer.clearCanvas();
-        PlayerStore.unlisten(this.update);
+        var playerEvents = player.events;
+        playerEvents.removeListener('resizeNow', this.updateSize);
+        playerEvents.removeListener('rendererUpdate', this.update);
         window.removeEventListener('resize', this.handleResize);
     },
     update() {
         if (this.isMounted()) {
-
-            var playerState = PlayerStore.getState();
-
+//            console.log('renderer update');
             this.setState({
-                uri: playerState.uri,
-                playing: playerState.playing,
-                fullscreen: playerState.fullscreen,
-                volume: playerState.volume,
-                rippleEffects: playerState.rippleEffects,
-                clickPause: playerState.clickPause,
-                aspectRatio: playerState.aspectRatio,
-                crop: playerState.crop,
-                zoom: playerState.zoom
+                rippleEffects: ls.isSet('playerRippleEffects') ? ls('playerRippleEffects') : true,
+                clickPause: ls.isSet('clickPause') ? ls('clickPause') : true,
             });
         }
+    },
+    updateSize(newValue) {
+        player.set(newValue);
+        this.handleResize({
+            canvas: this.refs['wcjs-render'],
+            canvasParent: this.refs['canvas-holder']
+        });
     },
     initPlayer() {
 
         var renderer = this;
 
-        this.player = PlayerStore.getState().wcjs;
-        this.pendingFiles = PlayerStore.getState().pendingFiles;
+        this.player = player.wcjs;
+        this.pendingFiles = player.pendingFiles;
 
         var initializeSize = _.once(() => {
             if (!this.state.initialResize) {
@@ -140,22 +131,24 @@ default React.createClass({
         });
 
         this.player.onPositionChanged = _.throttle((pos) => {
-            PlayerActions.position(pos);
+            var visibilityState = VisibilityStore.getState();
+            if (ls('renderHidden') || ((visibilityState.uiShown && !visibilityState.uiHidden) || (visibilityState.playlist || visibilityState.settings)))
+                ProgressActions.position(pos);
             initializeSize();
-        }, 500);
+        }, ls('renderFreq'));
 
         this.player.onOpening = () => {
             wcjsRenderer.clearCanvas();
-            PlayerActions.opening();
+            events.opening();
         };
 
-        this.player.onTimeChanged = PlayerActions.time;
+        this.player.onTimeChanged = TimeActions.pushTime;
 
-        this.player.onBuffering = _.throttle(PlayerActions.buffering, 500);
+        this.player.onBuffering = _.throttle(events.buffering, ls('renderFreq'));
 
-        this.player.onLengthChanged = PlayerActions.length;
+        this.player.onLengthChanged = TimeActions.length;
 
-        this.player.onSeekableChanged = PlayerActions.seekable;
+        this.player.onSeekableChanged = ProgressActions.seekable;
 
         this.player.onPlaying = () => {
             if (renderer.state.firstPlay) {
@@ -171,18 +164,17 @@ default React.createClass({
                     });
                 });
             }
-            PlayerActions.playing();
+            events.playing();
         }
 
-        this.player.onPaused = PlayerActions.paused;
+        this.player.onPaused = events.paused;
 
         this.player.onStopped = () => {
-            if (renderer.isMounted()) {
+            if (renderer.isMounted())
                 renderer.setState({
                     firstPlay: true
                 });
-            }
-            PlayerActions.stopped();
+            events.stopped();
         }
 
         this.player.onEndReached = () => {
@@ -191,25 +183,23 @@ default React.createClass({
                     firstPlay: true
                 });
             }
-            PlayerActions.ended();
+            events.ended();
         }
 
         this.player.onEncounteredError = () => {
-            if (renderer.isMounted()) {
+            if (renderer.isMounted())
                 renderer.setState({
                     firstPlay: true
                 });
-            }
-            PlayerActions.error();
+            events.error();
         }
 
         this.player.onMediaChanged = () => {
-            if (renderer.isMounted()) {
+            if (renderer.isMounted())
                 renderer.setState({
                     firstPlay: true
                 });
-            }
-            PlayerActions.mediaChanged();
+            events.mediaChanged();
         }
 
         if (this.pendingFiles && this.pendingFiles.length) {
@@ -222,9 +212,8 @@ default React.createClass({
                     this.player.playlist.add(this.pendingFiles[i]);
                 } else if (this.pendingFiles[i].uri) {
                     this.player.playlist.add(this.pendingFiles[i].uri);
-                    if (this.pendingFiles[i].title) {
+                    if (this.pendingFiles[i].title)
                         this.player.playlist.items[this.player.playlist.items.count - 1].title = this.pendingFiles[i].title;
-                    }
 
                     if (this.pendingFiles[i].byteSize && this.pendingFiles[i].torrentHash)
                         PlayerActions.setDesc({
@@ -239,11 +228,10 @@ default React.createClass({
                             path: this.pendingFiles[i].path
                         });
 
-
                 }
             }
 
-            if (playAfter) PlayerActions.play();
+            if (playAfter) player.wcjs.play();
 
         }
 
@@ -303,8 +291,8 @@ default React.createClass({
         var height = canvas.height;
         var sourceAspect = width / height;
 
-        if (this.state.aspectRatio != "Default" && this.state.aspectRatio.indexOf(":") > -1) {
-            var res = this.state.aspectRatio.split(":");
+        if (player.aspect != "Default" && player.aspect.indexOf(":") > -1) {
+            var res = player.aspect.split(":");
             var ratio = gcd(width, height);
         }
 
@@ -313,15 +301,15 @@ default React.createClass({
         if (ratio) var sourceAspect = (ratio * parseFloat(res[0])) / (ratio * parseFloat(res[1]));
         else var sourceAspect = width / height;
 
-        if (this.state.crop != "Default" && this.state.crop.indexOf(":") > -1) {
-            var res = this.state.crop.split(":");
+        if (player.crop != "Default" && player.crop.indexOf(":") > -1) {
+            var res = player.crop.split(":");
             var ratio = gcd(width, height);
             var sourceAspect = (ratio * parseFloat(res[0])) / (ratio * parseFloat(res[1]));
         }
 
         var cond = destAspect > sourceAspect;
 
-        if (this.state.crop != "Default" && this.state.crop.indexOf(":") > -1) {
+        if (player.crop != "Default" && player.crop.indexOf(":") > -1) {
             if (cond) {
                 canvasParent.style.height = "100%";
                 canvasParent.style.width = (((container.clientHeight * sourceAspect) / container.clientWidth) * 100) + "%";
@@ -341,29 +329,32 @@ default React.createClass({
             }
         } else {
             if (cond) {
-                canvasParent.style.height = (100 * this.state.zoom) + "%";
-                canvasParent.style.width = (((container.clientHeight * sourceAspect) / container.clientWidth) * 100 * this.state.zoom) + "%";
+                canvasParent.style.height = (100 * player.zoom) + "%";
+                canvasParent.style.width = (((container.clientHeight * sourceAspect) / container.clientWidth) * 100 * player.zoom) + "%";
             } else {
-                canvasParent.style.height = (((container.clientWidth / sourceAspect) / container.clientHeight) * 100 * this.state.zoom) + "%";
-                canvasParent.style.width = (100 * this.state.zoom) + "%";
+                canvasParent.style.height = (((container.clientWidth / sourceAspect) / container.clientHeight) * 100 * player.zoom) + "%";
+                canvasParent.style.width = (100 * player.zoom) + "%";
             }
             canvas.style.height = "100%";
             canvas.style.width = "100%";
         }
 
-        PlayerActions.settingChange({
-            fontSize: this.calcFontSize(),
-            subSize: this.calcSubSize()
+        SubtitleActions.settingChange({
+            size: this.calcSubSize()
+        });
+
+        player.events.emit('announce', {
+            size: this.calcFontSize()
         });
 
     },
     handleTogglePlay() {
         if (this.state.clickPause)
-            this.state.playing ? PlayerActions.pause() : PlayerActions.play();
+            player.wcjs.togglePause();
     },
     wheel(event) {
         var volume = (event.deltaY < 0) ? this.player.volume + 5 : this.player.volume - 5;
-        PlayerActions.volume(volume);
+        VolumeActions.setVolume(volume);
         if (volume >= 0 && volume <= 200)
             PlayerActions.announcement('Volume ' + volume + '%');
     },
@@ -383,10 +374,10 @@ default React.createClass({
             }
         };
         return (
-            <div className='render-holder'>
-                <RaisedButton id={'canvasEffect'} onClick={this.handleTogglePlay} onDoubleClick={PlayerActions.toggleFullscreen.bind(this, !this.state.fullscreen)} iconClassName="material-icons" className={this.state.rippleEffects ? this.state.clickPause ? 'over-canvas' : 'over-canvas no-ripples' : 'over-canvas no-ripples' } label="Canvas Overlay" />
-                <div ref="canvas-holder" className="canvas-holder" onWheel={this.wheel} style={renderStyles.container}>
-                    <canvas id={'playerCanvas'} style={renderStyles.canvas} onClick={this.handleTogglePlay} onDoubleClick={PlayerActions.toggleFullscreen.bind(this, !this.state.fullscreen)} ref="wcjs-render" />
+            <div className='render-holder' onWheel={this.wheel}>
+                <RaisedButton id={'canvasEffect'} onClick={this.handleTogglePlay} onDoubleClick={ControlActions.toggleFullscreen} iconClassName="material-icons" className={this.state.rippleEffects ? this.state.clickPause ? 'over-canvas' : 'over-canvas no-ripples' : 'over-canvas no-ripples' } label="Canvas Overlay" />
+                <div ref="canvas-holder" className="canvas-holder" style={renderStyles.container}>
+                    <canvas id={'playerCanvas'} style={renderStyles.canvas} onClick={this.handleTogglePlay} onDoubleClick={ControlActions.toggleFullscreen} ref="wcjs-render" />
                 </div>
             </div>
         );

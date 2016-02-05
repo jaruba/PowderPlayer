@@ -11,8 +11,11 @@ from 'material-ui';
 
 import PlayerStore from '../store';
 import PlayerActions from '../actions';
-import ModalActions from '../../Modal/dark/actions';
+import VisibilityStore from './Visibility/store';
+import ModalActions from './Modal/actions';
 import ui from '../utils/ui';
+import player from '../utils/player';
+import events from '../utils/events';
 
 export
 default React.createClass({
@@ -20,41 +23,53 @@ default React.createClass({
     mixins: [History, PureRenderMixin],
 
     getInitialState() {
-        
-        var playerState = PlayerStore.getState();
-        
+        var visibilityState = VisibilityStore.getState();
         return {
-            title: playerState.title,
-            uiShown: playerState.uiShown && !playerState.playlistOpen && !playerState.settingsOpen,
-            uiHidden: playerState.uiHidden,
-            playlistOpen: playerState.playlistOpen,
-            settingsOpen: playerState.setingsOpen,
-            foundTrakt: playerState.foundTrakt
+            title: '',
+            uiShown: visibilityState.uiShown && !visibilityState.playlist && !visibilityState.settings,
+            uiHidden: visibilityState.uiHidden,
+            playlistOpen: visibilityState.playlist,
+            settingsOpen: visibilityState.settings,
+            foundTrakt: false
         }
     },
     componentWillMount() {
-        PlayerStore.listen(this.update);
+        VisibilityStore.listen(this.update);
+        player.events.on('foundTrakt', this.showTrakt);
+        player.events.on('setTitle', this.setTitle);
     },
     componentWillUnmount() {
-        PlayerStore.unlisten(this.update);
+        VisibilityStore.unlisten(this.update);
+        player.events.removeListener('foundTrakt', this.showTrakt);
+        player.events.removeListener('setTitle', this.setTitle);
     },
     update() {
         if (this.isMounted()) {
-
-            var playerState = PlayerStore.getState();
-
+//            console.log('header update');
+            var visibilityState = VisibilityStore.getState();
             this.setState({
-                title: playerState.title,
-                uiShown: playerState.uiShown && !playerState.playlistOpen && !playerState.settingsOpen,
-                uiHidden: playerState.uiHidden,
-                playlistOpen: playerState.playlistOpen,
-                settingsOpen: playerState.settingsOpen,
-                foundTrakt: playerState.foundTrakt
+                uiShown: visibilityState.uiShown && !visibilityState.playlist && !visibilityState.settings,
+                uiHidden: visibilityState.uiHidden,
+                playlistOpen: visibilityState.playlist,
+                settingsOpen: visibilityState.settings
             });
         }
     },
+    showTrakt(state) {
+        this.setState({
+            foundTrakt: state
+        });
+        player.set({
+            foundTrakt: state
+        });
+    },
+    setTitle(title) {
+        this.setState({
+            title: title
+        });
+    },
     handleClose() {
-        PlayerActions.close();
+        events.close();
         this.history.replaceState(null, '');
     },
     handleOpenSettings() {

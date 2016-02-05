@@ -37,6 +37,7 @@ default React.createClass({
                     open={this.state.open}
                     message={this.state.message}
                     autoHideDuration={5000}
+                    onRequestClose={() => { this.setState({ open: false }) }}
                 />
             </div>
         );

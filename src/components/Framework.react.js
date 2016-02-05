@@ -10,17 +10,17 @@ import {
 }
 from 'react-mousetrap';
 import Modal from './Modal';
-import DarkModal from './Modal/dark';
+import DarkModal from './Player/components/Modal';
 import Message from './Message';
 import Header from './Header';
 import historyActions from '../actions/historyActions';
 import traktUtil from './Player/utils/trakt';
 import request from 'request';
-// we just initiate this here for _reasons_:
 import subUtil from './Player/utils/subtitles';
 import remote from 'remote';
 import clArgs from '../utils/clArgs';
 import ls from 'local-storage';
+import Promise from 'bluebird';
 
 const Framework = React.createClass({
 
@@ -28,6 +28,14 @@ const Framework = React.createClass({
 
     componentWillMount() {
 
+        Promise.config({
+            warnings: {
+                wForgottenReturn: false
+            }
+        });
+
+        if (!ls.isSet('renderFreq')) ls('renderFreq', 500);
+        if (!ls.isSet('renderHidden')) ls('renderHidden', true);
         if (!ls.isSet('subEncoding')) ls('subEncoding', 'auto');
         if (!ls.isSet('peerPort')) ls('peerPort', 6881);
         if (!ls.isSet('maxPeers')) ls('maxPeers', 200);
@@ -35,6 +43,7 @@ const Framework = React.createClass({
 
         this.props.bindShortcut('ctrl+d', () => ipc.send('app:toggleDevTools'));
 
+        subUtil.fetchOsCookie(true);
 
         historyActions.history(this.history);
         this.history.listen(this.updatehistory);
@@ -42,7 +51,9 @@ const Framework = React.createClass({
 
     componentDidMount() {
         ipc.send('app:startup', new Date().getTime());
-        
+
+        require('request')('https://www.google.com'); // Connect once to avoid cloggage
+
         // login trakt
         if (ls('traktTokens'))
             traktUtil.autoLogin();

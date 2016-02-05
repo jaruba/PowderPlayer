@@ -4,13 +4,13 @@ import {
 }
 from 'material-ui';
 import clipboard from 'clipboard';
+import _ from 'lodash';
 
-import ModalActions from '../dark/actions';
-import PlayerActions from '../../Player/actions';
-import PlayerStore from '../../Player/store'
+import ModalActions from '../actions';
+import PlayerStore from '../../../store'
 
-import linkUtil from '../../../utils/linkUtil';
-import traktUtil from '../../Player/utils/trakt';
+import traktUtil from '../../../utils/trakt';
+import player from '../../../utils/player';
 
 export
 default React.createClass({
@@ -25,13 +25,16 @@ default React.createClass({
             ModalActions.close();
             try {
                 traktUtil.exchangePin(inputvalue);
-                PlayerStore.getState().notifier.info('Login Successful', '', 4000);
+                player.notifier.info('Login Successful', '', 4000);
+                _.delay(() => {
+                    player.events.emit('settingsUpdate');
+                },1000);
             } catch(e) {
-                PlayerStore.getState().notifier.info('Error: '+e.message, '', 7000);
+                player.notifier.info('Error: '+e.message, '', 7000);
             }
         } else {
             this.refs['codeInput'].focus();
-            PlayerStore.getState().notifier.info('Error: Trakt Code is Required', '', 7000);
+            player.notifier.info('Error: Trakt Code is Required', '', 7000);
         }
     },
     pasteClipboard() {

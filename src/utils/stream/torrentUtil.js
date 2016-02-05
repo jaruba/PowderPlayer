@@ -38,8 +38,16 @@ module.exports = {
                         opts.path = ls('downloadFolder');
 
                     var engine = peerflix(torrentInfo, opts);
+                    var streams = this.streams;
+                    let infoHash = engine.infoHash;
+                    let server = engine.server;
+
                     this.streams[engine.infoHash] = engine;
-                    engine['stream-port'] = port;
+
+                    engine.server.on('listening', () => {
+                        streams[infoHash]['stream-port'] = server.address().port;
+                    });
+
                     resolve(engine);
                     engine = null;
                 })

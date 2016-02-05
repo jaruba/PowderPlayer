@@ -31,9 +31,11 @@ module.exports = {
                             type: 'thinking'
                         });
         
-                        linkUtil( el, error => {
+                        linkUtil(el).then(url => {
                             ModalActions.thinking(false);
-                            MessageActions.open(error);
+                        }).catch(error => {
+                            ModalActions.thinking(false);
+                            MessageActions.open(error.message);
                         });
                     }
                 }
