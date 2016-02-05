@@ -141,7 +141,7 @@ hotkeys.attach = (props) => {
         if (["ended","stopping","error"].indexOf(player.wcjs.state) == -1) {
             if (player.wcjs.playing)
                 player.wcjs.togglePause();
-            ControlActions.delayTime({
+            ProgressActions.delayTime({
                 jump: 500,
                 delay: 0
             });

@@ -10,22 +10,8 @@ import worker from 'workerjs';
 
 var objective = {};
 var subtitles = {};
-var subWorker = false;
-
-function strip(s){
-    return s.replace(/^\s+|\s+$/g,"")
-}
-
-function toSeconds(t){
-    var s = 0.0;
-    if (t) {
-        var p = t.split(':');
-        t.split(':').forEach( el => {
-            s = s * 60 + parseFloat( el.replace(',', '.') );
-        });
-    }
-    return s;
-}
+var subFinder = false;
+var subParser = false;
 
 subtitles.os = new osMod(atob('T3BlblN1YnRpdGxlc1BsYXllciB2NC43'));
 subtitles.findHashTime = 0;
@@ -52,22 +38,47 @@ subtitles.fetchSubs = (newObjective) => {
     objective = newObjective;
     objective.filename = parser(objective.filepath).filename();
     
-    if (subWorker) subWorker.terminate();
+    if (subFinder) subFinder.terminate();
     
-    subWorker = new worker('../../js/components/Player/workers/subtitles.js', true);
-    subWorker.addEventListener('message', msg => {
+    subFinder = new worker('../../js/components/Player/workers/subtitles/find.js', true);
+    subFinder.addEventListener('message', msg => {
         if (msg.data) {
             if (msg.data == 'null') {
                 objective.cb('');
             } else {
                 objective.cb(msg.data);
             }
-            subWorker.terminate();
-            subWorker = false;
+            subFinder.terminate();
+            subFinder = false;
         }
     });
     
-    subWorker.postMessage(objective);
+    subFinder.postMessage(objective);
+}
+
+subtitles.processSub = (srt, extension, cb) => {
+
+    if (subParser) subParser.terminate();
+
+    subParser = new worker('../../js/components/Player/workers/subtitles/parse.js', true);
+    
+    subParser.addEventListener('message', msg => {
+        if (msg.data) {
+            if (msg.data == 'null') {
+                cb('');
+            } else {
+                cb(msg.data);
+            }
+            subParser.terminate();
+            subParser = false;
+        }
+    });
+    
+    subParser.postMessage({
+        srt: srt,
+        extension: extension
+    });
+    
 }
 
 subtitles.loadSubtitle = (subtitleElement, cb) => {
@@ -121,61 +132,6 @@ subtitles.loadSubtitle = (subtitleElement, cb) => {
     req.end();
 }
 
-subtitles.processSub = (srt, extension, cb) => {
-    
-    var parsedSub = [];
-    
-    if (extension.toLowerCase() == "srt" || extension.toLowerCase() == "vtt") {
-
-        srt = strip(srt.replace(/\r\n|\r|\n/g, '\n'));
-
-        var srty = srt.split('\n\n'),
-            si = 0;
-        
-        if (srty[0].substr(0,6).toLowerCase() == "webvtt") si = 1;
-
-        for (var s = si; s < srty.length; s++) {
-            var st = srty[s].split('\n');
-            if (st.length >=2) {
-                var n = -1;
-                if (st[0].indexOf(' --> ') > -1) var n = 0;
-                else if (st[1].indexOf(' --> ') > -1) var n = 1;
-                else if (st[2].indexOf(' --> ') > -1)  var n = 2;
-                else if (st[3].indexOf(' --> ') > -1)  var n = 3;
-                if (n > -1) {
-                    var stOrigin = st[n]
-                    var is = Math.round(toSeconds(strip(stOrigin.split(' --> ')[0])));
-                    var os = Math.round(toSeconds(strip(stOrigin.split(' --> ')[1])));
-                    var t = st[n+1];
-                    if (st.length > n+2) for (var j=n+2; j<st.length; j++) t = t + '\n'+st[j];
-                    parsedSub[is] = {i:is, o: os, t: t};
-                }
-            }
-        }
-    } else if (extension.toLowerCase() == "sub") {
-        srt = srt.replace(/\r\n|\r|\n/g, '\n');
-        
-        srt = strip(srt);
-        var srty = srt.split('\n');
-
-        var s = 0;
-        for (s = 0; s < srty.length; s++) {
-            var st = srty[s].split('}{');
-            if (st.length >=2) {
-              var is = Math.round(st[0].substr(1) /10);
-              var os = Math.round(st[1].split('}')[0] /10);
-              var t = st[1].split('}')[1].replace('|', '\n');
-              if (is != 1 && os != 1) parsedSub[is] = {i:is, o: os, t: t};
-            }
-        }
-    }
-
-    if (parsedSub)
-        cb(parsedSub);
-    else
-        cb(null);
-}
-
 subtitles.findLine = (subLines, trackSub, subDelay, time) => {
     return new Promise((resolve, reject) => {
         var nowSecond = (time - subDelay) / 1000;
@@ -185,8 +141,12 @@ subtitles.findLine = (subLines, trackSub, subDelay, time) => {
             var os = 0;
 
             for (os in subLines) {
-                if (os > nowSecond) break;
-                line = os;
+                if (subLines[os]) {
+                    if (os > nowSecond) break;
+                    line = os;
+                } else {
+                    delete subLines[os];
+                }
             }
 
             if (line >= 0) {
