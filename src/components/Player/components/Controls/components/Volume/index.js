@@ -35,7 +35,7 @@ default React.createClass({
     },
     update() {
         if (this.isMounted()) {
-            console.log('volume update');
+//            console.log('volume update');
             var volumeState = VolumeStore.getState();
             this.setState({
                 volume: volumeState.volume,

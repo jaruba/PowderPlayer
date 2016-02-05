@@ -144,7 +144,7 @@ default React.createClass({
     },
 
     update() {
-        console.log('settings update');
+//        console.log('settings update');
         if (this.isMounted()) {
             this.setState({
                 alwaysOnTop: player.alwaysOnTop,

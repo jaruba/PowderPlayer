@@ -28,7 +28,7 @@ default React.createClass({
     },
 
     update() {
-        console.log('settings holder update');
+//        console.log('settings holder update');
         if (this.isMounted()) {
             var visibilityState = VisibilityStore.getState();
             this.setState({

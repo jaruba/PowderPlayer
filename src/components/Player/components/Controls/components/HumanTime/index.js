@@ -26,7 +26,7 @@ default React.createClass({
     },
     update() {
         if (this.isMounted()) {
-            console.log('time update');
+//            console.log('time update');
             var timeState = TimeStore.getState();
             this.setState({
                 currentTime: timeState.currentTime,

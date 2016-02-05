@@ -54,7 +54,7 @@ const Player = React.createClass({
         });
     },
     update() {
-        console.log('player update');
+//        console.log('player update');
         if (this.isMounted()) {
             var visibilityState = VisibilityStore.getState();
             this.setState({

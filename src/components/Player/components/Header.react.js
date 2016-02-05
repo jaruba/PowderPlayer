@@ -45,7 +45,7 @@ default React.createClass({
     },
     update() {
         if (this.isMounted()) {
-            console.log('header update');
+//            console.log('header update');
             var visibilityState = VisibilityStore.getState();
             this.setState({
                 uiShown: visibilityState.uiShown && !visibilityState.playlist && !visibilityState.settings,

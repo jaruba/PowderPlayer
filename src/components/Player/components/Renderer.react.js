@@ -96,7 +96,7 @@ default React.createClass({
     },
     update() {
         if (this.isMounted()) {
-            console.log('renderer update');
+//            console.log('renderer update');
             this.setState({
                 rippleEffects: ls.isSet('playerRippleEffects') ? ls('playerRippleEffects') : true,
                 clickPause: ls.isSet('clickPause') ? ls('clickPause') : true,

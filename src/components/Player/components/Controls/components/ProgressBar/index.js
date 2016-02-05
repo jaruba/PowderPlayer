@@ -40,7 +40,7 @@ default React.createClass({
     },
     update() {
         if (this.isMounted()) {
-            console.log('progressbar update');
+//            console.log('progressbar update');
             var progressState = ProgressStore.getState();
             this.setState({
                 position: progressState.position,

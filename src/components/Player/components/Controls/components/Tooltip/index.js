@@ -22,7 +22,7 @@ default React.createClass({
     },
     update() {
         if (this.isMounted()) {
-            console.log('tooltip update');
+//            console.log('tooltip update');
             var tooltipState = TooltipStore.getState();
             this.setState({
                 humanTime: tooltipState.humanTime,
