@@ -9,7 +9,17 @@ var register = {};
 
 register._writeDesktopFile = cb => {
     var powderPath = process.execPath.substr(0,process.execPath.lastIndexOf("/")+1);
-    fs.writeFile(dataPath+'/powder.desktop', '[Desktop Entry]\nVersion=1.0\nName=Powder Player\nComment=Powder Player is a hybrid between a Torrent Client and a Player (torrent streaming)\nExec='+process.execPath+' %U\nPath='+powderPath+'\nIcon='+powderPath+'icon.png\nTerminal=false\nType=Application\nMimeType=application/x-bittorrent;x-scheme-handler/magnet;x-scheme-handler/pow;video/avi;video/msvideo;video/x-msvideo;video/mp4;video/x-matroska;video/mpeg;\n', cb);
+    fs.writeFile(dataPath + '/powder.desktop', '[Desktop Entry]\n'+
+        'Version=1.0\n'+
+        'Name=Powder Player\n'+
+        'Comment=Powder Player is a hybrid between a Torrent Client and a Player (torrent streaming)\n'+
+        'Exec=' + process.execPath + ' %U\n'+
+        'Path=' + powderPath + '\n'+
+        'Icon=' + powderPath + 'icon.png\n'+
+        'Terminal=false\n'+
+        'Type=Application\n'+
+        'MimeType=application/x-bittorrent;x-scheme-handler/magnet;x-scheme-handler/pow;video/avi;video/msvideo;video/x-msvideo;video/mp4;video/x-matroska;video/mpeg;\n'+
+        '', cb);
 };
 
 register.torrent = () => {
@@ -25,10 +35,19 @@ register.torrent = () => {
         child.exec('"'+powderPath+'src/duti/duti" -s media.powder.player .torrent viewer');
         alert("Successfully Associated with Torrent Files");
     } else {
-        fs.writeFile(dataPath+'\\register-torrent.reg', 'REGEDIT4\r\n[HKEY_CURRENT_USER\\Software\\Classes\\powder.player.v1\\DefaultIcon]\r\n@="'+process.execPath.split("\\").join("\\\\")+'"\r\n[HKEY_CURRENT_USER\\Software\\Classes\\powder.player.v1\\shell\\open\\command]\r\n@="\\"'+process.execPath.split("\\").join("\\\\")+'\\" \\"%1\\""\r\n[HKEY_CURRENT_USER\\Software\\Classes\\.torrent]\r\n@="powder.player.v1"\r\n"Content Type"="application/x-bittorrent"', err => {
-            if (err) throw err;
-            shell.openItem(dataPath+'\\register-torrent.reg');
-        });
+        fs.writeFile(dataPath+'\\register-torrent.reg', 'REGEDIT4\r\n'+
+            '[HKEY_CURRENT_USER\\Software\\Classes\\powder.player.v1\\DefaultIcon]\r\n'+
+            '@="' + process.execPath.split("\\").join("\\\\") + '"\r\n'+
+
+            '[HKEY_CURRENT_USER\\Software\\Classes\\powder.player.v1\\shell\\open\\command]\r\n'+
+            '@="\\"' + process.execPath.split("\\").join("\\\\") + '\\" \\"%1\\""\r\n'+
+
+            '[HKEY_CURRENT_USER\\Software\\Classes\\.torrent]\r\n'+
+            '@="powder.player.v1"\r\n'+
+            '"Content Type"="application/x-bittorrent"', err => {
+                if (err) throw err;
+                shell.openItem(dataPath+'\\register-torrent.reg');
+            });
     }
 };
 
@@ -53,10 +72,27 @@ register.videos = () => {
         child.exec('"'+powderPath+'src/duti/duti" -s media.powder.player .mpeg viewer');
         alert("Successfully Associated with Video Files");
     } else {
-        fs.writeFile(dataPath+'\\register-videos.reg', 'REGEDIT4\r\n[HKEY_CURRENT_USER\\Software\\Classes\\powder.player.v1\\DefaultIcon]\r\n@="'+process.execPath.split("\\").join("\\\\")+'"\r\n[HKEY_CURRENT_USER\\Software\\Classes\\powder.player.v1\\shell\\open\\command]\r\n@="\\"'+process.execPath.split("\\").join("\\\\")+'\\" \\"%1\\""\r\n[HKEY_CURRENT_USER\\Software\\Classes\\.avi]\r\n@="powder.player.v1"\r\n"Content Type"="video/avi"\r\n[HKEY_CURRENT_USER\\Software\\Classes\\.mkv]\r\n@="powder.player.v1"\r\n"Content Type"="video/x-matroska"\r\n[HKEY_CURRENT_USER\\Software\\Classes\\.mp4]\r\n@="powder.player.v1"\r\n"Content Type"="video/mp4"', err => {
-            if (err) throw err;
-            shell.openItem(dataPath+'\\register-videos.reg'); 
-        });
+        fs.writeFile(dataPath + '\\register-videos.reg', 'REGEDIT4\r\n'+
+            '[HKEY_CURRENT_USER\\Software\\Classes\\powder.player.v1\\DefaultIcon]\r\n'+
+            '@="' + process.execPath.split("\\").join("\\\\") + '"\r\n'+
+
+            '[HKEY_CURRENT_USER\\Software\\Classes\\powder.player.v1\\shell\\open\\command]\r\n'+
+            '@="\\"' + process.execPath.split("\\").join("\\\\") + '\\" \\"%1\\""\r\n'+
+
+            '[HKEY_CURRENT_USER\\Software\\Classes\\.avi]\r\n'+
+            '@="powder.player.v1"\r\n'+
+            '"Content Type"="video/avi"\r\n'+
+
+            '[HKEY_CURRENT_USER\\Software\\Classes\\.mkv]\r\n'+
+            '@="powder.player.v1"\r\n'+
+            '"Content Type"="video/x-matroska"\r\n'+
+
+            '[HKEY_CURRENT_USER\\Software\\Classes\\.mp4]\r\n'+
+            '@="powder.player.v1"\r\n'+
+            '"Content Type"="video/mp4"', err => {
+                if (err) throw err;
+                shell.openItem(dataPath+'\\register-videos.reg'); 
+            });
     }
 };
 
@@ -73,10 +109,35 @@ register.magnet = () => {
         child.exec('"'+powderPath+'src/duti/duti" -s media.powder.player magnet');
         alert("Successfully Associated with Magnet Links");
     } else {
-        fs.writeFile(dataPath+'\\register-magnet.reg', 'REGEDIT4\r\n[HKEY_CLASSES_ROOT\\Magnet]\r\n@="URL:magnet Protocol"\r\n"Content Type"="application/x-magnet"\r\n"URL Protocol"=""\r\n\[HKEY_CLASSES_ROOT\\Magnet\\DefaultIcon]\r\n@="\\"'+process.execPath.split("\\").join("\\\\")+'\\"\r\n[HKEY_CLASSES_ROOT\\Magnet\\shell]\r\n[HKEY_CLASSES_ROOT\\Magnet\\shell\\open]\r\n[HKEY_CLASSES_ROOT\\Magnet\\shell\\open\\command]\r\n@="\\"'+process.execPath.split("\\").join("\\\\")+'\\" \\"%1\\""\r\n[HKEY_CURRENT_USER\\Software\\Classes\\Magnet]\r\n@="URL:magnet Protocol"\r\n"Content Type"="application/x-magnet"\r\n"URL Protocol"=""\r\n[HKEY_CURRENT_USER\\Software\\Classes\\Magnet\\DefaultIcon]\r\n@="\\"'+process.execPath.split("\\").join("\\\\")+'\\"\r\n[HKEY_CURRENT_USER\\Software\\Classes\\Magnet\\shell]\r\n[HKEY_CURRENT_USER\\Software\\Classes\\Magnet\\shell\\open]\r\n[HKEY_CURRENT_USER\\Software\\Classes\\Magnet\\shell\\open\\command]\r\n@="\\"'+process.execPath.split("\\").join("\\\\")+'\\" \\"%1\\""', err => {
-            if (err) throw err;
-            shell.openItem(dataPath+'\\register-magnet.reg'); 
-        });
+        fs.writeFile(dataPath + '\\register-magnet.reg', 'REGEDIT4\r\n'+
+            '[HKEY_CLASSES_ROOT\\Magnet]\r\n'+
+            '@="URL:magnet Protocol"\r\n'+
+            '"Content Type"="application/x-magnet"\r\n'+
+            '"URL Protocol"=""\r\n'+
+
+            '\[HKEY_CLASSES_ROOT\\Magnet\\DefaultIcon]\r\n'+
+            '@="\\"' + process.execPath.split("\\").join("\\\\") + '\\"\r\n'+
+
+            '[HKEY_CLASSES_ROOT\\Magnet\\shell]\r\n'+
+            '[HKEY_CLASSES_ROOT\\Magnet\\shell\\open]\r\n'+
+            '[HKEY_CLASSES_ROOT\\Magnet\\shell\\open\\command]\r\n'+
+            '@="\\"' + process.execPath.split("\\").join("\\\\") + '\\" \\"%1\\""\r\n'+
+
+            '[HKEY_CURRENT_USER\\Software\\Classes\\Magnet]\r\n'+
+            '@="URL:magnet Protocol"\r\n'+
+            '"Content Type"="application/x-magnet"\r\n'+
+            '"URL Protocol"=""\r\n'+
+
+            '[HKEY_CURRENT_USER\\Software\\Classes\\Magnet\\DefaultIcon]\r\n'+
+            '@="\\"' + process.execPath.split("\\").join("\\\\") + '\\"\r\n'+
+
+            '[HKEY_CURRENT_USER\\Software\\Classes\\Magnet\\shell]\r\n'+
+            '[HKEY_CURRENT_USER\\Software\\Classes\\Magnet\\shell\\open]\r\n'+
+            '[HKEY_CURRENT_USER\\Software\\Classes\\Magnet\\shell\\open\\command]\r\n'+
+            '@="\\"' + process.execPath.split("\\").join("\\\\") + '\\" \\"%1\\""', err => {
+                if (err) throw err;
+                shell.openItem(dataPath+'\\register-magnet.reg'); 
+            });
     }
 };
 
