@@ -6,13 +6,12 @@ from 'material-ui';
 import shell from 'shell';
 import clipboard from 'clipboard';
 
-import ModalActions from '../dark/actions';
+import ModalActions from '../actions';
 
-import MessageActions from '../../Message/actions';
-import PlayerStore from '../../Player/store';
+import PlayerStore from '../../../store';
 
-import traktUtil from '../../Player/utils/trakt';
-import player from '../../Player/utils/player';
+import traktUtil from '../../../utils/trakt';
+import player from '../../../utils/player';
 
 import MetaInspector from 'node-metainspector';
 
@@ -54,13 +53,13 @@ default React.createClass({
             ModalActions.close();
             try {
                 traktUtil.exchangePin(inputvalue);
-                MessageActions.open('Login Successful');
+                player.notifier.info('Login Successful');
             } catch(e) {
-                MessageActions.open('Error: '+e.message);
+                player.notifier.info('Error: '+e.message);
             }
         } else {
             this.refs['codeInput'].focus();
-            MessageActions.open('Error: Trakt Code is Required');
+            player.notifier.info('Error: Trakt Code is Required');
         }
     },
     pasteClipboard() {

@@ -12,7 +12,7 @@ from 'material-ui';
 import PlayerStore from '../store';
 import PlayerActions from '../actions';
 import VisibilityStore from './Visibility/store';
-import ModalActions from '../../Modal/dark/actions';
+import ModalActions from './Modal/actions';
 import ui from '../utils/ui';
 import player from '../utils/player';
 import events from '../utils/events';

@@ -5,13 +5,12 @@ import {
 from 'material-ui';
 import clipboard from 'clipboard'
 
-import ModalActions from '../dark/actions';
+import ModalActions from '../actions';
 
-import MessageActions from '../../Message/actions';
-import PlayerActions from '../../Player/actions';
+import PlayerActions from '../../../actions';
 
-import traktUtil from '../../Player/utils/trakt';
-import player from '../../Player/utils/player';
+import traktUtil from '../../../utils/trakt';
+import player from '../../../utils/player';
 
 import _ from 'lodash';
 import ls from 'local-storage';
@@ -130,12 +129,14 @@ default React.createClass({
                                     newObj.image = results.images.fanart.thumb;
                                 }
                             }
-                            
+
                             newObj.parsed = parsed;
                             newObj.trakt = results;
-                            
+
                             PlayerActions.setDesc(newObj);
-                            
+
+                            player.events.emit('setTitle', newObj.title);
+
                             ModalActions.close();
                             
                             ModalActions.open({

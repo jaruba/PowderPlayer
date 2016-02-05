@@ -6,11 +6,11 @@ from 'material-ui';
 import clipboard from 'clipboard';
 import _ from 'lodash';
 
-import ModalActions from '../dark/actions';
-import PlayerStore from '../../Player/store'
+import ModalActions from '../actions';
+import PlayerStore from '../../../store'
 
-import traktUtil from '../../Player/utils/trakt';
-import player from '../../Player/utils/player';
+import traktUtil from '../../../utils/trakt';
+import player from '../../../utils/player';
 
 export
 default React.createClass({

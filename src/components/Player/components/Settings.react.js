@@ -12,7 +12,7 @@ import PlayerActions from '../actions';
 import SubtitleStore from './SubtitleText/store';
 import SubtitleActions from './SubtitleText/actions';
 import traktUtil from '../utils/trakt';
-import ModalActions from '../../Modal/dark/actions';
+import ModalActions from './Modal/actions';
 import Register from '../../../utils/registerUtil';
 import player from '../utils/player';
 import ls from 'local-storage';

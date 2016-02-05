@@ -10,10 +10,9 @@ const {
 import ModalStore from './store';
 import ModalActions from './actions';
 
-import PlayerSettings from '../components/player-settings';
-import TraktCode from '../components/TraktCode';
-import TraktInfo from '../components/TraktInfo';
-import TraktSearch from '../components/TraktSearch';
+import TraktCode from './components/TraktCode';
+import TraktInfo from './components/TraktInfo';
+import TraktSearch from './components/TraktSearch';
 
 export
 default React.createClass({
@@ -91,18 +90,6 @@ default React.createClass({
 
     getContents() {
         switch (this.state.type) {
-            case 'URLAdd':
-                return <URLContents />;
-                break;
-            case 'fileSelctor':
-                return <FileStreamSelector />;
-                break;
-            case 'thinking':
-                return <Thinking />;
-                break;
-            case 'player-settings':
-                return <PlayerSettings />;
-                break;
             case 'TraktCode':
                 return <TraktCode />;
                 break;

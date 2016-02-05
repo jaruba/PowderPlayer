@@ -10,7 +10,7 @@ import {
 }
 from 'react-mousetrap';
 import Modal from './Modal';
-import DarkModal from './Modal/dark';
+import DarkModal from './Player/components/Modal';
 import Message from './Message';
 import Header from './Header';
 import historyActions from '../actions/historyActions';

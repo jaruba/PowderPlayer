@@ -99,18 +99,6 @@ default React.createClass({
             case 'thinking':
                 return <Thinking />;
                 break;
-            case 'player-settings':
-                return <PlayerSettings />;
-                break;
-            case 'TraktCode':
-                return <TraktCode />;
-                break;
-            case 'TraktInfo':
-                return <TraktInfo />;
-                break;
-            case 'TraktSearch':
-                return <TraktSearch />;
-                break;
         }
     },
 
