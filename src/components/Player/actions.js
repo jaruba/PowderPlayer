@@ -1,7 +1,6 @@
 import alt from '../../alt'
 import _ from 'lodash';
 import ipc from 'ipc';
-import subUtil from './utils/subtitles';
 import HistoryStore from '../../stores/historyStore';
 import torrentUtil from '../../utils/stream/torrentUtil';
 import player from './utils/player';

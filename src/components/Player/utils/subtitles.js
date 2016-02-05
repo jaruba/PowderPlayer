@@ -2,15 +2,15 @@ import osMod from 'opensubtitles-api';
 import fs from 'fs';
 import parser from './parser';
 import needle from 'needle';
-import async from 'async';
 import webUtil from '../../../utils/webUtil.js';
 import http from 'http';
 import retriever from 'subtitles-grouping/lib/retriever';
 import ls from 'local-storage';
+import worker from 'workerjs';
 
 var objective = {};
-var checkedFiles = {};
 var subtitles = {};
+var subWorker = false;
 
 function strip(s){
     return s.replace(/^\s+|\s+$/g,"")
@@ -32,15 +32,15 @@ subtitles.findHashTime = 0;
 subtitles.osCookie = false;
 
 subtitles.fetchOsCookie = retryCookie => {
-    webUtil.checkInternet(function(isConnected) {
+    webUtil.checkInternet( isConnected => {
         if (isConnected) {
-            var req = require('http').request({ host: "dl.opensubtitles.org", path: "/en/download/subencoding-utf8/vrf-ef3a1f1e6e/file/1954677189" },function(res) {
+            var req = require('http').request({ host: "dl.opensubtitles.org", path: "/en/download/subencoding-utf8/vrf-ef3a1f1e6e/file/1954677189" },(res) => {
                 if (res.headers["set-cookie"] && res.headers["set-cookie"][0]) {
                     var tempCookie = res.headers["set-cookie"][0];
                     subtitles.osCookie = (tempCookie + "").split(";").shift();
                 } else if (!res.headers["set-cookie"] && retryCookie) {
                     console.log("fetching OS cookie failed, trying again in 20 sec");
-                    setTimeout(function() { subtitles.fetchOsCookie(false) },20000);
+                    setTimeout(() => { subtitles.fetchOsCookie(false) },20000);
                 }
             });
             req.end();
@@ -48,139 +48,26 @@ subtitles.fetchOsCookie = retryCookie => {
     });
 }
 
-
-subtitles.tryLater = hashMs => {
-    subtitles.stopTrying();
-    subtitles.findHashTime = setTimeout(function() {
-        subtitles.findHash();
-    }, hashMs);
-}
-
-subtitles.byExactHash = (hash, fileSize, tag) => {
-    subtitles.os.login().then(token => {
-        var filename = objective.filename;
-        
-        var searcher = {
-            sublanguageid: 'all',
-            extensions: ['srt','sub','vtt'],
-            hash: hash,
-            size: fileSize,
-            filename: filename
-        };
-        
-        if (parser(filename).shortSzEp()) {
-            searcher.season = parser(filename).season().toString();
-            searcher.episode = parser(filename).episode().toString();
-        }
-        
-        if (objective.fps) searcher.fps = objective.fps;
-
-        subtitles.os.search(searcher).then(function(subData) {
-            if (Object.keys(subData).length) {
-                if (objective.byteLength) {
-                    var tempData = window.atob("aHR0cDovL3Bvd2Rlci5tZWRpYS9tZXRhRGF0YS9zZW5kLnBocD9mPQ==")+encodeURIComponent(filename)+window.atob("JmloPQ==")+encodeURIComponent(hash)+window.atob("JnM9")+encodeURIComponent(objective.byteLength);
-                    
-                    if (objective.torrentHash)
-                        tempData += window.atob("Jmg9")+encodeURIComponent(objective.torrentHash);
-
-                    needle.get(tempData, () => {});
-                }
-                var result = {};
-                async.each(subData, (item, callback) => {
-                    var vrf = item.url.substr(item.url.indexOf('vrf-'));
-                    vrf = vrf.substr(0,vrf.indexOf('/'));
-                    result[item.langName+'[lg]'+item.lang] = 'http://dl.opensubtitles.org/en/download/subencoding-utf8/'+vrf+'/file/'+item.url.split('/').pop();
-                    callback();
-                }, function(err) {
-                    objective.cb(result);
-                    objective = {};
-                });
-
-            } else
-                objective.cb(null);
-            return subData;
-        }).catch(function(err){
-            subtitles.tryLater(15000);
-        });
-
-    }).catch(function(err){
-        subtitles.tryLater(30000);
-    });
-}
-
 subtitles.fetchSubs = (newObjective) => {
-    subtitles.stopTrying();
     objective = newObjective;
-    objective.filename = parser(objective.filepath).filename()
+    objective.filename = parser(objective.filepath).filename();
     
-    if (!objective.byteLength)
-        objective.byteLength = fs.statSync(objective.filepath).size;
-
-    var url = window.atob("aHR0cDovL3Bvd2Rlci5tZWRpYS9tZXRhRGF0YS9nZXQucGhwP2Y9")+encodeURIComponent(objective.filename)+window.atob("Jmg9")+encodeURIComponent(objective.torrentHash)+window.atob("JnM9")+encodeURIComponent(objective.byteLength);
+    if (subWorker) subWorker.terminate();
     
-    needle.get(url, (err, res) => {
-        if (!err && res && res.body && objective.byteLength && JSON.parse(res.body).filehash) {
-            subtitles.byExactHash(res.filehash, objective.byteLength, objective.filename);
-        } else {
-            subtitles.stopTrying();
-            subtitles.findHash();
+    subWorker = new worker('../../js/components/Player/workers/subtitles.js', true);
+    subWorker.addEventListener('message', msg => {
+        if (msg.data) {
+            if (msg.data == 'null') {
+                objective.cb('');
+            } else {
+                objective.cb(msg.data);
+            }
+            subWorker.terminate();
+            subWorker = false;
         }
     });
-}
-
-subtitles.findHash = () => {
-    var filepath = objective.filepath,
-        byteLength = objective.byteLength,
-        torrentHash = objective.torrentHash,
-        isFinished = objective.isFinished,
-        filename = objective.filename;
-
-    if (!checkedFiles[filename])
-        checkedFiles[filename] = {};
-
-    if (torrentHash) {
-        subtitles.os.extractInfo(filepath).then(function(infos) {
-            var hash = infos.moviehash;
-            if (isFinished) {
-                if (byteLength) subtitles.byExactHash(hash, byteLength, filename);
-            } else {
-                if (!checkedFiles[filename][hash]) {
-                    checkedFiles[filename][hash] = 1;
-                    subtitles.stopTrying();
-                    subtitles.findHashTime = setTimeout(function() {
-                        subtitles.findHash();
-                    },10000);
-                } else {
-                    if (checkedFiles[filename][hash] >= 1) {
-                        checkedFiles[filename][hash]++;
-                        if (byteLength)
-                            subtitles.byExactHash(hash, byteLength, filename);
-                        
-                    } else checkedFiles[filename][hash]++;
-                }
-            }
-        });
-    } else {
-        subtitles.os.extractInfo(filepath).then(function(infos) {
-            if (!byteLength && filepath) {
-                fs.stat(filepath, (err, stats) => {
-                    if (stats && stats.size)
-                        subtitles.byExactHash(infos.moviehash, stats.size, filename);
-                })
-                byteLength = fs.statSync(filepath).size;
-            } else {
-                if (!byteLength) byteLength = 0;
-                subtitles.byExactHash(infos.moviehash, byteLength, filename);
-            }
-        });
-    }
-}
-
-subtitles.stopTrying = () => {
-    if (subtitles.findHashTime) {
-        clearTimeout(subtitles.findHashTime);
-        subtitles.findHashTime = null;
-    }
+    
+    subWorker.postMessage(objective);
 }
 
 subtitles.loadSubtitle = (subtitleElement, cb) => {
@@ -323,7 +210,5 @@ subtitles.findLine = (subLines, trackSub, subDelay, time) => {
         } else resolve();
     });
 }
-
-subtitles.fetchOsCookie(true);
 
 module.exports = subtitles;

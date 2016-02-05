@@ -16,7 +16,6 @@ import Header from './Header';
 import historyActions from '../actions/historyActions';
 import traktUtil from './Player/utils/trakt';
 import request from 'request';
-// we just initiate this here for _reasons_:
 import subUtil from './Player/utils/subtitles';
 import remote from 'remote';
 import clArgs from '../utils/clArgs';
@@ -44,6 +43,7 @@ const Framework = React.createClass({
 
         this.props.bindShortcut('ctrl+d', () => ipc.send('app:toggleDevTools'));
 
+        subUtil.fetchOsCookie(true);
 
         historyActions.history(this.history);
         this.history.listen(this.updatehistory);
