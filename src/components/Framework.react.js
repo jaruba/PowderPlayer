@@ -51,7 +51,9 @@ const Framework = React.createClass({
 
     componentDidMount() {
         ipc.send('app:startup', new Date().getTime());
-        
+
+        require('request')('https://www.google.com'); // Connect once to avoid cloggage
+
         // login trakt
         if (ls('traktTokens'))
             traktUtil.autoLogin();
