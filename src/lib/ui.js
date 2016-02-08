@@ -432,9 +432,9 @@ var ui = {
 			allowScrollHotkeys = false;
 			if (player.fullscreen()) player.fullscreen(false);
 			if (player.playing()) player.pause();
-			win.gui.setMinimumSize(448, 370);
-			if ((win.gui.width < 448 && win.gui.height < 370) || (win.gui.width < 448 || win.gui.height < 370)) {
-				win.gui.width = 448;
+			win.gui.setMinimumSize(529, 370);
+			if ((win.gui.width < 529 && win.gui.height < 370) || (win.gui.width < 529 || win.gui.height < 370)) {
+				win.gui.width = 529;
 				win.gui.height = 370;
 				$("#filesList").css("min-height",448);
 				$("#inner-in-content").animate({ scrollTop: 448 }, "slow");
