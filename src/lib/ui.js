@@ -573,6 +573,16 @@ $("#sub-default-color").on('change', function() {
 	$('.wcp-subtitle-text').css('color', localStorage.subColor);
 });
 
+$("#zoom-level-default").on('change', function() {
+	var oldZoom = parseFloat(localStorage.zoomLevel);
+	localStorage.zoomLevel = this.value;
+	var tWidth = win.gui.width;
+	var tHeight = win.gui.height;
+	win.gui.zoomLevel = parseFloat(localStorage.zoomLevel);
+});
+
+$("#zoom-level-default").val(localStorage.zoomLevel);
+
 if (localStorage.useVLC == "1") {
 	$('#use-player').val('VLC');
 	$(".internal-opt").hide(0);
