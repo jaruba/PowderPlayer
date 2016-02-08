@@ -43,8 +43,6 @@ var ui = {
 			modalSettings = {
 				top: 200,
 				overlay: 0.2,
-				transitionIn: 'animated bounceInLeft',
-				transitionOut: 'animated bounceOutRight',
 				closeButtonClass: '.'+modalName+'-animated-close'
 			};
 
@@ -265,9 +263,7 @@ var ui = {
 		
 			modalSettings = {
 				top: 200,
-				overlay: 0.2,
-				transitionIn: 'animated bounceInLeft',
-				transitionOut: 'animated bounceOutRight'
+				overlay: 0.2
 			};
 		
 			modalSettings.closeButtonClass = '.animated-close';

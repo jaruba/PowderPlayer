@@ -351,7 +351,7 @@ body {
     
     <div class="third-easy-modal-animated" id="player-settings">
         <center>
-            <h2 class="headButs change-set goRight" onClick="$('.third-animated-close').trigger('click'); setTimeout(function() { $('#tr-settings').trigger('click'); },1000); return false">Torrent Settings</h2>
+            <h2 class="headButs change-set goRight" onClick="$('.third-animated-close').trigger('click'); $('#tr-settings').trigger('click'); return false">Torrent Settings</h2>
             <h2 class="headButs goRight" style="margin-right: 3px">Player Settings</h2>
             <div class="clear"></div>
             <div id="but-assoc4" onClick="utils.register.powLinks(); return false" class="actionButton droid-bold" style="display: none">Associate with Powder Links</div>
@@ -369,7 +369,7 @@ body {
     <div class="forth-easy-modal-animated" id="torrent-settings">
         <center>
             <h2 class="headButs goRight">Torrent Settings</h2>
-            <h2 class="headButs change-set goRight" onClick="$('.forth-animated-close').trigger('click'); setTimeout(function() { $('.pl-settings').trigger('click'); },1000); return false" style="margin-right: 3px">Player Settings</h2>
+            <h2 class="headButs change-set goRight" onClick="$('.forth-animated-close').trigger('click'); $('.pl-settings').trigger('click'); return false" style="margin-right: 3px">Player Settings</h2>
             <div class="clear"></div>
             <div id="max-peers-hov" onClick="ui.mechanics.openPeerSelector(); return false" class="actionButton"><span class="droid-bold">Maximum Peers:</span> <span id="max-peers">100</span><input id="spinner" value="100" />
             </div>
