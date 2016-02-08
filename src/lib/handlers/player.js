@@ -165,6 +165,7 @@ var playerApi = {
 		},
 		
 		isOpening: function() {
+			$('.wcp-subtitle-text').css('color', localStorage.subColor); // set default subtitle color
 			if (torrent.timers.setDownload) clearInterval(torrent.timers.setDownload);
 			if (powGlobals.torrent.engine) {
 				if (powGlobals.lists.media[player.currentItem()] && powGlobals.lists.files[powGlobals.lists.media[player.currentItem()].index]) {

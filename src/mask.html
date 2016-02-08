@@ -351,8 +351,9 @@ body {
     
     <div class="third-easy-modal-animated" id="player-settings">
         <center>
-            <h2 class="headButs change-set goRight" onClick="$('.third-animated-close').trigger('click'); $('#tr-settings').trigger('click'); return false">Torrent Settings</h2>
-            <h2 class="headButs goRight" style="margin-right: 3px">Player Settings</h2>
+            <h2 class="headButs change-set goRight" onClick="$('.third-animated-close').trigger('click'); $('#tr-settings').trigger('click'); return false">Torrent</h2>
+            <h2 class="headButs change-set goRight" style="margin-right: 4px; margin-left: 1px" onClick="$('.third-animated-close').trigger('click'); $('#sub-settings').trigger('click'); return false" >Subtitles</h2>
+            <h2 class="headButs goRight" style="margin-right: 3px">Player</h2>
             <div class="clear"></div>
             <div id="but-assoc4" onClick="utils.register.powLinks(); return false" class="actionButton droid-bold" style="display: none">Associate with Powder Links</div>
             <div id="but-assoc1" onClick="utils.register.magnet(); return false" class="actionButton droid-bold">Associate with Magnet Links</div>
@@ -361,15 +362,28 @@ body {
             <div id="but-vlc" class="actionButton wrap-text"><span class="droid-bold">Video Player: <select id="use-player"><option>Internal</option><option>VLC</option></select></span></div>
             <div onClick="ui.settings.changeClickPause(); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold">Click to Pause:</span> <span id="click-pause">only in Fullscreen</span></div>
             <div onClick="chooseFile('#libraryDialog'); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold">Library Folder:</span> <span id="lib-folder">Temp</span></div>
-            <div onClick="ui.settings.changeNoSub(); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold">Auto-Download Subtitles:</span> <span id="click-no-sub">True</span></div>
             <div id="closeAction" class="third-animated-close actionButton" style="font-family: 'Droid Sans Bold' !important;font-weight: bold">Close Menu</div>
+        </center>
+    </div>
+    
+    <div class="sub-easy-modal-animated" id="subtitle-settings">
+        <center>
+            <h2 class="headButs change-set goRight" onClick="$('.sub-animated-close').trigger('click'); $('#tr-settings').trigger('click'); return false">Torrent</h2>
+            <h2 class="headButs goRight" style="margin-right: 4px; margin-left: 1px">Subtitles</h2>
+            <h2 class="headButs change-set goRight" onClick="$('.sub-animated-close').trigger('click'); $('.pl-settings').trigger('click'); return false" style="margin-right: 3px">Player</h2>
+            <div class="clear"></div>
+            <div onClick="ui.settings.changeNoSub(); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold">Auto-Download Subtitles:</span> <span id="click-no-sub">True</span></div>
+            <div id="but-sub-size" class="actionButton wrap-text"><span class="droid-bold">Subtitle Size: <select id="sub-default-size"><option>80%</option><option>90%</option><option selected>100%</option><option>110%</option><option>115%</option><option>120%</option><option>125%</option><option>130%</option><option>135%</option></select></span></div>
+            <div id="but-sub-color" class="actionButton wrap-text"><span class="droid-bold">Subtitle Color: <select id="sub-default-color"><option selected>White</option><option>Yellow</option><option>Green</option><option>Cyan</option><option>Blue</option></select></span></div>
+            <div id="closeAction" class="sub-animated-close actionButton" style="font-family: 'Droid Sans Bold' !important;font-weight: bold">Close Menu</div>
         </center>
     </div>
     
     <div class="forth-easy-modal-animated" id="torrent-settings">
         <center>
-            <h2 class="headButs goRight">Torrent Settings</h2>
-            <h2 class="headButs change-set goRight" onClick="$('.forth-animated-close').trigger('click'); $('.pl-settings').trigger('click'); return false" style="margin-right: 3px">Player Settings</h2>
+            <h2 class="headButs goRight">Torrent</h2>
+            <h2 class="headButs change-set goRight" style="margin-right: 4px; margin-left: 1px" onClick="$('.forth-animated-close').trigger('click'); $('#sub-settings').trigger('click'); return false" >Subtitles</h2>
+            <h2 class="headButs change-set goRight" onClick="$('.forth-animated-close').trigger('click'); $('.pl-settings').trigger('click'); return false" style="margin-right: 3px">Player</h2>
             <div class="clear"></div>
             <div id="max-peers-hov" onClick="ui.mechanics.openPeerSelector(); return false" class="actionButton"><span class="droid-bold">Maximum Peers:</span> <span id="max-peers">100</span><input id="spinner" value="100" />
             </div>
@@ -385,8 +399,9 @@ body {
 
     <div class="fifth-easy-modal-animated" id="plugins-settings">
         <center>
-            <h2 class="headButs change-set goRight" onClick="$('.fifth-animated-close').trigger('click'); setTimeout(function() { $('#tr-settings').trigger('click'); },1000); return false">Torrent Settings</h2>
-            <h2 class="headButs change-set goRight" onClick="$('.fifth-animated-close').trigger('click'); setTimeout(function() { $('.pl-settings').trigger('click'); },1000); return false" style="margin-right: 3px">Player Settings</h2>
+            <h2 class="headButs change-set goRight" onClick="$('.fifth-animated-close').trigger('click'); setTimeout(function() { $('#tr-settings').trigger('click'); },1000); return false">Torrent</h2>
+            <h2 class="headButs change-set goRight" style="margin-right: 4px; margin-left: 1px" onClick="$('.fifth-animated-close').trigger('click'); $('#sub-settings').trigger('click'); return false" >Subtitles</h2>
+            <h2 class="headButs change-set goRight" onClick="$('.fifth-animated-close').trigger('click'); setTimeout(function() { $('.pl-settings').trigger('click'); },1000); return false" style="margin-right: 3px">Player</h2>
             <div class="internal-opt actionButton actionMessage"><span class="droid">Click titles for details. Installed plugins have a yellow background.</span></div>
             <div id="select-plugin-list">
 
@@ -445,6 +460,7 @@ body {
     <input id="export_file" type="file" nwsaveas="snapshot.jpg" style="display:none" nwworkingdir=""/>
     
     <a id="tr-settings" class="easy-modal-open" href="#torrent-settings">Torrent Settings</a>
+    <a id="sub-settings" class="easy-modal-open" href="#subtitle-settings">Subtitle Settings</a>
     <a id="plugin-list" class="easy-modal-open" href="#plugins-settings">Torrent Settings</a>
     <a id="open-file-settings" class="easy-modal-open" href="#file-settings">File Settings</a>
     <a id="open-unsupported" class="easy-modal-open" href="#unsupported">Unsupported Media Error</a>

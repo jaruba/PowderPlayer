@@ -290,6 +290,9 @@ var ui = {
 			modalSettings.closeButtonClass = '.unsupported-animated-close';
 			$('.unsupported-easy-modal-animated').easyModal(modalSettings);
 
+			modalSettings.closeButtonClass = '.sub-animated-close';
+			$('.sub-easy-modal-animated').easyModal(modalSettings);
+
 		},
 		
 		openUrlModal: function(e) {
@@ -550,10 +553,46 @@ $('#use-player').on('change', function() {
 	}
 });
 
+$("#sub-default-size").on('change', function() {
+	localStorage.subSizeDefault = parseInt(this.value)/100;
+	player.setSubSize(parseInt(this.value)/100);
+});
+
+$("#sub-default-color").on('change', function() {
+	if (this.value == "White") {
+		localStorage.subColor = '#fff';
+	} else if (this.value == "Yellow") {
+		localStorage.subColor = '#ebcb00';
+	} else if (this.value == "Green") {
+		localStorage.subColor = '#00e78f';
+	} else if (this.value == "Cyan") {
+		localStorage.subColor = '#00ffff';
+	} else if (this.value == "Blue") {
+		localStorage.subColor = '#00b6ea';
+	}
+	$('.wcp-subtitle-text').css('color', localStorage.subColor);
+});
+
 if (localStorage.useVLC == "1") {
 	$('#use-player').val('VLC');
 	$(".internal-opt").hide(0);
 }
+
+if (localStorage.subColor == '#fff') {
+	$("#sub-default-color").val('White');
+} else if (localStorage.subColor == '#ebcb00') {
+	$("#sub-default-color").val('Yellow');
+} else if (localStorage.subColor == '#00e78f') {
+	$("#sub-default-color").val('Green');
+} else if (localStorage.subColor == '#00ffff') {
+	$("#sub-default-color").val('Cyan');
+} else if (localStorage.subColor == '#00b6ea') {
+	$("#sub-default-color").val('Blue');
+}
+
+$('.wcp-subtitle-text').css('color', localStorage.subColor);
+
+$("#sub-default-size").val((parseFloat(localStorage.subSizeDefault)*100)+'%');
 
 if (localStorage.bufferSize) {
 	$('#buffer-spinner').val(localStorage.bufferSize);

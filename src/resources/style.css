@@ -135,6 +135,7 @@ body {
 .forth-easy-modal-animated,
 .fifth-easy-modal-animated,
 .unsupported-easy-modal-animated,
+.sub-easy-modal-animated,
 .modal-holder {
 	width: 438px;
 	padding: 2em;
@@ -143,12 +144,14 @@ body {
 }
 .third-easy-modal-animated,
 .forth-easy-modal-animated,
-.fifth-easy-modal-animated {
+.fifth-easy-modal-animated,
+.sub-easy-modal-animated {
 	font-size: 15px
 }
 .unsupported-easy-modal-animated { padding: 5px; top: 35% !important }
 .forth-easy-modal-animated,
 .fifth-easy-modal-animated,
+.sub-easy-modal-animated,
 .modal-holder,
 #file-settings { padding: 5px; top: 22% !important }
 .third-easy-modal-animated { padding: 5px; top: 23% !important }
@@ -461,7 +464,7 @@ input[type="file"] { display: none }
 #header_content { width: calc(100% - 250px); float: right }
 #header_text { width: 70%; color: #fff; text-align: left }
 #optHold { width: 30% }
-.headButs { margin-bottom: 10px; font-size: 15px; width: 45.5%; background: #1C728A }
+.headButs { margin-bottom: 10px; font-size: 15px; width: 28.6%; background: #1C728A }
 .fl_dd {
 	font-size: 33px;
 	color: #767a7b;

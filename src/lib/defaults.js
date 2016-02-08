@@ -42,6 +42,8 @@ if (!localStorage.subEncoding) localStorage.subEncoding = 'auto';
 if (!localStorage.dlnaClients) localStorage.dlnaClients = '{}';
 if (!localStorage.pulseRule) localStorage.pulseRule = "disabled";
 if (!localStorage.noSubs) localStorage.noSubs = "0";
+if (!localStorage.subSizeDefault) localStorage.subSizeDefault = "1";
+if (!localStorage.subColor) localStorage.subColor = "#fff";
 if (!localStorage.history) {
 	dummyObject = {};
 	localStorage.history = JSON.stringify(dummyObject);
