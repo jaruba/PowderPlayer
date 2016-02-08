@@ -377,9 +377,25 @@ var torrent = {
 			} else if (Math.floor(Date.now() / 1000) - powGlobals.torrent.speedUpdate > 9) {
 				$("#speed").text("0.0 kB/s");
 			}
+			
 			powGlobals.torrent.speedPiece = powGlobals.torrent.allPieces;
-			downSpeed = setTimeout(function(){ torrent.checkSpeed(); }, 3000);
-		} else $("#speed").text("0.0 kB/s");
+		} else {
+			if (utils.fs.getReadableSize(powGlobals.torrent.engine.swarm.uploadSpeed()) != '0.1 kB') {
+				var newSpeed = utils.fs.getReadableSize(powGlobals.torrent.engine.swarm.uploadSpeed())+"/s";
+			} else {
+				var newSpeed = "0.0 kb/s";
+			}
+			if ($("#speed").text() != newSpeed)
+				$("#speed").text(utils.fs.getReadableSize(powGlobals.torrent.engine.swarm.uploadSpeed())+"/s");
+		}
+		if (powGlobals.torrent.engine.swarm.uploaded) {
+			var newUpload = utils.fs.getReadableSize(Math.floor(powGlobals.torrent.engine.swarm.uploaded));
+			if ($("#uploadAll").text() != newUpload)
+				$("#uploadAll").text(newUpload);
+		} else if ($("#uploadAll").text() != '0 kB') {
+			$("#uploadAll").text('0 kB');
+		}
+		torrent.timers.down = setTimeout(function(){ torrent.checkSpeed(); }, 3000);
 	},
 	
 	peerCheck: function() {

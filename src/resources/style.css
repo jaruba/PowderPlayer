@@ -253,13 +253,22 @@ i.speedIcon:before {
 	content: "\E80C";
 	font-style: normal;
 	font-size: 15px;
-	width: 25px;
+	width: 22px;
 	display: inline-block;
 	text-align: left;
 }
 i.downloadIcon:before {
 	font-family: 'Glyphs';
 	content: "\E80B";
+	font-style: normal;
+	font-size: 13px;
+	width: 25px;
+	display: inline-block;
+	text-align: left;
+}
+i.uploadIcon:before {
+	font-family: 'Glyphs';
+	content: "\E800";
 	font-style: normal;
 	font-size: 13px;
 	width: 25px;
