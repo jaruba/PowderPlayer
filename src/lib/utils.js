@@ -13,6 +13,21 @@ var utils = {
 	
 	eventMod: require('events'),
 	
+	download: function(url, dest, cb) {
+	  var http = require('http');
+	  var fs = require('fs');
+	  var file = fs.createWriteStream(dest);
+	  var request = http.get(url, function(response) {
+		response.pipe(file);
+		file.on('finish', function() {
+		  file.close(cb);  // close() is async, call cb after close completes.
+		});
+	  }).on('error', function(err) { // Handle errors
+		fs.unlink(dest); // Delete the file async. (But we don't check the result)
+		if (cb) cb(err.message);
+	  });
+	},
+
 	validateUrl: function(torLink) {
 		
 		if (torLink.indexOf(':') > -1 && this._supportedProtocols.indexOf(torLink.substr(0,torLink.indexOf(':'))) > -1) {

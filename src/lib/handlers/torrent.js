@@ -500,6 +500,10 @@ var torrent = {
 					eli.isMedia = true;
 				} else eli.isMedia = false;
 				
+				if (playerApi.supportedSubs.indexOf(utils.parser(eli.name).extension()) > -1) {
+					eli.isSubtitle = true;
+				} else eli.isSubtitle = false;
+				
 				powGlobals.lists.indexes[ij] = ij;
 				powGlobals.lists.files[ij] = eli;
 			});
@@ -533,6 +537,7 @@ var torrent = {
 			}
 			
 			var kla = kj;
+			var sbs = 0;
 		
 			if (localStorage.useVLC != "1") {
 				powGlobals.lists.files.forEach(function(el,ij) {
@@ -547,6 +552,7 @@ var torrent = {
 						powGlobals.lists.media[kj].checkHashes = [];
 						powGlobals.lists.media[kj].index = ij;
 						powGlobals.lists.media[kj].filename = utils.parser(thisName).filename();
+						powGlobals.lists.media[kj].realName = utils.parser(el.name).filename().replace(/\.[^/.]+$/, "");
 
 						if (playerApi.supportedVideos.indexOf(utils.parser(thisName).extension()) > -1) {
 							powGlobals.lists.media[kj].isVideo = true;
@@ -603,6 +609,13 @@ var torrent = {
 							else playerApi.playlist.async.addPlaylist.push(set);
 						}
 						kj++;
+					} else if (el.isSubtitle) {
+						if (!powGlobals.lists.subtitles) powGlobals.lists.subtitles = [];
+						powGlobals.lists.subtitles[sbs] = {};
+						powGlobals.lists.subtitles[sbs].index = ij;
+						powGlobals.lists.subtitles[sbs].filename = utils.parser(el.name).filename();
+						powGlobals.lists.subtitles[sbs].realName = utils.parser(el.name).filename().replace(/\.[^/.]+$/, "");
+						sbs++;
 					}
 				});
 			} else if (utils.fs.paths.vlc()) {

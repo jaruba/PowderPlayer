@@ -188,7 +188,7 @@ var subtitles = {
 	},
 	
 	updateSub: function() {
-		if (localStorage.subLang != "None") {
+		if (localStorage.subLang != "None" && player.subTrack() == 0) {
 			for (gvn = 1; gvn < player.subCount(); gvn++) {
 				if (player.subDesc(gvn).language == localStorage.subLang) {
 					player.subTrack(gvn);

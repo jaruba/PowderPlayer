@@ -186,29 +186,28 @@ var load = {
 		keepMedia = powGlobals.lists.media;
 		fileArray.forEach(function(el) {
 			if (utils.parser(el).extension() == 'torrent') {
-				var readTorrent = require('read-torrent');
-				readTorrent(el, function(err, data) {
-					var trackers = '';
+				var parseTorrent = require('parse-torrent');
+				var data = parseTorrent(require('fs').readFileSync(el));
+				var trackers = '';
+				
+				if (data) {
 					
-					if (data) {
-						
-						if (data.name)
-							trackers += '&dn=' + data.name.toLowerCase().split(' ').join('+');
-					
-						if (data.announce && data.announce.length)
-							for (ldf = 0; data.announce[ldf]; ldf++)
-								trackers += '&tr=' + encodeURIComponent(data.announce[ldf]);
+					if (data.name)
+						trackers += '&dn=' + data.name.toLowerCase().split(' ').join('+');
+				
+					if (data.announce && data.announce.length)
+						for (ldf = 0; data.announce[ldf]; ldf++)
+							trackers += '&tr=' + encodeURIComponent(data.announce[ldf]);
 
-					}
-					
-					var set = {
-						url: "pow://" + data.infoHash + trackers,
-						title: utils.parser(data.name).name()
-					};
-					torrent.parsed[data.infoHash] = data;
-					set = load.pushArgs(set);
-					player.addPlaylist(set);
-				});
+				}
+				
+				var set = {
+					url: "pow://" + data.infoHash + trackers,
+					title: utils.parser(data.name).name()
+				};
+				torrent.parsed[data.infoHash] = data;
+				set = load.pushArgs(set);
+				player.addPlaylist(set);
 			} else {
 				ranURL = true;
 				load.url(el);

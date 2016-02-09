@@ -4,6 +4,7 @@ var playerApi = {
 	supportedTypes: ["mkv", "avi", "mp4", "mpg", "mpeg", "webm", "flv", "ogg", "ogv", "mov", "wmv", "3gp", "3g2", "m4a", "mp3", "flac"],
 	supportedVideos: ["mkv", "avi", "mp4", "mpg", "mpeg", "webm", "flv", "ogg", "ogv", "mov", "wmv", "3gp", "3g2"],
 	supportedAudio: ["m4a", "mp3", "flac"],
+	supportedSubs: ["srt", "sub", "vtt"],
 	supportedLinks: ["youtube.com","video.google.com",".googlevideo.com","vimeo.com","dailymotion.com","dailymotion.co.uk","bbc.co.uk","trailers.apple.com","break.com","canalplus.fr","extreme.com","france2.fr","jamendo.com","koreus.com","lelombrik.net","liveleak.com","metacafe.com","mpora.com","pinkbike.com","pluzz.francetv.fr","rockbox.org","soundcloud.com","zapiks.com","metachannels.com","joox.com"],
 	firstTimeEver: true,
 	firstTime: false,
@@ -177,6 +178,44 @@ var playerApi = {
 						torrent.timers.setDownload = setInterval(function() { torrent.showCache(); },3000);
 					}
 				}
+				
+				if (localStorage.torrentSubs == "true" && powGlobals.lists.subtitles && powGlobals.lists.subtitles.length) {
+				
+					var targetSub = powGlobals.lists.media[player.currentItem()].realName;
+					var countFinds = 0;
+					var lastFind = -1;
+					for (oio = 0; powGlobals.lists.subtitles[oio]; oio++) {
+						if (powGlobals.lists.subtitles[oio].realName == targetSub) {
+							countFinds++;
+							lastFind = oio;
+						}
+					}
+					if (countFinds == 1) {
+						utils.download('http://localhost:' + powGlobals.torrent.engine.server.address().port + '/' + powGlobals.lists.subtitles[lastFind].index, gui.App.dataPath+pathBreak+'autosub.srt', function(data) {
+							if (!data) {
+								require('fs').unlink(gui.App.dataPath+pathBreak+'autosub.srt');
+								var subPath = powGlobals.torrent.engine.path + pathBreak + powGlobals.torrent.engine.files[powGlobals.lists.subtitles[lastFind].index].path;
+								if (subPath.indexOf("/") > -1) {
+									newString = '{"'+subPath.split('/').pop()+'":"'+subPath+'"}';
+								} else {
+									newString = '{"'+subPath.split('\\').pop()+'":"'+subPath.split('\\').join('\\\\')+'"}';
+								}
+								newSettings = player.vlc.playlist.items[player.currentItem()].setting;
+								if (utils.isJsonString(newSettings)) {
+									newSettings = JSON.parse(newSettings);
+									if (newSettings.subtitles) {
+										oldString = JSON.stringify(newSettings.subtitles);
+										newString = oldString.substr(0,oldString.length -1)+","+newString.substr(1);
+									}
+								} else newSettings = {};
+								newSettings.subtitles = JSON.parse(newString);
+								player.vlc.playlist.items[player.currentItem()].setting = JSON.stringify(newSettings);
+								player.subTrack(player.subCount() - 1);
+								player.notify("Subtitle Loaded");
+							}
+						});
+					}
+				}
 			}
 			if (remote.port && remote.secret && remote.socket) remote.socket.emit('event', { name: 'Opening' });
 			if (playerApi.waitForNext && playerApi.tempSel != player.currentItem()) {
@@ -186,6 +225,7 @@ var playerApi = {
 			if (powGlobals.lists.currentIndex != player.currentItem() && !playerApi.waitForNext) {
 				if (dlna.castData.casting) dlna.stop();
 				if (player.vlc.playlist.items[player.currentItem()].mrl.indexOf("pow://") == 0 || player.vlc.playlist.items[player.currentItem()].mrl.indexOf("magnet:?xt=urn:btih:") == 0) {
+
 					if (playerApi.savedPlaylists) {
 						if (playerApi.lastPlaylist) delete playerApi.lastPlaylist;
 						playerApi.savedPlaylists.forEach(function(el,ij) {

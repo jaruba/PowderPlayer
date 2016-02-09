@@ -323,6 +323,7 @@ var ui = {
 			if (torrent.timers.setDownload) clearTimeout(torrent.timers.setDownload);
 			playerApi.savedHistory = false;
 			if (typeof nextTorrent === 'undefined') {
+				playerApi.waitForNext = false;
 				correctPlaylist = {};
 				ctxMenu.disable();
 				$("#inner-in-content").animate({ scrollTop: 0 }, 0);
@@ -583,6 +584,12 @@ $("#zoom-level-default").on('change', function() {
 });
 
 $("#zoom-level-default").val(localStorage.zoomLevel);
+
+$("#torrent-sub").on('change', function() {
+	localStorage.torrentSubs = this.value;
+});
+
+$("#torrent-sub").val(localStorage.torrentSubs);
 
 if (localStorage.useVLC == "1") {
 	$('#use-player').val('VLC');

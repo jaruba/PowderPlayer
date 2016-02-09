@@ -5,7 +5,8 @@ var powGlobals = {
 		lists: {
 			files: [],
 			media: [],
-			indexes: []
+			indexes: [],
+			subtitles: []
 		}
 	},
 	isWin = /^win/.test(process.platform),
@@ -45,6 +46,7 @@ if (!localStorage.noSubs) localStorage.noSubs = "0";
 if (!localStorage.subSizeDefault) localStorage.subSizeDefault = "1";
 if (!localStorage.zoomLevel) localStorage.zoomLevel = "0";
 if (!localStorage.subColor) localStorage.subColor = "#fff";
+if (!localStorage.torrentSubs) localStorage.torrentSubs = "true";
 if (!localStorage.history) {
 	dummyObject = {};
 	localStorage.history = JSON.stringify(dummyObject);
