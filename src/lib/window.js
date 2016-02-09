@@ -140,6 +140,9 @@ var win = {
 		
 		resizeInBounds: function(newWidth,newHeight) {
 			
+			// don't resize if zoom level is not the default value
+			if (localStorage.zoomLevel != "0") return;
+			
 			scr = win.findScreen();
 			
 			if (scr) {
@@ -522,6 +525,13 @@ if (gui.App.argv.length > 0) {
 } else win.gui.show();
 
 // end specific to window frame
+
+if (localStorage.zoomLevel != "0") {
+	var tWidth = win.gui.width;
+	var tHeight = win.gui.height;
+	win.gui.zoomLevel = parseFloat(localStorage.zoomLevel);
+	win.gui.resizeTo(Math.floor(tWidth + (tWidth * parseFloat(localStorage.zoomLevel) * 0.25)) , Math.floor(tHeight + (tHeight * parseFloat(localStorage.zoomLevel) * 0.25)));
+}
 
 //win.gui.showDevTools();
 win.title.helpers.init();
