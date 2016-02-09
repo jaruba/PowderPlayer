@@ -326,6 +326,7 @@ var ui = {
 				correctPlaylist = {};
 				ctxMenu.disable();
 				$("#inner-in-content").animate({ scrollTop: 0 }, 0);
+				torrent.parsed = {};
 				player.setOpeningText("Stopping");
 				player.fullscreen(false);
 				$("#header_container").css("display","none");

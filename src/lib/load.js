@@ -147,10 +147,25 @@ var load = {
 					
 					readTorrent(utils.validateUrl(torLink), function(err, data) {
 						
+						var trackers = '';
+						
+						if (data) {
+							
+							if (data.name)
+								trackers += '&dn=' + data.name.toLowerCase().split(' ').join('+');
+						
+							if (data.announce && data.announce.length)
+								for (ldf = 0; data.announce[ldf]; ldf++)
+									trackers += '&tr=' + encodeURIComponent(data.announce[ldf]);
+	
+						}
+						
 						var set = {
-							url: "pow://"+data.infoHash,
+							url: "pow://" + data.infoHash + trackers,
 							title: utils.parser(data.name).name()
 						};
+						
+						torrent.parsed[data.infoHash] = data;
 	
 						player.addPlaylist(set);
 		
@@ -172,12 +187,25 @@ var load = {
 		fileArray.forEach(function(el) {
 			if (utils.parser(el).extension() == 'torrent') {
 				var readTorrent = require('read-torrent');
-					
 				readTorrent(el, function(err, data) {
+					var trackers = '';
+					
+					if (data) {
+						
+						if (data.name)
+							trackers += '&dn=' + data.name.toLowerCase().split(' ').join('+');
+					
+						if (data.announce && data.announce.length)
+							for (ldf = 0; data.announce[ldf]; ldf++)
+								trackers += '&tr=' + encodeURIComponent(data.announce[ldf]);
+
+					}
+					
 					var set = {
-						url: "pow://"+data.infoHash,
+						url: "pow://" + data.infoHash + trackers,
 						title: utils.parser(data.name).name()
 					};
+					torrent.parsed[data.infoHash] = data;
 					set = load.pushArgs(set);
 					player.addPlaylist(set);
 				});
@@ -245,9 +273,10 @@ var load = {
 	dropped: function(devFiles) {
 		var newFiles = [];
 		for (var i = 0; i < devFiles.length; ++i) {
-			if (fs.lstatSync(devFiles[i].path).isDirectory()) {
+			if (fs.lstatSync(devFiles[i].path).isDirectory())
 				load.directory(devFiles[i].path);
-			} else newFiles.push(devFiles[i].path);
+			else
+				newFiles.push(devFiles[i].path);
 		}
 		if (newFiles.length) load.multiple(newFiles);
 	},

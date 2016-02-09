@@ -203,6 +203,8 @@ var playerApi = {
 					
 					if (player.vlc.playlist.items[player.currentItem()].mrl.indexOf("pow://") == 0) {
 						nextTorrent = "magnet:?xt=urn:btih:"+player.vlc.playlist.items[player.currentItem()].mrl.replace("pow://","");
+						var infoHash = player.vlc.playlist.items[player.currentItem()].mrl.replace("pow://","");
+						if (infoHash.indexOf('&') > -1) infoHash = infoHash.substr(0, infoHash.indexOf('&'));
 						if (nextTorrent.indexOf("/") > -1 && isNaN(nextTorrent.split("/")[1]) === false) {
 							nextTorrent = nextTorrent.split("/")[0];
 						}
@@ -214,7 +216,12 @@ var playerApi = {
 						}
 					}
 					player.setDownloaded(0);
-					ui.goto.mainMenu(nextTorrent);
+
+					if (infoHash && torrent.parsed[infoHash])
+						ui.goto.mainMenu(torrent.parsed[infoHash]);
+					else
+						ui.goto.mainMenu(nextTorrent);
+					
 					return;
 				} else {
 					win.title.left(player.itemDesc(player.currentItem()).title);

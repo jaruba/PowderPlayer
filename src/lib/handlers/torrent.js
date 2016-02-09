@@ -8,6 +8,7 @@ var torrent = {
 	pauseCache: false,
 	updatePeers: -1,
 	lastPeerUpdate: 0,
+	parsed: {},
 	
 	queues: {
 		pieces: 0,
@@ -783,7 +784,7 @@ var torrent = {
 						else dlna.play(playerApi.nextPlay);
 					}
 				} else {
-					if (powGlobals.torrent.hasVideo > 1) player.playItem(nextPlay);
+					if (powGlobals.torrent.hasVideo > 1) player.playItem(playerApi.nextPlay);
 					else {
 						if (playerApi.waitForNext && playerApi.tempSel > -1) player.playItem(playerApi.tempSel);
 						else player.playItem(playerApi.nextPlay);
