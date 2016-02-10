@@ -242,7 +242,7 @@ var ctxMenu = {
 		player.zoom(newZoom);
 	},
 	
-	refresh: function() {
+	refreshAudioMenu: function() {
 		this._audioMenu = new gui.Menu();
 		saveCtx = this;
 		for (i = 0; i < player.audioCount(); i++) {
@@ -251,7 +251,11 @@ var ctxMenu = {
 				type: 'checkbox',
 				click: function(newAudio) { return function(event) { saveCtx.selectAudio(newAudio); } }(i)
 			};
-			if (i == 1) mnOpts.checked = true;
+			if (player.vlc.audio.track > 1) {
+				if (i == player.vlc.audio.track) mnOpts.checked = true;
+			} else {
+				if (i == 1) mnOpts.checked = true;
+			}
 			this._audioMenu.append(new gui.MenuItem(mnOpts));
 		}
 		this.playerMenu.items[2].submenu = this._audioMenu;
@@ -261,6 +265,10 @@ var ctxMenu = {
 		
 		this.playerMenu.removeAt(2);
 		this.playerMenu.insert(audioMenuBackup,2);
+	},
+	
+	refresh: function() {
+		this.refreshAudioMenu();
 
 		this.playerMenu.items[3].enabled = true;
 	

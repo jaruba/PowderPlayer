@@ -1,6 +1,8 @@
 
 var playerApi = {
 	
+	cache: {},
+	
 	supportedTypes: ["mkv", "avi", "mp4", "mpg", "mpeg", "webm", "flv", "ogg", "ogv", "mov", "wmv", "3gp", "3g2", "m4a", "mp3", "flac"],
 	supportedVideos: ["mkv", "avi", "mp4", "mpg", "mpeg", "webm", "flv", "ogg", "ogv", "mov", "wmv", "3gp", "3g2"],
 	supportedAudio: ["m4a", "mp3", "flac"],

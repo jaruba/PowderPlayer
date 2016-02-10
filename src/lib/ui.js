@@ -324,6 +324,7 @@ var ui = {
 			playerApi.savedHistory = false;
 			if (typeof nextTorrent === 'undefined') {
 				playerApi.waitForNext = false;
+				playerApi.cache = {};
 				correctPlaylist = {};
 				ctxMenu.disable();
 				$("#inner-in-content").animate({ scrollTop: 0 }, 0);
