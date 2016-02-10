@@ -63,7 +63,7 @@ $('#fileDialog').change(function(evt) {
 
 $('#subtitleDialog').change(function(evt) {
 	  var targetSub = $(this).val();
-	  if (["sub","srt","vtt"].indexOf(utils.parser(targetSub).extension()) > -1) {
+	  if (["sub","srt","vtt","gz"].indexOf(utils.parser(targetSub).extension()) > -1) {
 		newString = '{"'+utils.parser(targetSub).filename()+'":"';
 		if (targetSub.indexOf("/") > -1) newString += targetSub+'"}';
 		else newString += targetSub.split('\\').join('\\\\')+'"}';
@@ -79,6 +79,26 @@ $('#subtitleDialog').change(function(evt) {
 		player.vlc.playlist.items[player.currentItem()].setting = JSON.stringify(newSettings);
 		player.subTrack(player.subCount()-1);
 		player.notify("Subtitle Loaded");
+	  } else if (["zip"].indexOf(utils.parser(targetSub).extension()) > -1) {
+		require('subtitles-grouping/lib/retriever').retrieveSrt(targetSub,function(err,res,subnm) {
+			if (subnm) {
+				newString = '{"'+subnm.replace(/\.[^/.]+$/, "")+'":"';
+				if (targetSub.indexOf("/") > -1) newString += targetSub+'"}';
+				else newString += targetSub.split('\\').join('\\\\')+'"}';
+				newSettings = player.vlc.playlist.items[player.currentItem()].setting;
+				if (utils.isJsonString(newSettings)) {
+					newSettings = JSON.parse(newSettings);
+					if (newSettings.subtitles) {
+						oldString = JSON.stringify(newSettings.subtitles);
+						newString = oldString.substr(0,oldString.length -1)+","+newString.substr(1);
+					}
+				} else newSettings = {};
+				newSettings.subtitles = JSON.parse(newString);
+				player.vlc.playlist.items[player.currentItem()].setting = JSON.stringify(newSettings);
+				player.subTrack(player.subCount()-1);
+				player.notify("Subtitle Loaded");
+			}
+	    },{ charset: window.localStorage.subEncoding });
 	  } else {
 		  player.notify("Subtitle Unsupported");
 	  }
