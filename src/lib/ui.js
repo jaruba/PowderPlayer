@@ -102,6 +102,12 @@ var ui = {
 
 	settings: {
 		
+		clearHistory: function() {
+			$(".history-close").trigger('click');
+			localStorage.history = "{}";
+			$(".history-button").trigger('click');
+		},
+		
 		changeClickPause: function() {
 			if (localStorage.clickPause == 'fullscreen') {
 				$("#click-pause").text("Fullscreen + Windowed");

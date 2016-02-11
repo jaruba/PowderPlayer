@@ -321,6 +321,7 @@ a.history-button {
 a.history-button.hover { color: #FFA741 }
 i.history-icon:before { font-family: 'Glyphs'; content: "\E806"; font-style: normal }
 i.close-icon:before { font-family: 'Glyphs'; content: "\E896"; font-style: normal }
+i.trash-icon:before { font-family: 'Glyphs'; content: "\E80F"; font-style: normal }
 .actionButton {
 	width: 100%;
 	height: 43px;
@@ -493,10 +494,15 @@ input[type="file"] { display: none }
 .pure-margin { margin-top: 10px !important }
 .spBottom { margin-bottom: 10px }
 .modal-title {
-	width: 82%;
+	width: 68%;
 	background: #1C728A;
 	text-align: left;
 	padding-left: 12px
+}
+.trash-hold {
+	width: 25px;
+	text-align: center;
+	padding: 9px 14px;
 }
 .modal-close {
 	width: 8%;

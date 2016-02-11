@@ -105,7 +105,7 @@
 .mini .modal-title {
   font-size: 17px;
   margin-bottom: 0;
-  width: 85%;
+  width: 74%;
   padding-top: 6px;
   padding-bottom: 6px;
 }
@@ -120,6 +120,14 @@
 
 .mini .close-icon {
   font-size: 17px;
+}
+
+.mini .trash-hold {
+	padding: 4px 8px
+}
+
+.mini .trash-icon {
+  font-size: 19px;
 }
 
 .mini .third-easy-modal-animated {
