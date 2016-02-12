@@ -105,9 +105,13 @@
 .mini .modal-title {
   font-size: 17px;
   margin-bottom: 0;
-  width: 74%;
+  width: 84%;
   padding-top: 6px;
   padding-bottom: 6px;
+}
+
+.mini #history-title {
+  width: 74%;
 }
 
 .mini .modal-close {

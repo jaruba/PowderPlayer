@@ -293,6 +293,9 @@ var ui = {
 			modalSettings.closeButtonClass = '.history-animated-close';
 			$('.history-easy-modal-animated').easyModal(modalSettings);
 			
+			modalSettings.closeButtonClass = '.ext-player-close';
+			$('.ext-player-easy-modal-animated').easyModal(modalSettings);
+			
 			modalSettings.closeButtonClass = '.unsupported-animated-close';
 			$('.unsupported-easy-modal-animated').easyModal(modalSettings);
 
@@ -554,10 +557,58 @@ $('#buffer-sel-hov').hover(function() { }, function() {
 
 $('#use-player').on('change', function() {
 	if (this.value == "VLC") {
+		localStorage.customPlayer = '';
 		localStorage.useVLC = "1";
 		$(".internal-opt").hide(0);
-	} else if (this.value == "Internal") {
+	} else if (this.value == "Scan for Players") {
+		$('.player-setting-close').trigger('click');
+		$("#open-ext-player").trigger('click');
+		$('#use-player').val('Internal');
 		localStorage.useVLC = "0";
+		localStorage.customPlayer = '';
+		$(".internal-opt").show(0);
+		require('./lib/ext-player.js');
+	} else if (this.value == "Custom Player") {
+		chooseFile('#playerDialog');
+	    document.body.onfocus = cancelCustomPlayer;
+   	} else if (this.value == "Internal") {
+		localStorage.customPlayer = '';
+		localStorage.useVLC = "0";
+		$(".internal-opt").show(0);
+	}
+});
+
+function setCustomPlayer(customPlayer) {
+	localStorage.useVLC = "1";
+	localStorage.customPlayer = customPlayer;
+	$(".internal-opt").hide(0);
+	$('#use-player').val('Custom Player');
+	$('.ext-player-close').trigger('click');
+	$('.pl-settings').trigger('click');
+}
+
+function cancelCustomPlayer() {
+	setTimeout(function() {
+		if (!$('#playerDialog')[0].value.length) {
+			$('#use-player').val('Internal');
+			localStorage.useVLC = "0";
+			localStorage.customPlayer = '';
+			$(".internal-opt").show(0);
+		}
+	}, 100);
+	document.body.onfocus = null;
+}
+
+
+$('#playerDialog').change(function(evt) {
+	if ($(this).val()) {
+		localStorage.useVLC = "1";
+		localStorage.customPlayer = $(this).val();
+		$(".internal-opt").hide(0);
+	} else {
+		$('#use-player').val('Internal');
+		localStorage.useVLC = "0";
+		localStorage.customPlayer = '';
 		$(".internal-opt").show(0);
 	}
 });
@@ -599,8 +650,13 @@ $("#torrent-sub").on('change', function() {
 $("#torrent-sub").val(localStorage.torrentSubs);
 
 if (localStorage.useVLC == "1") {
-	$('#use-player').val('VLC');
-	$(".internal-opt").hide(0);
+	if (!localStorage.customPlayer) {
+		$('#use-player').val('VLC');
+		$(".internal-opt").hide(0);
+	} else if (localStorage.customPlayer) {
+		$('#use-player').val('Custom Player');
+		$(".internal-opt").hide(0);
+	}
 }
 
 if (localStorage.subColor == '#fff') {

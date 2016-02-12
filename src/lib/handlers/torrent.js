@@ -618,7 +618,8 @@ var torrent = {
 						sbs++;
 					}
 				});
-			} else if (utils.fs.paths.vlc()) {
+			} else if (localStorage.customPlayer || utils.fs.paths.vlc()) {
+				var playerExec = localStorage.customPlayer || utils.fs.paths.vlc();
 				var os = require('os');
 				var newM3U = "#EXTM3U";
 				powGlobals.lists.files.forEach(function(el,ij) {
@@ -629,13 +630,17 @@ var torrent = {
 					}
 				});
 				fs.exists(gui.App.dataPath+pathBreak+'vlc_playlist.m3u', function(exists) {
+					if (playerExec.indexOf('[]quote[]') == -1) playerExec += '"';
+					else {
+						playerExec = playerExec.replace('[]quote[]','"');
+					}
 					if (exists) fs.unlink(gui.App.dataPath+pathBreak+'vlc_playlist.m3u', function() {
 						fs.writeFile(gui.App.dataPath+pathBreak+'vlc_playlist.m3u', newM3U, function() {
-							require('child_process').exec('"'+utils.fs.paths.vlc()+'" "'+gui.App.dataPath+pathBreak+'vlc_playlist.m3u"');
+							require('child_process').exec('"'+playerExec+' "'+gui.App.dataPath+pathBreak+'vlc_playlist.m3u"');
 						});
 					});
 					else fs.writeFile(gui.App.dataPath+pathBreak+'vlc_playlist.m3u', newM3U, function() {
-						require('child_process').exec('"'+utils.fs.paths.vlc()+'" "'+gui.App.dataPath+pathBreak+'vlc_playlist.m3u"');
+						require('child_process').exec('"'+playerExec+' "'+gui.App.dataPath+pathBreak+'vlc_playlist.m3u"');
 					});
 					$(window).trigger('resize');
 				});

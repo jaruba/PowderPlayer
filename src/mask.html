@@ -359,11 +359,11 @@ body {
             <div id="but-assoc1" onClick="utils.register.magnet(); return false" class="actionButton droid-bold">Associate with Magnet Links</div>
             <div id="but-assoc2" onClick="utils.register.torrent(); return false" class="actionButton droid-bold">Associate with Torrent Files</div>
             <div id="but-assoc3" onClick="utils.register.videos(); return false" class="actionButton droid-bold">Associate with Video Files</div>
-            <div id="but-vlc" class="actionButton wrap-text"><span class="droid-bold">Video Player: <select id="use-player"><option>Internal</option><option>VLC</option></select></span></div>
+            <div id="but-zoom-level" class="actionButton wrap-text"><span class="droid-bold">UI Zoom Level: <select id="zoom-level-default"><option selected>0</option><option>0.5</option><option selected>1.0</option><option>1.5</option><option>2.0</option><option>2.5</option><option>3.0</option><option>3.5</option><option>4.0</option></select></span></div>
+            <div id="but-vlc" class="actionButton wrap-text"><span class="droid-bold">Video Player: <select id="use-player"><option>Internal</option><option>VLC</option><option>Scan for Players</option><option>Custom Player</option></select></span></div>
             <div onClick="ui.settings.changeClickPause(); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold">Click to Pause:</span> <span id="click-pause">only in Fullscreen</span></div>
             <div onClick="chooseFile('#libraryDialog'); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold">Library Folder:</span> <span id="lib-folder">Temp</span></div>
-            <div id="but-zoom-level" class="actionButton wrap-text"><span class="droid-bold">UI Zoom Level: <select id="zoom-level-default"><option selected>0</option><option>0.5</option><option selected>1</option><option>1.5</option><option>2</option><option>2.5</option><option>3</option><option>3.5</option><option>4</option></select></span></div>
-            <div id="closeAction" class="third-animated-close actionButton" style="font-family: 'Droid Sans Bold' !important;font-weight: bold">Close Menu</div>
+            <div id="closeAction" class="third-animated-close actionButton player-setting-close" style="font-family: 'Droid Sans Bold' !important;font-weight: bold">Close Menu</div>
         </center>
     </div>
     
@@ -426,6 +426,15 @@ body {
         <div class="clear"></div>
         <div id="history-list" class="modal-list"></div>
     </div>
+
+    <div class="ext-player-easy-modal-animated modal-holder" id="ext-player-powder">
+        <h2 id="ext-player-title" class="goLeft modal-title">External Players</h2>
+        <h2 class="change-set goRight ext-player-close modal-close" style="margin-left: 6px"><i class="close-icon"></i></h2>
+        <div class="clear"></div>
+        <span id="ext-player-announce" style="font-weight: bold; padding: 10px; display: block; font-size: 15px; text-align: center">Scanning for Local Video Players ...<br><br>May take up to 10 seconds.</span>
+        <span id="ext-player-error" style="font-weight: bold; padding: 10px; display: none; font-size: 15px; text-align: center">An error occured, sorry.</span>
+        <div id="ext-player-list" class="modal-list" style="display: none"></div>
+    </div>
     
     <div class="unsupported-easy-modal-animated" id="unsupported">
         <center>
@@ -460,13 +469,15 @@ body {
     <input id="torrentDialog" type="file" accept=".torrent" multiple />
     <input id="folderDialog" type="file" nwdirectory />
     <input id="libraryDialog" type="file" nwdirectory />
+    <input id="playerDialog" type="file" />
     <input id="export_file" type="file" nwsaveas="snapshot.jpg" style="display:none" nwworkingdir=""/>
     
     <a id="tr-settings" class="easy-modal-open" href="#torrent-settings">Torrent Settings</a>
     <a id="sub-settings" class="easy-modal-open" href="#subtitle-settings" style="display: none">Subtitle Settings</a>
-    <a id="plugin-list" class="easy-modal-open" href="#plugins-settings">Torrent Settings</a>
+    <a id="plugin-list" class="easy-modal-open" href="#plugins-settings">Plugins Settings</a>
     <a id="open-file-settings" class="easy-modal-open" href="#file-settings">File Settings</a>
     <a id="open-unsupported" class="easy-modal-open" href="#unsupported">Unsupported Media Error</a>
+    <a id="open-ext-player" class="easy-modal-open" href="#ext-player-powder" style="display:none">Scan for Players</a>
     
           </div>
       </div>

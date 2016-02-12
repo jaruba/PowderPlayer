@@ -494,10 +494,13 @@ input[type="file"] { display: none }
 .pure-margin { margin-top: 10px !important }
 .spBottom { margin-bottom: 10px }
 .modal-title {
-	width: 68%;
+	width: 81%;
 	background: #1C728A;
 	text-align: left;
 	padding-left: 12px
+}
+#history-title {
+	width: 68%;
 }
 .trash-hold {
 	width: 25px;

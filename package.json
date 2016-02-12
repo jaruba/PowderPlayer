@@ -50,7 +50,8 @@
         "net": "*",
         "valid-url": "*",
         "rimraf": "*",
-        "adm-zip": "*"
+        "adm-zip": "*",
+        "readdirp": "^2.0.0"
     },
     "optionalDependencies": {
         "node-windows": "*",

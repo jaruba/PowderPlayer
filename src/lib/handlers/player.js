@@ -3,8 +3,8 @@ var playerApi = {
 	
 	cache: {},
 	
-	supportedTypes: ["mkv", "avi", "mp4", "mpg", "mpeg", "webm", "flv", "ogg", "ogv", "mov", "wmv", "3gp", "3g2", "m4a", "mp3", "flac"],
-	supportedVideos: ["mkv", "avi", "mp4", "mpg", "mpeg", "webm", "flv", "ogg", "ogv", "mov", "wmv", "3gp", "3g2"],
+	supportedTypes: ["mkv", "avi", "mp4", "mpg", "mpeg", "webm", "flv", "ogg", "ogv", "mov", "wmv", "3gp", "3g2", "m4v", "m4a", "mp3", "flac"],
+	supportedVideos: ["mkv", "avi", "mp4", "mpg", "mpeg", "webm", "flv", "ogg", "ogv", "mov", "wmv", "3gp", "3g2", "m4v"],
 	supportedAudio: ["m4a", "mp3", "flac"],
 	supportedSubs: ["srt", "sub", "vtt"],
 	supportedLinks: ["youtube.com","video.google.com",".googlevideo.com","vimeo.com","dailymotion.com","dailymotion.co.uk","bbc.co.uk","trailers.apple.com","break.com","canalplus.fr","extreme.com","france2.fr","jamendo.com","koreus.com","lelombrik.net","liveleak.com","metacafe.com","mpora.com","pinkbike.com","pluzz.francetv.fr","rockbox.org","soundcloud.com","zapiks.com","metachannels.com","joox.com"],
@@ -20,6 +20,7 @@ var playerApi = {
 	nextPlay: 0,
 	tempSel: -1,
 	events: new utils.eventMod.EventEmitter(),
+	fixPlaylist: false,
 	
 	init: function() {
 		setTimeout(function() {
@@ -328,7 +329,7 @@ var playerApi = {
 					}
 				} else {
 					if (player.vlc && !load.argData.dlna) player.setOpeningText("Loading resource");
-					if (player.currentItem() > -1 && powGlobals.lists.media) {
+					if (player.currentItem() > -1 && powGlobals.lists.media && powGlobals.lists.media[player.currentItem()]) {
 		//				if (!playerApi.isYoutube(player.currentItem())) {
 		//					win.gui.title = new parser(powGlobals.lists.media[player.currentItem()].filename).name(); // if not youtube, set window title
 		//				}
@@ -385,8 +386,27 @@ var playerApi = {
 			if (player.state() != playerApi.lastState) {
 				if (remote.port && remote.secret && remote.socket) remote.socket.emit('event', { name: 'State', value: player.state() });
 		
+				if (playerApi.fixPlaylist && ["opening","idle"].indexOf(player.state()) > -1) {
+					playerApi.fixPlaylist = false;
+					setTimeout(function() {
+						var targetCount = player.itemCount() / 2;
+						player.playItem(0);
+						for (uss = 0; uss < targetCount; uss++) {
+							player.vlc.playlist.removeItem(targetCount);
+						}
+						if (targetCount > 1) {
+							$('#player_wrapper').find(".wcp-prev").show(0);
+							$('#player_wrapper').find(".wcp-next").show(0);
+						}
+						ctxMenu.refresh();
+					},100);
+				}
 				// detect unsupported media types
-				if ((["opening","playing",""].indexOf(playerApi.lastState) > -1) && (player.state() == "ended" && player.itemCount() == 1 && playerApi.firstTimeEver) && (!playerApi.isYoutube(player.currentItem()))) {
+				if ((["opening","playing",""].indexOf(playerApi.lastState) > -1) && (player.state() == "ended" && player.itemCount() == 1 && playerApi.firstTimeEver) && !playerApi.isYoutube(player.currentItem())) {
+					if (player.currentItem() == 0 && player.itemDesc(0).mrl.split('.').pop() == 'm3u') {
+						playerApi.fixPlaylist = true;
+						return;
+					}
 					ui.goto.mainMenu();
 					$("#open-unsupported").trigger("click");
 				}
