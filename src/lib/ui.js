@@ -556,16 +556,19 @@ $('#buffer-sel-hov').hover(function() { }, function() {
 });
 
 $('#use-player').on('change', function() {
+	localStorage.playerCmdArgs = '';
 	if (this.value == "VLC") {
 		localStorage.customPlayer = '';
 		localStorage.useVLC = "1";
 		$(".internal-opt").hide(0);
+		$(".external-opt").show(0);
 	} else if (this.value == "Scan for Players") {
 		$('.player-setting-close').trigger('click');
 		$("#open-ext-player").trigger('click');
 		$('#use-player').val('Internal');
 		localStorage.useVLC = "0";
 		localStorage.customPlayer = '';
+		$(".external-opt").hide(0);
 		$(".internal-opt").show(0);
 		require('./lib/ext-player.js');
 	} else if (this.value == "Custom Player") {
@@ -574,14 +577,17 @@ $('#use-player').on('change', function() {
    	} else if (this.value == "Internal") {
 		localStorage.customPlayer = '';
 		localStorage.useVLC = "0";
+		$(".external-opt").hide(0);
 		$(".internal-opt").show(0);
 	}
 });
 
 function setCustomPlayer(customPlayer) {
+	localStorage.playerCmdArgs = '';
 	localStorage.useVLC = "1";
 	localStorage.customPlayer = customPlayer;
 	$(".internal-opt").hide(0);
+	$(".external-opt").show(0);
 	$('#use-player').val('Custom Player');
 	$('.ext-player-close').trigger('click');
 	$('.pl-settings').trigger('click');
@@ -593,6 +599,7 @@ function cancelCustomPlayer() {
 			$('#use-player').val('Internal');
 			localStorage.useVLC = "0";
 			localStorage.customPlayer = '';
+			$(".external-opt").hide(0);
 			$(".internal-opt").show(0);
 		}
 	}, 100);
@@ -601,14 +608,17 @@ function cancelCustomPlayer() {
 
 
 $('#playerDialog').change(function(evt) {
+	localStorage.playerCmdArgs = '';
 	if ($(this).val()) {
 		localStorage.useVLC = "1";
 		localStorage.customPlayer = $(this).val();
 		$(".internal-opt").hide(0);
+		$(".external-opt").show(0);
 	} else {
 		$('#use-player').val('Internal');
 		localStorage.useVLC = "0";
 		localStorage.customPlayer = '';
+		$(".external-opt").hide(0);
 		$(".internal-opt").show(0);
 	}
 });
@@ -653,11 +663,19 @@ if (localStorage.useVLC == "1") {
 	if (!localStorage.customPlayer) {
 		$('#use-player').val('VLC');
 		$(".internal-opt").hide(0);
+		$(".external-opt").show(0);
 	} else if (localStorage.customPlayer) {
 		$('#use-player').val('Custom Player');
 		$(".internal-opt").hide(0);
+		$(".external-opt").show(0);
 	}
 }
+
+$('#cmd-args-form').on('submit', function(e) {
+	e.preventDefault();
+	localStorage.playerCmdArgs = $("#cmd-args-input").val();
+	$('#cmd-args-close').trigger('click');
+});
 
 if (localStorage.subColor == '#fff') {
 	$("#sub-default-color").val('White');

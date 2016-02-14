@@ -60,6 +60,10 @@
   width: 281px;
 }
 
+.mini #cmd-args-input {
+  width: 294px
+}
+
 .mini .fl_dd {
   font-size: 30px;
 }

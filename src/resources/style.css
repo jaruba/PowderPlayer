@@ -69,6 +69,7 @@ body {
 }
 #magnetForm { height: 47px }
 #magnetLink { width:300px }
+#cmd-args-input { width: 314px; margin-right: 5px }
 #magnetSubmit { position: relative; top: 1px; left: 8px }
 #holder {
   border: 3px dashed #ccc;

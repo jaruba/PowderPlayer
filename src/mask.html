@@ -337,6 +337,22 @@ body {
             </center>
         </div>
     </div>
+
+    <div class="easy-modal-animated" id="set-cmd-args">
+        <div id="holdCenter">
+                <div id="formHolder">
+                    <form class="pure-form pure-form-aligned" id="cmd-args-form">
+                        <fieldset>
+                            <div class="pure-control-group">
+                                <input id="cmd-args-input" type="text" name="magnet" placeholder="Custom Player Command Line Arguments" onFocus="this.select();" onMouseUp="return false;">
+                                <button id="cmd-args-submit" type="submit" class="pure-button pure-button-primary">Save</button>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+        </div>
+        <button id="cmd-args-close" class="animated-close pure-button pure-margin" title="Close">Close</button>
+    </div>
     
     <div class="second-easy-modal-animated" id="file-settings">
         <center>
@@ -363,6 +379,7 @@ body {
             <div id="but-vlc" class="actionButton wrap-text"><span class="droid-bold">Video Player: <select id="use-player"><option>Internal</option><option>VLC</option><option>Scan for Players</option><option>Custom Player</option></select></span></div>
             <div onClick="ui.settings.changeClickPause(); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold">Click to Pause:</span> <span id="click-pause">only in Fullscreen</span></div>
             <div onClick="chooseFile('#libraryDialog'); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold">Library Folder:</span> <span id="lib-folder">Temp</span></div>
+            <div onClick="$('#open-set-cmd-args').trigger('click'); $('#cmd-args-input').val(localStorage.playerCmdArgs); $('#cmd-args-input').focus(); return false" class="external-opt actionButton wrap-text" style="display:none"><span class="droid-bold">Set Command Line Arguments</span></div>
             <div id="closeAction" class="third-animated-close actionButton player-setting-close" style="font-family: 'Droid Sans Bold' !important;font-weight: bold">Close Menu</div>
         </center>
     </div>
@@ -478,6 +495,7 @@ body {
     <a id="open-file-settings" class="easy-modal-open" href="#file-settings">File Settings</a>
     <a id="open-unsupported" class="easy-modal-open" href="#unsupported">Unsupported Media Error</a>
     <a id="open-ext-player" class="easy-modal-open" href="#ext-player-powder" style="display:none">Scan for Players</a>
+    <a id="open-set-cmd-args" class="easy-modal-open" href="#set-cmd-args" style="display:none">Set Cmd Args</a>
     
           </div>
       </div>

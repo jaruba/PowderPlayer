@@ -634,13 +634,17 @@ var torrent = {
 					else {
 						playerExec = playerExec.replace('[]quote[]','"');
 					}
+					var playerCmdArgs = '';
+					if (localStorage.playerCmdArgs) {
+						playerCmdArgs = ' '+localStorage.playerCmdArgs;
+					}
 					if (exists) fs.unlink(gui.App.dataPath+pathBreak+'vlc_playlist.m3u', function() {
 						fs.writeFile(gui.App.dataPath+pathBreak+'vlc_playlist.m3u', newM3U, function() {
-							require('child_process').exec('"'+playerExec+' "'+gui.App.dataPath+pathBreak+'vlc_playlist.m3u"');
+							require('child_process').exec('"'+playerExec+' "'+gui.App.dataPath+pathBreak+'vlc_playlist.m3u"'+playerCmdArgs);
 						});
 					});
 					else fs.writeFile(gui.App.dataPath+pathBreak+'vlc_playlist.m3u', newM3U, function() {
-						require('child_process').exec('"'+playerExec+' "'+gui.App.dataPath+pathBreak+'vlc_playlist.m3u"');
+						require('child_process').exec('"'+playerExec+' "'+gui.App.dataPath+pathBreak+'vlc_playlist.m3u"'+playerCmdArgs);
 					});
 					$(window).trigger('resize');
 				});
