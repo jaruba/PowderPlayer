@@ -59,7 +59,8 @@ var subtitles = {
 					extensions: ['srt','sub','vtt'],
 					hash: hash,
 					size: fileSize,
-					filename: powGlobals.current.filename
+					filename: powGlobals.current.filename,
+					limit: 'all'
 				};
 				
 				if (utils.parser(powGlobals.current.filename).shortSzEp()) {
@@ -90,10 +91,26 @@ var subtitles = {
 						});
 						newString = '{ ';
 						async.forEachOf(subData, function (item, ij, callback){
-							var vrf = item.url.substr(item.url.indexOf('vrf-'));
-							vrf = vrf.substr(0,vrf.indexOf('/'));
-							newString += '"'+item.langName+'": "http://dl.opensubtitles.org/en/download/subencoding-utf8/'+vrf+'/file/'+item.url.split('/').pop()+'", ';
-							callback();
+							if (item[0]) {
+								async.forEachOf(item, function (itemArr, ijArr, callbackArr){
+									var vrf = itemArr.url.substr(itemArr.url.indexOf('vrf-'));
+									vrf = vrf.substr(0,vrf.indexOf('/'));
+									if (ijArr == 0) {
+										newString += '"'+itemArr.langName+'": "http://dl.opensubtitles.org/en/download/subencoding-utf8/'+vrf+'/file/'+itemArr.url.split('/').pop()+'", ';
+									} else {
+										newString += '"[hid]'+itemArr.langName+' '+(ijArr+1)+'": "http://dl.opensubtitles.org/en/download/subencoding-utf8/'+vrf+'/file/'+itemArr.url.split('/').pop()+'", ';
+									}
+									callbackArr();
+								}, function(err) {
+									callback();
+								});
+								
+							} else {
+								var vrf = item.url.substr(item.url.indexOf('vrf-'));
+								vrf = vrf.substr(0,vrf.indexOf('/'));
+								newString += '"'+item.langName+'": "http://dl.opensubtitles.org/en/download/subencoding-utf8/'+vrf+'/file/'+item.url.split('/').pop()+'", ';
+								callback();
+							}
 						}, function(err) {
 							newString = newString.substr(0,newString.length -2)+" }";
 							if (player.itemCount() > 0) {
@@ -113,6 +130,7 @@ var subtitles = {
 									if (!dlna.initiated) {
 										subtitles.updateSub();
 										player.wrapper.find(".wcp-subtitle-but").show(0);
+										player.wrapper.find(".wcp-show-subtitles").show(0);
 										if (player.fullscreen()) player.notify('<i class="wcp-subtitle-icon-big"></i>');
 										else player.notify('<i class="wcp-subtitle-icon"></i>');
 									}
