@@ -81,6 +81,7 @@
 
 .wcjs-player .header.show{
     opacity: 1;
+    transition: none;
 }
 
 .wcjs-player .header .player-close {
@@ -206,6 +207,7 @@
 }
 .wcjs-player .control-bar.show{
     opacity: 1;
+    transition: none;
 }
 
 .wcjs-player .control-bar .scrobbler-padding {
@@ -293,7 +295,7 @@
     position: absolute !important;
     top: 47%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%) !important;
     width: 100% !important;
     padding: 12px;
     
@@ -311,20 +313,17 @@
 
 .wcjs-player .control-bar .subtitles-toggle {
     position: absolute !important;
-    top: 53%;
-    right: 18px;
+    top: 16%;
+    right: 42px;
     transform: translate(-50%, -50%);
     padding-top: 10px !important;
 }
 
 .wcjs-player .control-bar .fullscreen-toggle {
     padding-top: 9px !important;
-}
-
-.wcjs-player .control-bar .fullscreen-toggle {
     position: absolute !important;
-    top: 52%;
-    right: -21px;
+    top: 16%;
+    right: 3px;
     transform: translate(-50%, -50%);
 }
 

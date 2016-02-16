@@ -1084,7 +1084,7 @@ default React.createClass({
             })
             
             renderSettings.push(
-                <Tab key={klm + 1000} label={ij} style={{height: '100%'}}>
+                <Tab key={klm + 1000} label={ij} style={{height: '100%', textTransform: 'none', padding: '14px 12px'}}>
                     <div className="playlist-inner" style={{maxWidth: '700px', maxHeight: 'calc(100% - 130px)'}}>
                         {indents[ij]}
                     </div>
