@@ -2,7 +2,7 @@
     "name": "powder-player",
     "description": "Hybrid between a Torrent Client and a Player",
     "main": "app://powder/src/mask.html",
-    "version": "0.9.6",
+    "version": "0.9.7",
     "author": "Branza Victor-Alexandru <branza.alex@gmail.com>",
     "homepage": "http://powder.media/",
     "license": "LGPL-2.1",
