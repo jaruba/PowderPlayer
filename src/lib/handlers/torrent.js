@@ -43,78 +43,8 @@ var torrent = {
 
 
 	},
-	
-	cachePiece: async.queue(function(task, cb) {
 		
-		if (!powGlobals.torrent.engine || !powGlobals.lists.files[task.index]) {
-			torrent.queues.pieces--;
-			cb();
-			return;
-		}
-		
-		if (playerApi.tempSel > -1) _currentItem = playerApi.tempSel;
-		else _currentItem = player.currentItem();
-		
-		if (powGlobals.lists.files[task.index].lastDownload && powGlobals.lists.files[task.index].lastDownload >= 100) {
-			if (powGlobals.lists.files[task.index].parts.length > 1) {
-				powGlobals.lists.files[task.index].parts = [powGlobals.lists.files[task.index].pieces.first,powGlobals.lists.files[task.index].pieces.last];
-				if (typeof powGlobals.lists.files[task.index].vIndex !== 'undefined' && powGlobals.lists.files[task.index].vIndex == _currentItem) {
-					powGlobals.current.playingPart = 0;
-				}
-			}
-			torrent.queues.pieces--;
-			cb();
-			return;
-		}
-		
-		async.someOf(powGlobals.lists.files[task.index].parts,function(ind,spc,curItem) {
-			return function(el,ij,callback) {
-				if (el[0] -1 == spc) {
-					if (powGlobals.lists.files[ind].parts[ij-1] && powGlobals.lists.files[ind].parts[ij-1][1] +1 == spc) {
-						powGlobals.lists.files[ind].parts.splice((ij-1),2,[powGlobals.lists.files[ind].parts[ij-1][0],el[1]]);
-					} else powGlobals.lists.files[ind].parts[ij][0] = spc;
-				} else if (el[1] +1 == spc) {
-					if (powGlobals.lists.files[ind].parts[ij+1] && powGlobals.lists.files[ind].parts[ij+1][0] -1 == spc) {
-						powGlobals.lists.files[ind].parts.splice(ij,2,[el[0],powGlobals.lists.files[ind].parts[ij+1][1]]);
-					} else powGlobals.lists.files[ind].parts[ij][1] = spc;
-				} else if (el[0] > spc) {
-					powGlobals.lists.files[ind].parts.splice(ij,0,[spc,spc]);
-				} else {
-					callback(false);
-					return;
-				}
-
-				if (typeof powGlobals.lists.files[ind].vIndex !== 'undefined' && powGlobals.lists.files[ind].vIndex == curItem) {
-			
-					if (player.state() == 'stopping' && dlna.castData.casting == 1) {
-						playerPos = $(".wcp-progress-seen").width()/100;
-					} else {
-						playerPos = player.position();
-					}
-
-					targetPos = Math.floor(((powGlobals.current.lastPiece - powGlobals.current.firstPiece) * playerPos) + powGlobals.current.firstPiece);
-					if ((targetPos >= el[0] && targetPos <= el[1]) || (powGlobals.lists.files[ind].parts[ij-1] && targetPos > powGlobals.lists.files[ind].parts[ij-1][1] && targetPos < el[0])) {
-						powGlobals.current.playingPart = ij;
-					}
-				}
-				
-				callback(true);
-			}
-		}(task.index, task.piece, _currentItem),function(ind,spc,queueCb) {
-			return function(truthy) {
-				if (!truthy) {
-					powGlobals.lists.files[ind].parts.push([spc,spc]);
-				}
-				setTimeout(function() {
-					torrent.queues.pieces--;
-					queueCb();
-				}, powGlobals.torrent.hasVideo > 0 ? torrent.queues.pieces > 100 ? 50 : torrent.queues.pieces * 30 > 200 ? 200 : torrent.queues.pieces * 30 : 0);
-			}
-		}(task.index,task.piece,cb));
-
-	}, 1),
-	
-	showCache: function() {
+	showCache: function(tarPiece) {
 		
 		if (!dlna.instance.initiated) {
 			if (this.pauseCache) return;
@@ -131,39 +61,47 @@ var torrent = {
 		if (powGlobals.lists.media[_currentItem] && powGlobals.lists.files[powGlobals.lists.media[_currentItem].index]) {
 			target = powGlobals.lists.files[powGlobals.lists.media[_currentItem].index];
 			
-			if (!target.parts) return;
+			if (!powGlobals.torrent.pieces) return;
 			
 			if (target.lastDownload && target.lastDownload >= 100) {
 				player.setDownloaded(1);
 				clearInterval(torrent.timers.setDownload);
 				return;
 			}
-			
-			if (player.state() == 'stopping' && dlna.castData.casting == 1) {
-				playerPos = $(".wcp-progress-seen").width()/100;
+						
+			if (tarPiece) {
+				targetPos = tarPiece;
+				powGlobals.current.lastTargetPart = targetPos;
 			} else {
-				playerPos = player.position();
-			}
-			
-			targetPos = Math.floor(((target.pieces.last - target.pieces.first) * playerPos) + target.pieces.first);
 
-			if (typeof powGlobals.current.playingPart !== 'undefined' && target.parts[powGlobals.current.playingPart]) {
-				part = target.parts[powGlobals.current.playingPart];
-				if ((targetPos >= part[0] && targetPos <= part[1]) || (target.parts[powGlobals.current.playingPart-1] && targetPos > target.parts[powGlobals.current.playingPart-1][1] && targetPos < part[0])) {
-					player.setDownloaded( (part[1] - target.pieces.first) / (target.pieces.last - target.pieces.first) );
-					return;
+				if (player.state() == 'stopping' && dlna.castData.casting == 1) {
+					playerPos = $(".wcp-progress-seen").width()/100;
+				} else {
+					playerPos = player.position();
+				}
+				
+				targetPos = Math.floor(((target.pieces.last - target.pieces.first) * playerPos) + target.pieces.first);
+							
+				if (targetPos < powGlobals.current.playingPart && powGlobals.current.lastTargetPart < targetPos) {
+					powGlobals.current.lastTargetPart = targetPos;
+					targetPos = powGlobals.current.playingPart;
+				} else {
+					powGlobals.current.lastTargetPart = targetPos;
+				}
+				
+				if (!powGlobals.torrent.pieces[targetPos]) targetPos--;
+				
+			}
+
+			if (powGlobals.torrent.pieces[targetPos]) {
+				for (jhk = targetPos; powGlobals.torrent.pieces[jhk] && jhk <= target.pieces.last; jhk++) { }
+				if (jhk < target.pieces.last) {
+					jhk = jhk -1;
+					powGlobals.current.playingPart = jhk;
+					player.setDownloaded((jhk - target.pieces.first) / (target.pieces.last - target.pieces.first));
 				}
 			}
-									
-			async.someOf(target.parts,function(tar,tarPos) {
-				return function(el,ij,callback) {
-					if ((tarPos >= el[0] && tarPos <= el[1]) || (tar.parts[ij-1] && tarPos > tar.parts[ij-1][1] && tarPos < el[0])) {
-						player.setDownloaded( (el[1] - tar.pieces.first) / (tar.pieces.last - tar.pieces.first) );
-						powGlobals.current.playingPart = ij;
-						callback(true);
-					} else callback(false);
-				}
-			}(target,targetPos),function() {});
+
 		}
 	},
 	
@@ -179,31 +117,16 @@ var torrent = {
 				return;
 			}
 
-			targetPos = Math.floor(((target.pieces.last - target.pieces.first) * targetPos) + target.pieces.first);
+//			targetPos = Math.floor(((target.pieces.last - target.pieces.first) * targetPos) + target.pieces.first);
 			newPos = Math.floor(((target.pieces.last - target.pieces.first) * newPos) + target.pieces.first);
-			
-			if (typeof powGlobals.current.playingPart !== 'undefined' && target.parts[powGlobals.current.playingPart]) {
-				part = target.parts[powGlobals.current.playingPart];
-				if ((targetPos >= part[0] && targetPos <= part[1]) || (target.parts[powGlobals.current.playingPart-1] && targetPos > target.parts[powGlobals.current.playingPart-1][1] && targetPos < part[0])) {
-					if (!((newPos >= part[0] && newPos <= part[1]) || (target.parts[powGlobals.current.playingPart-1] && newPos > target.parts[powGlobals.current.playingPart-1][1] && newPos < part[0]))) {
-						player.setDownloaded(0);
-						return;
-					}
-				}
+
+			if (powGlobals.torrent.pieces[newPos]) {
+				torrent.showCache(newPos);
+			} else if (powGlobals.torrent.pieces[newPos-1]) {
+				torrent.showCache(newPos-1);
+			} else {
+				player.setDownloaded(0);
 			}
-									
-			async.someOf(target.parts,function(tar,tarPos,nPos) {
-				return function(el,ij,callback) {
-					if ((tarPos >= el[0] && tarPos <= el[1]) || (tar.parts[ij-1] && tarPos > tar.parts[ij-1][1] && tarPos < el[0])) {
-						if (!((nPos >= el[0] && nPos <= el[1]) || (tar.parts[ij-1] && nPos > tar.parts[ij-1][1] && nPos < el[0]))) {
-							player.setDownloaded(0);
-						} else {
-							powGlobals.current.playingPart = ij;
-						}
-						callback(true);
-					} else callback(false);
-				}
-			}(target,targetPos,newPos),function() {});
 		}
 	},
 	
@@ -218,7 +141,6 @@ var torrent = {
 		piece = task.piece;
 		if (powGlobals.torrent.engine.torrent) {
 			_TS = powGlobals.torrent.engine.torrent;
-			powGlobals.torrent.lastDownloadTime = Math.floor(Date.now() / 1000);
 			powGlobals.torrent.allPieces++;
 			if (powGlobals.torrent.allPieces * _TS.pieceLength <= _TS.length) {
 				_downSize = powGlobals.torrent.allPieces * _TS.pieceLength;
@@ -269,16 +191,6 @@ var torrent = {
 										player.setOpeningText("Opening Video");
 									}
 								}
-							}
-						}
-						
-						if (powGlobals.torrent.hasVideo > 0 && el.isMedia) {
-							if (!powGlobals.lists.files[ij].parts) {
-								powGlobals.lists.files[ij].parts = [];
-								powGlobals.lists.files[ij].parts.push([pc,pc]);
-							} else {
-								torrent.queues.pieces++;
-								torrent.cachePiece.push({ index: ij, piece: pc });
 							}
 						}
 						
@@ -362,7 +274,7 @@ var torrent = {
 				setTimeout(function() {
 					torrent.queues.uiUpdate--;
 					cb();
-				}, powGlobals.torrent.hasVideo > 0 ? torrent.queues.uiUpdate * 30 > 200 ? 200 : torrent.queues.uiUpdate * 30 : 0);
+				}, powGlobals.torrent.hasVideo > 0 ? torrent.queues.uiUpdate * 50 > 200 ? 200 : torrent.queues.uiUpdate * 50 : 0);
 			});
 		} else {
 			torrent.queues.uiUpdate--;
@@ -373,28 +285,26 @@ var torrent = {
 	checkSpeed: function() {
 		if ($('#all-download .progress-bar').attr('data-transitiongoal') < 100) {
 			if (powGlobals.torrent.speedPiece < powGlobals.torrent.allPieces) {
-				$("#speed").text(utils.fs.getReadableSize(powGlobals.torrent.engine.swarm.downloadSpeed())+"/s");
+				var newSpeed = utils.fs.getReadableSize(powGlobals.torrent.engine.swarm.downloadSpeed());
+				if (newSpeed == '0.1 kB') newSpeed = '0.0 kB';
+				if ($("#speed").text() != newSpeed) $("#speed").text(newSpeed+"/s");
 				powGlobals.torrent.speedUpdate = Math.floor(Date.now() / 1000);
 			} else if (Math.floor(Date.now() / 1000) - powGlobals.torrent.speedUpdate > 9) {
-				$("#speed").text("0.0 kB/s");
+				$("#speed").text('0.0 kB/s');
 			}
 			
 			powGlobals.torrent.speedPiece = powGlobals.torrent.allPieces;
 		} else {
-			if (utils.fs.getReadableSize(powGlobals.torrent.engine.swarm.uploadSpeed()) != '0.1 kB') {
-				var newSpeed = utils.fs.getReadableSize(powGlobals.torrent.engine.swarm.uploadSpeed())+"/s";
-			} else {
-				var newSpeed = "0.0 kb/s";
-			}
-			if ($("#speed").text() != newSpeed)
-				$("#speed").text(utils.fs.getReadableSize(powGlobals.torrent.engine.swarm.uploadSpeed())+"/s");
+			var newSpeed = utils.fs.getReadableSize(powGlobals.torrent.engine.swarm.uploadSpeed());
+			if (newSpeed == '0.1 kB') newSpeed = '0.0 kB';
+			if ($("#speed").text() != newSpeed) $("#speed").text(newSpeed+"/s");
 		}
 		if (powGlobals.torrent.engine.swarm.uploaded) {
 			var newUpload = utils.fs.getReadableSize(Math.floor(powGlobals.torrent.engine.swarm.uploaded));
 			if ($("#uploadAll").text() != newUpload)
 				$("#uploadAll").text(newUpload);
-		} else if ($("#uploadAll").text() != '0 kB') {
-			$("#uploadAll").text('0 kB');
+		} else if ($("#uploadAll").text() != '0.0 kB') {
+			$("#uploadAll").text('0.0 kB');
 		}
 		torrent.timers.down = setTimeout(function(){ torrent.checkSpeed(); }, 3000);
 	},
@@ -405,17 +315,8 @@ var torrent = {
 			if (playerApi.loaded) player.setOpeningText("Connected to "+powGlobals.torrent.seeds+" peers");
 		}
 		
-		if (Date.now() - powGlobals.torrent.lastPeerUpdate > 1000) {
-			powGlobals.torrent.lastPeerUpdate = Date.now();
-			if (powGlobals.torrent.updatePeers != -1) clearTimeout(powGlobals.torrent.updatePeers);
+		if ($("#nrPeers").text() != powGlobals.torrent.engine.swarm.wires.length)
 			$("#nrPeers").text(powGlobals.torrent.engine.swarm.wires.length);
-		} else {
-			if (powGlobals.torrent.updatePeers != -1) clearTimeout(powGlobals.torrent.updatePeers);
-			powGlobals.torrent.updatePeers = setTimeout(function() {
-				powGlobals.torrent.lastPeerUpdate = Date.now();
-				$("#nrPeers").text(powGlobals.torrent.engine.swarm.wires.length);
-			},500);
-		}
 		
 		// if more then 1 minute has past since last downloaded piece, restart peer discovery
 		if (Math.floor(Date.now() / 1000) - powGlobals.torrent.lastDownloadTime > 60) {
@@ -439,6 +340,7 @@ var torrent = {
 	
 	engine: {
 		kill: function(targetEngine) {
+			powGlobals.torrent.pieces = null;
 			targetEngine.server.close(function(dyingEngine) {
 				return function() {
 					dyingEngine.remove(function(deadEngine) {
@@ -842,5 +744,3 @@ var torrent = {
 		
 	}
 }
-
-var onmagnet = function () { torrent.peerCheck(); }

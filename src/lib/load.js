@@ -337,14 +337,13 @@ var load = {
 			if (typeof torLink !== 'object' && Buffer.isBuffer(torLink) === false && utils.parser(torLink).extension() == "torrent") torLink = fs.readFileSync(torLink);
 			
 			// load the torrent with peerflix
-			var opts = { connections: localStorage.maxPeers, trackers: ['udp://tracker.openbittorrent.com:80', 'udp://tracker.publicbt.com:80', 'udp://tracker.istole.it:6969', 'udp://open.demonii.com:1337' ] };
+			var opts = { connections: localStorage.maxPeers, trackers: ['udp://tracker.openbittorrent.com:80', 'udp://tracker.publicbt.com:80/announce', 'udp://tracker.istole.it:6969', 'udp://open.demonii.com:1337', 'udp://tracker.coppersurfer.tk:80', 'udp://exodus.desync.com:6969', 'udp://glotorrents.pw:6969/announce', 'udp://tracker.opentrackr.org:1337/announce', 'udp://tracker.leechers-paradise.org:6969' ] };
 			if (localStorage.peerPort != 6881) opts.port = localStorage.peerPort;
 			if (localStorage.tmpDir != 'Temp') opts.path = localStorage.tmpDir;
 			
 			powGlobals.torrent.engine = this._peerflix(torLink,opts);
 							
-			powGlobals.torrent.engine.swarm.on('wire', onmagnet);
-			torrent.timers.peers = setInterval(function(){ torrent.peerCheck() }, 2000);
+			torrent.timers.peers = setInterval(function(){ torrent.peerCheck() }, 1000);
 			
 			if (!isHistory) powGlobals.torrent.engine.server.on('listening', function(remSel,remPlaylist,remEngine) {
 				return function() {
@@ -371,13 +370,18 @@ var load = {
 			}(playerApi.tempSel,targetHistory,powGlobals.torrent.engine));
 					
 			powGlobals.torrent.engine.on('download',function(pc) {
+				if (!powGlobals.torrent.pieces) {
+					powGlobals.torrent.pieces = Array.apply(null, Array(powGlobals.torrent.engine.torrent.pieces.length)).map(function () { return false })
+				}
+				powGlobals.torrent.pieces[pc] = true;
+				powGlobals.torrent.lastDownloadTime = Math.floor(Date.now() / 1000);
 				torrent.queues.uiUpdate++;
 				torrent.checkDownloaded.push({ piece: pc });
 			});
 			
 			powGlobals.torrent.engine.on('ready', function () { torrent.isReady = true; });
 			
-			onmagnet();
+			torrent.peerCheck();
 		}
 	
 		return this;
