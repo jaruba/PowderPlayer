@@ -152,7 +152,19 @@
 	}
 	function runUpdate() {
 		localStorage.doUpdate = "1";
-		gui.Shell.openExternal(gui.App.dataPath+pathBreak+'updater'+appExt);
+		if (process.platform == "linux") {
+				var linuxPath = process.execPath.split('/');
+				var newFolderName = linuxPath[linuxPath.length -2];
+				if (newFolderName == 'PowderPlayer') {
+						// if folder name was not changed
+						require('child_process').exec('gnome-terminal -x bash -c "echo \'Updating Powder Player\'; echo; tar -xvf \''+gui.App.dataPath+pathBreak+'updater'+appExt+'\' -C \''+linuxPath.slice(0, -2).join('/')+'\'; echo; echo \'Update Complete! Press any key to close ...\'; read" & disown');
+				} else {
+						// if folder name was changed
+						require('child_process').exec('gnome-terminal -x bash -c "echo \'Updating Powder Player\'; echo; tar -xvf \''+gui.App.dataPath+pathBreak+'updater'+appExt+'\' -C \''+linuxPath.slice(0, -2).join('/')+'\'; rm -rf \''+linuxPath.slice(0, -1).join('/')+'\'; mv \''+linuxPath.slice(0, -2).join('/')+'/PowderPlayer\' \''+linuxPath.slice(0, -1).join('/')+'\'; echo; echo \'Update Complete! Press any key to close ...\'; read" & disown');
+				}
+		} else {
+			gui.Shell.openExternal(gui.App.dataPath+pathBreak+'updater'+appExt);
+		}
 		win.close();
 	}
     </script>
