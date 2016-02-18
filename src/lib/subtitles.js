@@ -130,7 +130,7 @@ var subtitles = {
 									if (!dlna.initiated) {
 										subtitles.updateSub();
 										player.wrapper.find(".wcp-subtitle-but").show(0);
-										player.wrapper.find(".wcp-show-subtitles").show(0);
+										player.wrapper.find(".wcp-show-subtitles").css('display', 'inline-block');
 										if (player.fullscreen()) player.notify('<i class="wcp-subtitle-icon-big"></i>');
 										else player.notify('<i class="wcp-subtitle-icon"></i>');
 									}

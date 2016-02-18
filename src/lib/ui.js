@@ -290,6 +290,9 @@ var ui = {
 			modalSettings.closeButtonClass = '.fifth-animated-close';
 			$('.fifth-easy-modal-animated').easyModal(modalSettings);
 			
+			modalSettings.closeButtonClass = '.sixth-animated-close';
+			$('.sixth-easy-modal-animated').easyModal(modalSettings);
+			
 			modalSettings.closeButtonClass = '.history-animated-close';
 			$('.history-easy-modal-animated').easyModal(modalSettings);
 			
@@ -378,7 +381,6 @@ var ui = {
 			player.setDownloaded(0);
 			if (powGlobals.torrent.engine) {
 				clearTimeout(torrent.timers.down);
-				powGlobals.torrent.engine.swarm.removeListener('wire', onmagnet);
 				if (dlna.params.nextStartDlna) { dlna.instance.controls.stop(); }
 				if (torrent.isReady) {
 					torrent.isReady = false;
@@ -652,6 +654,18 @@ $("#zoom-level-default").on('change', function() {
 });
 
 $("#zoom-level-default").val(localStorage.zoomLevel);
+
+$("#process-type-default").on('change', function() {
+	if (this.value == 'Single') {
+		localStorage.singleInstance = '1';
+	} else {
+		delete localStorage.singleInstance;
+	}
+});
+
+if (localStorage.singleInstance == '1') {
+	$("#process-type-default").val('Single');
+}
 
 $("#torrent-sub").on('change', function() {
 	localStorage.torrentSubs = this.value;

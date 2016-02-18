@@ -230,7 +230,7 @@ var utils = {
 		powGlobals.lists.currentIndex = -1;
 	},
 	
-	processArgs: function(args) {
+	processArgs: function(args, willReset) {
 		var ranFirstArg = false;
 		for (kn = 0; args[kn]; kn++) {
 			if (args[kn].startsWith("--")) {
@@ -294,9 +294,50 @@ var utils = {
 		}
 		
 		if (load.argData.keepFirst) {
-			utils.resetPowGlobals();
+			if (!willReset) utils.resetPowGlobals();
 			load.url(load.argData.keepFirst);
 			delete load.argData.keepFirst;
+		}
+	},
+	
+	reprocessArgs: function(newArgs, attention, cb) {
+		if (newArgs) {
+			if (newArgs.length) {
+				if (!gui) var gui = require('nw.gui');
+				if (JSON.stringify(newArgs) != JSON.stringify(gui.App.argv)) {
+	
+					if (powGlobals.torrent.engine && !powGlobals.torrent.hasVideo) {
+						if (torrent.timers.peers) clearInterval(torrent.timers.peers);
+						if (torrent.timers.setDownload) clearTimeout(torrent.timers.setDownload);
+						clearTimeout(torrent.timers.down);
+						torrent.engine.kill(powGlobals.torrent.engine);
+						utils.resetPowGlobals();
+						player.stop();
+						player.clearPlaylist();
+						$('#main').css("display","table");
+						$("#inner-in-content").css("overflow-y","hidden");
+						utils.processArgs(newArgs);
+					} else {
+						if (player && player.itemCount() == 0) {
+							utils.processArgs(newArgs);
+						} else {
+							utils.processArgs(newArgs,true);
+							player.notify('Added to Playlist');
+						}
+					}
+	
+					cb();
+	
+				} else cb();
+			} else if (!newArgs.length) cb();
+
+			if (attention) {
+				var tmpWin = gui.Window.get();
+				tmpWin.requestAttention(2);
+				setTimeout(function() {
+					tmpWin.requestAttention(false);
+				}, 1000);
+			}
 		}
 	},
 	

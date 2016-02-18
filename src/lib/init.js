@@ -60,18 +60,18 @@ win.gui.on('loaded', function() {
 var wcp = require('pw-wcjs-player');
 
 gui.App.on("open",function(msg) {
-	if (powGlobals.torrent.engine) {
-		if (torrent.timers.peers) clearInterval(torrent.timers.peers);
-		if (torrent.timers.setDownload) clearTimeout(torrent.timers.setDownload);
-		clearTimeout(torrent.timers.down);
-		powGlobals.torrent.engine.swarm.removeListener('wire', onmagnet);
-		torrent.engine.kill(powGlobals.torrent.engine);
-	}
-	utils.resetPowGlobals();
-	player.stop();
-	player.clearPlaylist();
-	$('#main').css("display","table");
-	utils.processArgs([msg]);
+	
+	if (isWin) {
+
+		if (msg.match(/\"/g).length > 2)
+			newCmd = msg.substr(msg.split('"', 3).join('"').length).split('"').join('');
+		else
+			newCmd = msg;
+			
+		utils.reprocessArgs([newCmd]);
+	
+	} else utils.reprocessArgs([msg]);
+	
 });
 
 playerApi.init();
@@ -93,4 +93,8 @@ $('.h').mouseenter(function() {
 if (process.platform == 'linux') {
 	$('#but-assoc4').show();
 	$('#player-settings').addClass('mini-linux');
+}
+
+if (process.platform == 'darwin') {
+	$('#but-process-type').hide();
 }

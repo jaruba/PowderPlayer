@@ -445,8 +445,11 @@ var playerApi = {
 				if (powGlobals.torrent.engine && powGlobals.lists.media[ijk] && powGlobals.lists.media[ijk].path) {
 					plObject[ijk.toString()].contentType = require('mime-types').lookup(powGlobals.lists.media[ijk].path);
 				}
+				var itemDesc = player.itemDesc(ijk);
 				if (player.vlc.playlist.items[ijk].mrl.substr(0,17) == "http://localhost:" && isNaN(utils.parser(player.vlc.playlist.items[ijk].mrl).filename()) === false) {
 					plObject[ijk.toString()].mrl = parseInt(utils.parser(player.vlc.playlist.items[ijk].mrl).filename());
+				} else if (itemDesc.setting && itemDesc.setting.streamLink && itemDesc.setting.streamLink.substr(0,17) == "http://localhost:" && isNaN(utils.parser(itemDesc.setting.streamLink).filename()) === false) {
+					plObject[ijk.toString()].mrl = parseInt(utils.parser(itemDesc.setting.streamLink).filename());
 				} else {
 					plObject[ijk.toString()].mrl = player.vlc.playlist.items[ijk].mrl;
 				}

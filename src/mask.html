@@ -28,6 +28,63 @@ Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
 	}
     </script>
     
+    <script src="lib/defaults.js"></script>
+    <script src="lib/utils.js"></script>
+    <script>
+	if (localStorage.singleInstance == '1') {
+		
+		var keepHidden = false;
+		var passedPoint = false;
+		
+		function createServer() {
+			utils.unusedPort(function(port) {
+				var io = require('socket.io').listen(port);
+				localStorage.portNum = port;
+				localStorage.proof = new Date().getTime();
+				io.on('connection', function(socket){
+					socket.on('add', function(webData) {
+                        if (webData.secret == localStorage.proof) {
+							utils.reprocessArgs(webData.args, true, function() {
+								socket.emit('dismiss', { });
+							});
+						}
+                    });
+				});
+			});
+		}
+		if (localStorage.portNum) {
+			keepHidden = true;
+			var io = require('socket.io-client');
+			var socket = io.connect('http://localhost:'+localStorage.portNum, {reconnect: false});
+			var gui = require('nw.gui');
+
+			socket.emit('add', { secret: localStorage.proof, args: gui.App.argv });
+			socket.on('dismiss', function() {
+				var tmpWin = gui.Window.get();
+				tmpWin.close(true);
+			});
+			
+			socket.on('connect_error', function() {
+				socket.close();
+				if (passedPoint) {
+					if (!gui) var gui = require('nw.gui');
+					var tmpWin = gui.Window.get();
+
+					if (gui.App.argv.length > 0) {
+						shouldShow = gui.App.argv.some(function(el,ij) {
+							return (['--silent','--silent=true'].indexOf(el) > -1);
+						});
+						if (!shouldShow) tmpWin.show();
+					} else tmpWin.show();
+				}
+				createServer();
+			});
+		} else {
+			createServer();
+		}
+	}
+	</script>
+    
     <meta charset="UTF-8">
     <title>Powder Player</title>
 
@@ -367,7 +424,8 @@ body {
     
     <div class="third-easy-modal-animated" id="player-settings">
         <center>
-            <h2 class="headButs change-set goRight" onClick="$('.third-animated-close').trigger('click'); $('#tr-settings').trigger('click'); return false">Torrent</h2>
+            <h2 class="headButs change-set goRight" onClick="$('.third-animated-close').trigger('click'); $('#pr-settings').trigger('click'); return false">Process</h2>
+            <h2 class="headButs change-set goRight" onClick="$('.third-animated-close').trigger('click'); $('#tr-settings').trigger('click'); return false" style="margin-right: 4px; margin-left: 1px">Torrent</h2>
             <h2 class="headButs change-set goRight" style="margin-right: 4px; margin-left: 1px" onClick="$('.third-animated-close').trigger('click'); $('#sub-settings').trigger('click'); return false" >Subtitles</h2>
             <h2 class="headButs goRight" style="margin-right: 3px">Player</h2>
             <div class="clear"></div>
@@ -375,7 +433,6 @@ body {
             <div id="but-assoc1" onClick="utils.register.magnet(); return false" class="actionButton droid-bold">Associate with Magnet Links</div>
             <div id="but-assoc2" onClick="utils.register.torrent(); return false" class="actionButton droid-bold">Associate with Torrent Files</div>
             <div id="but-assoc3" onClick="utils.register.videos(); return false" class="actionButton droid-bold">Associate with Video Files</div>
-            <div id="but-zoom-level" class="actionButton wrap-text"><span class="droid-bold">UI Zoom Level: <select id="zoom-level-default"><option selected>0</option><option>0.5</option><option selected>1.0</option><option>1.5</option><option>2.0</option><option>2.5</option><option>3.0</option><option>3.5</option><option>4.0</option></select></span></div>
             <div id="but-vlc" class="actionButton wrap-text"><span class="droid-bold">Video Player: <select id="use-player"><option>Internal</option><option>VLC</option><option>Scan for Players</option><option>Custom Player</option></select></span></div>
             <div onClick="ui.settings.changeClickPause(); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold">Click to Pause:</span> <span id="click-pause">only in Fullscreen</span></div>
             <div onClick="chooseFile('#libraryDialog'); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold">Library Folder:</span> <span id="lib-folder">Temp</span></div>
@@ -386,7 +443,8 @@ body {
     
     <div class="sub-easy-modal-animated" id="subtitle-settings">
         <center>
-            <h2 class="headButs change-set goRight" onClick="$('.sub-animated-close').trigger('click'); $('#tr-settings').trigger('click'); return false">Torrent</h2>
+            <h2 class="headButs change-set goRight" onClick="$('.sub-animated-close').trigger('click'); $('#pr-settings').trigger('click'); return false">Process</h2>
+            <h2 class="headButs change-set goRight" onClick="$('.sub-animated-close').trigger('click'); $('#tr-settings').trigger('click'); return false" style="margin-right: 4px; margin-left: 1px">Torrent</h2>
             <h2 class="headButs goRight" style="margin-right: 4px; margin-left: 1px">Subtitles</h2>
             <h2 class="headButs change-set goRight" onClick="$('.sub-animated-close').trigger('click'); $('.pl-settings').trigger('click'); return false" style="margin-right: 3px">Player</h2>
             <div class="clear"></div>
@@ -400,7 +458,8 @@ body {
     
     <div class="forth-easy-modal-animated" id="torrent-settings">
         <center>
-            <h2 class="headButs goRight">Torrent</h2>
+            <h2 class="headButs change-set goRight" onClick="$('.forth-animated-close').trigger('click'); $('#pr-settings').trigger('click'); return false" >Process</h2>
+            <h2 class="headButs goRight" style="margin-right: 4px; margin-left: 1px">Torrent</h2>
             <h2 class="headButs change-set goRight" style="margin-right: 4px; margin-left: 1px" onClick="$('.forth-animated-close').trigger('click'); $('#sub-settings').trigger('click'); return false" >Subtitles</h2>
             <h2 class="headButs change-set goRight" onClick="$('.forth-animated-close').trigger('click'); $('.pl-settings').trigger('click'); return false" style="margin-right: 3px">Player</h2>
             <div class="clear"></div>
@@ -413,6 +472,19 @@ body {
             <div onClick="chooseFile('#folderDialog'); return false" class="actionButton wrap-text"><span class="droid-bold">Download Folder:</span> <span id="def-folder">Temp</span></div>
             <div onClick="ui.settings.changePulseSetting(); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold">Speed Pulsing:</span> <span id="click-pulse">auto</span></div>
             <div id="closeAction" class="forth-animated-close actionButton" style="font-family: 'Droid Sans Bold' !important;font-weight: bold">Close Menu</div>
+        </center>
+    </div>
+
+    <div class="sixth-easy-modal-animated" id="process-settings">
+        <center>
+            <h2 class="headButs goRight" >Process</h2>
+            <h2 class="headButs change-set goRight" onClick="$('.sixth-animated-close').trigger('click'); $('#tr-settings').trigger('click'); return false" style="margin-right: 4px; margin-left: 1px">Torrent</h2>
+            <h2 class="headButs change-set goRight" style="margin-right: 4px; margin-left: 1px" onClick="$('.sixth-animated-close').trigger('click'); $('#sub-settings').trigger('click'); return false" >Subtitles</h2>
+            <h2 class="headButs change-set goRight" onClick="$('.sixth-animated-close').trigger('click'); $('.pl-settings').trigger('click'); return false" style="margin-right: 3px">Player</h2>
+            <div class="clear"></div>
+            <div id="but-process-type" class="actionButton wrap-text"><span class="droid-bold">Process Type: <select id="process-type-default"><option selected>Multiple</option><option>Single</option></select></span></div>
+            <div id="but-zoom-level" class="actionButton wrap-text"><span class="droid-bold">Zoom Level: <select id="zoom-level-default"><option selected>0</option><option>0.5</option><option selected>1.0</option><option>1.5</option><option>2.0</option><option>2.5</option><option>3.0</option><option>3.5</option><option>4.0</option></select></span></div>
+            <div id="closeAction" class="sixth-animated-close actionButton" style="font-family: 'Droid Sans Bold' !important;font-weight: bold">Close Menu</div>
         </center>
     </div>
 
@@ -490,6 +562,7 @@ body {
     <input id="export_file" type="file" nwsaveas="snapshot.jpg" style="display:none" nwworkingdir=""/>
     
     <a id="tr-settings" class="easy-modal-open" href="#torrent-settings">Torrent Settings</a>
+    <a id="pr-settings" class="easy-modal-open" href="#process-settings" style="display: none">Process Settings</a>
     <a id="sub-settings" class="easy-modal-open" href="#subtitle-settings" style="display: none">Subtitle Settings</a>
     <a id="plugin-list" class="easy-modal-open" href="#plugins-settings">Plugins Settings</a>
     <a id="open-file-settings" class="easy-modal-open" href="#file-settings">File Settings</a>
@@ -502,8 +575,6 @@ body {
     </div>
 </div>
     
-    <script src="lib/defaults.js"></script>
-    <script src="lib/utils.js"></script>
     <script src="lib/window.js"></script>
     <script src="lib/dlna.js"></script>
     <script src="lib/library.js"></script>

@@ -36,7 +36,6 @@ var win = {
 			if (r) {
 				if (powGlobals.torrent.engine) {
 					clearTimeout(torrent.timers.down);
-					powGlobals.torrent.engine.swarm.removeListener('wire', onmagnet);
 					powGlobals.torrent.engine.server.close(function() {
 						powGlobals.torrent.engine.remove(function() {
 							if (powGlobals.torrent.engine) powGlobals.torrent.engine.destroy(function() { win.exitApp(1500); });
@@ -47,7 +46,6 @@ var win = {
 			} else {
 				if (powGlobals.torrent.engine) {
 					clearTimeout(torrent.timers.down);
-					powGlobals.torrent.engine.swarm.removeListener('wire', onmagnet);
 					powGlobals.torrent.engine.server.close(function() {
 						if (powGlobals.torrent.engine) {
 							powGlobals.torrent.engine.destroy(function() {
@@ -517,13 +515,16 @@ win.gui.on('move', function() {
 	frameTimer = setTimeout(function() { win.frame.hide(); },5000);
 });
 
-if (gui.App.argv.length > 0) {
-	shouldShow = gui.App.argv.some(function(el,ij) {
-		return (['--silent','--silent=true'].indexOf(el) > -1);
-	});
-	if (!shouldShow) win.gui.show();
-} else win.gui.show();
-
+if (!keepHidden) {
+	if (gui.App.argv.length > 0) {
+		shouldShow = gui.App.argv.some(function(el,ij) {
+			return (['--silent','--silent=true'].indexOf(el) > -1);
+		});
+		if (!shouldShow) win.gui.show();
+	} else win.gui.show();
+} else {
+	passedPoint = true;
+}
 // end specific to window frame
 
 if (localStorage.zoomLevel != "0") {
