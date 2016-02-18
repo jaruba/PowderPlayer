@@ -134,6 +134,16 @@ var ui = {
 			}
 		},
 		
+		changeNoSeeding: function() {
+			if (localStorage.noSeeding) {
+				delete localStorage.noSeeding;
+				$("#no-seeding").text("Always Seed");
+			} else {
+				localStorage.noSeeding = '1';
+				$("#no-seeding").text("Only when Downloading");
+			}
+		},
+		
 		switchPulsing: function() {
 			if ($("#menuPulsing").text() == "Disable Pulsing") {
 				localStorage.pulseRule = "disabled";
@@ -716,4 +726,8 @@ $("#sub-default-size").val((parseFloat(localStorage.subSizeDefault)*100)+'%');
 if (localStorage.bufferSize) {
 	$('#buffer-spinner').val(localStorage.bufferSize);
 	$('#buffer-sel').html(localStorage.bufferSize);
+}
+
+if (localStorage.noSeeding) {
+	$("#no-seeding").text("Only when Downloading");
 }
