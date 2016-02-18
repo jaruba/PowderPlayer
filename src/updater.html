@@ -162,6 +162,8 @@
 						// if folder name was changed
 						require('child_process').exec('gnome-terminal -x bash -c "echo \'Updating Powder Player\'; echo; tar -xvf \''+gui.App.dataPath+pathBreak+'updater'+appExt+'\' -C \''+linuxPath.slice(0, -2).join('/')+'\'; rm -rf \''+linuxPath.slice(0, -1).join('/')+'\'; mv \''+linuxPath.slice(0, -2).join('/')+'/PowderPlayer\' \''+linuxPath.slice(0, -1).join('/')+'\'; echo; echo \'Update Complete! Press any key to close ...\'; read" & disown');
 				}
+		} else if (process.platform == "darwin") {
+			require('child_process').exec("open '"+gui.App.dataPath+pathBreak+'updater'+appExt+"'");
 		} else {
 			gui.Shell.openExternal(gui.App.dataPath+pathBreak+'updater'+appExt);
 		}
