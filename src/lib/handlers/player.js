@@ -21,6 +21,7 @@ var playerApi = {
 	tempSel: -1,
 	events: new utils.eventMod.EventEmitter(),
 	fixPlaylist: false,
+	remLocalSub: false,
 	
 	init: function() {
 		setTimeout(function() {
@@ -146,6 +147,19 @@ var playerApi = {
 			}
 		//	if (playerApi.isYoutube(player.currentItem()) && win.gui.title != player.vlc.playlist.items[player.currentItem()].title.replace("[custom]","")) win.gui.title = player.vlc.playlist.items[player.currentItem()].title.replace("[custom]","");
 			if ($("#inner-in-content").css("overflow-y") == "visible" || $("#inner-in-content").css("overflow-y") == "auto") $("#inner-in-content").animate({ scrollTop: 0 }, 'slow');
+			
+			if (playerApi.remLocalSub) {
+				if (player.subCount()) {
+					for (kom = 1; kom < player.subCount(); kom++) {
+						if (player.subDesc(kom).language == playerApi.remLocalSub) {
+							player.subTrack(kom);
+							player.notify("Subtitle Loaded");
+							break;
+						}
+					}
+				}
+				playerApi.remLocalSub = false;
+			}
 		},
 		
 		gotVideoSize: function(width,height) {
@@ -213,8 +227,12 @@ var playerApi = {
 								} else newSettings = {};
 								newSettings.subtitles = JSON.parse(newString);
 								player.vlc.playlist.items[player.currentItem()].setting = JSON.stringify(newSettings);
-								player.subTrack(player.subCount() - 1);
-								player.notify("Subtitle Loaded");
+								if (player.stateInt() < 3) {
+									playerApi.remLocalSub = subPath.split('\\').pop();
+								} else {
+									player.subTrack(player.subCount() - 1);
+									player.notify("Subtitle Loaded");
+								}
 							}
 						});
 					}

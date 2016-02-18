@@ -615,7 +615,7 @@ var torrent = {
 				}
 				remote.updateVal("mediaFiles",powGlobals.lists.media);
 			} else $("#menu-back-video").show();
-						
+
 			$("#filesList").append($('<div style="width: 100%; height: 79px; text-align: center; line-height: 79px; font-family: \'Droid Sans Bold\'; font-size: 19px; border-bottom: 1px solid #353535; background: #4d4d4d">Scroll up to Start Video Mode</div>'));
 			
 			powGlobals.lists.files.forEach(function(el,ij) {
@@ -694,7 +694,15 @@ var torrent = {
 					});
 				},1000);
 			}
-			
+			if (powGlobals.torrent.hasVideo == 1) {
+				// if only 1 media file, download all the files just to become a seeder
+				setTimeout(function() {
+					powGlobals.torrent.engine.files.forEach(function(el) {
+						el.select();
+					});
+				},1000);
+			}
+
 			if (playerApi.playlist.saved["0"]) {
 				if (typeof kla !== 'undefined') playerApi.nextPlay += kla;
 				if (player.state() == "error") player.stop(true);

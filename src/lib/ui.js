@@ -223,15 +223,21 @@ var ui = {
 			}
 			if (playerApi.supportedTypes.indexOf(utils.parser($("#file"+kj).find(".filenames").text()).extension()) > -1) {
 				// if the item is a video or audio file
-				powGlobals.lists.media.some(function(el,ij) {
-					if (el.index == kj) {
-						$("#playAction").attr("onClick","player.playItem("+ij+"); $('#closeAction').trigger('click'); $('#inner-in-content').animate({ scrollTop: 0 }, 'slow'); ui.buttons.play("+kj+"); $('#inner-in-content').css('overflow-y','hidden')");
-						$("#copyStream").attr("onClick","gui.Clipboard.get().set('http://localhost:'+powGlobals.torrent.engine.server.address().port+'/"+powGlobals.lists.files[kj].index+"','text'); $('#closeAction').trigger('click')");
-						$("#playAction").show(0);
-						$("#copyStream").show(0);
-						return false;
-					}
-				});
+				if (powGlobals.lists.media.length) {
+					powGlobals.lists.media.some(function(el,ij) {
+						if (el.index == kj) {
+							$("#playAction").attr("onClick","player.playItem("+ij+"); $('#closeAction').trigger('click'); $('#inner-in-content').animate({ scrollTop: 0 }, 'slow'); ui.buttons.play("+kj+"); $('#inner-in-content').css('overflow-y','hidden')");
+							$("#copyStream").attr("onClick","gui.Clipboard.get().set('http://localhost:'+powGlobals.torrent.engine.server.address().port+'/"+powGlobals.lists.files[kj].index+"','text'); $('#closeAction').trigger('click')");
+							$("#playAction").show(0);
+							$("#copyStream").show(0);
+							return false;
+						}
+					});
+				} else {
+					$("#playAction").hide(0);
+					$("#copyStream").attr("onClick","gui.Clipboard.get().set('http://localhost:'+powGlobals.torrent.engine.server.address().port+'/"+powGlobals.lists.files[kj].index+"','text'); $('#closeAction').trigger('click')");
+					$("#copyStream").show(0);
+				}
 			} else {
 				$("#playAction").hide(0);
 				$("#copyStream").hide(0);
