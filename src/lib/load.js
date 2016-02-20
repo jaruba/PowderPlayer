@@ -21,8 +21,8 @@ var load = {
 	autoPlay: false,
 	argData: {},
 	_setOnlyFirst: 0,
-	_peerflix: require('peerflix'),
-	
+	_worker: require('torrent-worker'),
+
 	pushArgs: function(set) {
 		if (!$.isEmptyObject(load.argData)) {
 			if (load.argData.title) {
@@ -335,52 +335,61 @@ var load = {
 		if (typeof torLink !== 'undefined' && (typeof torLink === 'object' || Buffer.isBuffer(torLink) || torLink.toLowerCase().match(/magnet:\?xt=urn:sha1:[a-z0-9]{20,50}/i) != null || torLink.toLowerCase().match(/magnet:\?xt=urn:btih:[a-z0-9]{20,50}/i) != null || utils.parser(torLink).extension() == "torrent")) {
 		
 			if (typeof torLink !== 'object' && Buffer.isBuffer(torLink) === false && utils.parser(torLink).extension() == "torrent") torLink = fs.readFileSync(torLink);
-			
+
 			// load the torrent with peerflix
 			var opts = { connections: localStorage.maxPeers, trackers: ['udp://tracker.openbittorrent.com:80', 'udp://tracker.publicbt.com:80/announce', 'udp://tracker.istole.it:6969', 'udp://open.demonii.com:1337', 'udp://tracker.coppersurfer.tk:80', 'udp://exodus.desync.com:6969', 'udp://glotorrents.pw:6969/announce', 'udp://tracker.opentrackr.org:1337/announce', 'udp://tracker.leechers-paradise.org:6969' ] };
 			if (localStorage.peerPort != 6881) opts.port = localStorage.peerPort;
 			if (localStorage.tmpDir != 'Temp') opts.path = localStorage.tmpDir;
+			if (localStorage.noSeeding) opts.noSeeding = localStorage.noSeeding;
 			
-			powGlobals.torrent.engine = this._peerflix(torLink,opts);
-							
-			torrent.timers.peers = setInterval(function(){ torrent.peerCheck() }, 1000);
+			powGlobals.torrent.engine = this._worker.process(torLink,opts);
 			
-			if (!isHistory) powGlobals.torrent.engine.server.on('listening', function(remSel,remPlaylist,remEngine) {
+			powGlobals.torrent.engine.on('download',function(pc) {
+				if (powGlobals && powGlobals.torrent && powGlobals.torrent.engine) {
+					if (!powGlobals.torrent.pieces) {
+						powGlobals.torrent.pieces = Array.apply(null, Array(powGlobals.torrent.engine.torrent.pieces.length)).map(function () { return false })
+					}
+					powGlobals.torrent.pieces[pc] = true;
+					powGlobals.torrent.lastDownloadTime = Math.floor(Date.now() / 1000);
+					torrent.queues.uiUpdate++;
+					torrent.checkDownloaded.push({ piece: pc });
+				}
+			});
+			
+			powGlobals.torrent.engine.on('killed',function() {
+				window.playerApi.waitForNext = false;
+			});
+			
+			if (!isHistory) powGlobals.torrent.engine.on('listening', function(remSel,remPlaylist,remEngine) {
 				return function() {
+					
 					if (playerApi.tempSel != remSel) {
 						torrent.engine.kill(remEngine);
 						return;
 					}
-					powGlobals.torrent.engine = remEngine;
+//						powGlobals.torrent.engine = remEngine;
 					if (remPlaylist["0"]) torrent.engine.start(0,remPlaylist,remSel);
 					else torrent.engine.start();
 					powGlobals.torrent.serverReady = 1;
 				}
 			}(playerApi.tempSel,playerApi.playlist.saved,powGlobals.torrent.engine));
-			else if (isHistory) powGlobals.torrent.engine.server.on('listening', function(remSel,remHistory,remEngine) {
+			else if (isHistory) powGlobals.torrent.engine.on('listening', function(remSel,remHistory,remEngine) {
 				return function() {
 					if (playerApi.tempSel != remSel) {
 						torrent.engine.kill(remEngine);
 						return;
 					}
-					powGlobals.torrent.engine = remEngine;
+//						powGlobals.torrent.engine = remEngine;
 					torrent.engine.start(remHistory);
 					powGlobals.torrent.serverReady = 1;
 				}
 			}(playerApi.tempSel,targetHistory,powGlobals.torrent.engine));
-					
-			powGlobals.torrent.engine.on('download',function(pc) {
-				if (!powGlobals.torrent.pieces) {
-					powGlobals.torrent.pieces = Array.apply(null, Array(powGlobals.torrent.engine.torrent.pieces.length)).map(function () { return false })
-				}
-				powGlobals.torrent.pieces[pc] = true;
-				powGlobals.torrent.lastDownloadTime = Math.floor(Date.now() / 1000);
-				torrent.queues.uiUpdate++;
-				torrent.checkDownloaded.push({ piece: pc });
-			});
+
 			
-			powGlobals.torrent.engine.on('ready', function () { torrent.isReady = true; });
+			powGlobals.torrent.engine.on('ready', function () {	torrent.isReady = true; });
 			
+			torrent.timers.peers = setInterval(function(){ torrent.peerCheck() }, 1000);
+								
 			torrent.peerCheck();
 		}
 	

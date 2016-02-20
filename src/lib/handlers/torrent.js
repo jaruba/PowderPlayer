@@ -285,7 +285,7 @@ var torrent = {
 	checkSpeed: function() {
 		if ($('#all-download .progress-bar').attr('data-transitiongoal') < 100) {
 			if (powGlobals.torrent.speedPiece < powGlobals.torrent.allPieces) {
-				var newSpeed = utils.fs.getReadableSize(powGlobals.torrent.engine.swarm.downloadSpeed());
+				var newSpeed = utils.fs.getReadableSize(powGlobals.torrent.engine.swarm.downloadSpeed);
 				if (newSpeed == '0.1 kB') newSpeed = '0.0 kB';
 				if ($("#speed").text() != newSpeed) $("#speed").text(newSpeed+"/s");
 				powGlobals.torrent.speedUpdate = Math.floor(Date.now() / 1000);
@@ -295,7 +295,7 @@ var torrent = {
 			
 			powGlobals.torrent.speedPiece = powGlobals.torrent.allPieces;
 		} else {
-			var newSpeed = utils.fs.getReadableSize(powGlobals.torrent.engine.swarm.uploadSpeed());
+			var newSpeed = utils.fs.getReadableSize(powGlobals.torrent.engine.swarm.uploadSpeed);
 			if (newSpeed == '0.1 kB') newSpeed = '0.0 kB';
 			if ($("#speed").text() != newSpeed) $("#speed").text(newSpeed+"/s");
 		}
@@ -310,21 +310,23 @@ var torrent = {
 	},
 	
 	peerCheck: function() {
-		if (!torrent.isReady && powGlobals.torrent.engine.swarm.wires.length > 0) {
-			powGlobals.torrent.seeds = powGlobals.torrent.engine.swarm.wires.length;
-			if (playerApi.loaded) player.setOpeningText("Connected to "+powGlobals.torrent.seeds+" peers");
-		}
-		
-		if ($("#nrPeers").text() != powGlobals.torrent.engine.swarm.wires.length)
-			$("#nrPeers").text(powGlobals.torrent.engine.swarm.wires.length);
-		
-		// if more then 1 minute has past since last downloaded piece, restart peer discovery
-		if (Math.floor(Date.now() / 1000) - powGlobals.torrent.lastDownloadTime > 60) {
-			if ($(".pause:visible").length > 0) {
-				if (powGlobals.torrent.engine && powGlobals.torrent.engine.amInterested) {
-					if (player.state() != "opening") {
-						powGlobals.torrent.lastDownloadTime = Math.floor(Date.now() / 1000);
-						powGlobals.torrent.engine.discover();
+		if (powGlobals.torrent.engine && powGlobals.torrent.engine.swarm) {
+			if (!torrent.isReady && powGlobals.torrent.engine.swarm.wires.length > 0) {
+				powGlobals.torrent.seeds = powGlobals.torrent.engine.swarm.wires.length;
+				if (playerApi.loaded) player.setOpeningText("Connected to "+powGlobals.torrent.seeds+" peers");
+			}
+			
+			if ($("#nrPeers").text() != powGlobals.torrent.engine.swarm.wires.length)
+				$("#nrPeers").text(powGlobals.torrent.engine.swarm.wires.length);
+			
+			// if more then 1 minute has past since last downloaded piece, restart peer discovery
+			if (Math.floor(Date.now() / 1000) - powGlobals.torrent.lastDownloadTime > 60) {
+				if ($(".pause:visible").length > 0) {
+					if (powGlobals.torrent.engine && powGlobals.torrent.engine.amInterested) {
+						if (player.state() != "opening") {
+							powGlobals.torrent.lastDownloadTime = Math.floor(Date.now() / 1000);
+							powGlobals.torrent.engine.discover();
+						}
 					}
 				}
 			}
@@ -357,7 +359,7 @@ var torrent = {
 		start: function(targetHistory,remPlaylist,remSel) {
 			if (torrent.hold) {
 				torrent.hold = false;
-				torrent.engine.kill(powGlobals.torrent.engine);
+				powGlobals.torrent.engine.kill();
 				return;
 			}
 		
@@ -478,7 +480,7 @@ var torrent = {
 		//					if (targetHistory == 0) win.gui.title = utils.parser(filename).name();
 		
 							if (playerApi.loaded) {
-								if (powGlobals.torrent.engine.swarm.wires.length == 0) player.setOpeningText("No Peers Found");
+								if (powGlobals.torrent.engine.swarm.wires && powGlobals.torrent.engine.swarm.wires.length == 0) player.setOpeningText("No Peers Found");
 								else player.setOpeningText("Prebuffering ...");
 								setTimeout(function() { torrent.announceNoPeers(); },3000);
 							}
@@ -487,7 +489,7 @@ var torrent = {
 							if (powGlobals.torrent.engine.files[el.index].offset != powGlobals.torrent.engine.server.index.offset) {
 								for (as = 0; powGlobals.torrent.engine.files[powGlobals.lists.files[as].index]; as++) {
 									if (powGlobals.torrent.engine.files[powGlobals.lists.files[as].index].offset == powGlobals.torrent.engine.server.index.offset) {
-										powGlobals.torrent.engine.files[powGlobals.lists.files[as].index].deselect();
+										powGlobals.torrent.engine.deselectFile(powGlobals.lists.files[as].index);
 										break;
 									}
 								}
@@ -527,7 +529,9 @@ var torrent = {
 				powGlobals.lists.files.forEach(function(el,ij) {
 					var thisName = el.name;
 					if (el.isMedia) {
-						if (newM3U == "#EXTM3U") powGlobals.torrent.engine.files[el.index].select();
+						if (newM3U == "#EXTM3U") {
+							powGlobals.torrent.engine.selectFile(el.index);
+						}
 						newM3U += os.EOL+"#EXTINF:0,"+utils.parser(el.name).name()+os.EOL+localHref+el.index;
 					}
 				});
@@ -593,7 +597,6 @@ var torrent = {
 			setTimeout(function() {
 				if (powGlobals.torrent.engine) {
 					powGlobals.torrent.engine.discover();
-					powGlobals.torrent.engine.swarm.reconnectAll();
 				}
 			},1000);
 			
@@ -624,7 +627,7 @@ var torrent = {
 				if (typeof savedIj !== 'undefined' && savedIj == ij) setPaused = '<i id="action'+ij+'" onClick="ui.buttons.pause('+ij+')" class="glyphs pause hf" style="background-color: #F6BC24"></i>';
 				if (powGlobals.torrent.hasVideo == 0 && localStorage.useVLC != "1") {
 					setPaused = '<i id="action'+ij+'" onClick="ui.buttons.pause('+ij+')" class="glyphs pause hf" style="background-color: #F6BC24"></i>';
-					powGlobals.torrent.engine.swarm.paused = false;
+					powGlobals.torrent.engine.swarmSetPaused(false);
 					ui.buttons.play(ij);
 				}
 				
@@ -689,16 +692,16 @@ var torrent = {
 			if (powGlobals.torrent.hasVideo == 0 && localStorage.useVLC != "1") {
 				// reselect all files
 				setTimeout(function() {
-					powGlobals.torrent.engine.files.forEach(function(el) {
-						el.select();
+					powGlobals.torrent.engine.files.forEach(function(el, ij) {
+						powGlobals.torrent.engine.selectFile(ij);
 					});
 				},1000);
 			}
 			if (powGlobals.torrent.hasVideo == 1) {
 				// if only 1 media file, download all the files just to become a seeder
 				setTimeout(function() {
-					powGlobals.torrent.engine.files.forEach(function(el) {
-						el.select();
+					powGlobals.torrent.engine.files.forEach(function(el, ij) {
+						powGlobals.torrent.engine.selectFile(ij);
 					});
 				},1000);
 			}

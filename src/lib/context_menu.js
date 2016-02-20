@@ -80,7 +80,6 @@ var ctxMenu = {
 			click: function() {
 				if (powGlobals.torrent.engine) {
 					powGlobals.torrent.engine.discover();
-					powGlobals.torrent.engine.swarm.reconnectAll();
 					player.notify("Forcing Download");
 				}
 			}

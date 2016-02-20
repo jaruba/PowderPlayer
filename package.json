@@ -33,7 +33,7 @@
         "mime-types": "*",
         "node-ssdp": "*",
         "opensubtitles-api": "*",
-        "peerflix": "jaruba/peerflix",
+        "torrent-worker": "*",
         "read-torrent": "*",
         "universal-analytics": "*",
         "request": "*",

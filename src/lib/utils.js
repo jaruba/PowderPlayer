@@ -310,7 +310,7 @@ var utils = {
 						if (torrent.timers.peers) clearInterval(torrent.timers.peers);
 						if (torrent.timers.setDownload) clearTimeout(torrent.timers.setDownload);
 						clearTimeout(torrent.timers.down);
-						torrent.engine.kill(powGlobals.torrent.engine);
+						powGlobals.torrent.engine.kill();
 						utils.resetPowGlobals();
 						player.stop();
 						player.clearPlaylist();

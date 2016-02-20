@@ -401,7 +401,7 @@ var ui = {
 				if (torrent.isReady) {
 					torrent.isReady = false;
 					if (powGlobals.torrent.serverReady) {
-						torrent.engine.kill(powGlobals.torrent.engine);
+						powGlobals.torrent.engine.kill();
 						powGlobals = {
 							current: {},
 							torrent: {},

@@ -540,7 +540,7 @@ body {
         <ul class="dropdown-menu">
             <li><a onClick="gui.Shell.openItem(powGlobals.torrent.engine.path+pathBreak+powGlobals.torrent.engine.torrent.name+pathBreak); return false" href="#">Open Folder</a></li>
             <li class="dropdown-divider"></li>
-            <li><a onClick="powGlobals.torrent.engine.discover(); powGlobals.torrent.engine.swarm.reconnectAll(); return false" href="#">Force Download</a></li>
+            <li><a onClick="powGlobals.torrent.engine.discover(); return false" href="#">Force Download</a></li>
             <li><a id="menuPulsing" onClick="ui.settings.switchPulsing(); return false" href="#">Disable Pulsing</a></li>
             <li class="dropdown-divider"></li>
             <li><a onClick="gui.Clipboard.get().set('magnet:?xt=urn:btih:'+powGlobals.torrent.engine.infoHash.toUpperCase(),'text'); return false" href="#">Copy Magnet URI</a></li>
