@@ -161,9 +161,10 @@ var load = {
 						}
 						
 						var set = {
-							url: "pow://" + data.infoHash + trackers,
-							title: utils.parser(data.name).name()
+							url: "pow://" + data.infoHash + trackers
 						};
+						
+						if (data.name) set.title = utils.parser(data.name).name();
 						
 						torrent.parsed[data.infoHash] = data;
 	

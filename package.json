@@ -34,6 +34,7 @@
         "node-ssdp": "*",
         "opensubtitles-api": "*",
         "torrent-worker": "*",
+        "ultimate-parser": "*",
         "read-torrent": "*",
         "universal-analytics": "*",
         "request": "*",
