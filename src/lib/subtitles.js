@@ -1,221 +1,232 @@
 var osMod = require('opensubtitles-api');
+var fs = require('fs');
+var parser = require('ultimate-parser');
+var needle = require('needle');
+var http = require('http');
+var retriever = require('subtitles-grouping/lib/retriever');
+var worker = require('workerjs');
 
-var subtitles = {
-	
-	os: new osMod(atob('T3BlblN1YnRpdGxlc1BsYXllciB2NC43')),
-	findHashTime: 0,
-	osCookie: false,
+var objective = {};
+var subtitles = {};
+var subFinder = false;
+var subParser = false;
 
-	fetchOsCookie: function(retryCookie) {
-		utils.checkInternet(function(isConnected) {
-			if (isConnected) {
-				var req = require('http').request({ host: "dl.opensubtitles.org", path: "/en/download/subencoding-utf8/vrf-ef3a1f1e6e/file/1954677189" },function(res) {
-					if (res.headers["set-cookie"] && res.headers["set-cookie"][0]) {
-						tempCookie = res.headers["set-cookie"][0];
-						subtitles.osCookie = (tempCookie + "").split(";").shift();
-					} else if (!res.headers["set-cookie"] && retryCookie) {
-						console.log("fetching OS cookie failed, trying again in 20 sec");
-						setTimeout(function() { subtitles.fetchOsCookie(false) },20000);
-					}
-				});
-				req.end();
-			}
-		});
-	},
-	
-	readData: function(xhr) {
-		if (utils.isJsonString(xhr)) {
-			jsonRes = JSON.parse(xhr);
-			if (typeof jsonRes.filehash !== 'undefined') {
-				powGlobals.current.fileHash = jsonRes.filehash;
-				if (powGlobals.current.byteLength) subtitles.byExactHash(powGlobals.current.fileHash,powGlobals.current.byteLength,powGlobals.current.filename);
-			} else {
-				clearTimeout(subtitles.findHashTime);
-				subtitles.findHash();
-			}
-		} else {
-			clearTimeout(subtitles.findHashTime);
-			subtitles.findHash();
-		}
-	},
-	
-	tryLater: function(hashMs) {
-		if (powGlobals.current.fileHash) delete powGlobals.current.fileHash;
-		clearTimeout(subtitles.findHashTime);
-		subtitles.findHashTime = setTimeout(function() {
-			subtitles.findHash();
-		},hashMs);
-	},
-	
-	byExactHash: function(hash,fileSize,tag) {
-		if (player.itemCount() > 0) {
-			torrent.flood.pause();
-			setTimeout(function() { torrent.flood.start(); },3000); // to ensure it's started again even if errors arise
-			subtitles.os.login().then(function(token){
-				powGlobals.subtitles.osToken = token;
-				
-				searcher = {
-					sublanguageid: 'all',
-					extensions: ['srt','sub','vtt'],
-					hash: hash,
-					size: fileSize,
-					filename: powGlobals.current.filename,
-					limit: 'all'
-				};
-				
-				if (utils.parser(powGlobals.current.filename).shortSzEp()) {
-					searcher.season = utils.parser(powGlobals.current.filename).season().toString();
-					searcher.episode = utils.parser(powGlobals.current.filename).episode().toString();
-					if (powGlobals.current.filename.indexOf(utils.parser(powGlobals.current.filename).shortSzEp().replace('s','').replace('e','')) > -1) {
-						// cases like "2015" as a season/episode tag should be ignored in this case
-						delete searcher.season;
-						delete searcher.episode;
-					}
-				}
-				
-				if (player.fps()) searcher.fps = player.fps();
-				
-				subtitles.os.search(searcher).then(function(subData) {
-					if (!$.isEmptyObject(subData)) {
-						utils.checkInternet(function(isConnected) {
-							if (isConnected) {
-								if (powGlobals.current.byteLength) {
-									tempData = window.atob("aHR0cDovL3Bvd2Rlci5tZWRpYS9tZXRhRGF0YS9zZW5kLnBocD9mPQ==")+encodeURIComponent(powGlobals.current.filename)+window.atob("JmloPQ==")+encodeURIComponent(powGlobals.current.fileHash)+window.atob("JnM9")+encodeURIComponent(powGlobals.current.byteLength);
-									
-									if (powGlobals.torrent.engine) {
-										tempData += window.atob("Jmg9")+encodeURIComponent(powGlobals.torrent.engine.infoHash);
-									}
-									$.ajax({ type: 'GET', url: tempData, global: false, cache: false });
-								}
-							}
-						});
-						newString = '{ ';
-						async.forEachOf(subData, function (item, ij, callback){
-							if (item[0]) {
-								async.forEachOf(item, function (itemArr, ijArr, callbackArr){
-									var vrf = itemArr.url.substr(itemArr.url.indexOf('vrf-'));
-									vrf = vrf.substr(0,vrf.indexOf('/'));
-									if (ijArr == 0) {
-										newString += '"'+itemArr.langName+'": "http://dl.opensubtitles.org/en/download/subencoding-utf8/'+vrf+'/file/'+itemArr.url.split('/').pop()+'", ';
-									} else {
-										newString += '"[hid]'+itemArr.langName+' '+(ijArr+1)+'": "http://dl.opensubtitles.org/en/download/subencoding-utf8/'+vrf+'/file/'+itemArr.url.split('/').pop()+'", ';
-									}
-									callbackArr();
-								}, function(err) {
-									callback();
-								});
-								
-							} else {
-								var vrf = item.url.substr(item.url.indexOf('vrf-'));
-								vrf = vrf.substr(0,vrf.indexOf('/'));
-								newString += '"'+item.langName+'": "http://dl.opensubtitles.org/en/download/subencoding-utf8/'+vrf+'/file/'+item.url.split('/').pop()+'", ';
-								callback();
-							}
-						}, function(err) {
-							newString = newString.substr(0,newString.length -2)+" }";
-							if (player.itemCount() > 0) {
-								newSettings = player.vlc.playlist.items[player.currentItem()].setting;
-								if (utils.isJsonString(newSettings)) {
-									newSettings = JSON.parse(newSettings);
-									if (newSettings.subtitles) {
-										oldString = JSON.stringify(newSettings.subtitles);
-										newString = oldString.substr(0,oldString.length -1)+","+newString.substr(2);
-									}
-								} else newSettings = {};
-								newSettings.subtitles = JSON.parse(newString);
-								setTimeout(function() {
-	//								console.log(JSON.stringify(newSettings));
-									player.vlc.playlist.items[player.currentItem()].setting = JSON.stringify(newSettings);
-									setTimeout(function() { remote.updateVal("subCount",player.subCount()); },100);
-									if (!dlna.initiated) {
-										subtitles.updateSub();
-										player.wrapper.find(".wcp-subtitle-but").show(0);
-										player.wrapper.find(".wcp-show-subtitles").css('display', 'inline-block');
-										if (player.fullscreen()) player.notify('<i class="wcp-subtitle-icon-big"></i>');
-										else player.notify('<i class="wcp-subtitle-icon"></i>');
-									}
-								},100);
-							}
-						});
+subtitles.os = new osMod(atob('T3BlblN1YnRpdGxlc1BsYXllciB2NC43'));
+subtitles.findHashTime = 0;
+subtitles.osCookie = false;
 
-					} else {
-//						console.log(1);
-//						subtitles.tryLater(15000);
-						player.notify('No Subtitles Found');
-					}
-				}).catch(function(err){
-//					console.log(2);
-//					console.log(err.message);
-					subtitles.tryLater(15000);
-				});
-				
-			}).catch(function(err){
-//				console.log(3);
-//				console.log(err.message);
-				subtitles.tryLater(30000);
-			});
-		}
-	},
-	
-	findHash: function() {
-		if (["playing","paused"].indexOf(player.state()) > -1) {
-			if (!powGlobals.current.fileHash) {
-				if (powGlobals.torrent.engine) {
-					subtitles.os.extractInfo(powGlobals.current.path).then(function(infos) {
-						hash = infos.moviehash;
-//						console.log("found this hash: "+hash);
-						el = powGlobals.lists.files[powGlobals.lists.media[player.currentItem()].index];
-						if (el.finished) {
-							powGlobals.current.fileHash = infos.moviehash;
-							if (powGlobals.current.byteLength) subtitles.byExactHash(infos.moviehash,powGlobals.current.byteLength,powGlobals.current.filename);
-						} else {
-							if (typeof powGlobals.lists.media[player.currentItem()].checkHashes[hash] === 'undefined') {
-								powGlobals.lists.media[player.currentItem()].checkHashes[hash] = 1;
-							} else {
-								if (powGlobals.lists.media[player.currentItem()].checkHashes[hash] >= 1) {
-									powGlobals.lists.media[player.currentItem()].checkHashes[hash]++;
-									powGlobals.current.fileHash = hash;
-									if (powGlobals.current.byteLength) {
-										subtitles.byExactHash(powGlobals.current.fileHash,powGlobals.current.byteLength,powGlobals.current.filename);
-									}
-									
-								} else powGlobals.lists.media[player.currentItem()].checkHashes[hash]++;
-							}
-						}
-						return true;
-					});
+subtitles.fetchOsCookie = function (retryCookie) {
+    utils.checkInternet( function (isConnected) {
+        if (isConnected) {
+            var req = require('http').request({ host: "dl.opensubtitles.org", path: "/en/download/subencoding-utf8/vrf-ef3a1f1e6e/file/1954677189" }, function (res) {
+                if (res.headers["set-cookie"] && res.headers["set-cookie"][0]) {
+                    var tempCookie = res.headers["set-cookie"][0];
+                    subtitles.osCookie = (tempCookie + "").split(";").shift();
+                } else if (!res.headers["set-cookie"] && retryCookie) {
+                    console.log("fetching OS cookie failed, trying again in 20 sec");
+                    setTimeout(function () { subtitles.fetchOsCookie(false) },20000);
+                }
+            });
+            req.end();
+        }
+    });
+}
+
+subtitles.finishedCB = function (subs) {
+	if (!subs) {
+		player.notify('No Subtitles Found');
+	} else {
+		if (player.itemCount() > 0 && !player.itemDesc(player.currentItem()).setting.checkedSubs) {
+			newSettings = player.vlc.playlist.items[player.currentItem()].setting;
+			if (utils.isJsonString(newSettings)) {
+				newSettings = JSON.parse(newSettings);
+				if (newSettings.subtitles) {
+					$.extend( newSettings.subtitles, subs2 );
 				} else {
-					subtitles.os.extractInfo(powGlobals.current.path).then(function(infos) {
-						powGlobals.current.fileHash = infos.moviehash;
-						if (!powGlobals.current.byteLength && powGlobals.current.path) {
-							powGlobals.current.byteLength = utils.fs.size(powGlobals.current.path);
-						}
-						if (!powGlobals.current.byteLength) powGlobals.current.byteLength = 0;
-						subtitles.byExactHash(powGlobals.current.fileHash,powGlobals.current.byteLength,powGlobals.current.filename);
-					});
+					newSettings.subtitles = subs;
 				}
-				if (!powGlobals.current.fileHash) {
-					clearTimeout(subtitles.findHashTime);
-					subtitles.findHashTime = setTimeout(function() { subtitles.findHash(); },15000);
-				}
+			} else {
+				newSettings = {};
+				newSettings.subtitles = subs;
 			}
-		} else {
-			clearTimeout(subtitles.findHashTime);
-			subtitles.findHashTime = setTimeout(function() { subtitles.findHash(); },15000);
-		}
-	},
-	
-	updateSub: function() {
-		if (localStorage.subLang != "None" && player.subTrack() == 0) {
-			for (gvn = 1; gvn < player.subCount(); gvn++) {
-				if (player.subDesc(gvn).language == localStorage.subLang) {
-					player.subTrack(gvn);
-					break;
+			newSettings.checkedSubs = true;
+			setTimeout(function() {
+				player.vlc.playlist.items[player.currentItem()].setting = JSON.stringify(newSettings);
+				setTimeout(function() { remote.updateVal("subCount",player.subCount()); },100);
+				if (!dlna.initiated) {
+					subtitles.updateSub();
+					player.wrapper.find(".wcp-subtitle-but").show(0);
+					player.wrapper.find(".wcp-show-subtitles").css('display', 'inline-block');
+					if (player.fullscreen()) player.notify('<i class="wcp-subtitle-icon-big"></i>');
+					else player.notify('<i class="wcp-subtitle-icon"></i>');
 				}
+			},100);
+		}
+	}
+}
+
+subtitles.fetchSubs = function () {
+    
+    if (subFinder) subFinder.terminate();
+
+    objective = {
+		filepath: powGlobals.lists.media[player.currentItem()].path,
+		fps: player.vlc.input.fps
+	};
+
+	if (powGlobals.lists.media[player.currentItem()].byteLength)
+		objective.byteLength = powGlobals.lists.media[player.currentItem()].byteLength;
+
+	if (powGlobals.torrent && powGlobals.torrent.engine && powGlobals.torrent.engine.infoHash) {
+		objective.torrentHash = powGlobals.torrent.engine.infoHash;
+		objective.isFinished = false;
+	}
+
+    objective.filename = parser(objective.filepath).filename();
+	objective.cb = subtitles.finishedCB;
+    
+    subFinder = new worker('../../src/workers/subtitles/find.js', true);
+	
+    subFinder.addEventListener('message', function (msg) {
+        if (msg.data) {
+            if (msg.data == 'null') {
+                objective.cb('');
+            } else {
+                objective.cb(msg.data);
+            }
+            subFinder.terminate();
+            subFinder = false;
+        }
+    });
+    
+    subFinder.postMessage(objective);
+}
+
+subtitles.processSub = function (srt, extension, cb) {
+
+    if (subParser) subParser.terminate();
+
+    subParser = new worker('../../src/workers/subtitles/parse.js', true);
+    
+    subParser.addEventListener('message', function (msg) {
+        if (msg.data) {
+            if (msg.data == 'null') {
+                cb('');
+            } else {
+                cb(msg.data);
+            }
+            subParser.terminate();
+            subParser = false;
+        }
+    });
+    
+    subParser.postMessage({
+        srt: srt,
+        extension: extension
+    });
+    
+}
+
+subtitles.loadSubtitle = function (subtitleElement, cb) {
+    if (subtitleElement.indexOf("[-alt-]") > -1) {
+        var altSub = subtitleElement.split("[-alt-]")[1];
+        subtitleElement = subtitleElement.split("[-alt-]")[0];
+    }
+
+    var callOpts = {};
+    callOpts.host = subtitleElement.replace("http://","").substr(0,subtitleElement.replace("http://","").indexOf("/"));
+    callOpts.path = subtitleElement.replace("http://","").substr(subtitleElement.replace("http://","").indexOf("/"));
+    if (subtitleElement.replace("http://","").substr(0,subtitleElement.replace("http://","").indexOf("/")) == "dl.opensubtitles.org" && subtitles.osCookie) {
+        callOpts.headers = { 'cookie': subtitles.osCookie };
+    } else if (subtitleElement.replace("http://","").substr(0,subtitleElement.replace("http://","").indexOf("/")) == "dl.opensubtitles.org") {
+        if (altSub) {
+          window.torrent.flood.pause();
+            retriever.retrieveSrt("http://dl.opensubtitles.org/en/download/file/"+subtitleElement.split('/').pop(), function (err, res) {
+              window.torrent.flood.start();
+                subtitles.processSub(res, subtitleElement.split('.').pop(), cb);
+            },{ charset: localStorage.subEncoding });
+        } else
+            cb(null);
+    } else {
+        retriever.retrieveSrt(subtitleElement, function (err, res) {
+            subtitles.processSub(res, subtitleElement.split('.').pop(), cb);
+        },{ charset: localStorage.subEncoding });
+    }
+    var resData = "";
+
+  window.torrent.flood.pause();
+    var req = http.request(callOpts, function (res) {
+        if ([501,410,404].indexOf(res.statusCode) > -1) {
+            if (subtitleElement.indexOf('http://dl.opensubtitles.org/en/download/subencoding-utf8/') == 0)
+                retriever.retrieveSrt(subtitleElement.replace('/subencoding-utf8/','/file/'), function (err, res) {
+                  window.torrent.flood.start();
+                    subtitles.processSub(res, subtitleElement.split('.').pop(), cb);
+                },{ charset: localStorage.subEncoding });
+            else
+                cb(null);
+        } else {
+            
+            res.on('data', function (data) {
+                resData += data;
+            });
+            res.on('end', function () {
+              window.torrent.flood.start();
+                subtitles.processSub(resData, subtitleElement.split('.').pop(), cb);
+            });
+        }
+    });
+    req.end();
+}
+
+subtitles.findLine = function (subLines, trackSub, subDelay, time) {
+    return new Promise(function (resolve, reject) {
+        var nowSecond = (time - subDelay) / 1000;
+        if (trackSub > -2) {
+
+            var line = -1;
+            var os = 0;
+
+            for (os in subLines) {
+                if (subLines[os]) {
+                    if (os > nowSecond) break;
+                    line = os;
+                } else {
+                    delete subLines[os];
+                }
+            }
+
+            if (line >= 0) {
+                if (line != trackSub) {
+                    if ((subLines[line].t.match(new RegExp("<", "g")) || []).length == 2) {
+                        if (!(subLines[line].t.substr(0, 1) == "<" && subLines[line].t.slice(-1) == ">"))
+                            subLines[line].t = subLines[line].t.replace(/<\/?[^>]+(>|$)/g, "");
+                    } else if ((subLines[line].t.match(new RegExp("<", "g")) || []).length > 2)
+                        subLines[line].t = subLines[line].t.replace(/<\/?[^>]+(>|$)/g, "");
+                        
+                    resolve({
+                        text: subLines[line].t,
+                        trackSub: line
+                    });
+                } else if (subLines[line].o < nowSecond)
+                    resolve({
+                        text: ''
+                    });
+
+            } else resolve();
+        } else resolve();
+    });
+}
+
+	
+subtitles.updateSub = function() {
+	if (localStorage.subLang != "None" && player.subTrack() == 0) {
+		for (gvn = 1; gvn < player.subCount(); gvn++) {
+			if (player.subDesc(gvn).language == localStorage.subLang) {
+				player.subTrack(gvn);
+				break;
 			}
 		}
 	}
-
 }
 
 subtitles.fetchOsCookie(true);

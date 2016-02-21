@@ -45,7 +45,7 @@ if (!localStorage.pulseRule) localStorage.pulseRule = "disabled";
 if (!localStorage.noSubs) localStorage.noSubs = "0";
 if (!localStorage.subSizeDefault) localStorage.subSizeDefault = "1";
 if (!localStorage.zoomLevel) localStorage.zoomLevel = "0";
-if (!localStorage.subColor) localStorage.subColor = "#fff";
+if (!localStorage.subColor) localStorage.subColor = "#ebcb00";
 if (!localStorage.torrentSubs) localStorage.torrentSubs = "true";
 if (!localStorage.playerCmdArgs) localStorage.playerCmdArgs = "";
 if (!localStorage.history) {

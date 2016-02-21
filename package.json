@@ -52,7 +52,9 @@
         "valid-url": "*",
         "rimraf": "*",
         "adm-zip": "*",
-        "readdirp": "^2.0.0"
+        "readdirp": "^2.0.0",
+        "bluebird": "*",
+        "workerjs": "*"
     },
     "optionalDependencies": {
         "node-windows": "*",

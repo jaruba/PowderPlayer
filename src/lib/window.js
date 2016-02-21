@@ -35,7 +35,9 @@ var win = {
 	
 			if (r) {
 				if (powGlobals.torrent.engine) {
-					clearTimeout(torrent.timers.down);
+					if (torrent.timers.peers) clearInterval(torrent.timers.peers);
+					if (torrent.timers.setDownload) clearTimeout(torrent.timers.setDownload);
+					if (torrent.timers.down) clearTimeout(torrent.timers.down);
 					powGlobals.torrent.engine.server.close(function() {
 						powGlobals.torrent.engine.remove(function() {
 							if (powGlobals.torrent.engine) powGlobals.torrent.engine.destroy(function() { win.exitApp(1500); });
@@ -45,7 +47,9 @@ var win = {
 				} else win.exitApp(1000);
 			} else {
 				if (powGlobals.torrent.engine) {
-					clearTimeout(torrent.timers.down);
+					if (torrent.timers.peers) clearInterval(torrent.timers.peers);
+					if (torrent.timers.setDownload) clearTimeout(torrent.timers.setDownload);
+					if (torrent.timers.down) clearTimeout(torrent.timers.down);
 					powGlobals.torrent.engine.server.close(function() {
 						if (powGlobals.torrent.engine) {
 							powGlobals.torrent.engine.destroy(function() {

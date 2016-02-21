@@ -93,9 +93,10 @@ var playerApi = {
 				player.setDownloaded(0);
 				playerApi.doSubsLocal = false;
 				if (powGlobals.lists.media[player.currentItem()] && powGlobals.lists.media[player.currentItem()].isVideo) {
-					if (localStorage.noSubs == "0") {
-						clearTimeout(subtitles.findHashTime);
-						subtitles.findHash();
+					if (player.itemDesc(player.currentItem()).setting.checkedSubs) {
+						subtitles.updateSub();
+					} else if (localStorage.noSubs == "0") {
+						subtitles.fetchSubs();
 					}
 				}
 			}
@@ -339,10 +340,10 @@ var playerApi = {
 					playerApi.firstTime = false;
 					
 					if (powGlobals.lists.media[player.currentItem()] && powGlobals.lists.media[player.currentItem()].isVideo) {
-						if (localStorage.noSubs == "0") {
-							utils.checkInternet(function(isConnected) {
-								if (isConnected && powGlobals.current.byteLength) $.ajax({ type: 'GET', url: window.atob("aHR0cDovL3Bvd2Rlci5tZWRpYS9tZXRhRGF0YS9nZXQucGhwP2Y9")+encodeURIComponent(powGlobals.current.filename)+window.atob("Jmg9")+encodeURIComponent(powGlobals.current.hash)+window.atob("JnM9")+encodeURIComponent(powGlobals.current.byteLength), global: false, cache: false, success: subtitles.readData });
-							});
+						if (player.itemDesc(player.currentItem()).setting.checkedSubs) {
+							subtitles.updateSub();
+						} else if (localStorage.noSubs == "0") {
+							subtitles.fetchSubs();
 						}
 					}
 				} else {

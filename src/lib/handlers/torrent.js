@@ -217,12 +217,6 @@ var torrent = {
 								setTimeout(utils.delayer(ij,function(dln) {
 									if (powGlobals.lists.files && powGlobals.lists.files[dln]) {
 										powGlobals.lists.files[dln].finished = true;
-										if (powGlobals.lists.files[dln].isMedia && powGlobals.lists.media[powGlobals.lists.files[dln].vIndex].isVideo) {
-											if (localStorage.noSubs == "0") {
-												clearTimeout(subtitles.findHashTime);
-												subtitles.findHash();
-											}
-										}
 									}
 								}),20000);
 								
