@@ -110,60 +110,60 @@ var ui = {
 		
 		changeClickPause: function() {
 			if (localStorage.clickPause == 'fullscreen') {
-				$("#click-pause").text("Fullscreen + Windowed");
+				$("#click-pause").text(i18n("Fullscreen + Windowed"));
 				localStorage.clickPause = "both";
 			} else {
-				$("#click-pause").text("only in Fullscreen");
+				$("#click-pause").text(i18n("only in Fullscreen"));
 				localStorage.clickPause = "fullscreen";
 			}
 		},
 		
 		changePulseSetting: function() {
 			if (localStorage.pulseRule == 'auto') {
-				$("#click-pulse").text("always");
+				$("#click-pulse").text(i18n("always"));
 				localStorage.pulseRule = "always";
-				if ($("#menuPulsing").text() == "Disable Pulsing") $("#menuPulsing").text("Enable Pulsing");
+				if ($("#menuPulsing").text() == i18n("Disable Pulsing")) $("#menuPulsing").text(i18n("Enable Pulsing"));
 			} else if (localStorage.pulseRule == 'always') {
-				$("#click-pulse").text("disabled");
+				$("#click-pulse").text(i18n("disabled"));
 				localStorage.pulseRule = "disabled";
-				if ($("#menuPulsing").text() == "Enable Pulsing") $("#menuPulsing").text("Disable Pulsing");
+				if ($("#menuPulsing").text() == i18n("Enable Pulsing")) $("#menuPulsing").text(i18n("Disable Pulsing"));
 			} else {
-				$("#click-pulse").text("auto");
+				$("#click-pulse").text(i18n("auto"));
 				localStorage.pulseRule = "auto";
-				if ($("#menuPulsing").text() == "Disable Pulsing") $("#menuPulsing").text("Enable Pulsing");
+				if ($("#menuPulsing").text() == i18n("Disable Pulsing")) $("#menuPulsing").text(i18n("Enable Pulsing"));
 			}
 		},
 		
 		changeNoSeeding: function() {
 			if (localStorage.noSeeding) {
 				delete localStorage.noSeeding;
-				$("#no-seeding").text("Always Seed");
+				$("#no-seeding").text(i18n("Always Seed"));
 			} else {
 				localStorage.noSeeding = '1';
-				$("#no-seeding").text("Only when Downloading");
+				$("#no-seeding").text(i18n("Only when Downloading"));
 			}
 		},
 		
 		switchPulsing: function() {
-			if ($("#menuPulsing").text() == "Disable Pulsing") {
+			if ($("#menuPulsing").text() == i18n("Disable Pulsing")) {
 				localStorage.pulseRule = "disabled";
-				$("#menuPulsing").text("Enable Pulsing");
-				$("#click-pulse").text("disabled");
+				$("#menuPulsing").text(i18n("Enable Pulsing"));
+				$("#click-pulse").text(i18n("disabled"));
 				ctxMenu.playerMenu.items[0].submenu.items[4].checked = false;
 			} else {
 				localStorage.pulseRule = "auto";
-				$("#menuPulsing").text("Disable Pulsing");
-				$("#click-pulse").text("auto");
+				$("#menuPulsing").text(i18n("Disable Pulsing"));
+				$("#click-pulse").text(i18n("auto"));
 				ctxMenu.playerMenu.items[0].submenu.items[4].checked = true;
 			}
 		},
 		
 		changeNoSub: function() {
-			if ($("#click-no-sub").text() == "True") {
-				$("#click-no-sub").text("False");
+			if ($("#click-no-sub").text() == i18n("True")) {
+				$("#click-no-sub").text(i18n("False"));
 				localStorage.noSubs = "1";
 			} else {
-				$("#click-no-sub").text("True");
+				$("#click-no-sub").text(i18n("True"));
 				localStorage.noSubs = "0";
 			}
 		},
@@ -357,7 +357,7 @@ var ui = {
 				ctxMenu.disable();
 				$("#inner-in-content").animate({ scrollTop: 0 }, 0);
 				torrent.parsed = {};
-				player.setOpeningText("Stopping");
+				player.setOpeningText(i18n("Stopping"));
 				player.fullscreen(false);
 				$("#header_container").css("display","none");
 				$("#inner-in-content").css("overflow-y","hidden");
@@ -366,7 +366,7 @@ var ui = {
 				document.getElementById('magnetLink').value = "";
 				$('#player_wrapper').css("min-height","1px").css("height","1px").css("width","1px");
 				if ($("#open-url").hasClass("dark-add-url")) {
-					$("#magnetSubmit").text("Stream");
+					$("#magnetSubmit").text(i18n("Stream"));
 					$("#open-url").removeClass("dark-add-url");
 				}
 				win.gui.setMinimumSize(530, 440);
@@ -391,7 +391,7 @@ var ui = {
 				$('#open-url').css('top', Math.round(($(window).height() - 187) / 2)+'px');
 				player.clearPlaylist();
 			} else {
-				player.setOpeningText("Loading resource");
+				player.setOpeningText(i18n("Loading resource"));
 				$("#header_container").show();
 			}
 			player.setDownloaded(0);
@@ -491,20 +491,20 @@ $("#peer-port").text(localStorage.peerPort);
 $("#peer-spinner").val(localStorage.peerPort);
 $("#def-folder").text(localStorage.tmpDir);
 if (localStorage.libDir == "Temp") {
-	$("#lib-folder").text("same as Download Folder");
+	$("#lib-folder").text(i18n("same as Download Folder"));
 } else $("#lib-folder").text(localStorage.libDir);
 if (localStorage.clickPause == 'fullscreen') {
-	$("#click-pause").text("only in Fullscreen");
-} else $("#click-pause").text("Fullscreen + Windowed");
+	$("#click-pause").text(i18n("only in Fullscreen"));
+} else $("#click-pause").text(i18n("Fullscreen + Windowed"));
 $('#open-url').css('top', Math.round(($(window).height() - 187) / 2)+'px');
 
 if (localStorage.pulseRule == "disabled") {
-	$("#menuPulsing").text("Enable Pulsing");
+	$("#menuPulsing").text(i18n("Enable Pulsing"));
 	ctxMenu.playerMenu.items[0].submenu.items[4].checked = false;
 }
 
 if (localStorage.noSubs == "1") {
-	$("#click-no-sub").text("False");
+	$("#click-no-sub").text(i18n("False"));
 }
 
 $("#click-pulse").text(localStorage.pulseRule);
@@ -580,19 +580,19 @@ $('#use-player').on('change', function() {
 		localStorage.useVLC = "1";
 		$(".internal-opt").hide(0);
 		$(".external-opt").show(0);
-	} else if (this.value == "Scan for Players") {
+	} else if (this.value == i18n("Scan for Players")) {
 		$('.player-setting-close').trigger('click');
 		$("#open-ext-player").trigger('click');
-		$('#use-player').val('Internal');
+		$('#use-player').val(i18n('Internal'));
 		localStorage.useVLC = "0";
 		localStorage.customPlayer = '';
 		$(".external-opt").hide(0);
 		$(".internal-opt").show(0);
 		require('./lib/ext-player.js');
-	} else if (this.value == "Custom Player") {
+	} else if (this.value == i18n("Custom Player")) {
 		chooseFile('#playerDialog');
 	    document.body.onfocus = cancelCustomPlayer;
-   	} else if (this.value == "Internal") {
+   	} else if (this.value == i18n("Internal")) {
 		localStorage.customPlayer = '';
 		localStorage.useVLC = "0";
 		$(".external-opt").hide(0);
@@ -606,7 +606,7 @@ function setCustomPlayer(customPlayer) {
 	localStorage.customPlayer = customPlayer;
 	$(".internal-opt").hide(0);
 	$(".external-opt").show(0);
-	$('#use-player').val('Custom Player');
+	$('#use-player').val(i18n('Custom Player'));
 	$('.ext-player-close').trigger('click');
 	$('.pl-settings').trigger('click');
 }
@@ -614,7 +614,7 @@ function setCustomPlayer(customPlayer) {
 function cancelCustomPlayer() {
 	setTimeout(function() {
 		if (!$('#playerDialog')[0].value.length) {
-			$('#use-player').val('Internal');
+			$('#use-player').val(i18n('Internal'));
 			localStorage.useVLC = "0";
 			localStorage.customPlayer = '';
 			$(".external-opt").hide(0);
@@ -633,7 +633,7 @@ $('#playerDialog').change(function(evt) {
 		$(".internal-opt").hide(0);
 		$(".external-opt").show(0);
 	} else {
-		$('#use-player').val('Internal');
+		$('#use-player').val(i18n('Internal'));
 		localStorage.useVLC = "0";
 		localStorage.customPlayer = '';
 		$(".external-opt").hide(0);
@@ -680,7 +680,7 @@ $("#process-type-default").on('change', function() {
 });
 
 if (localStorage.singleInstance == '1') {
-	$("#process-type-default").val('Single');
+	$("#process-type-default").val(i18n('Single'));
 }
 
 $("#torrent-sub").on('change', function() {
@@ -695,7 +695,7 @@ if (localStorage.useVLC == "1") {
 		$(".internal-opt").hide(0);
 		$(".external-opt").show(0);
 	} else if (localStorage.customPlayer) {
-		$('#use-player').val('Custom Player');
+		$('#use-player').val(i18n('Custom Player'));
 		$(".internal-opt").hide(0);
 		$(".external-opt").show(0);
 	}
@@ -707,16 +707,29 @@ $('#cmd-args-form').on('submit', function(e) {
 	$('#cmd-args-close').trigger('click');
 });
 
+$("#change-lang").on('change', function() {
+	if (this.value == 'English') {
+		localStorage.appLang = 'template';
+	} else {
+		localStorage.appLang = this.value;
+	}
+	translator.changeLocal(require('path').dirname(process.execPath)+'/src/locale/' + localStorage.appLang);
+});
+
+if (localStorage.appLang != 'template') {
+	$("#change-lang").val(i18n(localStorage.appLang));
+}
+
 if (localStorage.subColor == '#fff') {
-	$("#sub-default-color").val('White');
+	$("#sub-default-color").val(i18n('White'));
 } else if (localStorage.subColor == '#ebcb00') {
-	$("#sub-default-color").val('Yellow');
+	$("#sub-default-color").val(i18n('Yellow'));
 } else if (localStorage.subColor == '#00e78f') {
-	$("#sub-default-color").val('Green');
+	$("#sub-default-color").val(i18n('Green'));
 } else if (localStorage.subColor == '#00ffff') {
-	$("#sub-default-color").val('Cyan');
+	$("#sub-default-color").val(i18n('Cyan'));
 } else if (localStorage.subColor == '#00b6ea') {
-	$("#sub-default-color").val('Blue');
+	$("#sub-default-color").val(i18n('Blue'));
 }
 
 $('.wcp-subtitle-text').css('color', localStorage.subColor);
@@ -729,5 +742,5 @@ if (localStorage.bufferSize) {
 }
 
 if (localStorage.noSeeding) {
-	$("#no-seeding").text("Only when Downloading");
+	$("#no-seeding").text(i18n("Only when Downloading"));
 }

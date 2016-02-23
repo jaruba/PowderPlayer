@@ -40,7 +40,7 @@ $('#torrentDialog').change(function(evt) {
 });
 
 $('#libraryDialog').change(function(evt) {
-	$("#lib-folder").text($(this).val());
+	$("#lib-folder").text(i18n($(this).val()));
 	localStorage.libDir = $(this).val();
 });
 
@@ -78,7 +78,7 @@ $('#subtitleDialog').change(function(evt) {
 		newSettings.subtitles = JSON.parse(newString);
 		player.vlc.playlist.items[player.currentItem()].setting = JSON.stringify(newSettings);
 		player.subTrack(player.subCount()-1);
-		player.notify("Subtitle Loaded");
+		player.notify(i18n("Subtitle Loaded"));
 	  } else if (["zip"].indexOf(utils.parser(targetSub).extension()) > -1) {
 		require('subtitles-grouping/lib/retriever').retrieveSrt(targetSub,function(err,res,subnm) {
 			if (subnm) {
@@ -96,11 +96,11 @@ $('#subtitleDialog').change(function(evt) {
 				newSettings.subtitles = JSON.parse(newString);
 				player.vlc.playlist.items[player.currentItem()].setting = JSON.stringify(newSettings);
 				player.subTrack(player.subCount()-1);
-				player.notify("Subtitle Loaded");
+				player.notify(i18n("Subtitle Loaded"));
 			}
 	    },{ charset: window.localStorage.subEncoding });
 	  } else {
-		  player.notify("Subtitle Unsupported");
+		  player.notify(i18n("Subtitle Unsupported"));
 	  }
 });
 

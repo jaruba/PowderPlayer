@@ -27,6 +27,8 @@ var playerApi = {
 		setTimeout(function() {
 			player = new wcp("#player_wrapper").addPlayer({ autoplay: 1, progressCache: 1, pausePolicy: localStorage.clickPause });
 			
+			translator.refresh();
+			
 			playerApi.events.emit('loaded');
 			
 			player.onPlaying(playerApi.listeners.isPlaying);
@@ -154,7 +156,7 @@ var playerApi = {
 					for (kom = 1; kom < player.subCount(); kom++) {
 						if (player.subDesc(kom).language == playerApi.remLocalSub) {
 							player.subTrack(kom);
-							player.notify("Subtitle Loaded");
+							player.notify(i18n("Subtitle Loaded"));
 							break;
 						}
 					}
@@ -232,7 +234,7 @@ var playerApi = {
 									playerApi.remLocalSub = subPath.split('\\').pop();
 								} else {
 									player.subTrack(player.subCount() - 1);
-									player.notify("Subtitle Loaded");
+									player.notify(i18n("Subtitle Loaded"));
 								}
 							}
 						});
@@ -293,7 +295,7 @@ var playerApi = {
 				playerApi.savedHistory = false;
 				powGlobals.lists.currentIndex = player.currentItem();
 				if (powGlobals.torrent.engine) {
-					if (player.vlc && !load.argData.dlna) player.setOpeningText("Prebuffering ...");
+					if (player.vlc && !load.argData.dlna) player.setOpeningText(i18n("Prebuffering") + " ...");
 					if (typeof powGlobals.lists.media[player.currentItem()] !== 'undefined' && typeof powGlobals.lists.media[player.currentItem()].local === 'undefined') {
 						ij = powGlobals.lists.media[player.currentItem()].index;
 						if (!powGlobals.torrent.engine.files[powGlobals.lists.files[ij].index].selected) {
@@ -347,7 +349,7 @@ var playerApi = {
 						}
 					}
 				} else {
-					if (player.vlc && !load.argData.dlna) player.setOpeningText("Loading resource");
+					if (player.vlc && !load.argData.dlna) player.setOpeningText(i18n("Loading resource"));
 					if (player.currentItem() > -1 && powGlobals.lists.media && powGlobals.lists.media[player.currentItem()]) {
 		//				if (!playerApi.isYoutube(player.currentItem())) {
 		//					win.gui.title = new parser(powGlobals.lists.media[player.currentItem()].filename).name(); // if not youtube, set window title

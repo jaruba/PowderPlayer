@@ -9,6 +9,14 @@
 
     <script src="resources/jquery-2.1.3.min.js"></script>
     <script src="resources/bootstrap-progressbar/bootstrap-progressbar.min.js"></script>
+    <script src="lib/translator.js"></script>
+    <script>
+	if (!localStorage.appLang) localStorage.appLang = 'template';
+	if (['template','English'].indexOf(localStorage.appLang) > -1) newLang = 'template';
+	else newLang = localStorage.appLang;
+	translator.setLocal(require('path').dirname(process.execPath)+'/src/locale/' + newLang);
+	var i18n = translator.i18n;
+    </script>
 </head>
 
 <body>
@@ -18,27 +26,28 @@
     </div>
     <center style="z-index: 2">
     	<div id="starter" style="display:none">
-            <h2 id="update-header" style="margin-bottom: 5px">Update to Powder</h2>
-            <div id="donwload-now" onClick="startDownload()" class="actionButton droid-bold">Download Now!</div>
-            <div id="maybe-later" onClick="win.close()" class="actionButton droid-bold">Maybe Later ...</div>
+            <h2 id="update-header" class="i18n" style="margin-bottom: 5px">Update to Powder</h2>
+            <div id="donwload-now" onClick="startDownload()" class="actionButton droid-bold i18n">Download Now!</div>
+            <div id="maybe-later" onClick="win.close()" class="actionButton droid-bold i18n">Maybe Later ...</div>
         </div>
 		<div id="downloader" style="display:none; padding:30px 15px; background:#f1654f; color: #fff">
-            <div class="droid-bold">Downloading ...</div>
+            <div class="droid-bold i18n">Downloading ...</div>
             <div id="all-download" class="progress" style="margin:10px 0; width: 100%">
                 <div class="progress-bar progress-bar-warning" role="progressbar" data-transitiongoal="0" style="transition: width .0s ease"></div>
             </div>
             <div class="stats">
-                <span>Progress: <span id="downPart">0 kB</span> / <span id="downAll">0 kB</span></span>
+                <span><i18n>Progress</i18n>: <span id="downPart">0 kB</span> / <span id="downAll">0 kB</span></span>
             </div>
         </div>
     	<div id="ender" style="display:none">
-            <h2 id="update-header" style="font-size:15px">Downloaded Successfully</h2>
-			<i style="font-size:13px; display:inline-block; padding:10px 30px; background:#5AA5C9; color:#fff; margin-bottom:2px">Powder Player will be closed during the updating process.</i>
-            <div id="donwload-now" onClick="runUpdate()" class="actionButton droid-bold">Run Update Now!</div>
+            <h2 id="update-header" class="i18n" style="font-size:15px">Downloaded Successfully</h2>
+			<i style="font-size:13px; display:inline-block; padding:10px 30px; background:#5AA5C9; color:#fff; margin-bottom:2px" class="i18n">Powder Player will be closed during the updating process.</i>
+            <div id="donwload-now" onClick="runUpdate()" class="actionButton droid-bold i18n">Run Update Now!</div>
         </div>
     </center>
     
 	<script>
+	translator.refresh();
 	localStorage.doUpdate = "0";
 	
 	var isWin = /^win/.test(process.platform);
@@ -78,7 +87,7 @@
 				for (kl = 0; jsonData[mn]["assets"][kl]; kl++) {
 					if (jsonData[mn]["assets"][kl]["browser_download_url"].split(".").pop() == appExt.split(".").pop()) {
 						file_url = jsonData[mn]["assets"][kl]["browser_download_url"];
-						$("#update-header").text("Update to Powder "+jsonData[mn]["tag_name"]);
+						$("#update-header").text(i18n("Update to Powder")+" "+jsonData[mn]["tag_name"]);
 						$(".spinner").fadeOut();
 						$("#starter").fadeIn();
 						return;

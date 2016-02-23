@@ -361,7 +361,7 @@ var utils = {
 						if (xhr.replace(".","") != xhr && isNaN(xhr.split(".")[0]) === false && isNaN(xhr.split(".")[1]) === false && localStorage.powderVersion != xhr) {
 							// there is a new version of powder
 							
-							$("#update-header").html("Update to Powder v"+xhr);
+							$("#update-header").html(i18n("Update to Powder")+" v"+xhr);
 							var updater = gui.Window.open('app://powder/src/updater.html',{ width: 320, height: 133, icon: "icon.png", toolbar: false });
 							if (isWin) updExt = ".exe";
 							else {
@@ -393,7 +393,7 @@ var utils = {
 				}
 				utils.ga.visitor.pageview("/mask.html").send();
 				utils.ga.loaded = true;
-			} else $('#select-plugin-list').empty().html('<div onClick="ui.settings.loadPluginList(); return false" class="actionButton wrap-text"><span class="droid-bold">Couldn\'t connect. Press to try again.</span></div>');
+			} else $('#select-plugin-list').empty().html('<div onClick="ui.settings.loadPluginList(); return false" class="actionButton wrap-text"><span class="droid-bold">'+i18n("Couldn't connect. Press to try again.")+'</span></div>');
 		});
 	},
 	

@@ -44,17 +44,17 @@ var load = {
 			$('#player_wrapper').css("min-height","100%").css("height","100%").css("width","auto");
 			
 			if (!$("#open-url").hasClass("dark-add-url")) {
-				$("#magnetSubmit").text("Add");
+				$("#magnetSubmit").text(i18n("Add"));
 				$("#open-url").addClass("dark-add-url");
 			}
 			
-			if (playerApi.playlist.async.preBufZero) player.setOpeningText("Prebuffering ...");
+			if (playerApi.playlist.async.preBufZero) player.setOpeningText(i18n("Prebuffering") + " ...");
 			if (playerApi.playlist.async.addPlaylist && playerApi.playlist.async.addPlaylist.length > 0 && playerApi.playlist.async.noPlaylist === false) {
 				playerApi.playlist.async.addPlaylist.forEach(function(e) { player.addPlaylist(e); });
 			}
 			
 			if (playerApi.playlist.async.loadLocal) {
-				player.setOpeningText("Loading resource");
+				player.setOpeningText(i18n("Loading resource"));
 				player.playItem(0);
 			}
 	
@@ -116,7 +116,7 @@ var load = {
 					$('#player_wrapper').css("min-height","100%").css("height","100%").css("width","auto");
 		
 					if (!$("#open-url").hasClass("dark-add-url")) {
-						$("#magnetSubmit").text("Add");
+						$("#magnetSubmit").text(i18n("Add"));
 						$("#open-url").addClass("dark-add-url");
 					}
 		
@@ -132,7 +132,7 @@ var load = {
 				}
 			
 				if (playerApi.loaded) {
-					player.setOpeningText("Loading resource");
+					player.setOpeningText(i18n("Loading resource"));
 					if (typeof noAutoStart === 'undefined') player.playItem(0);
 				} else playerApi.playlist.async.loadLocal = true;
 			
@@ -240,7 +240,7 @@ var load = {
 		$('#main').css("display","none");
 		$('#player_wrapper').css("min-height","100%").css("height","100%").css("width","auto");
 		if (!$("#open-url").hasClass("dark-add-url")) {
-			$("#magnetSubmit").text("Add");
+			$("#magnetSubmit").text(i18n("Add"));
 			$("#open-url").addClass("dark-add-url");
 		}
 		this._setOnlyFirst = 0;
@@ -298,7 +298,7 @@ var load = {
 			$('#player_wrapper').css("min-height","100%").css("height","100%").css("width","auto");
 			
 			if (!$("#open-url").hasClass("dark-add-url")) {
-				$("#magnetSubmit").text("Add");
+				$("#magnetSubmit").text(i18n("Add"));
 				$("#open-url").addClass("dark-add-url");
 			}
 			
@@ -398,14 +398,14 @@ var load = {
 	},
 	
 	history: function(targetHistory) {
-		player.setOpeningText("Loading resource");
+		player.setOpeningText(i18n("Loading resource"));
 	
 		win.gui.setMinimumSize(372, 210);
 	
 		$('#main').css("display","none");
 		$('#player_wrapper').css("min-height","100%").css("height","100%").css("width","auto");
 		if (!$("#open-url").hasClass("dark-add-url")) {
-			$("#magnetSubmit").text("Add");
+			$("#magnetSubmit").text(i18n("Add"));
 			$("#open-url").addClass("dark-add-url");
 		}
 		

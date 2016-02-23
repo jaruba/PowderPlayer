@@ -28,6 +28,14 @@ Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
 	}
     </script>
     
+    <script src="lib/translator.js"></script>
+    <script>
+	if (!localStorage.appLang) localStorage.appLang = 'template';
+	if (['template','English'].indexOf(localStorage.appLang) > -1) newLang = 'template';
+	else newLang = localStorage.appLang;
+	translator.setLocal(require('path').dirname(process.execPath)+'/src/locale/' + newLang);
+	var i18n = translator.i18n;
+    </script>
     <script src="lib/defaults.js"></script>
     <script src="lib/utils.js"></script>
     <script>
@@ -307,39 +315,39 @@ body {
 		        <div id="holder">
                 	<div id="main-buttons-hold">
                         <div id="main-buttons-small">
-                            <a class="pl-settings easy-modal-open h" href="#player-settings" title="Settings"><i class="player-settings"></i></a>
-                            <a class="history-button easy-modal-open h" href="#history-powder" onClick="ui.mechanics.printHistory()" title="History"><i class="history-icon"></i></a>
+                            <a class="pl-settings easy-modal-open h i18n" href="#player-settings" title="Settings"><i class="player-settings"></i></a>
+                            <a class="history-button easy-modal-open h i18n" href="#history-powder" onClick="ui.mechanics.printHistory()" title="History"><i class="history-icon"></i></a>
                         </div>
                     </div>
                     <img src="images/powder-logo.png" id="logoBig">
                     <br>
-                    <b class="fl_dd droid-bold">Drag & Drop a File</b>
+                    <b class="fl_dd droid-bold i18n">Drag & Drop a File</b>
                     <br>
-                    <span class="fl_sl">or select an option below</span>
+                    <span class="fl_sl i18n">or select an option below</span>
                     <br><br>
                     <div id="mainButHold">
 						<a href="#" onClick="chooseFile('#torrentDialog'); return false">
 		                    <div id="torrentBut" class="mainButtons goLeft h">
 								<img id="torIcon" src="images/torrent-icon.png">
-								<br>Add Torrent
+								<br><i18n>Add Torrent</i18n>
 		                    </div>
 						</a>
                     	<a href="#" onClick="chooseFile('#fileDialog'); return false">
                     		<div id="videoBut" class="mainButtons h">
                     			<img id="vidIcon" src="images/video-icon.png">
-                    			<br>Add Video
+                    			<br><i18n>Add Video</i18n>
                     		</div>
 						</a>
                     	<a class="main-add-url" href="#open-url">
 		                    <div id="linkBut" class="mainButtons goRight noMarginRight h">
 			                    <img id="urlIcon" src="images/link-icon.png">
-			                    <br>Use a URL
+			                    <br><i18n>Use a URL</i18n>
 		                    </div>
                         </a>
                     </div>
                     <br><br>
                     <span id="footer">
-                    	<b class="droid-bold">Supports:</b> Torrent Files / Links, Magnet Links, Youtube Links,<br>Youtube Playlist Links and all <a class="mainLinks h" onClick="gui.Shell.openExternal('http://www.videolan.org/vlc/features.php?cat=video'); return false" href="http://www.videolan.org/vlc/features.php?cat=video" target="_blank">VLC Supported Media Formats</a>.
+                    	<b class="droid-bold"><i18n>Supports</i18n>:</b> <i18n>Torrent Files / Links, Magnet Links, Youtube Links,</i18n><br><i18n>Youtube Playlist Links and all</i18n> <a class="mainLinks h i18n" onClick="gui.Shell.openExternal('http://www.videolan.org/vlc/features.php?cat=video'); return false" href="http://www.videolan.org/vlc/features.php?cat=video" target="_blank">VLC Supported Media Formats</a>.
                     </span>
 				</div>
 			</center>
@@ -352,15 +360,15 @@ body {
         <div id="header_container" class="hidden">
             <div id="header">
                 <div class="stats">
-                    <span><i class="peersIcon"></i>Peers: <span id="nrPeers">0</span></span><br>
-                    <span><i class="uploadIcon"></i>Uploaded: <span id="uploadAll">0 kB</span></span><br>
-                    <span><i class="downloadIcon"></i>Downloaded: <span id="downPart">0 kB</span> / <span id="downAll">0 kB</span></span>
+                    <span><i class="peersIcon"></i><i18n>Peers</i18n>: <span id="nrPeers">0</span></span><br>
+                    <span><i class="uploadIcon"></i><i18n>Uploaded</i18n>: <span id="uploadAll">0 kB</span></span><br>
+                    <span><i class="downloadIcon"></i><i18n>Downloaded</i18n>: <span id="downPart">0 kB</span> / <span id="downAll">0 kB</span></span>
                 </div>
                 <div id="all-download" class="progress">
                     <div class="progress-bar progress-bar-warning" role="progressbar" data-transitiongoal="0"></div><br>
                 </div>
                 <span id="downloadPercent">0%</span>
-                <span style="color: #bcbdbe; text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.3); font-size: 13px; margin-right: 96px; position: absolute; right: 0; display: inline-block; padding: 0 7px; border-radius: 3px; height: 21px; line-height: 22px; top: 51px"><i class="speedIcon" style="width: 22px"></i>Speed: <span id="speed">0.0 kB/s</span></span></span>
+                <span style="color: #bcbdbe; text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.3); font-size: 13px; margin-right: 96px; position: absolute; right: 0; display: inline-block; padding: 0 7px; border-radius: 3px; height: 21px; line-height: 22px; top: 51px"><i class="speedIcon" style="width: 22px"></i><i18n>Speed</i18n>: <span id="speed">0.0 kB/s</span></span></span>
 
                 <div id="header_content">
                     <div id="header_text" class="wrap-text goLeft" style="display:none"><span id="headerText"></span></div>
@@ -378,19 +386,19 @@ body {
                         <form class="pure-form pure-form-aligned" onsubmit="ui.buttons.urlFormAction(); return false;" id="magnetForm">
                             <fieldset>
                                 <div class="pure-control-group">
-                                    <input id="magnetLink" type="text" name="magnet" placeholder="Magnet URI or Video URL" onFocus="this.select();" onMouseUp="return false;">
-                                    <button id="magnetSubmit" type="submit" class="pure-button pure-button-primary">Stream</button>
+                                    <input id="magnetLink" type="text" name="magnet" class="i18n" placeholder="Magnet URI or Video URL" onFocus="this.select();" onMouseUp="return false;">
+                                    <button id="magnetSubmit" type="submit" class="pure-button pure-button-primary i18n">Stream</button>
                                 </div>
                             </fieldset>
                         </form>
                     </div>
             </div>
-            <button class="animated-close pure-button pure-margin" title="Close">Close</button>
+            <button class="animated-close pure-button pure-margin i18n" title="Close">Close</button>
         </div>
         <div id="internet-error" class="hidden">
             <center>
-                You require an internet connection to use this feature.<br><br>
-                <button class="animated-close pure-button pure-margin" title="I understand">I understand</button>
+                <i18n>You require an internet connection to use this feature.</i18n><br><br>
+                <button class="animated-close pure-button pure-margin i18n" title="I understand">I understand</button>
             </center>
         </div>
     </div>
@@ -401,91 +409,92 @@ body {
                     <form class="pure-form pure-form-aligned" id="cmd-args-form">
                         <fieldset>
                             <div class="pure-control-group">
-                                <input id="cmd-args-input" type="text" name="magnet" placeholder="Custom Player Command Line Arguments" onFocus="this.select();" onMouseUp="return false;">
-                                <button id="cmd-args-submit" type="submit" class="pure-button pure-button-primary">Save</button>
+                                <input id="cmd-args-input" type="text" class="i18n" name="magnet" placeholder="Custom Player Command Line Arguments" onFocus="this.select();" onMouseUp="return false;">
+                                <button id="cmd-args-submit" type="submit" class="pure-button pure-button-primary i18n">Save</button>
                             </div>
                         </fieldset>
                     </form>
                 </div>
         </div>
-        <button id="cmd-args-close" class="animated-close pure-button pure-margin" title="Close">Close</button>
+        <button id="cmd-args-close" class="animated-close pure-button pure-margin i18n" title="Close">Close</button>
     </div>
     
     <div class="second-easy-modal-animated" id="file-settings">
         <center>
-            <h2 class="spBottom">Select an Action</h2>
-            <div id="playAction" onClick="" class="actionButton">Play Now</div>
-            <div id="openAction" onClick="" class="actionButton">Open File</div>
-            <div id="openFolderAction" onClick="" class="actionButton">Open Containing Folder</div>
-            <div id="copyStream" onClick="" class="actionButton">Copy Stream URL</div>
-            <div id="closeAction"class="second-animated-close actionButton">Close</div>
+            <h2 class="spBottom i18n">Select an Action</h2>
+            <div id="playAction" onClick="" class="actionButton i18n">Play Now</div>
+            <div id="openAction" onClick="" class="actionButton i18n">Open File</div>
+            <div id="openFolderAction" onClick="" class="actionButton i18n">Open Containing Folder</div>
+            <div id="copyStream" onClick="" class="actionButton i18n">Copy Stream URL</div>
+            <div id="closeAction"class="second-animated-close actionButton i18n">Close</div>
         </center>
     </div>
     
     <div class="third-easy-modal-animated" id="player-settings">
         <center>
-            <h2 class="headButs change-set goRight" onClick="$('.third-animated-close').trigger('click'); $('#pr-settings').trigger('click'); return false">Process</h2>
-            <h2 class="headButs change-set goRight" onClick="$('.third-animated-close').trigger('click'); $('#tr-settings').trigger('click'); return false" style="margin-right: 4px; margin-left: 1px">Torrent</h2>
-            <h2 class="headButs change-set goRight" style="margin-right: 4px; margin-left: 1px" onClick="$('.third-animated-close').trigger('click'); $('#sub-settings').trigger('click'); return false" >Subtitles</h2>
-            <h2 class="headButs goRight" style="margin-right: 3px">Player</h2>
+            <h2 class="headButs change-set goRight i18n" onClick="$('.third-animated-close').trigger('click'); $('#pr-settings').trigger('click'); return false">Process</h2>
+            <h2 class="headButs change-set goRight i18n" onClick="$('.third-animated-close').trigger('click'); $('#tr-settings').trigger('click'); return false" style="margin-right: 4px; margin-left: 1px">Torrent</h2>
+            <h2 class="headButs change-set goRight i18n" style="margin-right: 4px; margin-left: 1px" onClick="$('.third-animated-close').trigger('click'); $('#sub-settings').trigger('click'); return false" >Subtitles</h2>
+            <h2 class="headButs goRight i18n" style="margin-right: 3px">Player</h2>
             <div class="clear"></div>
-            <div id="but-assoc4" onClick="utils.register.powLinks(); return false" class="actionButton droid-bold" style="display: none">Associate with Powder Links</div>
-            <div id="but-assoc1" onClick="utils.register.magnet(); return false" class="actionButton droid-bold">Associate with Magnet Links</div>
-            <div id="but-assoc2" onClick="utils.register.torrent(); return false" class="actionButton droid-bold">Associate with Torrent Files</div>
-            <div id="but-assoc3" onClick="utils.register.videos(); return false" class="actionButton droid-bold">Associate with Video Files</div>
-            <div id="but-vlc" class="actionButton wrap-text"><span class="droid-bold">Video Player: <select id="use-player"><option>Internal</option><option>VLC</option><option>Scan for Players</option><option>Custom Player</option></select></span></div>
-            <div onClick="ui.settings.changeClickPause(); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold">Click to Pause:</span> <span id="click-pause">only in Fullscreen</span></div>
-            <div onClick="chooseFile('#libraryDialog'); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold">Library Folder:</span> <span id="lib-folder">Temp</span></div>
-            <div onClick="$('#open-set-cmd-args').trigger('click'); $('#cmd-args-input').val(localStorage.playerCmdArgs); $('#cmd-args-input').focus(); return false" class="external-opt actionButton wrap-text" style="display:none"><span class="droid-bold">Set Command Line Arguments</span></div>
-            <div id="closeAction" class="third-animated-close actionButton player-setting-close" style="font-family: 'Droid Sans Bold' !important;font-weight: bold">Close Menu</div>
+            <div id="but-assoc4" onClick="utils.register.powLinks(); return false" class="actionButton droid-bold i18n" style="display: none">Associate with Powder Links</div>
+            <div id="but-assoc1" onClick="utils.register.magnet(); return false" class="actionButton droid-bold i18n">Associate with Magnet Links</div>
+            <div id="but-assoc2" onClick="utils.register.torrent(); return false" class="actionButton droid-bold i18n">Associate with Torrent Files</div>
+            <div id="but-assoc3" onClick="utils.register.videos(); return false" class="actionButton droid-bold i18n">Associate with Video Files</div>
+            <div id="but-lang" class="actionButton wrap-text"><span class="droid-bold"><i18n>Language</i18n>: <select id="change-lang"><option class="i18n">English</option><option class="i18n">French</option><option class="i18n">Romanian</option></select></span></div>
+            <div id="but-vlc" class="actionButton wrap-text"><span class="droid-bold"><i18n>Video Player</i18n>: <select id="use-player"><option class="i18n">Internal</option><option>VLC</option><option class="i18n">Scan for Players</option><option class="i18n">Custom Player</option></select></span></div>
+            <div onClick="ui.settings.changeClickPause(); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold"><i18n>Click to Pause</i18n>:</span> <span id="click-pause i18n">only in Fullscreen</span></div>
+            <div onClick="chooseFile('#libraryDialog'); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold"><i18n>Library Folder</i18n>:</span> <span id="lib-folder">Temp</span></div>
+            <div onClick="$('#open-set-cmd-args').trigger('click'); $('#cmd-args-input').val(localStorage.playerCmdArgs); $('#cmd-args-input').focus(); return false" class="external-opt actionButton wrap-text" style="display:none"><span class="droid-bold i18n">Set Command Line Arguments</span></div>
+            <div id="closeAction" class="third-animated-close actionButton player-setting-close i18n" style="font-family: 'Open Sans Bold' !important;font-weight: bold">Close Menu</div>
         </center>
     </div>
     
     <div class="sub-easy-modal-animated" id="subtitle-settings">
         <center>
-            <h2 class="headButs change-set goRight" onClick="$('.sub-animated-close').trigger('click'); $('#pr-settings').trigger('click'); return false">Process</h2>
-            <h2 class="headButs change-set goRight" onClick="$('.sub-animated-close').trigger('click'); $('#tr-settings').trigger('click'); return false" style="margin-right: 4px; margin-left: 1px">Torrent</h2>
-            <h2 class="headButs goRight" style="margin-right: 4px; margin-left: 1px">Subtitles</h2>
-            <h2 class="headButs change-set goRight" onClick="$('.sub-animated-close').trigger('click'); $('.pl-settings').trigger('click'); return false" style="margin-right: 3px">Player</h2>
+            <h2 class="headButs change-set goRight i18n" onClick="$('.sub-animated-close').trigger('click'); $('#pr-settings').trigger('click'); return false">Process</h2>
+            <h2 class="headButs change-set goRight i18n" onClick="$('.sub-animated-close').trigger('click'); $('#tr-settings').trigger('click'); return false" style="margin-right: 4px; margin-left: 1px">Torrent</h2>
+            <h2 class="headButs goRight i18n" style="margin-right: 4px; margin-left: 1px">Subtitles</h2>
+            <h2 class="headButs change-set goRight i18n" onClick="$('.sub-animated-close').trigger('click'); $('.pl-settings').trigger('click'); return false" style="margin-right: 3px">Player</h2>
             <div class="clear"></div>
-            <div onClick="ui.settings.changeNoSub(); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold">Auto-Download Subtitles:</span> <span id="click-no-sub">True</span></div>
-            <div id="but-sub-size" class="actionButton wrap-text"><span class="droid-bold">Subtitle Size: <select id="sub-default-size"><option>80%</option><option>90%</option><option selected>100%</option><option>110%</option><option>115%</option><option>120%</option><option>125%</option><option>130%</option><option>135%</option></select></span></div>
-            <div id="but-sub-color" class="actionButton wrap-text"><span class="droid-bold">Subtitle Color: <select id="sub-default-color"><option selected>White</option><option>Yellow</option><option>Green</option><option>Cyan</option><option>Blue</option></select></span></div>
-            <div id="but-torrent-sub" class="actionButton wrap-text"><span class="droid-bold">Load from Torrent: <select id="torrent-sub"><option>true</option><option>false</option></select></span></div>
-            <div id="closeAction" class="sub-animated-close actionButton" style="font-family: 'Droid Sans Bold' !important;font-weight: bold">Close Menu</div>
+            <div onClick="ui.settings.changeNoSub(); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold"><i18n>Auto-Download Subtitles</i18n>:</span> <span id="click-no-sub i18n">True</span></div>
+            <div id="but-sub-size" class="actionButton wrap-text"><span class="droid-bold"><i18n>Subtitle Size</i18n>: <select id="sub-default-size"><option>80%</option><option>90%</option><option selected>100%</option><option>110%</option><option>115%</option><option>120%</option><option>125%</option><option>130%</option><option>135%</option></select></span></div>
+            <div id="but-sub-color" class="actionButton wrap-text"><span class="droid-bold"><i18n>Subtitle Color</i18n>: <select id="sub-default-color"><option class="i18n" selected>White</option><option class="i18n">Yellow</option><option class="i18n">Green</option><option class="i18n">Cyan</option><option class="i18n">Blue</option></select></span></div>
+            <div id="but-torrent-sub" class="actionButton wrap-text"><span class="droid-bold"><i18n>Load from Torrent</i18n>: <select id="torrent-sub"><option class="i18n">true</option><option class="i18n">false</option></select></span></div>
+            <div id="closeAction" class="sub-animated-close actionButton i18n" style="font-family: 'Open Sans Bold' !important;font-weight: bold">Close Menu</div>
         </center>
     </div>
     
     <div class="forth-easy-modal-animated" id="torrent-settings">
         <center>
-            <h2 class="headButs change-set goRight" onClick="$('.forth-animated-close').trigger('click'); $('#pr-settings').trigger('click'); return false" >Process</h2>
-            <h2 class="headButs goRight" style="margin-right: 4px; margin-left: 1px">Torrent</h2>
-            <h2 class="headButs change-set goRight" style="margin-right: 4px; margin-left: 1px" onClick="$('.forth-animated-close').trigger('click'); $('#sub-settings').trigger('click'); return false" >Subtitles</h2>
-            <h2 class="headButs change-set goRight" onClick="$('.forth-animated-close').trigger('click'); $('.pl-settings').trigger('click'); return false" style="margin-right: 3px">Player</h2>
+            <h2 class="headButs change-set goRight i18n" onClick="$('.forth-animated-close').trigger('click'); $('#pr-settings').trigger('click'); return false" >Process</h2>
+            <h2 class="headButs goRight i18n" style="margin-right: 4px; margin-left: 1px">Torrent</h2>
+            <h2 class="headButs change-set goRight i18n" style="margin-right: 4px; margin-left: 1px" onClick="$('.forth-animated-close').trigger('click'); $('#sub-settings').trigger('click'); return false" >Subtitles</h2>
+            <h2 class="headButs change-set goRight i18n" onClick="$('.forth-animated-close').trigger('click'); $('.pl-settings').trigger('click'); return false" style="margin-right: 3px">Player</h2>
             <div class="clear"></div>
-            <div id="max-peers-hov" onClick="ui.mechanics.openPeerSelector(); return false" class="actionButton"><span class="droid-bold">Maximum Peers:</span> <span id="max-peers">100</span><input id="spinner" value="100" />
+            <div id="max-peers-hov" onClick="ui.mechanics.openPeerSelector(); return false" class="actionButton"><span class="droid-bold"><i18n>Maximum Peers</i18n>:</span> <span id="max-peers">100</span><input id="spinner" value="100" />
             </div>
-            <div id="peer-port-hov" onClick="ui.mechanics.openPeerPortSelector(); return false" class="actionButton"><span class="droid-bold">Peer Listening Port:</span> <span id="peer-port">6881</span><input id="peer-spinner" value="6881" />
+            <div id="peer-port-hov" onClick="ui.mechanics.openPeerPortSelector(); return false" class="actionButton"><span class="droid-bold"><i18n>Peer Listening Port</i18n>:</span> <span id="peer-port">6881</span><input id="peer-spinner" value="6881" />
             </div>
-            <div id="buffer-sel-hov" onClick="ui.mechanics.openBufferSelector(); return false" class="actionButton"><span class="droid-bold">Playback Buffer Size:</span> <span id="buffer-sel">10</span><input id="buffer-spinner" value="10" /> seconds
+            <div id="buffer-sel-hov" onClick="ui.mechanics.openBufferSelector(); return false" class="actionButton"><span class="droid-bold"><i18n>Playback Buffer Size</i18n>:</span> <span id="buffer-sel">10</span><input id="buffer-spinner" value="10" /> <i18n>seconds</i18n>
             </div>
-            <div onClick="chooseFile('#folderDialog'); return false" class="actionButton wrap-text"><span class="droid-bold">Download Folder:</span> <span id="def-folder">Temp</span></div>
-            <div onClick="ui.settings.changePulseSetting(); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold">Speed Pulsing:</span> <span id="click-pulse">auto</span></div>
-            <div onClick="ui.settings.changeNoSeeding(); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold">Seeding Policy:</span> <span id="no-seeding">Always Seed</span></div>
-            <div id="closeAction" class="forth-animated-close actionButton" style="font-family: 'Droid Sans Bold' !important;font-weight: bold">Close Menu</div>
+            <div onClick="chooseFile('#folderDialog'); return false" class="actionButton wrap-text"><span class="droid-bold"><i18n>Download Folder</i18n>:</span> <span id="def-folder">Temp</span></div>
+            <div onClick="ui.settings.changePulseSetting(); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold"><i18n>Speed Pulsing</i18n>:</span> <span id="click-pulse" class="i18n">auto</span></div>
+            <div onClick="ui.settings.changeNoSeeding(); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold"><i18n>Seeding Policy</i18n>:</span> <span id="no-seeding" class="i18n">Always Seed</span></div>
+            <div id="closeAction" class="forth-animated-close actionButton i18n" style="font-family: 'Open Sans Bold' !important;font-weight: bold">Close Menu</div>
         </center>
     </div>
 
     <div class="sixth-easy-modal-animated" id="process-settings">
         <center>
-            <h2 class="headButs goRight" >Process</h2>
-            <h2 class="headButs change-set goRight" onClick="$('.sixth-animated-close').trigger('click'); $('#tr-settings').trigger('click'); return false" style="margin-right: 4px; margin-left: 1px">Torrent</h2>
-            <h2 class="headButs change-set goRight" style="margin-right: 4px; margin-left: 1px" onClick="$('.sixth-animated-close').trigger('click'); $('#sub-settings').trigger('click'); return false" >Subtitles</h2>
-            <h2 class="headButs change-set goRight" onClick="$('.sixth-animated-close').trigger('click'); $('.pl-settings').trigger('click'); return false" style="margin-right: 3px">Player</h2>
+            <h2 class="headButs goRight i18n" >Process</h2>
+            <h2 class="headButs change-set goRight i18n" onClick="$('.sixth-animated-close').trigger('click'); $('#tr-settings').trigger('click'); return false" style="margin-right: 4px; margin-left: 1px">Torrent</h2>
+            <h2 class="headButs change-set goRight i18n" style="margin-right: 4px; margin-left: 1px" onClick="$('.sixth-animated-close').trigger('click'); $('#sub-settings').trigger('click'); return false" >Subtitles</h2>
+            <h2 class="headButs change-set goRight i18n" onClick="$('.sixth-animated-close').trigger('click'); $('.pl-settings').trigger('click'); return false" style="margin-right: 3px">Player</h2>
             <div class="clear"></div>
-            <div id="but-process-type" class="actionButton wrap-text"><span class="droid-bold">Process Type: <select id="process-type-default"><option selected>Multiple</option><option>Single</option></select></span></div>
-            <div id="but-zoom-level" class="actionButton wrap-text"><span class="droid-bold">Zoom Level: <select id="zoom-level-default"><option selected>0</option><option>0.5</option><option selected>1.0</option><option>1.5</option><option>2.0</option><option>2.5</option><option>3.0</option><option>3.5</option><option>4.0</option></select></span></div>
-            <div id="closeAction" class="sixth-animated-close actionButton" style="font-family: 'Droid Sans Bold' !important;font-weight: bold">Close Menu</div>
+            <div id="but-process-type" class="actionButton wrap-text"><span class="droid-bold"><i18n>Process Type</i18n>: <select id="process-type-default"><option class="i18n" selected>Multiple</option><option class="i18n">Single</option></select></span></div>
+            <div id="but-zoom-level" class="actionButton wrap-text"><span class="droid-bold"><i18n>Zoom Level</i18n>: <select id="zoom-level-default"><option selected>0</option><option>0.5</option><option selected>1.0</option><option>1.5</option><option>2.0</option><option>2.5</option><option>3.0</option><option>3.5</option><option>4.0</option></select></span></div>
+            <div id="closeAction" class="sixth-animated-close actionButton i18n" style="font-family: 'Open Sans Bold' !important;font-weight: bold">Close Menu</div>
         </center>
     </div>
 
@@ -498,58 +507,58 @@ body {
             <div id="select-plugin-list">
 
             </div>
-            <div id="closeAction" class="fifth-animated-close actionButton" style="font-family: 'Droid Sans Bold' !important;font-weight: bold">Close Menu</div>
+            <div id="closeAction" class="fifth-animated-close actionButton" style="font-family: 'Open Sans Bold' !important;font-weight: bold">Close Menu</div>
         </center>
     </div>
     
     <div class="ask-remove-files" style="background:#fff;padding:10px">
         <center>
-            <h2 class="headButs change-set goLeft" style="margin-bottom:20px;width:calc(100% - 17px);background:#1C728A !important;cursor:default !important;-webkit-user-select:none">Remove Downloaded Files?</h2><div class="clear"></div>
-            <button type="submit" class="pure-button pure-button-success" onClick="win.closeProcedure(true);return false;">Yes</button><span style="cursor:default;-webkit-user-select:none">&nbsp;&nbsp;&nbsp;&nbsp;</span><button type="submit" class="pure-button pure-button-error" onClick="win.closeProcedure(false);return false;">No</button><span style="cursor:default;-webkit-user-select:none">&nbsp;&nbsp;&nbsp;&nbsp;</span><button class="pure-button pure-button-warning" onClick="$('.ask-remove-files').trigger('closeModal');return false;">Cancel</button>
+            <h2 class="headButs change-set goLeft i18n" style="margin-bottom:20px;width:calc(100% - 17px);background:#1C728A !important;cursor:default !important;-webkit-user-select:none">Remove Downloaded Files?</h2><div class="clear"></div>
+            <button type="submit" class="pure-button pure-button-success i18n" onClick="win.closeProcedure(true);return false;">Yes</button><span style="cursor:default;-webkit-user-select:none">&nbsp;&nbsp;&nbsp;&nbsp;</span><button type="submit" class="pure-button pure-button-error i18n" onClick="win.closeProcedure(false);return false;">No</button><span style="cursor:default;-webkit-user-select:none">&nbsp;&nbsp;&nbsp;&nbsp;</span><button class="pure-button pure-button-warning i18n" onClick="$('.ask-remove-files').trigger('closeModal');return false;">Cancel</button>
         </center>
     </div>
 
     <div class="history-easy-modal-animated modal-holder" id="history-powder">
-        <h2 id="history-title" class="goLeft modal-title">History</h2>
+        <h2 id="history-title" class="goLeft modal-title i18n">History</h2>
         <h2 class="change-set history-animated-close goRight history-close modal-close" style="margin-left: 6px"><i class="close-icon"></i></h2>
-        <h2 class="change-set goRight trash-hold" title="Clear History" onClick="ui.settings.clearHistory(); return false"><i class="trash-icon"></i></h2>
+        <h2 class="change-set goRight trash-hold i18n" title="Clear History" onClick="ui.settings.clearHistory(); return false"><i class="trash-icon"></i></h2>
         <div class="clear"></div>
         <div id="history-list" class="modal-list"></div>
     </div>
 
     <div class="ext-player-easy-modal-animated modal-holder" id="ext-player-powder">
-        <h2 id="ext-player-title" class="goLeft modal-title">External Players</h2>
+        <h2 id="ext-player-title" class="goLeft modal-title i18n">External Players</h2>
         <h2 class="change-set goRight ext-player-close modal-close" style="margin-left: 6px"><i class="close-icon"></i></h2>
         <div class="clear"></div>
-        <span id="ext-player-announce" style="font-weight: bold; padding: 10px; display: block; font-size: 15px; text-align: center">Scanning for Local Video Players ...<br><br>May take up to 10 seconds.</span>
-        <span id="ext-player-error" style="font-weight: bold; padding: 10px; display: none; font-size: 15px; text-align: center">An error occured, sorry.</span>
+        <span id="ext-player-announce" style="font-weight: bold; padding: 10px; display: block; font-size: 15px; text-align: center"><i18n>Scanning for Local Video Players</i18n> ...<br><br><i18n>May take up to 10 seconds.</i18n></span>
+        <span id="ext-player-error" class="i18n" style="font-weight: bold; padding: 10px; display: none; font-size: 15px; text-align: center">An error occured, sorry.</span>
         <div id="ext-player-list" class="modal-list" style="display: none"></div>
     </div>
     
     <div class="unsupported-easy-modal-animated" id="unsupported">
         <center>
-            <h2 class="spBottom">Unsupported Media Type</h2>
+            <h2 class="spBottom i18n">Unsupported Media Type</h2>
         	<br>
-            <span class="droid-bold">It seems that the Media Type you tried to play is not currently supported by Powder Player.</span>
+            <span class="droid-bold i18n">It seems that the Media Type you tried to play is not currently supported by Powder Player.</span>
         	<br><br>
-			<button class="unsupported-animated-close pure-button pure-margin droid-bold" title="I understand">I understand</button><br><br>
+			<button class="unsupported-animated-close pure-button pure-margin droid-bold i18n" title="I understand">I understand</button><br><br>
         </center>
     </div>
     
     <div id="dropdown-1" class="dropdown dropdown-tip">
         <ul class="dropdown-menu">
-            <li><a onClick="gui.Shell.openItem(powGlobals.torrent.engine.path+pathBreak+powGlobals.torrent.engine.torrent.name+pathBreak); return false" href="#">Open Folder</a></li>
+            <li><a class="i18n" onClick="gui.Shell.openItem(powGlobals.torrent.engine.path+pathBreak+powGlobals.torrent.engine.torrent.name+pathBreak); return false" href="#">Open Folder</a></li>
             <li class="dropdown-divider"></li>
-            <li><a onClick="powGlobals.torrent.engine.discover(); return false" href="#">Force Download</a></li>
-            <li><a id="menuPulsing" onClick="ui.settings.switchPulsing(); return false" href="#">Disable Pulsing</a></li>
+            <li><a class="i18n" onClick="powGlobals.torrent.engine.discover(); return false" href="#">Force Download</a></li>
+            <li><a id="menuPulsing" class="i18n" onClick="ui.settings.switchPulsing(); return false" href="#">Disable Pulsing</a></li>
             <li class="dropdown-divider"></li>
-            <li><a onClick="gui.Clipboard.get().set('magnet:?xt=urn:btih:'+powGlobals.torrent.engine.infoHash.toUpperCase(),'text'); return false" href="#">Copy Magnet URI</a></li>
+            <li><a class="i18n" onClick="gui.Clipboard.get().set('magnet:?xt=urn:btih:'+powGlobals.torrent.engine.infoHash.toUpperCase(),'text'); return false" href="#">Copy Magnet URI</a></li>
             <li class="dropdown-divider"></li>
-            <li><a onClick="for (ij = 0; typeof powGlobals.lists.files[ij] !== 'undefined'; ij++) ui.buttons.play(ij); return false" href="#">Start All</a></li>
-            <li><a onClick="for (ij = 0; typeof powGlobals.lists.files[ij] !== 'undefined'; ij++) ui.buttons.pause(ij); return false" href="#">Pause All</a></li>
+            <li><a class="i18n" onClick="for (ij = 0; typeof powGlobals.lists.files[ij] !== 'undefined'; ij++) ui.buttons.play(ij); return false" href="#">Start All</a></li>
+            <li><a class="i18n" onClick="for (ij = 0; typeof powGlobals.lists.files[ij] !== 'undefined'; ij++) ui.buttons.pause(ij); return false" href="#">Pause All</a></li>
             <li class="dropdown-divider"></li>
-            <li><a onClick="$('#inner-in-content').animate({ scrollTop: 0 }, 'slow'); return false" id="menu-back-video" href="#">Back to Video</a></li>
-            <li><a onClick="ui.goto.mainMenu(); return false" href="#">Remove Torrent</a></li>
+            <li><a class="i18n" onClick="$('#inner-in-content').animate({ scrollTop: 0 }, 'slow'); return false" id="menu-back-video" href="#">Back to Video</a></li>
+            <li><a class="i18n" onClick="ui.goto.mainMenu(); return false" href="#">Remove Torrent</a></li>
         </ul>
     </div>
     

@@ -8,9 +8,9 @@ var ctxMenu = {
 	_cropMenu: new gui.Menu(),
 	_zoomMenu: new gui.Menu(),
 	playerMenu: new gui.Menu(),
-	aspectRatios: ['Default','1:1','4:3','16:9','16:10','2.21:1','2.35:1','2.39:1','5:4'],
-	crops: ['Default','16:10','16:9','1.85:1','2.21:1','2.35:1','2.39:1','5:3','4:3','5:4','1:1'],
-	zooms: [['Default',1],['2x Double',2],['0.25x Quarter',0.25],['0.5x Half',0.5]],
+	aspectRatios: [i18n('Default'),'1:1','4:3','16:9','16:10','2.21:1','2.35:1','2.39:1','5:4'],
+	crops: [i18n('Default'),'16:10','16:9','1.85:1','2.21:1','2.35:1','2.39:1','5:3','4:3','5:4','1:1'],
+	zooms: [[i18n('Default'),1],['2x ' + i18n('Double'),2],['0.25x ' + i18n('Quarter'),0.25],['0.5x ' + i18n('Half'),0.5]],
 	
 	init: function() {
 
@@ -18,46 +18,46 @@ var ctxMenu = {
 		saveCtx = this;
 		
 		this._audioMenu.append(new gui.MenuItem({
-			label: 'Disable',
+			label: i18n('Disable'),
 			type: 'checkbox',
 			checked: true,
 			click: function() { saveCtx.selectAudio(0); }
 		}));
 		
 		this._subtitleMenu.append(new gui.MenuItem({
-			label: 'Add Subtitle',
+			label: i18n('Add Subtitle'),
 			click: function() { chooseFile('#subtitleDialog'); }
 		}));		
 		
 		this._subtitleMenu.append(new gui.MenuItem({
-			label: 'Enlarge',
+			label: i18n('Enlarge'),
 			click: function() { player.keymap().trigger('alt + up'); }
 		}));		
 		
 		this._subtitleMenu.append(new gui.MenuItem({
-			label: 'Shrink',
+			label: i18n('Shrink'),
 			click: function() { player.keymap().trigger('alt + down'); }
 		}));		
 		
 		this._subtitleMenu.append(new gui.MenuItem({
-			label: 'Move Up',
+			label: i18n('Move Up'),
 			click: function() { player.keymap().trigger('shift + up'); }
 		}));		
 		
 		this._subtitleMenu.append(new gui.MenuItem({
-			label: 'Move Down',
+			label: i18n('Move Down'),
 			click: function() { player.keymap().trigger('shift + down'); }
 		}));		
 		
 		this._torrentMenu.append(new gui.MenuItem({
-			label: 'Torrent Data',
+			label: i18n('Torrent Data'),
 			click: function() {
 				ui.goto.torrentData();
 			}
 		}));
 		
 		this._torrentMenu.append(new gui.MenuItem({
-			label: 'Open Folder',
+			label: i18n('Open Folder'),
 			click: function() {
 				if (powGlobals.torrent.engine) {
 					gui.Shell.openItem(powGlobals.torrent.engine.path+pathBreak+powGlobals.torrent.engine.torrent.name+pathBreak);
@@ -66,27 +66,27 @@ var ctxMenu = {
 		}));
 		
 		this._torrentMenu.append(new gui.MenuItem({
-			label: 'Download All',
+			label: i18n('Download All'),
 			click: function() {
 				if (powGlobals.torrent.engine) {
 					for (ij = 0; typeof powGlobals.lists.files[ij] !== 'undefined'; ij++) ui.buttons.play(ij);
-					player.notify("Downloading All Files");
+					player.notify(i18n("Downloading All Files"));
 				}
 			}
 		}));
 		
 		this._torrentMenu.append(new gui.MenuItem({
-			label: 'Force Download',
+			label: i18n('Force Download'),
 			click: function() {
 				if (powGlobals.torrent.engine) {
 					powGlobals.torrent.engine.discover();
-					player.notify("Forcing Download");
+					player.notify(i18n("Forcing Download"));
 				}
 			}
 		}));
 		
 		this._torrentMenu.append(new gui.MenuItem({
-			label: 'Speed Pulsing',
+			label: i18n('Speed Pulsing'),
 			type: 'checkbox',
 			checked: true,
 			click: function() {
@@ -95,7 +95,7 @@ var ctxMenu = {
 		}));
 
 		this._torrentMenu.append(new gui.MenuItem({
-			label: 'Close + Keep Files',
+			label: i18n('Close + Keep Files'),
 			click: function() {
 				if (powGlobals.torrent.engine) win.closeProcedure(false);
 			}
@@ -131,18 +131,18 @@ var ctxMenu = {
 			saveCtx._zoomMenu.append(new gui.MenuItem(mnOpts));
 		});
 
-		this.playerMenu.append(new gui.MenuItem({ label: 'Torrent', submenu: this._torrentMenu }));
+		this.playerMenu.append(new gui.MenuItem({ label: i18n('Torrent'), submenu: this._torrentMenu }));
 		this.playerMenu.append(new gui.MenuItem({ type: 'separator' }));
-		this.playerMenu.append(new gui.MenuItem({ label: 'Audio Tracks', submenu: this._audioMenu }));
-		this.playerMenu.append(new gui.MenuItem({ label: 'Subtitles', submenu: this._subtitleMenu }));
+		this.playerMenu.append(new gui.MenuItem({ label: i18n('Audio Tracks'), submenu: this._audioMenu }));
+		this.playerMenu.append(new gui.MenuItem({ label: i18n('Subtitles'), submenu: this._subtitleMenu }));
 		this.playerMenu.append(new gui.MenuItem({ type: 'separator' }));
-		this.playerMenu.append(new gui.MenuItem({ label: 'Aspect Ratio', submenu: this._aspectRatioMenu }));
-		this.playerMenu.append(new gui.MenuItem({ label: 'Crop', submenu: this._cropMenu }));
-		this.playerMenu.append(new gui.MenuItem({ label: 'Zoom', submenu: this._zoomMenu }));
+		this.playerMenu.append(new gui.MenuItem({ label: i18n('Aspect Ratio'), submenu: this._aspectRatioMenu }));
+		this.playerMenu.append(new gui.MenuItem({ label: i18n('Crop'), submenu: this._cropMenu }));
+		this.playerMenu.append(new gui.MenuItem({ label: i18n('Zoom'), submenu: this._zoomMenu }));
 		this.playerMenu.append(new gui.MenuItem({ type: 'separator' }));
 		
 		this.playerMenu.append(new gui.MenuItem({
-			label: 'See Hotkeys',
+			label: i18n('See Hotkeys'),
 			click: function() {
 				try {
 					utils.createWindow(null, 'hotkeys.html', {
@@ -159,7 +159,7 @@ var ctxMenu = {
 		}));
 		
 		this.playerMenu.append(new gui.MenuItem({
-			label: 'Always on Top',
+			label: i18n('Always on Top'),
 			type: 'checkbox',
 			checked: false,
 			click: function() {
@@ -183,7 +183,7 @@ var ctxMenu = {
 		}));
 		
 		this.playerMenu.append(new gui.MenuItem({
-			label: 'Back to Menu',
+			label: i18n('Back to Menu'),
 			click: function() {
 				ui.goto.mainMenu();
 			}

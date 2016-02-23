@@ -34,7 +34,7 @@ subtitles.fetchOsCookie = function (retryCookie) {
 
 subtitles.finishedCB = function (subs) {
 	if (!subs) {
-		player.notify('No Subtitles Found');
+		player.notify(i18n('No Subtitles Found'));
 	} else {
 		if (player.itemCount() > 0 && !player.itemDesc(player.currentItem()).setting.checkedSubs) {
 			newSettings = player.vlc.playlist.items[player.currentItem()].setting;
@@ -219,7 +219,7 @@ subtitles.findLine = function (subLines, trackSub, subDelay, time) {
 
 	
 subtitles.updateSub = function() {
-	if (localStorage.subLang != "None" && player.subTrack() == 0) {
+	if (localStorage.subLang != i18n("None") && player.subTrack() == 0) {
 		for (gvn = 1; gvn < player.subCount(); gvn++) {
 			if (player.subDesc(gvn).language == localStorage.subLang) {
 				player.subTrack(gvn);

@@ -31,7 +31,7 @@ var dlna = {
 		if (dlna.instance.lastSecond > 0) {
 			if (dlna.instance.lastSecond > 30) {
 				dlna.instance.controls.seek(dlna.instance.lastSecond);
-				player.setOpeningText("Streaming to TV ...");
+				player.setOpeningText(i18n("Streaming to TV ..."));
 				if (dlna.notFoundTimer) clearTimeout(dlna.notFoundTimer);
 				$(".wcp-dlna-buttons").hide(0);
 				dlna.params.samsungDlna.retries = 0;
@@ -41,7 +41,7 @@ var dlna = {
 			if (dlna.saved.allowOnce) {
 				if (player.itemDesc(dlna.instance.lastIndex).title == dlna.saved.title && dlna.saved.time) {
 					dlna.instance.controls.seek(dlna.saved.time);
-					player.setOpeningText("Streaming to TV ...");
+					player.setOpeningText(i18n("Streaming to TV ..."));
 				}
 				dlna.saved = {};
 			}
@@ -146,7 +146,7 @@ var dlna = {
 		player.find(".wcp-vol-control")[0].style.borderRight = "1px solid #262626";
 		$(".wcp-dlna-buttons").hide(0);
 	
-		player.setOpeningText("Stopped Streaming");
+		player.setOpeningText(i18n("Stopped Streaming"));
 		if (dlna.instance.controls) dlna.instance.controls.stop();
 		utils.sleep.allow();
 		dlna.instance.initiated = false;
@@ -171,7 +171,7 @@ var dlna = {
 		var MediaRendererClient = require('upnp-mediarenderer-client');
 		
 		if (!dlnaReconnect) {
-			player.setOpeningText("Starting DLNA Server ...");
+			player.setOpeningText(i18n("Starting DLNA Server ..."));
 			clearTimeout(dlna.notFoundTimer);
 			dlna.instance.controls = new MediaRendererClient(dlna.instance.clients[0]);
 			oldClients = JSON.parse(localStorage.dlnaClients);
@@ -525,7 +525,7 @@ var dlna = {
 		if (bestIp) {
 			dlna.instance.localIp = bestIp;
 			dlna.prepareServer();
-		} else player.setOpeningText("Failed to Detect Local IP");
+		} else player.setOpeningText(i18n("Failed to Detect Local IP"));
 	},
 
 	compareIps: function(strA,strB){
@@ -578,7 +578,7 @@ var dlna = {
 						  dlna.bestMatches.shift();
 //						  console.log("current array length: "+dlna.bestMatches.length);
 						  if (dlna.bestMatches.length) dlna.tryKnown();
-						  else player.setOpeningText("Error: Nothing Found");
+						  else player.setOpeningText(i18n("Error: Nothing Found"));
 					  }
 					});
 					
@@ -590,7 +590,7 @@ var dlna = {
 					dlna.bestMatches.shift();
 //				    console.log("current array length: "+dlna.bestMatches.length);
 				    if (dlna.bestMatches.length) dlna.tryKnown();
-				    else player.setOpeningText("Error: Nothing Found");
+				    else player.setOpeningText(i18n("Error: Nothing Found"));
 				}
 				
 			});
@@ -636,7 +636,7 @@ var dlna = {
 		player.find(".wcp-vol-control")[0].style.borderRight = "none";
 		player.find(".wcp-subtitle-but").hide(0);
 	
-		player.setOpeningText("Searching for Device ...");
+		player.setOpeningText(i18n("Searching for Device ..."));
 		player.stop(true);
 		player.find(".wcp-splash-screen").show(0);
 		dlna.instance.clients = [];
@@ -685,7 +685,7 @@ var dlna = {
 				if (dlna.bestMatches.length) {
 					dlna.checkedPorts = [];
 					dlna.tryKnown();
-				} else player.setOpeningText("Error: Nothing Found");
+				} else player.setOpeningText(i18n("Error: Nothing Found"));
 
 			}
 		},10000);
@@ -832,7 +832,7 @@ var dlna = {
 						}
 						if (noDisabled) return;
 	
-						player.setOpeningText("Starting Previous Video ...");
+						player.setOpeningText(i18n("Starting Previous Video ..."));
 						dlna.castData.castingPaused = 1;
 						dlna.play(i);
 					}
@@ -847,7 +847,7 @@ var dlna = {
 						}
 						if (noDisabled) return;
 	
-						player.setOpeningText("Starting Next Video ...");
+						player.setOpeningText(i18n("Starting Next Video ..."));
 						dlna.castData.castingPaused = 1;
 						dlna.play(i);
 					}
@@ -887,8 +887,8 @@ var dlna = {
 			}
 			dlna.castData = {};
 			utils.sleep.prevent();
-			if (dlna.instance.lastSecond > 30) player.setOpeningText("Updating playback position ...");
-			else player.setOpeningText("Streaming to TV ...");
+			if (dlna.instance.lastSecond > 30) player.setOpeningText(i18n("Updating playback position ..."));
+			else player.setOpeningText(i18n("Streaming to TV ..."));
 			clearTimeout(dlna.notFoundTimer);
 			$(".wcp-dlna-buttons").hide(0);
 			dlna.params.samsungDlna.retries = 0;
@@ -900,7 +900,7 @@ var dlna = {
 		},
 			
 		playbackEnded: function() {
-			player.setOpeningText("Playback Ended");
+			player.setOpeningText(i18n("Playback Ended"));
 			$(".wcp-dlna-buttons").show(0);
 			if (dlna.instance.controls) dlna.instance.controls.server.close(function() { dlna.resetGlobals(); });
 			dlna.resetInstance();
@@ -918,7 +918,7 @@ var dlna = {
 			if (dlna.instance.started && status["TransportState"] == "STOPPED") {
 				if (dlna.castData.casting && dlna.instance.lastPos > 0.9) {
 					if (dlna.instance.lastIndex +1 < player.itemCount()) {
-						player.setOpeningText("Starting Next Video ...");
+						player.setOpeningText(i18n("Starting Next Video ..."));
 						dlna.castData.castingPaused = 1;
 						dlna.play(parseInt(dlna.instance.lastIndex)+1);
 						// implement change video in playlist
@@ -929,7 +929,7 @@ var dlna = {
 				}
 			}
 			if (status["TransportStatus"] == "ERROR_OCCURRED") {
-				player.setOpeningText("Error Occurred");
+				player.setOpeningText(i18n("Error Occurred"));
 				$(".wcp-dlna-buttons").show(0);
 
 				if (dlna.instance.controls) {
@@ -947,7 +947,7 @@ var dlna = {
 
 				if (dlna.instance.serverName == "SHP, UPnP/1.0, Samsung UPnP SDK/1.0" && samsungDlna.retries < 3) {
 					// reconnect if samsung and the previous or next file is mkv (this is a bug from samsung)
-					player.setOpeningText("Reconnecting ...");
+					player.setOpeningText(i18n("Reconnecting ..."));
 					if (samsungDlna.timeout) clearTimeout(samsungDlna.timeout);
 					samsungDlna.timeout = setTimeout(function() {
 						dlna.resetData(function() {
@@ -970,7 +970,7 @@ var dlna = {
 		},
 
 		onPlaying: function() {
-			player.setOpeningText("Streaming to TV ...");
+			player.setOpeningText(i18n("Streaming to TV ..."));
 			clearTimeout(dlna.notFoundTimer);
 			$(".wcp-dlna-buttons").hide(0);
 			samsungRetries = 0;
@@ -983,7 +983,7 @@ var dlna = {
 		
 		onPaused: function() {
 			dlna.castData.castingPaused = 1;
-			player.setOpeningText("Playback Paused ...");
+			player.setOpeningText(i18n("Playback Paused ..."));
 			
 			player.wrapper.find(".wcp-pause").removeClass("wcp-pause").addClass("wcp-play");
 		}

@@ -183,12 +183,12 @@ var torrent = {
 								tempPrebuf = Math.floor((el.pieces.downloaded / (el.pieces.last - el.pieces.first)) *100*45);
 								if (tempPrebuf <= 100 && tempPrebuf > torrent.prebuf) {
 									torrent.prebuf = tempPrebuf;
-									if (playerApi.loaded && !torrent.stopPrebuf) player.setOpeningText("Prebuffering "+torrent.prebuf+"%");
+									if (playerApi.loaded && !torrent.stopPrebuf) player.setOpeningText(i18n("Prebuffering") + " "+torrent.prebuf+"%");
 								} else if (tempPrebuf > 100 && !torrent.stopPrebuf) {
 									if (powGlobals.lists && powGlobals.lists.media && powGlobals.lists.media[player.currentItem()] && powGlobals.lists.media[player.currentItem()].isAudio) {
-										player.setOpeningText("Loading Audio");
+										player.setOpeningText(i18n("Loading Audio"));
 									} else {
-										player.setOpeningText("Opening Video");
+										player.setOpeningText(i18n("Opening Video"));
 									}
 								}
 							}
@@ -307,7 +307,7 @@ var torrent = {
 		if (powGlobals.torrent.engine && powGlobals.torrent.engine.swarm) {
 			if (!torrent.isReady && powGlobals.torrent.engine.swarm.wires.length > 0) {
 				powGlobals.torrent.seeds = powGlobals.torrent.engine.swarm.wires.length;
-				if (playerApi.loaded) player.setOpeningText("Connected to "+powGlobals.torrent.seeds+" peers");
+				if (playerApi.loaded) player.setOpeningText(i18n("Connected to") + " "+powGlobals.torrent.seeds+" " + i18n("peers"));
 			}
 			
 			if ($("#nrPeers").text() != powGlobals.torrent.engine.swarm.wires.length)
@@ -329,7 +329,7 @@ var torrent = {
 	
 	announceNoPeers: function() {
 		if (player.currentItem() == 0 && player.state() == "opening") {
-			if (powGlobals.torrent.engine.swarm.wires.length == 0) player.setOpeningText("No Peers Found");
+			if (powGlobals.torrent.engine.swarm.wires.length == 0) player.setOpeningText(i18n("No Peers Found"));
 			setTimeout(function() { torrent.announceNoPeers(); },5000);
 		}
 	},
@@ -474,8 +474,8 @@ var torrent = {
 		//					if (targetHistory == 0) win.gui.title = utils.parser(filename).name();
 		
 							if (playerApi.loaded) {
-								if (powGlobals.torrent.engine.swarm.wires && powGlobals.torrent.engine.swarm.wires.length == 0) player.setOpeningText("No Peers Found");
-								else player.setOpeningText("Prebuffering ...");
+								if (powGlobals.torrent.engine.swarm.wires && powGlobals.torrent.engine.swarm.wires.length == 0) player.setOpeningText(i18n("No Peers Found"));
+								else player.setOpeningText(i18n("Prebuffering") + " ...");
 								setTimeout(function() { torrent.announceNoPeers(); },3000);
 							}
 							else playerApi.playlist.async.preBufZero = true;
@@ -628,7 +628,7 @@ var torrent = {
 				if (ij%2 !== 0) backColor = '#3e3e3e';
 				else backColor = '#444';
 				
-				$("#filesList").append($('<div class="fileHolder hf" style="background-color: '+backColor+'"><div style="width: 70px; text-align: right; position: absolute; right: 0px; font-size: 240%; margin-top: 14px; margin-right: 19px;">'+setPaused+'</div><div onClick="ui.buttons.settings('+ij+')" id="file'+ij+'" class="files" data-index="'+ij+'" style="text-align: left; padding-bottom: 8px; padding-top: 8px; width: 100%" data-color="'+backColor+'"><div id="p-file'+ij+'" class="circle"><strong></strong></div><div style="width: calc(100% - 89px); text-align: left"><span class="filenames">'+powGlobals.torrent.engine.files[el.index].name+'</span><span class="infos">Downloaded: <span id="down-fl'+ij+'">0 kB</span> / '+utils.fs.getReadableSize(powGlobals.torrent.engine.files[el.index].length)+'</span><div style="clear: both"></div></div></center></div></div>'));
+				$("#filesList").append($('<div class="fileHolder hf" style="background-color: '+backColor+'"><div style="width: 70px; text-align: right; position: absolute; right: 0px; font-size: 240%; margin-top: 14px; margin-right: 19px;">'+setPaused+'</div><div onClick="ui.buttons.settings('+ij+')" id="file'+ij+'" class="files" data-index="'+ij+'" style="text-align: left; padding-bottom: 8px; padding-top: 8px; width: 100%" data-color="'+backColor+'"><div id="p-file'+ij+'" class="circle"><strong></strong></div><div style="width: calc(100% - 89px); text-align: left"><span class="filenames">'+powGlobals.torrent.engine.files[el.index].name+'</span><span class="infos">'+window.i18n('Downloaded')+': <span id="down-fl'+ij+'">0 kB</span> / '+utils.fs.getReadableSize(powGlobals.torrent.engine.files[el.index].length)+'</span><div style="clear: both"></div></div></center></div></div>'));
 		
 			});
 			
@@ -706,7 +706,7 @@ var torrent = {
 				if (dlna.params.nextStartDlna == 1) {
 					dlna.params.nextStartDlna = 0;
 					dlna.instance.initiated = true;
-					player.setOpeningText("Starting DLNA Server ...");
+					player.setOpeningText(i18n("Starting DLNA Server ..."));
 					if (powGlobals.torrent.hasVideo > 1) dlna.play(playerApi.nextPlay);
 					else {
 						if (playerApi.waitForNext && playerApi.tempSel > -1) dlna.play(playerApi.tempSel);

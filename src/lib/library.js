@@ -61,7 +61,7 @@ var scan = {
 					}
 				});
 			} else {
-				player.notify("No Items Found");
+				player.notify(i18n("No Items Found"));
 				return;
 			}
 			results = cleanArray;
@@ -99,8 +99,8 @@ var scan = {
 				}
 			});
 			mj++;
-			if (mj == 1) player.notify(mj+" Episode Found");
-			else player.notify(mj+" Episodes Found");
+			if (mj == 1) player.notify(mj+" " + i18n("Episode Found"));
+			else player.notify(mj+" " + i18n("Episodes Found"));
 			player.refreshPlaylist();
 		});
 	},
@@ -126,14 +126,14 @@ var scan = {
 									title: el.name
 								});
 							});
-							if (xhr.length == 1) player.notify(xhr.length+" Episode Found");
-							else player.notify(xhr.length+" Episodes Found");
+							if (xhr.length == 1) player.notify(xhr.length+" " + i18n("Episode Found"));
+							else player.notify(xhr.length+" " + i18n("Episodes Found"));
 							player.refreshPlaylist();
-						} else player.notify("No Items Found");
+						} else player.notify(i18n("No Items Found"));
 						torrent.flood.start();
 					} });
-				} else player.notify("No Items Found");
-			} else player.notify("No Internet");
+				} else player.notify(i18n("No Items Found"));
+			} else player.notify(i18n("No Internet"));
 		});
 	}
 }
