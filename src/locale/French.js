@@ -255,6 +255,10 @@ module.exports = {
     "Reconnecting ...": "Reconnexion...",
     "Playback Paused ...": "Lecture mise en pause...",
 	"Language": "Langue",
-    "None": "Aucun"
+    "None": "Aucun",
+
+	// window titles
+	"Updater": "Mise à jour",
+	"Hotkeys": "Raccourcis clavier"
 
 }

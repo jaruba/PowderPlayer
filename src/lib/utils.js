@@ -393,7 +393,7 @@ var utils = {
 				}
 				utils.ga.visitor.pageview("/mask.html").send();
 				utils.ga.loaded = true;
-			} else $('#select-plugin-list').empty().html('<div onClick="ui.settings.loadPluginList(); return false" class="actionButton wrap-text"><span class="droid-bold">'+i18n("Couldn't connect. Press to try again.")+'</span></div>');
+			} else $('#select-plugin-list').empty().html('<div onClick="ui.settings.loadPluginList(); return false" class="actionButton wrap-text"><span class="droid-bold i18n">'+i18n("Couldn't connect. Press to try again.")+'</span></div>');
 		});
 	},
 	

@@ -80,8 +80,9 @@
 }
 
 .mini .mainButtons {
-  width: 110px !important;
-  height: 100px !important;
+  width: 100px !important;
+  height: 90px !important;
+  padding: 5px;
 }
 
 .mini #torIcon {
@@ -98,6 +99,21 @@
 .mini #urlIcon {
   width: 38px;
   height: 38px;
+}
+
+.mini .mainButTwoLine div #torIcon {
+	margin-top: 5px;
+	margin-bottom: 3px;
+}
+
+.mini .mainButTwoLine div #vidIcon {
+	margin-top: 7px;
+	margin-bottom: 6px;
+}
+
+.mini .mainButTwoLine div #urlIcon {
+  margin-top: 7px;
+  margin-bottom: 6px;
 }
 
 .mini #footer {

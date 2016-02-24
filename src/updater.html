@@ -14,8 +14,9 @@
 	if (!localStorage.appLang) localStorage.appLang = 'template';
 	if (['template','English'].indexOf(localStorage.appLang) > -1) newLang = 'template';
 	else newLang = localStorage.appLang;
-	translator.setLocal(require('path').dirname(process.execPath)+'/src/locale/' + newLang);
+	translator.setLocal(require('path').dirname(process.execPath)+'/src/locale/' + newLang.split(' ').join('_'));
 	var i18n = translator.i18n;
+	document.title = i18n(document.title);
     </script>
 </head>
 

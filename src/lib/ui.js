@@ -544,6 +544,10 @@ $(document).ready(function() {
 	});
 	$('#buffer-spinner').parent().css("display","none");
 
+	setTimeout(function() {
+		refreshMainBut();
+	},0);
+
 });
 
 $('#max-peers-hov').hover(function() { }, function() {
@@ -707,17 +711,42 @@ $('#cmd-args-form').on('submit', function(e) {
 	$('#cmd-args-close').trigger('click');
 });
 
+function refreshMainBut() {
+	var maxHeight = 0;
+	$(".mainMenuBut i18n").each(function(ij, el) {
+		if ($(el).height() > maxHeight) maxHeight = $(el).height();
+	});
+	if (maxHeight > $("dummy").height()) {
+		$(".mainMenuBut").addClass("mainButTwoLine");
+	} else {
+		$(".mainMenuBut").removeClass("mainButTwoLine");
+	}
+}
+
+require('fs').readdir(require('path').dirname(process.execPath)+'/src/locale', function(err, files) {
+	var langOptions = '<option class="i18n">' + i18n('English') + '</option>';
+	langOptions += files.map(function(el) {
+		return el != 'template.js' ? '<option>' + i18n(el.replace('.js', '').split('_').join(' ')) + '</option>' : '';
+	});
+	$("#change-lang").html(langOptions);
+});
+
 $("#change-lang").on('change', function() {
 	if (this.value == 'English') {
 		localStorage.appLang = 'template';
 	} else {
 		localStorage.appLang = this.value;
 	}
-	translator.changeLocal(require('path').dirname(process.execPath)+'/src/locale/' + localStorage.appLang);
+	translator.changeLocal(require('path').dirname(process.execPath)+'/src/locale/' + localStorage.appLang.split(' ').join('_'));
+	setTimeout(function() {
+		refreshMainBut();
+	},0);
 });
 
 if (localStorage.appLang != 'template') {
-	$("#change-lang").val(i18n(localStorage.appLang));
+	setTimeout(function() {
+		$("#change-lang").val(i18n(localStorage.appLang));
+	},0);
 }
 
 if (localStorage.subColor == '#fff') {

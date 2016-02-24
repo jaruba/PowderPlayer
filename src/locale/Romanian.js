@@ -255,6 +255,10 @@ module.exports = {
     "Reconnecting ...": "Mă Reconectez ...",
     "Playback Paused ...": "Pauză ...",
 	"Language": "Limbă",
-    "None": "Nimic"
+    "None": "Nimic",
+
+	// window titles
+	"Updater": "Actualizator",
+	"Hotkeys": "Prescurtări"
 
 }

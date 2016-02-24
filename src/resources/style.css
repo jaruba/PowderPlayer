@@ -231,10 +231,11 @@ body {
 }
 .mainButtons {
 	color: #fff;
-	width: 130px;
-	height: 110px;
+	width: 120px;
+	height: 100px;
 	border-radius: 4px;
-	display: inline-block
+	display: inline-block;
+	padding: 5px;
 }
 .easy-modal,
 .easy-modal-animated,
@@ -592,13 +593,13 @@ input[type="file"] { display: none }
 	margin-bottom: 11px
 }
 #mainButHold { width: 510px }
-#torIcon { margin-top: 15px; margin-bottom: 11px }
-#vidIcon { margin-top: 19px; margin-bottom: 16px }
-#urlIcon { margin-top: 20px; margin-bottom: 9px }
+#torIcon { margin-top: 10px; margin-bottom: 11px }
+#vidIcon { margin-top: 14px; margin-bottom: 16px }
+#urlIcon { margin-top: 15px; margin-bottom: 9px }
 .noMarginRight { margin-right: 0 }
 #footer {
 	color: #8c8c8c;
-	line-height: 29px;
+	line-height: 25px;
 	margin-bottom: 40px;
 	display: inline-block;
 }
@@ -739,4 +740,26 @@ input[type="file"] { display: none }
 	height: 21px;
 	line-height: 22px;
 	top: 8px;
+}
+
+dummy {
+	display: none
+}
+
+.mainButTwoLine .torrentBut {
+}
+
+.mainButTwoLine div #torIcon {
+	margin-top: 3px;
+	margin-bottom: 2px;
+}
+
+.mainButTwoLine div #vidIcon {
+	margin-top: 8px;
+	margin-bottom: 6px;
+}
+
+.mainButTwoLine div #urlIcon {
+	margin-top: 5px;
+	margin-bottom: 3px;
 }

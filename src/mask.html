@@ -326,19 +326,20 @@ body {
                     <span class="fl_sl i18n">or select an option below</span>
                     <br><br>
                     <div id="mainButHold">
-						<a href="#" onClick="chooseFile('#torrentDialog'); return false">
+						<a href="#" class="mainMenuBut" onClick="chooseFile('#torrentDialog'); return false">
 		                    <div id="torrentBut" class="mainButtons goLeft h">
 								<img id="torIcon" src="images/torrent-icon.png">
 								<br><i18n>Add Torrent</i18n>
+								<dummy>Text</dummy>
 		                    </div>
 						</a>
-                    	<a href="#" onClick="chooseFile('#fileDialog'); return false">
+                    	<a href="#" class="mainMenuBut" onClick="chooseFile('#fileDialog'); return false">
                     		<div id="videoBut" class="mainButtons h">
                     			<img id="vidIcon" src="images/video-icon.png">
                     			<br><i18n>Add Video</i18n>
                     		</div>
 						</a>
-                    	<a class="main-add-url" href="#open-url">
+                    	<a class="main-add-url mainMenuBut" href="#open-url">
 		                    <div id="linkBut" class="mainButtons goRight noMarginRight h">
 			                    <img id="urlIcon" src="images/link-icon.png">
 			                    <br><i18n>Use a URL</i18n>
@@ -385,9 +386,11 @@ body {
                     <div id="formHolder">
                         <form class="pure-form pure-form-aligned" onsubmit="ui.buttons.urlFormAction(); return false;" id="magnetForm">
                             <fieldset>
-                                <div class="pure-control-group">
-                                    <input id="magnetLink" type="text" name="magnet" class="i18n" placeholder="Magnet URI or Video URL" onFocus="this.select();" onMouseUp="return false;">
-                                    <button id="magnetSubmit" type="submit" class="pure-button pure-button-primary i18n">Stream</button>
+                                <div class="pure-control-group" style="display: table; width: 100%">
+                                	<div style="display: table-cell; width: 100%">
+                                    <input id="magnetLink" type="text" name="magnet" class="i18n" placeholder="Magnet URI or Video URL" onFocus="this.select();" onMouseUp="return false;" style="width: 100%">
+                                    </div>
+                                    <button id="magnetSubmit" type="submit" class="pure-button pure-button-primary i18n" style="display: table-cell">Stream</button>
                                 </div>
                             </fieldset>
                         </form>
@@ -441,7 +444,7 @@ body {
             <div id="but-assoc1" onClick="utils.register.magnet(); return false" class="actionButton droid-bold i18n">Associate with Magnet Links</div>
             <div id="but-assoc2" onClick="utils.register.torrent(); return false" class="actionButton droid-bold i18n">Associate with Torrent Files</div>
             <div id="but-assoc3" onClick="utils.register.videos(); return false" class="actionButton droid-bold i18n">Associate with Video Files</div>
-            <div id="but-lang" class="actionButton wrap-text"><span class="droid-bold"><i18n>Language</i18n>: <select id="change-lang"><option class="i18n">English</option><option class="i18n">French</option><option class="i18n">Romanian</option></select></span></div>
+            <div id="but-lang" class="actionButton wrap-text"><span class="droid-bold"><i18n>Language</i18n>: <select id="change-lang"></select></span></div>
             <div id="but-vlc" class="actionButton wrap-text"><span class="droid-bold"><i18n>Video Player</i18n>: <select id="use-player"><option class="i18n">Internal</option><option>VLC</option><option class="i18n">Scan for Players</option><option class="i18n">Custom Player</option></select></span></div>
             <div onClick="ui.settings.changeClickPause(); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold"><i18n>Click to Pause</i18n>:</span> <span id="click-pause i18n">only in Fullscreen</span></div>
             <div onClick="chooseFile('#libraryDialog'); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold"><i18n>Library Folder</i18n>:</span> <span id="lib-folder">Temp</span></div>
