@@ -137,7 +137,7 @@ var utils = {
 				(({
 					linux: ["/usr/bin/vlc", "/usr/local/bin/vlc"],
 					darwin: ["/Applications/VLC.app/Contents/MacOS/VLC", process.env.HOME+"/Applications/VLC.app/Contents/MacOS/VLC"],
-					win32: ["C:\\Program Files\\VideoLAN\\VLC\\vlc.exe", "C:\\Program Files (x86)\\VideoLAN\\VLC\\vlc.exe"]
+					win32: [require('path').dirname(process.execPath)+pathBreak+'node_modules'+pathBreak+'wcjs-prebuilt'+pathBreak+'bin'+pathBreak+'vlc'+appExt,require('path').dirname(process.execPath)+pathBreak+'node_modules'+pathBreak+'webchimera.js'+pathBreak+'build'+pathBreak+'Release'+pathBreak+'vlc'+appExt,require('path').dirname(process.execPath)+pathBreak+'node_modules'+pathBreak+'pw-wcjs-player'+pathBreak+'node_modules'+pathBreak+'wcjs-renderer'+pathBreak+'node_modules'+pathBreak+'webchimera.js'+pathBreak+'build'+pathBreak+'Release'+pathBreak+'vlc'+appExt]
 				})[process.platform] || []).forEach(function(path) {
 					if (fs.existsSync(path)) vlcPath = path;
 				});
