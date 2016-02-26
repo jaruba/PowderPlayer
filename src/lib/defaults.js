@@ -48,6 +48,7 @@ if (!localStorage.zoomLevel) localStorage.zoomLevel = "0";
 if (!localStorage.subColor) localStorage.subColor = "#ebcb00";
 if (!localStorage.torrentSubs) localStorage.torrentSubs = "true";
 if (!localStorage.playerCmdArgs) localStorage.playerCmdArgs = "";
+if (!localStorage.noKeeping) localStorage.noKeeping = "True";
 if (!localStorage.history) {
 	dummyObject = {};
 	localStorage.history = JSON.stringify(dummyObject);

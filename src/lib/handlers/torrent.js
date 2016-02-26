@@ -9,6 +9,7 @@ var torrent = {
 	updatePeers: -1,
 	lastPeerUpdate: 0,
 	parsed: {},
+	files: {},
 	
 	queues: {
 		pieces: 0,
@@ -139,7 +140,7 @@ var torrent = {
 		}
 
 		piece = task.piece;
-		if (powGlobals.torrent.engine.torrent) {
+		if (powGlobals.torrent.engine.torrent && powGlobals.torrent.engine.torrent.pieces) {
 			_TS = powGlobals.torrent.engine.torrent;
 			powGlobals.torrent.allPieces++;
 			if (powGlobals.torrent.allPieces * _TS.pieceLength <= _TS.length) {
@@ -304,7 +305,7 @@ var torrent = {
 	},
 	
 	peerCheck: function() {
-		if (powGlobals.torrent.engine && powGlobals.torrent.engine.swarm) {
+		if (powGlobals.torrent.engine && powGlobals.torrent.engine.swarm && powGlobals.torrent.engine.swarm.wires) {
 			if (!torrent.isReady && powGlobals.torrent.engine.swarm.wires.length > 0) {
 				powGlobals.torrent.seeds = powGlobals.torrent.engine.swarm.wires.length;
 				if (playerApi.loaded) player.setOpeningText(i18n("Connected to") + " "+powGlobals.torrent.seeds+" " + i18n("peers"));
@@ -589,7 +590,7 @@ var torrent = {
 		
 			// Force Peer Discovery and Reconnection
 			setTimeout(function() {
-				if (powGlobals.torrent.engine) {
+				if (powGlobals.torrent.engine && powGlobals.torrent.engine.discover) {
 					powGlobals.torrent.engine.discover();
 				}
 			},1000);
@@ -694,9 +695,11 @@ var torrent = {
 			if (powGlobals.torrent.hasVideo == 1) {
 				// if only 1 media file, download all the files just to become a seeder
 				setTimeout(function() {
-					powGlobals.torrent.engine.files.forEach(function(el, ij) {
-						powGlobals.torrent.engine.selectFile(ij);
-					});
+					if (powGlobals.torrent.engine && powGlobals.torrent.engine.files) {
+						powGlobals.torrent.engine.files.forEach(function(el, ij) {
+							powGlobals.torrent.engine.selectFile(ij);
+						});
+					}
 				},1000);
 			}
 

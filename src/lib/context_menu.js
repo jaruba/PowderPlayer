@@ -1,18 +1,33 @@
 
 var ctxMenu = {
 
-	_torrentMenu: new gui.Menu(),
-	_audioMenu: new gui.Menu(),
-	_subtitleMenu: new gui.Menu(),
-	_aspectRatioMenu: new gui.Menu(),
-	_cropMenu: new gui.Menu(),
-	_zoomMenu: new gui.Menu(),
-	playerMenu: new gui.Menu(),
-	aspectRatios: [i18n('Default'),'1:1','4:3','16:9','16:10','2.21:1','2.35:1','2.39:1','5:4'],
-	crops: [i18n('Default'),'16:10','16:9','1.85:1','2.21:1','2.35:1','2.39:1','5:3','4:3','5:4','1:1'],
-	zooms: [[i18n('Default'),1],['2x ' + i18n('Double'),2],['0.25x ' + i18n('Quarter'),0.25],['0.5x ' + i18n('Half'),0.5]],
+	_torrentMenu: false,
+	_audioMenu: false,
+	_subtitleMenu: false,
+	_aspectRatioMenu: false,
+	_cropMenu: false,
+	_zoomMenu: false,
+	playerMenu: false,
+	aspectRatios: false,
+	crops: false,
+	zooms: false,
+	
+	defaults: function() {
+		this._torrentMenu = new gui.Menu();
+		this._audioMenu = new gui.Menu();
+		this._subtitleMenu = new gui.Menu();
+		this._aspectRatioMenu = new gui.Menu();
+		this._cropMenu = new gui.Menu();
+		this._zoomMenu = new gui.Menu();
+		this.playerMenu = new gui.Menu();
+		this.aspectRatios = [i18n('Default'),'1:1','4:3','16:9','16:10','2.21:1','2.35:1','2.39:1','5:4'];
+		this.crops = [i18n('Default'),'16:10','16:9','1.85:1','2.21:1','2.35:1','2.39:1','5:3','4:3','5:4','1:1'];
+		this.zooms = [[i18n('Default'),1],['2x ' + i18n('Double'),2],['0.25x ' + i18n('Quarter'),0.25],['0.5x ' + i18n('Half'),0.5]];
+	},
 	
 	init: function() {
+		
+		this.defaults();
 
 		// submenus
 		saveCtx = this;
@@ -93,13 +108,22 @@ var ctxMenu = {
 				if (powGlobals.torrent.engine) ui.settings.switchPulsing();
 			}
 		}));
-
-		this._torrentMenu.append(new gui.MenuItem({
-			label: i18n('Close + Keep Files'),
-			click: function() {
-				if (powGlobals.torrent.engine) win.closeProcedure(false);
-			}
-		}));
+		
+		if (localStorage.noKeeping == "True") {
+			this._torrentMenu.append(new gui.MenuItem({
+				label: i18n('Close + Keep Files'),
+				click: function() {
+					if (powGlobals.torrent.engine) win.closeProcedure(false);
+				}
+			}));
+		} else {
+			this._torrentMenu.append(new gui.MenuItem({
+				label: i18n('Close + Remove Files'),
+				click: function() {
+					if (powGlobals.torrent.engine) win.closeProcedure();
+				}
+			}));
+		}
 		
 		this.aspectRatios.forEach(function(el,i) {
 			mnOpts = {

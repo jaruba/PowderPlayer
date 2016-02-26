@@ -446,8 +446,8 @@ body {
             <div id="but-assoc3" onClick="utils.register.videos(); return false" class="actionButton droid-bold i18n">Associate with Video Files</div>
             <div id="but-lang" class="actionButton wrap-text"><span class="droid-bold"><i18n>Language</i18n>: <select id="change-lang"></select></span></div>
             <div id="but-vlc" class="actionButton wrap-text"><span class="droid-bold"><i18n>Video Player</i18n>: <select id="use-player"><option class="i18n">Internal</option><option>VLC</option><option class="i18n">Scan for Players</option><option class="i18n">Custom Player</option></select></span></div>
-            <div onClick="ui.settings.changeClickPause(); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold"><i18n>Click to Pause</i18n>:</span> <span id="click-pause i18n">only in Fullscreen</span></div>
-            <div onClick="chooseFile('#libraryDialog'); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold"><i18n>Library Folder</i18n>:</span> <span id="lib-folder">Temp</span></div>
+            <div onClick="ui.settings.changeClickPause(); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold"><i18n>Click to Pause</i18n>:</span> <span id="click-pause" class="i18n">only in Fullscreen</span></div>
+            <div onClick="chooseFile('#libraryDialog'); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold"><i18n>Library Folder</i18n>:</span> <span id="lib-folder" class="i18n">Temp</span></div>
             <div onClick="$('#open-set-cmd-args').trigger('click'); $('#cmd-args-input').val(localStorage.playerCmdArgs); $('#cmd-args-input').focus(); return false" class="external-opt actionButton wrap-text" style="display:none"><span class="droid-bold i18n">Set Command Line Arguments</span></div>
             <div id="closeAction" class="third-animated-close actionButton player-setting-close i18n" style="font-family: 'Open Sans Bold' !important;font-weight: bold">Close Menu</div>
         </center>
@@ -460,7 +460,7 @@ body {
             <h2 class="headButs goRight i18n" style="margin-right: 4px; margin-left: 1px">Subtitles</h2>
             <h2 class="headButs change-set goRight i18n" onClick="$('.sub-animated-close').trigger('click'); $('.pl-settings').trigger('click'); return false" style="margin-right: 3px">Player</h2>
             <div class="clear"></div>
-            <div onClick="ui.settings.changeNoSub(); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold"><i18n>Auto-Download Subtitles</i18n>:</span> <span id="click-no-sub i18n">True</span></div>
+            <div onClick="ui.settings.changeNoSub(); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold"><i18n>Auto-Download Subtitles</i18n>:</span> <span id="click-no-sub" class="i18n">True</span></div>
             <div id="but-sub-size" class="actionButton wrap-text"><span class="droid-bold"><i18n>Subtitle Size</i18n>: <select id="sub-default-size"><option>80%</option><option>90%</option><option selected>100%</option><option>110%</option><option>115%</option><option>120%</option><option>125%</option><option>130%</option><option>135%</option></select></span></div>
             <div id="but-sub-color" class="actionButton wrap-text"><span class="droid-bold"><i18n>Subtitle Color</i18n>: <select id="sub-default-color"><option class="i18n" selected>White</option><option class="i18n">Yellow</option><option class="i18n">Green</option><option class="i18n">Cyan</option><option class="i18n">Blue</option></select></span></div>
             <div id="but-torrent-sub" class="actionButton wrap-text"><span class="droid-bold"><i18n>Load from Torrent</i18n>: <select id="torrent-sub"><option class="i18n">true</option><option class="i18n">false</option></select></span></div>
@@ -484,6 +484,7 @@ body {
             <div onClick="chooseFile('#folderDialog'); return false" class="actionButton wrap-text"><span class="droid-bold"><i18n>Download Folder</i18n>:</span> <span id="def-folder">Temp</span></div>
             <div onClick="ui.settings.changePulseSetting(); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold"><i18n>Speed Pulsing</i18n>:</span> <span id="click-pulse" class="i18n">auto</span></div>
             <div onClick="ui.settings.changeNoSeeding(); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold"><i18n>Seeding Policy</i18n>:</span> <span id="no-seeding" class="i18n">Always Seed</span></div>
+            <div onClick="ui.settings.noKeeping(); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold"><i18n>Auto-Delete Media Files</i18n>:</span> <span id="no-keeping" class="i18n">True</span></div>
             <div id="closeAction" class="forth-animated-close actionButton i18n" style="font-family: 'Open Sans Bold' !important;font-weight: bold">Close Menu</div>
         </center>
     </div>

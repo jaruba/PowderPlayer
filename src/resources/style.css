@@ -557,7 +557,7 @@ input[type="file"] { display: none }
 	background: #4d4d4d;
 }
 .filenames {
-	margin-top: 17px;
+	margin-top: 12px;
 	display: block;
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -709,7 +709,7 @@ input[type="file"] { display: none }
 }
 .circle strong {
   position: absolute;
-  top: 12px;
+  top: 11px;
   left: 0;
   width: 100%;
   text-align: center;

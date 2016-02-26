@@ -105,8 +105,28 @@ var load = {
 					
 				if (direct == 'torrent') {
 					var readTorrent = require('read-torrent');
-					
-					readTorrent(utils.validateUrl(torLink), function(err, torrent) { load.torrent(torrent); });
+
+					readTorrent(utils.validateUrl(torLink), function(err, data) {
+
+						var trackers = '';
+
+						if (data) {
+							
+							if (data.name)
+								trackers += '&dn=' + data.name.toLowerCase().split(' ').join('+');
+						
+							if (data.announce && data.announce.length)
+								for (ldf = 0; data.announce[ldf]; ldf++)
+									trackers += '&tr=' + encodeURIComponent(data.announce[ldf]);
+
+						}
+						
+						torrent.files[data.infoHash] = utils.validateUrl(torLink);
+
+						load.torrent("magnet:?xt=urn:btih:" + data.infoHash + trackers);
+
+					});
+
 				} else if (direct == 'magnet') {				
 					load.torrent(utils.validateUrl(torLink));
 				} else if (direct == 'media') {
@@ -146,7 +166,7 @@ var load = {
 					var readTorrent = require('read-torrent');
 					
 					readTorrent(utils.validateUrl(torLink), function(err, data) {
-						
+
 						var trackers = '';
 						
 						if (data) {
@@ -166,7 +186,8 @@ var load = {
 						
 						if (data.name) set.title = utils.parser(data.name).name();
 						
-						torrent.parsed[data.infoHash] = data;
+						torrent.files[data.infoHash] = utils.validateUrl(torLink);
+//						torrent.parsed[data.infoHash] = data;
 	
 						player.addPlaylist(set);
 		
@@ -206,7 +227,7 @@ var load = {
 					url: "pow://" + data.infoHash + trackers,
 					title: utils.parser(data.name).name()
 				};
-				torrent.parsed[data.infoHash] = data;
+				torrent.files[data.infoHash] = el;
 				set = load.pushArgs(set);
 				player.addPlaylist(set);
 			} else {
@@ -342,11 +363,20 @@ var load = {
 			if (localStorage.peerPort != 6881) opts.port = localStorage.peerPort;
 			if (localStorage.tmpDir != 'Temp') opts.path = localStorage.tmpDir;
 			if (localStorage.noSeeding) opts.noSeeding = localStorage.noSeeding;
+			opts.withResume = true;
+
+			if (torLink.startsWith('magnet:?xt=urn:btih:')) {
+				var iHash = torLink.replace('magnet:?xt=urn:btih:','');
+				if (iHash.indexOf('&') > -1) iHash = iHash.substr(0, iHash.indexOf('&'));
+				if (torrent.files[iHash]) opts.torFile = torrent.files[iHash];
+			}
+			var newEngine = new this._worker();
+			powGlobals.torrent.engine = newEngine.process(torLink,opts);
 			
-			powGlobals.torrent.engine = this._worker.process(torLink,opts);
+			if (iHash) powGlobals.torrent.engine.infoHash = iHash;
 			
 			powGlobals.torrent.engine.on('download',function(pc) {
-				if (powGlobals && powGlobals.torrent && powGlobals.torrent.engine) {
+				if (powGlobals && powGlobals.torrent && powGlobals.torrent.engine && powGlobals.torrent.engine.torrent && powGlobals.torrent.engine.torrent.pieces) {
 					if (!powGlobals.torrent.pieces) {
 						powGlobals.torrent.pieces = Array.apply(null, Array(powGlobals.torrent.engine.torrent.pieces.length)).map(function () { return false })
 					}

@@ -376,7 +376,7 @@ var playerApi = {
 				if (player.currentItem() < (player.itemCount() -1)) {
 					if (typeof powGlobals.lists.media[player.currentItem()+1] !== 'undefined' && typeof powGlobals.lists.media[player.currentItem()+1].local === 'undefined') {
 						ij = powGlobals.lists.media[player.currentItem()+1].index;
-						if (!powGlobals.torrent.engine.files[powGlobals.lists.files[ij].index].selected) {
+						if (powGlobals.lists.files[ij] && !powGlobals.torrent.engine.files[powGlobals.lists.files[ij].index].selected) {
 							ui.buttons.play(ij);
 						}
 					}

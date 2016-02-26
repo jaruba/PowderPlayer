@@ -27,12 +27,37 @@ var translator = {
 		  if (c[i].placeholder) c[i].placeholder = translator.i18n(c[i].placeholder);
 		}
 		
+		ctxMenu.init();
+		
+		if (localStorage.pulseRule == "disabled") {
+			ctxMenu.playerMenu.items[0].submenu.items[4].checked = false;
+		}
+
+		
 		return translator;
 	},
+	clearModule: function(obj) {
+		// deletes the previous instance of the language module
+		// in case it was edited
+		var clearModules = [obj];
+		for (var i in clearModules) {
+			if (global.require.cache) {
+				for (module in global.require.cache) {
+					if (global.require.cache.hasOwnProperty(module) && module.indexOf(clearModules[i]) > -1) delete global.require.cache[module];
+				}
+			} else if (require.cache) {
+				for (module in require.cache) {
+					if (require.cache.hasOwnProperty(module) && module.indexOf(clearModules[i]) > -1) delete require.cache[module];
+				}
+			}
+		}
+	},
 	setLocal: function(obj) {
+		translator.clearModule(obj);
 		translator.local = require(obj);
 	},
 	changeLocal: function(obj) {
+		translator.clearModule(obj);
 		if (translator.local.NoLocal) {
 			translator.local = require(obj);
 			translator.refresh();

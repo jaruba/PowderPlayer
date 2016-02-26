@@ -102,6 +102,16 @@ var ui = {
 
 	settings: {
 		
+		noKeeping: function() {
+			if (localStorage.noKeeping == "True") {
+				$("#no-keeping").text(i18n('False'));
+				localStorage.noKeeping = "False";
+			} else {
+				$("#no-keeping").text(i18n('True'));
+				localStorage.noKeeping = "True";
+			}
+		},
+		
 		clearHistory: function() {
 			$(".history-close").trigger('click');
 			localStorage.history = "{}";
@@ -179,7 +189,6 @@ var ui = {
 						if (utils.availPlugins.length == 0) {
 					    	$('#select-plugin-list').empty().html('<div onClick="ui.settings.loadPluginList(); return false" class="actionButton wrap-text"><span class="droid-bold">Couldn\'t connect. Press to try again.</span></div>');
 						} else {
-//					        console.log("Got a response: ", utils.availPlugins);
 							$('#select-plugin-list').empty();
 							utils.availPlugins.forEach(function(el) {
 								if (el.repo && el.author && el.title) {
@@ -357,6 +366,7 @@ var ui = {
 				ctxMenu.disable();
 				$("#inner-in-content").animate({ scrollTop: 0 }, 0);
 				torrent.parsed = {};
+				torrent.files = {};
 				player.setOpeningText(i18n("Stopping"));
 				player.fullscreen(false);
 				$("#header_container").css("display","none");
@@ -390,6 +400,10 @@ var ui = {
 				}
 				$('#open-url').css('top', Math.round(($(window).height() - 187) / 2)+'px');
 				player.clearPlaylist();
+				
+				setTimeout(function() {
+					refreshMainBut();
+				},0);
 			} else {
 				player.setOpeningText(i18n("Loading resource"));
 				$("#header_container").show();
@@ -401,7 +415,13 @@ var ui = {
 				if (torrent.isReady) {
 					torrent.isReady = false;
 					if (powGlobals.torrent.serverReady) {
-						powGlobals.torrent.engine.kill();
+						
+						if (window.localStorage.noKeeping == "True") {
+							powGlobals.torrent.engine.kill();
+						} else {
+							powGlobals.torrent.engine.softKill();
+						}
+
 						powGlobals = {
 							current: {},
 							torrent: {},
@@ -414,7 +434,8 @@ var ui = {
 							load.torrent(nextTorrent);
 						}
 					} else {
-						powGlobals.torrent.engine.destroy();
+
+						if (powGlobals.torrent.engine.destroy) powGlobals.torrent.engine.destroy();
 						powGlobals = {
 							current: {},
 							torrent: {},
@@ -428,7 +449,7 @@ var ui = {
 						}
 					}
 				} else {
-					if (powGlobals.torrent.engine) powGlobals.torrent.engine.destroy();
+					if (powGlobals.torrent.engine && powGlobals.torrent.engine.destroy) powGlobals.torrent.engine.destroy();
 					powGlobals = {
 						current: {},
 						torrent: {},
@@ -805,4 +826,8 @@ if (localStorage.bufferSize) {
 
 if (localStorage.noSeeding) {
 	$("#no-seeding").text(i18n("Only when Downloading"));
+}
+
+if (localStorage.noKeeping == "False") {
+	$("#no-keeping").text(i18n('False'));
 }

@@ -34,7 +34,7 @@ var win = {
 			else r = true;
 	
 			if (r) {
-				if (powGlobals.torrent.engine) {
+				if (powGlobals.torrent.engine && powGlobals.torrent.engine.server) {
 					if (torrent.timers.peers) clearInterval(torrent.timers.peers);
 					if (torrent.timers.setDownload) clearTimeout(torrent.timers.setDownload);
 					if (torrent.timers.down) clearTimeout(torrent.timers.down);
@@ -46,7 +46,7 @@ var win = {
 					});
 				} else win.exitApp(1000);
 			} else {
-				if (powGlobals.torrent.engine) {
+				if (powGlobals.torrent.engine && powGlobals.torrent.engine.server) {
 					if (torrent.timers.peers) clearInterval(torrent.timers.peers);
 					if (torrent.timers.setDownload) clearTimeout(torrent.timers.setDownload);
 					if (torrent.timers.down) clearTimeout(torrent.timers.down);
@@ -321,7 +321,13 @@ var win = {
 		helpers: {
 			
 			init: function() {
-				win.title.helpers.addButtonHandlers("top-titlebar-close-button", "button_close.png", "button_close_hover.png", function() { win.closeProcedure() });
+				win.title.helpers.addButtonHandlers("top-titlebar-close-button", "button_close.png", "button_close_hover.png", function() {
+					if (localStorage.noKeeping == "True") {
+						win.closeProcedure();
+					} else {
+						win.closeProcedure(false);
+					}
+				});
 				win.title.helpers.addButtonHandlers("top-titlebar-maximize-button", "maximize.png", "maximize_hover.png", function() { win.gui.maximize() });
 				win.title.helpers.addButtonHandlers("top-titlebar-restore-button", "restore.png", "restore_hover.png",  function() { win.gui.restore() });
 				win.title.helpers.addButtonHandlers("top-titlebar-minimize-button", "minimize.png", "minimize_hover.png", function() {
@@ -371,7 +377,11 @@ win.gui.on('blur', function() {
 });
 
 win.gui.on('close', function() {
-	win.closeProcedure();
+	if (localStorage.noKeeping) {
+		win.closeProcedure();
+	} else {
+		win.closeProcedure(false);
+	}
 });
 
 $.fn.scrollEnd = function(callback, timeout) {          
