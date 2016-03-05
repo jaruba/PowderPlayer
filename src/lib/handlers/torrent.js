@@ -511,7 +511,8 @@ var torrent = {
 					} else if (el.isSubtitle) {
 						if (!powGlobals.lists.subtitles) powGlobals.lists.subtitles = [];
 						powGlobals.lists.subtitles[sbs] = {};
-						powGlobals.lists.subtitles[sbs].index = ij;
+//						powGlobals.lists.subtitles[sbs].index = ij;
+						powGlobals.lists.subtitles[sbs].index = el.index;
 						powGlobals.lists.subtitles[sbs].filename = utils.parser(el.name).filename();
 						powGlobals.lists.subtitles[sbs].realName = utils.parser(el.name).filename().replace(/\.[^/.]+$/, "");
 						sbs++;

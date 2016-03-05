@@ -219,14 +219,14 @@ var ui = {
 		play: function(kj) {
 			if ($("#action"+kj).hasClass("play")) {
 				$("#action"+kj).removeClass("play").addClass("pause").css("background-color","#F6BC24").attr("onClick","ui.buttons.pause("+kj+")");
-				powGlobals.torrent.engine.files[powGlobals.lists.files[kj].index].select();
+				powGlobals.torrent.engine.selectFile(powGlobals.lists.files[kj].index);
 			}
 		},
 
 		pause: function(kj) {
 			if ($("#action"+kj).hasClass("pause")) {
 				$("#action"+kj).removeClass("pause").addClass("play").css("background-color","#FF704A").attr("onClick","ui.buttons.play("+kj+")");
-				powGlobals.torrent.engine.files[powGlobals.lists.files[kj].index].deselect();
+				powGlobals.torrent.engine.deselectFile(powGlobals.lists.files[kj].index);
 			}
 		},
 		
@@ -742,7 +742,7 @@ if (localStorage.singleInstance == '1') {
 }
 
 $("#torrent-sub").on('change', function() {
-	if($(this).selectedIndex == 0) {
+	if (this.selectedIndex == 0) {
 		localStorage.torrentSubs = 'true';
 	} else {
 		localStorage.torrentSubs = 'false';
