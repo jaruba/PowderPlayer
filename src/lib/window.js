@@ -313,6 +313,9 @@ var win = {
 		},
 		
 		left: function(newtitle) {
+			if (newtitle.startsWith('[custom]')) {
+				newtitle = newtitle.replace('[custom]','');
+			}
 			win.gui.title = newtitle;
 			if ($(".top-titlebar-text").hasClass("top-text-center")) $(".top-titlebar-text").removeClass("top-text-center").addClass("top-text-left");
 			$(".top-titlebar-text").html(newtitle);

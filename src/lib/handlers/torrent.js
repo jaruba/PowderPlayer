@@ -511,7 +511,6 @@ var torrent = {
 					} else if (el.isSubtitle) {
 						if (!powGlobals.lists.subtitles) powGlobals.lists.subtitles = [];
 						powGlobals.lists.subtitles[sbs] = {};
-//						powGlobals.lists.subtitles[sbs].index = ij;
 						powGlobals.lists.subtitles[sbs].index = el.index;
 						powGlobals.lists.subtitles[sbs].filename = utils.parser(el.name).filename();
 						powGlobals.lists.subtitles[sbs].realName = utils.parser(el.name).filename().replace(/\.[^/.]+$/, "");
@@ -615,7 +614,7 @@ var torrent = {
 				remote.updateVal("mediaFiles",powGlobals.lists.media);
 			} else $("#menu-back-video").show();
 
-			$("#filesList").append($('<div style="width: 100%; height: 79px; text-align: center; line-height: 79px; font-family: \'Droid Sans Bold\'; font-size: 19px; border-bottom: 1px solid #353535; background: #4d4d4d">Scroll up to Start Video Mode</div>'));
+			$("#filesList").append($('<div style="width: 100%; height: 79px; text-align: center; line-height: 79px; font-size: 18px; border-bottom: 1px solid #353535; background: #4d4d4d; letter-spacing: 1px" class="droid-bold">' + i18n('Scroll up to Start Video Mode') + '</div>'));
 			
 			powGlobals.lists.files.forEach(function(el,ij) {
 				
