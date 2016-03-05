@@ -49,6 +49,7 @@ if (!localStorage.subColor) localStorage.subColor = "#ebcb00";
 if (!localStorage.torrentSubs) localStorage.torrentSubs = "true";
 if (!localStorage.playerCmdArgs) localStorage.playerCmdArgs = "";
 if (!localStorage.noKeeping) localStorage.noKeeping = "True";
+if (!localStorage.loadVideoSubs) localStorage.loadVideoSubs = "never";
 if (!localStorage.history) {
 	dummyObject = {};
 	localStorage.history = JSON.stringify(dummyObject);

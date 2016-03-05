@@ -753,6 +753,22 @@ if (localStorage.torrentSubs == 'false') {
 	$('#torrent-sub option:eq(1)').attr('selected', 'selected');
 }
 
+$("#video-sub").on('change', function() {
+	if (this.selectedIndex == 0) {
+		localStorage.loadVideoSubs = 'never';
+	} else if (this.selectedIndex == 1) {
+		localStorage.loadVideoSubs = 'one';
+	} else if (this.selectedIndex == 2) {
+		localStorage.loadVideoSubs = 'always';
+	}
+});
+
+if (localStorage.loadVideoSubs == 'one') {
+	$('#video-sub option:eq(1)').attr('selected', 'selected');
+} else if (localStorage.loadVideoSubs == 'always') {
+	$('#video-sub option:eq(2)').attr('selected', 'selected');
+}
+
 if (localStorage.useVLC == "1") {
 	if (!localStorage.customPlayer) {
 		$('#use-player').val('VLC');

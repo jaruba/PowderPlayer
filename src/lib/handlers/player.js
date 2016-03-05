@@ -153,11 +153,13 @@ var playerApi = {
 			
 			if (playerApi.remLocalSub) {
 				if (player.subCount()) {
-					for (kom = 1; kom < player.subCount(); kom++) {
-						if (player.subDesc(kom).language == playerApi.remLocalSub) {
-							player.subTrack(kom);
-							player.notify(i18n("Subtitle Loaded"));
-							break;
+					if (!((localStorage.loadVideoSubs == 'one' && player.vlc.subtitles.count == 2) || (localStorage.loadVideoSubs == 'always' && player.vlc.subtitles.count > 1))) {
+						for (kom = 1; kom < player.subCount(); kom++) {
+							if (player.subDesc(kom).language == playerApi.remLocalSub) {
+								player.subTrack(kom);
+								player.notify(i18n("Subtitle Loaded"));
+								break;
+							}
 						}
 					}
 				}
@@ -233,8 +235,10 @@ var playerApi = {
 								if (player.stateInt() < 3) {
 									playerApi.remLocalSub = subPath.split('\\').pop();
 								} else {
-									player.subTrack(player.subCount() - 1);
-									player.notify(i18n("Subtitle Loaded"));
+									if (!((localStorage.loadVideoSubs == 'one' && player.vlc.subtitles.count == 2) || (localStorage.loadVideoSubs == 'always' && player.vlc.subtitles.count > 1))) {
+										player.subTrack(player.subCount() - 1);
+										player.notify(i18n("Subtitle Loaded"));
+									}
 								}
 							}
 						});
