@@ -33,7 +33,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
 	if (!localStorage.appLang) localStorage.appLang = 'template';
 	if (['template','English'].indexOf(localStorage.appLang) > -1) newLang = 'template';
 	else newLang = localStorage.appLang;
-	translator.setLocal(require('path').dirname(process.execPath)+'/src/locale/' + newLang);
+	translator.setLocal(require('path').dirname(process.execPath)+'/src/locale/' + newLang.split(' ').join('_'));
 	var i18n = translator.i18n;
     </script>
     <script src="lib/defaults.js"></script>
@@ -463,7 +463,7 @@ body {
             <div onClick="ui.settings.changeNoSub(); return false" class="internal-opt actionButton wrap-text"><span class="droid-bold"><i18n>Auto-Download Subtitles</i18n>:</span> <span id="click-no-sub" class="i18n">True</span></div>
             <div id="but-sub-size" class="actionButton wrap-text"><span class="droid-bold"><i18n>Subtitle Size</i18n>: <select id="sub-default-size"><option>80%</option><option>90%</option><option selected>100%</option><option>110%</option><option>115%</option><option>120%</option><option>125%</option><option>130%</option><option>135%</option></select></span></div>
             <div id="but-sub-color" class="actionButton wrap-text"><span class="droid-bold"><i18n>Subtitle Color</i18n>: <select id="sub-default-color"><option class="i18n" selected>White</option><option class="i18n">Yellow</option><option class="i18n">Green</option><option class="i18n">Cyan</option><option class="i18n">Blue</option></select></span></div>
-            <div id="but-torrent-sub" class="actionButton wrap-text"><span class="droid-bold"><i18n>Load from Torrent</i18n>: <select id="torrent-sub"><option class="i18n">true</option><option class="i18n">false</option></select></span></div>
+            <div id="but-torrent-sub" class="actionButton wrap-text"><span class="droid-bold"><i18n>Load from Torrent</i18n>: <select id="torrent-sub"><option class="i18n">True</option><option class="i18n">False</option></select></span></div>
             <div id="closeAction" class="sub-animated-close actionButton i18n" style="font-family: 'Open Sans Bold' !important;font-weight: bold">Close Menu</div>
         </center>
     </div>

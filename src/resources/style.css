@@ -120,7 +120,7 @@
 * { margin: 0 }
 html, body { height: 100% }
 body {
-	font-family: 'Open Sans Light', sans-serif;
+	font-family: 'Noto Sans', sans-serif;
 	background: #fff;
 	overflow-y:hidden;
 	overflow-x:hidden;

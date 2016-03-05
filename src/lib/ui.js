@@ -62,7 +62,7 @@ var ui = {
 				else $("#history-list").css('overflowY', 'scroll');
 				$("#history-list").html(generateHistory);
 			} else {
-				generateHistory = "<div class=\"history-empty modal-empty\">Your history is empty, watch something first.</span>";
+				generateHistory = "<div class=\"history-empty modal-empty\">" + i18n("Your history is empty, watch something first.") + "</span>";
 				$("#history-list").css('overflowY', 'auto');
 				$("#history-list").html(generateHistory);
 			}
@@ -742,10 +742,16 @@ if (localStorage.singleInstance == '1') {
 }
 
 $("#torrent-sub").on('change', function() {
-	localStorage.torrentSubs = this.value;
+	if($(this).selectedIndex == 0) {
+		localStorage.torrentSubs = 'true';
+	} else {
+		localStorage.torrentSubs = 'false';
+	}
 });
 
-$("#torrent-sub").val(localStorage.torrentSubs);
+if (localStorage.torrentSubs == 'false') {
+	$('#torrent-sub option:eq(1)').attr('selected', 'selected');
+}
 
 if (localStorage.useVLC == "1") {
 	if (!localStorage.customPlayer) {

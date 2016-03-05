@@ -13,7 +13,7 @@ module.exports = {
     "Uploaded": "",
     "Downloaded": "",
     "Speed": "",
-	"Settings": "",
+    "Settings": "",
     "Close": "",
     "You require an internet connection to use this feature.": "",
     "I understand": "",
@@ -114,7 +114,7 @@ module.exports = {
     "Move Down": "",
     "Torrent Data": "",
     "Download All": "",
-	"Auto-Delete Media Files": "",
+    "Auto-Delete Media Files": "",
     "Close + Keep Files": "",
     "Close + Remove Files": "",
     "See Hotkeys": "",
@@ -141,7 +141,7 @@ module.exports = {
     "Associate with Torrent Files": "",
     "Associate with Video Files": "",
     "Video Player": "",
-	"Fullscreen": "",
+    "Fullscreen": "",
 
     // context: Internal Video Player
     "Internal": "",
@@ -256,11 +256,12 @@ module.exports = {
     "Error Occurred": "",
     "Reconnecting ...": "",
     "Playback Paused ...": "",
-	"Language": "",
+    "Language": "",
     "None": "",
-	
-	// window titles
-	"Updater": "",
-	"Hotkeys": ""
+    
+    // window titles
+    "Updater": "",
+    "Hotkeys": "",
+    "Your history is empty, watch something first.": ""
 
 }
