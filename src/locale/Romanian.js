@@ -13,7 +13,7 @@ module.exports = {
     "Uploaded": "Upload",
     "Downloaded": "Descărcat",
     "Speed": "Viteză",
-	"Settings": "Setări",
+    "Settings": "Setări",
     "Close": "Închide",
     "You require an internet connection to use this feature.": "Ai nevoie de o conecsiune la internet pentru a folosi această acţiune.",
     "I understand": "Am înţeles",
@@ -115,7 +115,7 @@ module.exports = {
     "Download All": "Descarcă Tot",
     "Force Download": "Forţează Download",
     "Speed Pulsing": "Pulsează Viteza",
-	"Auto-Delete Media Files": "Şterge Fişierele Media Automat",
+    "Auto-Delete Media Files": "Şterge Fişierele Media Automat",
     "Close + Keep Files": "Închide + Păstrează Fişierele",
     "Close + Remove Files": "Închide + Şterge Fişierele",
     "See Hotkeys": "Vezi Prescurtările",
@@ -142,7 +142,7 @@ module.exports = {
     "Associate with Torrent Files": "Asociază cu Fişiere Torrent",
     "Associate with Video Files": "Asociază cu Fişiere Video",
     "Video Player": "Player Video",
-	"Fullscreen": "",
+    "Fullscreen": "",
 
     // context: Internal Video Player
     "Internal": "Intern",
@@ -256,11 +256,12 @@ module.exports = {
     "Error Occurred": "A avut loc o Eroare",
     "Reconnecting ...": "Mă Reconectez ...",
     "Playback Paused ...": "Pauză ...",
-	"Language": "Limbă",
+    "Language": "Limbă",
     "None": "Nimic",
 
-	// window titles
-	"Updater": "Actualizator",
-	"Hotkeys": "Prescurtări"
+    // window titles
+    "Updater": "Actualizator",
+    "Hotkeys": "Prescurtări",
+    "Your history is empty, watch something first.": "Istoria ta este goală, uită-te la ceva întâi."
 
 }
