@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Powder Player"
-#define MyAppVersion "0.97"
+#define MyAppVersion "0.98"
 #define MyAppPublisher "Branza Victor-Alexandru"
 #define MyAppURL "http://powder.media/"
 #define MyAppExeName "powder.exe"
@@ -26,7 +26,7 @@ LicenseFile=..\..\LICENSE
 InfoBeforeFile=PowderInstall.txt
 InfoAfterFile=PowderAfterInstall.txt
 OutputDir=.\
-OutputBaseFilename=PowderPlayer_v0.97
+OutputBaseFilename=PowderPlayer_v0.98
 SetupIconFile=powder.ico
 Compression=lzma
 SolidCompression=yes
