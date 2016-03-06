@@ -91,6 +91,10 @@
 						$("#update-header").text(i18n("Update to Powder")+" "+jsonData[mn]["tag_name"]);
 						$(".spinner").fadeOut();
 						$("#starter").fadeIn();
+						win.setMaximumSize(320,$('#starter').height());
+						win.setMinimumSize(320,$('#starter').height());
+						win.resizeTo(320,$('#starter').height());
+
 						return;
 					}
 				}
@@ -158,6 +162,9 @@
 			$("#downloader").css("display","none");
 			$("#ender").css("display","block");
 			if (!focused) win.requestAttention(true);
+			win.setMaximumSize(320,$('#ender').height());
+			win.setMinimumSize(320,$('#ender').height());
+			win.resizeTo(320,$('#ender').height());
 		});
 	}
 	function runUpdate() {

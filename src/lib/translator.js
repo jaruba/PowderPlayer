@@ -37,13 +37,14 @@ var translator = {
 		  if (c[i].title) c[i].title = translator.i18n(c[i].title);
 		  if (c[i].placeholder) c[i].placeholder = translator.i18n(c[i].placeholder);
 		}
-		
-		ctxMenu.init();
-		
-		if (localStorage.pulseRule == "disabled") {
-			ctxMenu.playerMenu.items[0].submenu.items[4].checked = false;
-		}
 
+
+		if (window.ctxMenu) {
+			window.ctxMenu.init();
+			if (localStorage.pulseRule == "disabled") {
+				window.ctxMenu.playerMenu.items[0].submenu.items[4].checked = false;
+			}
+		}
 		
 		return translator;
 	},
