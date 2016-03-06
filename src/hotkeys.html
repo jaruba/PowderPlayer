@@ -205,7 +205,11 @@ h2 {
 if (!localStorage.appLang) localStorage.appLang = 'template';
 if (['template','English'].indexOf(localStorage.appLang) > -1) newLang = 'template';
 else newLang = localStorage.appLang;
-translator.changeLocal(require('path').dirname(process.execPath)+'/src/locale/' + newLang.split(' ').join('_'));
+if (process.platform == 'darwin') {
+	translator.changeLocal('./locale/' + newLang.split(' ').join('_'));
+} else {
+	translator.changeLocal(require('path').dirname(process.execPath)+'/src/locale/' + newLang.split(' ').join('_'));
+}
 var i18n = translator.i18n;
 document.title = i18n(document.title);
 </script>

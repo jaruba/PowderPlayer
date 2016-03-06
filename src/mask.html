@@ -33,7 +33,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
 	if (!localStorage.appLang) localStorage.appLang = 'template';
 	if (['template','English'].indexOf(localStorage.appLang) > -1) newLang = 'template';
 	else newLang = localStorage.appLang;
-	translator.setLocal(require('path').dirname(process.execPath)+'/src/locale/' + newLang.split(' ').join('_'));
+	if (process.platform == 'darwin') {
+		translator.setLocal('./locale/' + newLang.split(' ').join('_'));
+	} else {
+		translator.setLocal(require('path').dirname(process.execPath)+'/src/locale/' + newLang.split(' ').join('_'));
+	}
 	var i18n = translator.i18n;
     </script>
     <script src="lib/defaults.js"></script>

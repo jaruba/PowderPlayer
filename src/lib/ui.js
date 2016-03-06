@@ -787,7 +787,13 @@ function refreshMainBut() {
 	}
 }
 
-require('fs').readdir(require('path').dirname(process.execPath)+'/src/locale', function(err, files) {
+if (process.platform == 'darwin') {
+	var localePath = './src/locale';
+} else {
+	var localePath = require('path').dirname(process.execPath)+'/src/locale';
+}
+
+require('fs').readdir(localePath, function(err, files) {
 	var langOptions = '<option class="i18n">' + i18n('English') + '</option>';
 	langOptions += files.map(function(el) {
 		return el != 'template.js' ? '<option value="' + el.replace('.js', '').split('_').join(' ') + '">' + translator.langName(el.replace('.js', '').split('_').join(' ')) + '</option>' : '';
@@ -801,7 +807,11 @@ $("#change-lang").on('change', function() {
 	} else {
 		localStorage.appLang = $(this).val();
 	}
-	translator.changeLocal(require('path').dirname(process.execPath)+'/src/locale/' + localStorage.appLang.split(' ').join('_'));
+	if (process.platform == 'darwin') {
+		translator.changeLocal('./locale/' + localStorage.appLang.split(' ').join('_'));
+	} else {
+		translator.changeLocal(require('path').dirname(process.execPath)+'/src/locale/' + localStorage.appLang.split(' ').join('_'));
+	}
 	setTimeout(function() {
 		refreshMainBut();
 	},0);
