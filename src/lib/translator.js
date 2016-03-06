@@ -1,4 +1,15 @@
 var translator = {
+	_langNames: {
+		"Romanian": "Română",
+		"French": "Français",
+		"Polish": "Polskie",
+		"Russian": "Pусский",
+		"Portuguese (Brazil)": "Português (Brasil)"
+	},
+	langName: function(str) {
+		if (translator._langNames[str]) return translator._langNames[str];
+		else return str;
+	},
 	local: { 'NoLocal': true },
 	i18n: function(str) {
 		if (translator.local[str]) return translator.local[str];

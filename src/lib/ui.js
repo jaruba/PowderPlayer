@@ -802,16 +802,16 @@ function refreshMainBut() {
 require('fs').readdir(require('path').dirname(process.execPath)+'/src/locale', function(err, files) {
 	var langOptions = '<option class="i18n">' + i18n('English') + '</option>';
 	langOptions += files.map(function(el) {
-		return el != 'template.js' ? '<option>' + i18n(el.replace('.js', '').split('_').join(' ')) + '</option>' : '';
+		return el != 'template.js' ? '<option value="' + el.replace('.js', '').split('_').join(' ') + '">' + translator.langName(el.replace('.js', '').split('_').join(' ')) + '</option>' : '';
 	});
 	$("#change-lang").html(langOptions);
 });
 
 $("#change-lang").on('change', function() {
-	if (this.value == 'English') {
+	if ($(this).val() == 'English') {
 		localStorage.appLang = 'template';
 	} else {
-		localStorage.appLang = this.value;
+		localStorage.appLang = $(this).val();
 	}
 	translator.changeLocal(require('path').dirname(process.execPath)+'/src/locale/' + localStorage.appLang.split(' ').join('_'));
 	setTimeout(function() {
@@ -821,8 +821,8 @@ $("#change-lang").on('change', function() {
 
 if (localStorage.appLang != 'template') {
 	setTimeout(function() {
-		$("#change-lang").val(i18n(localStorage.appLang));
-	},0);
+		$("#change-lang").val(localStorage.appLang);
+	}, 1000);
 }
 
 setTimeout(function() {
