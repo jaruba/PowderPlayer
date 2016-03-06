@@ -44,6 +44,7 @@
         "async": "jaruba/async",
         "pw-wcjs-player": "jaruba/pw-wcjs-player",
         "computer-sleep": "jaruba/computer-sleep",
+        "node-subtitles-grouping" : "jaruba/node-subtitles-grouping",
         "http-proxy": "*",
         "socket.io": "*",
         "socket.io-client": "*",
