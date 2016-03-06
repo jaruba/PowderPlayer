@@ -730,7 +730,7 @@ $("#zoom-level-default").on('change', function() {
 $("#zoom-level-default").val(localStorage.zoomLevel);
 
 $("#process-type-default").on('change', function() {
-	if (this.value == 'Single') {
+	if (this.selectedIndex == 1) {
 		localStorage.singleInstance = '1';
 	} else {
 		delete localStorage.singleInstance;
@@ -738,7 +738,7 @@ $("#process-type-default").on('change', function() {
 });
 
 if (localStorage.singleInstance == '1') {
-	$("#process-type-default").val(i18n('Single'));
+	$('#process-type-default option:eq(1)').attr('selected', 'selected');
 }
 
 $("#torrent-sub").on('change', function() {
@@ -767,18 +767,6 @@ if (localStorage.loadVideoSubs == 'one') {
 	$('#video-sub option:eq(1)').attr('selected', 'selected');
 } else if (localStorage.loadVideoSubs == 'always') {
 	$('#video-sub option:eq(2)').attr('selected', 'selected');
-}
-
-if (localStorage.useVLC == "1") {
-	if (!localStorage.customPlayer) {
-		$('#use-player').val('VLC');
-		$(".internal-opt").hide(0);
-		$(".external-opt").show(0);
-	} else if (localStorage.customPlayer) {
-		$('#use-player').val(i18n('Custom Player'));
-		$(".internal-opt").hide(0);
-		$(".external-opt").show(0);
-	}
 }
 
 $('#cmd-args-form').on('submit', function(e) {
@@ -819,13 +807,24 @@ $("#change-lang").on('change', function() {
 	},0);
 });
 
-if (localStorage.appLang != 'template') {
-	setTimeout(function() {
-		$("#change-lang").val(localStorage.appLang);
-	}, 1000);
-}
-
 setTimeout(function() {
+	// give some time for the translations to take effect first
+	if (localStorage.useVLC == "1") {
+		if (!localStorage.customPlayer) {
+			$('#use-player').val('VLC');
+			$(".internal-opt").hide(0);
+			$(".external-opt").show(0);
+		} else if (localStorage.customPlayer) {
+			$('#use-player').val(i18n('Custom Player'));
+			$(".internal-opt").hide(0);
+			$(".external-opt").show(0);
+		}
+	}
+
+	if (localStorage.appLang != 'template') {
+		$("#change-lang").val(localStorage.appLang);
+	}
+	
 	if (localStorage.subColor == '#fff') {
 		$("#sub-default-color").val(i18n('White'));
 	} else if (localStorage.subColor == '#ebcb00') {
@@ -837,6 +836,15 @@ setTimeout(function() {
 	} else if (localStorage.subColor == '#00b6ea') {
 		$("#sub-default-color").val(i18n('Blue'));
 	}
+
+	if (localStorage.noSeeding) {
+		$("#no-seeding").text(i18n("Only when Downloading"));
+	}
+	
+	if (localStorage.noKeeping == "False") {
+		$("#no-keeping").text(i18n('False'));
+	}
+
 }, 1000);
 
 $('.wcp-subtitle-text').css('color', localStorage.subColor);
@@ -846,12 +854,4 @@ $("#sub-default-size").val((parseFloat(localStorage.subSizeDefault)*100)+'%');
 if (localStorage.bufferSize) {
 	$('#buffer-spinner').val(localStorage.bufferSize);
 	$('#buffer-sel').html(localStorage.bufferSize);
-}
-
-if (localStorage.noSeeding) {
-	$("#no-seeding").text(i18n("Only when Downloading"));
-}
-
-if (localStorage.noKeeping == "False") {
-	$("#no-keeping").text(i18n('False'));
 }

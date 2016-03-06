@@ -539,9 +539,7 @@ if (!keepHidden) {
 		});
 		if (!shouldShow) win.gui.show();
 	} else win.gui.show();
-} else {
-	passedPoint = true;
-}
+} else passedPoint = true;
 // end specific to window frame
 
 if (localStorage.zoomLevel != "0") {
