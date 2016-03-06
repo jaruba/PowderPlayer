@@ -3,8 +3,8 @@ module.exports = {
     
     "Drag & Drop a File": "Arraste e Solte Um Arquivo Nesta Janela",
     "or select an option below": "ou selecione uma das opções abaixo:",
-    "Add Torrent": "Adicionar arquivo Torrent",
-    "Add Video": "Adicionar Arquivo de Vídeo",
+    "Add Torrent": "Adicionar Torrent",
+    "Add Video": "Adicionar Vídeo",
     "Use a URL": "Usar um Link da WEB",
     "Supports": "Suporte a",
     "Torrent Files / Links, Magnet Links, Youtube Links,": "Arquivos Torrent / Links, Links Magnéticos, Links do Youtube",
@@ -52,6 +52,7 @@ module.exports = {
     "Downloaded Successfully": "Baixado Com Sucesso",
     "Powder Player will be closed during the updating process.": "O Powder Player precisará ser fechado durante o processo de atualização.",
     "Run Update Now!": "Rodar a Atualização Agora!",
+    "Scroll up to Start Video Mode": "Role Pra Cima Para Iniciar o Modo de Vídeo",
 
     // context: hotkeys and hotkey descriptions
     "Most Used": "Mais Usado",
@@ -167,6 +168,11 @@ module.exports = {
 
     // context: Load Subtitle from Torrent
     "Load from Torrent": "Carregar do Torrent",
+    // context: Load Subtitle from Video (mkv)
+    "Load from Video": "Carregar do Vídeo",
+    "Never": "Nunca",
+    "If only one": "Se somente uma Legenda",
+    "Always": "Sempre",
     "Maximum Peers": "Peers Máximos",
     "Peer Listening Port": "Porta usada pelo Powder Player",
     "Playback Buffer Size": "Tempo de pré-carregamento de Vídeo",
@@ -259,6 +265,8 @@ module.exports = {
     "Playback Paused ...": "Reprodução Pausada",
     "Language": "Linguagem",
     "None": "Nada",
+    "Change audio track": "Mudar Trilha de Áudio",
+    "Audio": "Áudio",
     
     // window titles
     "Updater": "Atualizador",

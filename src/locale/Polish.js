@@ -51,6 +51,7 @@ module.exports = {
     "Downloaded Successfully": "Pobieranie zakończone",
     "Powder Player will be closed during the updating process.": "Powder Player zostanie zamknięty w trakcie aktualizacji",
     "Run Update Now!": "Aktualizuj!",
+    "Scroll up to Start Video Mode": "Przewiń do góry, aby przejść do trybu wideo",
 
     // context: hotkeys and hotkey descriptions
     "Most Used": "Najczęściej używane",
@@ -166,6 +167,11 @@ module.exports = {
 
     // context: Load Subtitle from Torrent
     "Load from Torrent": "Zaladuj z torrenta",
+    // context: Load Subtitle from Video (mkv)
+    "Load from Video": "Załaduj z pliku wideo",
+    "Never": "Nigdy",
+    "If only one": "Jeśli są tylko jedne",
+    "Always": "Zawsze",
     "Maximum Peers": "Maks. ilość udostępnień",
     "Peer Listening Port": "Port nasłuchu",
     "Playback Buffer Size": "Wielkość bufora odtwarzania",
@@ -258,6 +264,8 @@ module.exports = {
     "Playback Paused ...": "Odtwarzanie wstrzymane ...",
     "Language": "Język",
     "None": "(pusto)",
+    "Change audio track": "Przełącz ścieżkę dźwiękową",
+    "Audio": "",
     
     // window titles
     "Updater": "Aktualizator",

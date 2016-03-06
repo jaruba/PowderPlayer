@@ -50,6 +50,7 @@ module.exports = {
     "Downloaded Successfully": "Descărcat cu Succes",
     "Powder Player will be closed during the updating process.": "Powder Player va fi închis în timpul actualizării.",
     "Run Update Now!": "Actualizează Acum!",
+    "Scroll up to Start Video Mode": "Derulați în sus pentru a Porni Modul Video",
 
     // context: hotkeys and hotkey descriptions
     "Most Used": "Folosite Des",
@@ -167,6 +168,11 @@ module.exports = {
 
     // context: Load Subtitle from Torrent
     "Load from Torrent": "Încarcă din Torrent",
+    // context: Load Subtitle from Video (mkv)
+    "Load from Video": "Încarcă din Video",
+    "Never": "Niciodata",
+    "If only one": "Daca este doar unul",
+    "Always": "Întotdeauna",
     "Maximum Peers": "Conecsiuni Maxime",
     "Peer Listening Port": "Port pentru Connecsiuni",
     "Playback Buffer Size": "Mărime Buffer",
@@ -258,6 +264,8 @@ module.exports = {
     "Playback Paused ...": "Pauză ...",
     "Language": "Limbă",
     "None": "Nimic",
+    "Change audio track": "Schimbă audio track",
+    "Audio": "",
 
     // window titles
     "Updater": "Actualizator",

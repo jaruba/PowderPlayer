@@ -51,6 +51,7 @@ module.exports = {
     "Downloaded Successfully": "",
     "Powder Player will be closed during the updating process.": "",
     "Run Update Now!": "",
+    "Scroll Up to Start Video Mode": "",
 
     // context: hotkeys and hotkey descriptions
     "Most Used": "",
@@ -166,6 +167,11 @@ module.exports = {
 
     // context: Load Subtitle from Torrent
     "Load from Torrent": "",
+    // context: Load Subtitle from Video (mkv)
+    "Load from Video": "",
+    "Never": "",
+    "If only one": "",
+    "Always": "",
     "Maximum Peers": "",
     "Peer Listening Port": "",
     "Playback Buffer Size": "",
@@ -258,6 +264,8 @@ module.exports = {
     "Playback Paused ...": "",
     "Language": "",
     "None": "",
+    "Change audio track": "",
+    "Audio": "",
     
     // window titles
     "Updater": "",

@@ -6,8 +6,8 @@ module.exports = {
     "Add Video": "Добавить видеофайл",
     "Use a URL": "Использовать ссылку",
     "Supports": "Поддерживаются",
-    "Torrent Files / Links, Magnet Links, Youtube Links,": "торрент-файлы / ссылки, магнет-ссылки, ссылки Youtube,",
-    "Youtube Playlist Links and all": "ссылки плейлистов Youtube и все",
+    "Torrent Files / Links, Magnet Links, Youtube Links,": "торрент-файлы / ссылки, магнет-ссылки, ссылки",
+    "Youtube Playlist Links and all": "Youtube, ссылки плейлистов Youtube и все",
     "VLC Supported Media Formats": "типы медиафайлов воспроизводимые VLC",
     "Peers": "Пиры",
     "Uploaded": "Загружено",
@@ -51,6 +51,7 @@ module.exports = {
     "Downloaded Successfully": "Завершено",
     "Powder Player will be closed during the updating process.": "Powder Player будет закрыт на время обновления",
     "Run Update Now!": "Приступить к обновлению!",
+    "Scroll up to Start Video Mode": "Прокрутка вверх - переход в режим просмотра видео",
 
     // context: hotkeys and hotkey descriptions
     "Most Used": "Наиболее часто используемые",
@@ -166,6 +167,11 @@ module.exports = {
 
     // context: Load Subtitle from Torrent
     "Load from Torrent": "Загрузить из торрента",
+    // context: Load Subtitle from Video (mkv)
+    "Load from Video": "Загружать из видеофайла",
+    "Never": "Никогда",
+    "If only one": "Если они единственные",
+    "Always": "Всегда",
     "Maximum Peers": "Макс. количество пиров",
     "Peer Listening Port": "Порт для входящих соединений",
     "Playback Buffer Size": "Размер буфера воспроизведения",
@@ -258,6 +264,8 @@ module.exports = {
     "Playback Paused ...": "Воспроизведение приостановлено ...",
     "Language": "Язык",
     "None": "(пусто)",
+    "Change audio track": "Переключить звуковую дорожку",
+    "Audio": "Aудио",
     
     // window titles
     "Updater": "Обновление",
