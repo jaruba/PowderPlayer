@@ -825,17 +825,19 @@ if (localStorage.appLang != 'template') {
 	},0);
 }
 
-if (localStorage.subColor == '#fff') {
-	$("#sub-default-color").val(i18n('White'));
-} else if (localStorage.subColor == '#ebcb00') {
-	$("#sub-default-color").val(i18n('Yellow'));
-} else if (localStorage.subColor == '#00e78f') {
-	$("#sub-default-color").val(i18n('Green'));
-} else if (localStorage.subColor == '#00ffff') {
-	$("#sub-default-color").val(i18n('Cyan'));
-} else if (localStorage.subColor == '#00b6ea') {
-	$("#sub-default-color").val(i18n('Blue'));
-}
+setTimeout(function() {
+	if (localStorage.subColor == '#fff') {
+		$("#sub-default-color").val(i18n('White'));
+	} else if (localStorage.subColor == '#ebcb00') {
+		$("#sub-default-color").val(i18n('Yellow'));
+	} else if (localStorage.subColor == '#00e78f') {
+		$("#sub-default-color").val(i18n('Green'));
+	} else if (localStorage.subColor == '#00ffff') {
+		$("#sub-default-color").val(i18n('Cyan'));
+	} else if (localStorage.subColor == '#00b6ea') {
+		$("#sub-default-color").val(i18n('Blue'));
+	}
+}, 1000);
 
 $('.wcp-subtitle-text').css('color', localStorage.subColor);
 
