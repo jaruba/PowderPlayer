@@ -614,7 +614,7 @@ var torrent = {
 				remote.updateVal("mediaFiles",powGlobals.lists.media);
 			} else $("#menu-back-video").show();
 
-			$("#filesList").append($('<div style="width: 100%; height: 79px; text-align: center; line-height: 79px; font-size: 18px; border-bottom: 1px solid #353535; background: #4d4d4d; letter-spacing: 1px" class="droid-bold">' + i18n('Scroll up to Start Video Mode') + '</div>'));
+			$("#filesList").append($('<div style="width: 100%; height: 79px; text-align: center; line-height: 79px; font-size: 18px; border-bottom: 1px solid #353535; background: #4d4d4d; letter-spacing: 1px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden" class="droid-bold">' + i18n('Scroll up to Start Video Mode') + '</div>'));
 			
 			powGlobals.lists.files.forEach(function(el,ij) {
 				

@@ -213,35 +213,38 @@ var playerApi = {
 						}
 					}
 					if (countFinds == 1) {
-						utils.download('http://localhost:' + powGlobals.torrent.engine.server.address().port + '/' + powGlobals.lists.subtitles[lastFind].index, gui.App.dataPath+pathBreak+'autosub.srt', function(data) {
-							if (!data) {
-								require('fs').unlink(gui.App.dataPath+pathBreak+'autosub.srt');
-								var subPath = powGlobals.torrent.engine.path + pathBreak + powGlobals.torrent.engine.files[powGlobals.lists.subtitles[lastFind].index].path;
-								if (subPath.indexOf("/") > -1) {
-									newString = '{"'+subPath.split('/').pop()+'":"'+subPath+'"}';
-								} else {
-									newString = '{"'+subPath.split('\\').pop()+'":"'+subPath.split('\\').join('\\\\')+'"}';
-								}
-								newSettings = player.vlc.playlist.items[player.currentItem()].setting;
-								if (utils.isJsonString(newSettings)) {
-									newSettings = JSON.parse(newSettings);
-									if (newSettings.subtitles) {
-										oldString = JSON.stringify(newSettings.subtitles);
-										newString = oldString.substr(0,oldString.length -1)+","+newString.substr(1);
+						var nowMS = Date.now();
+						utils.download('http://localhost:' + powGlobals.torrent.engine.server.address().port + '/' + powGlobals.lists.subtitles[lastFind].index, gui.App.dataPath+pathBreak+'autosub-' + nowMS + '.srt', function(now_ms) {
+							return function(data) {
+								if (!data) {
+									require('fs').unlink(gui.App.dataPath+pathBreak+'autosub-' + now_ms + '.srt');
+									var subPath = powGlobals.torrent.engine.path + pathBreak + powGlobals.torrent.engine.files[powGlobals.lists.subtitles[lastFind].index].path;
+									if (subPath.indexOf("/") > -1) {
+										newString = '{"'+subPath.split('/').pop()+'":"'+subPath+'"}';
+									} else {
+										newString = '{"'+subPath.split('\\').pop()+'":"'+subPath.split('\\').join('\\\\')+'"}';
 									}
-								} else newSettings = {};
-								newSettings.subtitles = JSON.parse(newString);
-								player.vlc.playlist.items[player.currentItem()].setting = JSON.stringify(newSettings);
-								if (player.stateInt() < 3) {
-									playerApi.remLocalSub = subPath.split('\\').pop();
-								} else {
-									if (!((localStorage.loadVideoSubs == 'one' && player.vlc.subtitles.count == 2) || (localStorage.loadVideoSubs == 'always' && player.vlc.subtitles.count > 1))) {
-										player.subTrack(player.subCount() - 1);
-										player.notify(i18n("Subtitle Loaded"));
+									newSettings = player.vlc.playlist.items[player.currentItem()].setting;
+									if (utils.isJsonString(newSettings)) {
+										newSettings = JSON.parse(newSettings);
+										if (newSettings.subtitles) {
+											oldString = JSON.stringify(newSettings.subtitles);
+											newString = oldString.substr(0,oldString.length -1)+","+newString.substr(1);
+										}
+									} else newSettings = {};
+									newSettings.subtitles = JSON.parse(newString);
+									player.vlc.playlist.items[player.currentItem()].setting = JSON.stringify(newSettings);
+									if (player.stateInt() < 3) {
+										playerApi.remLocalSub = subPath.split('\\').pop();
+									} else {
+										if (!((localStorage.loadVideoSubs == 'one' && player.vlc.subtitles.count == 2) || (localStorage.loadVideoSubs == 'always' && player.vlc.subtitles.count > 1))) {
+											player.subTrack(player.subCount() - 1);
+											player.notify(i18n("Subtitle Loaded"));
+										}
 									}
 								}
 							}
-						});
+						}(nowMS));
 					}
 				}
 			}
