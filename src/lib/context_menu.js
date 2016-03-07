@@ -270,7 +270,7 @@ var ctxMenu = {
 		saveCtx = this;
 		for (i = 0; i < player.audioCount(); i++) {
 			mnOpts = {
-				label: player.audioDesc(i),
+				label: i == 0 ? i18n('Disable') : player.audioDesc(i),
 				type: 'checkbox',
 				click: function(newAudio) { return function(event) { saveCtx.selectAudio(newAudio); } }(i)
 			};

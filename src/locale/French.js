@@ -245,6 +245,7 @@ module.exports = {
     "Episodes Found": "Épisodes trouvés",
     "No Internet": "Pas d'Internet",
     "Prebuffering": "Mise en mémoire tampon",
+    "Buffering": "",
     "Connected to": "Connecté à",
     "peers": "pairs",
     "No Peers Found": "Aucun pair trouvé",

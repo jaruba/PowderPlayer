@@ -245,6 +245,7 @@ module.exports = {
     "Episodes Found": "Episoade Găsite",
     "No Internet": "Nu ai Internet",
     "Prebuffering": "Preîncărcare",
+    "Buffering": "",
     "Connected to": "Conectat la",
     "peers": " ",
     "No Peers Found": "Nu s-au Găsit Conecsiuni",

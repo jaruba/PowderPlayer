@@ -2,7 +2,7 @@ var translator = {
 	_langNames: {
 		"Romanian": "Română",
 		"French": "Français",
-		"Polish": "Polskie",
+		"Polish": "Polski",
 		"Russian": "Pусский",
 		"Portuguese (Brazil)": "Português (Brasil)"
 	},

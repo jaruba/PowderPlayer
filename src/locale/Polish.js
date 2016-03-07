@@ -245,6 +245,7 @@ module.exports = {
     "Episodes Found": "Znaleziono odcinki",
     "No Internet": "Brak internetu",
     "Prebuffering": "Buforowanie",
+    "Buffering": "",
     "Connected to": "Połączono z",
     "peers": "źródłami",
     "No Peers Found": "Nie znaleziono źródeł",
