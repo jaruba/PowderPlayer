@@ -38,7 +38,7 @@
         "read-torrent": "*",
         "universal-analytics": "*",
         "request": "*",
-        "upnp-mediarenderer-client": "*",
+        "upnp-mediarenderer-client": "vankasteelj/node-upnp-mediarenderer-client",
         "xmlrpc": "*",
         "tcp-port-used": "*",
         "async": "jaruba/async",
