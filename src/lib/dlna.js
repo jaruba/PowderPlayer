@@ -198,8 +198,9 @@ var dlna = {
 			autoplay: true,
 			metadata: {
 				title: player.vlc.playlist.items[dlna.instance.lastIndex].title.replace("[custom]",""),
-                        type: 'video',
-                        url: httpServer
+                        	type: 'video',
+                        	url: httpServer,
+                        	protocolInfo: 'http-get:*:video/mp4:*'
 			}
 		};
 /////////////////////////////////////////////
