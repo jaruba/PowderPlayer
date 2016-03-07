@@ -55,7 +55,10 @@
         "adm-zip": "*",
         "readdirp": "^2.0.0",
         "bluebird": "*",
-        "workerjs": "*"
+        "workerjs": "*",
+
+        "send": "0.13.x",
+        "iconv-lite": "0.4.x"
     },
     "optionalDependencies": {
         "node-windows": "*",
