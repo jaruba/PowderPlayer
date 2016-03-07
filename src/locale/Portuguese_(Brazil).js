@@ -1,7 +1,7 @@
 module.exports = {
     // Tradução PT-BR Versão 0.1
     
-    "Drag & Drop a File": "Arraste e Solte Um Arquivo Nesta Janela",
+    "Drag & Drop a File": "Arraste e Solte Um arquivo",
     "or select an option below": "ou selecione uma das opções abaixo:",
     "Add Torrent": "Adicionar Torrent",
     "Add Video": "Adicionar Vídeo",
