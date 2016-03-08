@@ -101,6 +101,7 @@ var dlna = {
 	},
 	
 	resetInstance: function() {
+		dlna.savedSub = null;
 		if (dlna.instance.server) {
 			dlna.instance.server.close(function() { });
 			if (dlna.instance.proxy) {
@@ -108,6 +109,7 @@ var dlna = {
 				delete dlna.instance.proxy;
 			}
 			delete dlna.instance.server;
+			dlna.instance.subServer.stop();
 			dlna.instance.files = [];
 		}
 	},
@@ -164,170 +166,175 @@ var dlna = {
 	},
 	
 	startServer: function(httpServer,dlnaReconnect) {
-		dlnaReconnect = typeof dlnaReconnect !== 'undefined' ? dlnaReconnect : false;
-	
-		dlna.saved.allowOnce = true;
-	
-		var MediaRendererClient = require('upnp-mediarenderer-client');
+		utils.unusedPort(function(subPort) {
+			dlnaReconnect = typeof dlnaReconnect !== 'undefined' ? dlnaReconnect : false;
 		
-		if (!dlnaReconnect) {
-			player.setOpeningText(i18n("Starting DLNA Server ..."));
-			clearTimeout(dlna.notFoundTimer);
-			dlna.instance.controls = new MediaRendererClient(dlna.instance.clients[0]);
-			oldClients = JSON.parse(localStorage.dlnaClients);
-			var votedClient = false;
-			for (var k in oldClients) if (oldClients.hasOwnProperty(k)) {
-				if (k == dlna.instance.clients[0]) {
-					oldClients[k] = oldClients[k] +1;
-					votedClient = true;
-					break;
+			dlna.saved.allowOnce = true;
+		
+			var MediaRendererClient = require('upnp-mediarenderer-client');
+			
+			if (!dlnaReconnect) {
+				player.setOpeningText(i18n("Starting DLNA Server ..."));
+				clearTimeout(dlna.notFoundTimer);
+				dlna.instance.controls = new MediaRendererClient(dlna.instance.clients[0]);
+				oldClients = JSON.parse(localStorage.dlnaClients);
+				var votedClient = false;
+				for (var k in oldClients) if (oldClients.hasOwnProperty(k)) {
+					if (k == dlna.instance.clients[0]) {
+						oldClients[k] = oldClients[k] +1;
+						votedClient = true;
+						break;
+					}
 				}
+				if (!votedClient) oldClients[dlna.instance.clients[0]] = 1;
+				localStorage.dlnaClients = JSON.stringify(oldClients);
+				localStorage.lastDlna = dlna.instance.clients[0];
+				dlna.instance.controls.on('status', dlna.listeners.onStatus);
+				dlna.instance.controls.on('playing', dlna.listeners.onPlaying);
+				dlna.instance.controls.on('paused', dlna.listeners.onPaused);
 			}
-			if (!votedClient) oldClients[dlna.instance.clients[0]] = 1;
-			localStorage.dlnaClients = JSON.stringify(oldClients);
-			localStorage.lastDlna = dlna.instance.clients[0];
-			dlna.instance.controls.on('status', dlna.listeners.onStatus);
-			dlna.instance.controls.on('playing', dlna.listeners.onPlaying);
-			dlna.instance.controls.on('paused', dlna.listeners.onPaused);
-		}
-		dlna.castData.casting = 0;
-		dlna.instance.checks = 0;
-		dlna.instance.paused = false;
-	
-		var options = {
-			autoplay: true,
-			metadata: {
-				title: player.vlc.playlist.items[dlna.instance.lastIndex].title.replace("[custom]",""),
-                        	type: 'video',
-                        	url: httpServer,
-                        	protocolInfo: 'http-get:*:video/mp4:*'
-			}
-		};
+			dlna.castData.casting = 0;
+			dlna.instance.checks = 0;
+			dlna.instance.paused = false;
+		
+			var options = {
+				autoplay: true,
+				metadata: {
+					title: require('normalize-for-search')(player.vlc.playlist.items[dlna.instance.lastIndex].title.replace("[custom]","")),
+	                        	type: 'video',
+	                        	url: httpServer
+				}
+			};
 /////////////////////////////////////////////
-        var subtitle = dlna.SUBTEST;
-        if (subtitle) {
-            // REQUIRES MODULES 'SEND' and 'ICONV-LITE'
-                var _server;
-                var _httpServer;
-                var PORT = 9999;
-                var subtitlePath = {};
-                var encoding = 'utf8';
-                var send = require('send');
-                var http = require('http');
-                var path = require('path');
-                var iconv = require('iconv-lite');
-                var fs = require('fs');
-                var url = require('url');
-
-                _server = http.createServer(function (req, res) {
-                    var uri = url.parse(req.url);
-                    var ext = path.extname(uri.pathname).substr(1);
-                    var sub_path = subtitlePath[ext];
-                    var sub_dir = path.dirname(sub_path);
-                    var sub_uri = '/' + path.basename(sub_path);
-
-                    var headers = function (res, path, stat) {
-                        if (req.headers.origin) {
-                            res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
-                        }
-                        res.setHeader('Content-Type', 'text/' + ext + ';charset=' + encoding);
-                        console.debug('SubtitlesServer: served vtt/srt with encoding: ' + encoding);
-                    };
-
-                    if (ext in subtitlePath) {
-                        send(req, sub_uri, {
-                                root: sub_dir
-                            })
-                            .on('headers', headers)
-                            .pipe(res);
-                    } else {
-                        res.writeHead(404);
-                        res.end();
-                        console.error('SubtitlesServer: No subtitle with format %s available.', ext);
-                    }
-                });
-
-                function startListening(cb) {
-                    _httpServer = _server.listen(PORT);
-                }
-
-                function stopServer(cb) {
-                    _httpServer.close(function () {
-                        _httpServer = null;
-                        if (cb) {
-                            cb();
-                        }
-                    });
-                }
-
-                var SubtitlesServer = {
-                    start: function (data, cb) {
-                        iconv.extendNodeEncodings();
-
-                        encoding = data.encoding || 'utf8';
-                        console.debug('SubtitleServer: loading', data.srt || data.vtt);
-                        if (data.vtt) {
-                            fs.readFile(data.vtt, function (err, data) {
-                                if (err) {
-                                    console.error('SubtitlesServer: Unable to load VTT file');
-                                    return;
-                                }
-                            });
-                            subtitlePath['vtt'] = data.vtt;
-                        }
-
-                        if (data.srt) {
-                            fs.readFile(data.srt, function (err, data) {
-                                if (err) {
-                                    console.error('SubtitlesServer: Unable to load SRT file');
-                                    return;
-                                }
-                            });
-                            subtitlePath['srt'] = data.srt;
-                        }
-
-                        if (!_httpServer) {
-                            startListening(cb);
-                        }
-                    },
-
-                    stop: function () {
-                        if (_httpServer) {
-                            stopServer();
-                        }
-                    }
-                };
-            SubtitlesServer.start({
-                encoding: "utf8",
-                srt: subtitle
-            });
-            
-            options.metadata.subtitlesUrl = httpServer.split(':')[0] + ':' + httpServer.split(':')[1] + ':9999/video.srt';
-            console.log('SERVED SUB:', options.metadata.subtitlesUrl);
-        }
+// START SUBTITLE SERVER - @vankasteelj
+			if (dlna.savedSub) {
+			        var subtitle = dlna.savedSub;
+			        dlna.savedSub = null;
+			        if (subtitle) {
+			            // REQUIRES MODULES 'SEND' and 'ICONV-LITE'
+			                var _server;
+			                var _httpServer;
+			                var PORT = subPort;
+			                var subtitlePath = {};
+			                var encoding = 'utf8';
+			                var send = require('send');
+			                var http = require('http');
+			                var path = require('path');
+			                var iconv = require('iconv-lite');
+			                var fs = require('fs');
+			                var url = require('url');
+			
+			                _server = http.createServer(function (req, res) {
+			                    var uri = url.parse(req.url);
+			                    var ext = path.extname(uri.pathname).substr(1);
+			                    var sub_path = subtitlePath[ext];
+			                    var sub_dir = path.dirname(sub_path);
+			                    var sub_uri = '/' + path.basename(sub_path);
+			
+			                    var headers = function (res, path, stat) {
+			                        if (req.headers.origin) {
+			                            res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
+			                        }
+			                        res.setHeader('Content-Type', 'text/' + ext + ';charset=' + encoding);
+			                        console.debug('SubtitlesServer: served vtt/srt with encoding: ' + encoding);
+			                    };
+			
+			                    if (ext in subtitlePath) {
+			                        send(req, sub_uri, {
+			                                root: sub_dir
+			                            })
+			                            .on('headers', headers)
+			                            .pipe(res);
+			                    } else {
+			                        res.writeHead(404);
+			                        res.end();
+			                        console.error('SubtitlesServer: No subtitle with format %s available.', ext);
+			                    }
+			                });
+			
+			                function startListening(cb) {
+			                    _httpServer = _server.listen(PORT);
+			                }
+			
+			                function stopServer(cb) {
+			                    _httpServer.close(function () {
+			                        _httpServer = null;
+			                        if (cb) {
+			                            cb();
+			                        }
+			                    });
+			                }
+			
+			                dlna.instance.subServer = {
+			                    start: function (data, cb) {
+			                        iconv.extendNodeEncodings();
+			
+			                        encoding = data.encoding || 'utf8';
+			                        console.debug('SubtitleServer: loading', data.srt || data.vtt);
+			                        if (data.vtt) {
+			                            fs.readFile(data.vtt, function (err, data) {
+			                                if (err) {
+			                                    console.error('SubtitlesServer: Unable to load VTT file');
+			                                    return;
+			                                }
+			                            });
+			                            subtitlePath['vtt'] = data.vtt;
+			                        }
+			
+			                        if (data.srt) {
+			                            fs.readFile(data.srt, function (err, data) {
+			                                if (err) {
+			                                    console.error('SubtitlesServer: Unable to load SRT file');
+			                                    return;
+			                                }
+			                            });
+			                            subtitlePath['srt'] = data.srt;
+			                        }
+			
+			                        if (!_httpServer) {
+			                            startListening(cb);
+			                        }
+			                    },
+			
+			                    stop: function () {
+			                        if (_httpServer) {
+			                            stopServer();
+			                        }
+			                    }
+			                };
+					dlna.instance.subServer.start({
+						encoding: "utf8",
+						srt: subtitle
+					});
+					
+					options.metadata.subtitlesUrl = httpServer.split(':')[0] + ':' + httpServer.split(':')[1] + ':' + subPort + '/video.srt';
+					console.log('SERVED SUB:', options.metadata.subtitlesUrl);
+			        }
+			}
+// END SUBTITLE SERVER - @vankasteelj
 ///////////////////////////////////////////////////////
         
-		
-	//	console.log(" - "+httpServer);
-		if (!dlnaReconnect) { dlna.instance.controls.load(httpServer, options, dlna.listeners.onLoad); }
-		else dlna.instance.controls.load(httpServer, options, function() {});
-		
-		dlna.instance.interval = setInterval(function(){
-			if (dlna.instance.duration) {
-				dlna.instance.controls.getPosition(function(err, position) {
-					if (position > 0) dlna.sendData(position,dlna.instance.duration);
-				});
-			} else {
-				dlna.instance.controls.getDuration(function(err, duration) {
-					dlna.instance.duration = duration;
-					if (dlna.instance.duration > 0) {
-						dlna.instance.controls.getPosition(function(err, position) {
-							if (position > 0) dlna.sendData(position,dlna.instance.duration);
-						});
-					}
-				});
-			}
-		},1000);
+		//	console.log(" - "+httpServer);
+			if (!dlnaReconnect) { dlna.instance.controls.load(httpServer, options, dlna.listeners.onLoad); }
+			else dlna.instance.controls.load(httpServer, options, function() {});
+			
+			dlna.instance.interval = setInterval(function(){
+				if (dlna.instance.duration) {
+					dlna.instance.controls.getPosition(function(err, position) {
+						if (position > 0) dlna.sendData(position,dlna.instance.duration);
+					});
+				} else {
+					dlna.instance.controls.getDuration(function(err, duration) {
+						dlna.instance.duration = duration;
+						if (dlna.instance.duration > 0) {
+							dlna.instance.controls.getPosition(function(err, position) {
+								if (position > 0) dlna.sendData(position,dlna.instance.duration);
+							});
+						}
+					});
+				}
+			},1000);
+		}
 	},
 	
 	createProxy: function(urlParser) {
@@ -739,16 +746,18 @@ var dlna = {
 		dlna.instance.lastIndex = playerApi.tempSel > -1 ? playerApi.tempSel : parseInt(player.currentItem());
 		dlna.instance.initiated = true;
 
-  var SUBTEST = player.subDesc(player.subTrack());
-  if (SUBTEST && SUBTEST.url) dlna.SUBTEST = SUBTEST.url;
+		if (player.subTrack()) {
+			var subber = player.subDesc(player.subTrack());
+			if (subber && subber.url) dlna.savedSub = subber.url;
+		} else {
+			dlna.savedSub = null;
+		}
 	
 		player.find(".wcp-vol-button").hide(0);
 		player.find(".wcp-vol-control")[0].style.borderRight = "none";
 		player.find(".wcp-subtitle-but").hide(0);
 	
 		player.setOpeningText(i18n("Searching for Device ..."));
-console.log('track number:', player.subTrack(player.subTrack()));
-console.log('sub desc:', player.subDesc(player.subTrack()));
 		player.stop(true);
 		player.find(".wcp-splash-screen").show(0);
 		dlna.instance.clients = [];
@@ -836,7 +845,7 @@ console.log('sub desc:', player.subDesc(player.subTrack()));
 		}
 	},
 	
-	play: function(remIndex) {
+	play: function(remIndex, opts) {
 		if (remIndex < player.itemCount()) {
 			if (player.itemDesc(remIndex).disabled) {
 				var noDisabled = true;
@@ -890,6 +899,13 @@ console.log('sub desc:', player.subDesc(player.subTrack()));
 
 					mrl = player.itemDesc(remIndex).mrl;
 					dlna.resetInstance();
+
+					if (opts) {
+						if (!dlna.instance) dlna.instance = {};
+						if (opts.lastPos) dlna.instance.lastPos = opts.lastPos;
+						if (opts.subUrl) dlna.savedSub = opts.subUrl;
+					}
+
 					if (mrl.indexOf('https://www.youtube.') == 0 || mrl.indexOf('https://youtube.') == 0 || mrl.indexOf('http://www.youtube.') == 0 || mrl.indexOf('http://youtube.') == 0) {
 						if (!load.argData) load.argData = {};
 						if (!load.argData.parseThenDlna) load.argData.parseThenDlna = true;
@@ -1028,7 +1044,7 @@ console.log('sub desc:', player.subDesc(player.subTrack()));
 				dlna.setOpts();
 			}
 			if (dlna.instance.started && status["TransportState"] == "STOPPED") {
-				if (dlna.castData.casting && dlna.instance.lastPos > 0.9) {
+				if (dlna.castData.casting && dlna.instance.lastPos > 0.94) {
 					if (dlna.instance.lastIndex +1 < player.itemCount()) {
 						player.setOpeningText(i18n("Starting Next Video ..."));
 						dlna.castData.castingPaused = 1;
