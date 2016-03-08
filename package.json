@@ -58,7 +58,8 @@
         "workerjs": "*",
 
         "send": "0.13.x",
-        "iconv-lite": "0.4.x"
+        "iconv-lite": "0.4.x",
+        "normalize-for-search": "*"
     },
     "optionalDependencies": {
         "node-windows": "*",
