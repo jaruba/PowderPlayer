@@ -168,175 +168,201 @@ var dlna = {
 	},
 	
 	startServer: function(httpServer,dlnaReconnect) {
-		utils.unusedPort(function(subPort) {
-			dlnaReconnect = typeof dlnaReconnect !== 'undefined' ? dlnaReconnect : false;
-		
-			dlna.saved.allowOnce = true;
-		
-			var MediaRendererClient = require('upnp-mediarenderer-client');
-			
-			if (!dlnaReconnect) {
-				player.setOpeningText(i18n("Starting DLNA Server ..."));
-				clearTimeout(dlna.notFoundTimer);
-				dlna.instance.controls = new MediaRendererClient(dlna.instance.clients[0]);
-				oldClients = JSON.parse(localStorage.dlnaClients);
-				var votedClient = false;
-				for (var k in oldClients) if (oldClients.hasOwnProperty(k)) {
-					if (k == dlna.instance.clients[0]) {
-						oldClients[k] = oldClients[k] +1;
-						votedClient = true;
-						break;
-					}
-				}
-				if (!votedClient) oldClients[dlna.instance.clients[0]] = 1;
-				localStorage.dlnaClients = JSON.stringify(oldClients);
-				localStorage.lastDlna = dlna.instance.clients[0];
-				dlna.instance.controls.on('status', dlna.listeners.onStatus);
-				dlna.instance.controls.on('playing', dlna.listeners.onPlaying);
-				dlna.instance.controls.on('paused', dlna.listeners.onPaused);
+		// no subtitles found? start looking for them
+		if (dlna.instance.lastIndex > -1 && player.itemDesc(dlna.instance.lastIndex)) {
+			if (localStorage.noSubs == "0" && player.itemDesc(dlna.instance.lastIndex).setting && !player.itemDesc(dlna.instance.lastIndex).setting.checkedSubs) {
+				subtitles.fetchSubs();
 			}
-			dlna.castData.casting = 0;
-			dlna.instance.checks = 0;
-			dlna.instance.paused = false;
+		}
 		
-			var options = {
-				autoplay: true,
-				metadata: {
-					title: require('normalize-for-search')(player.vlc.playlist.items[dlna.instance.lastIndex].title.replace("[custom]","")),
-	                        	type: 'video',
-	                        	url: httpServer
+		// if it's a remote subtitle, download it first
+		if (dlna.savedSub && dlna.savedSub.startsWith('http')) {
+			var skipDownload = false;
+			var nowExt = dlna.savedSub.split('.').pop();
+		} else {
+			var skipDownload = true;
+			var nowExt = '';
+		}
+
+		var nowMS = Date.now();
+		utils.download(dlna.savedSub, gui.App.dataPath+pathBreak+'autosub-' + nowMS + '.' + nowExt, function(now_ms, now_ext) {
+			return function(data) {
+				if (!data) {
+					dlna.savedSub = gui.App.dataPath+pathBreak+'autosub-' + now_ms + '.' + now_ext;
 				}
-			};
-/////////////////////////////////////////////
-// START SUBTITLE SERVER - @vankasteelj
-			if (dlna.savedSub) {
-			        var subtitle = dlna.savedSub;
-			        dlna.savedSub = null;
-			        if (subtitle) {
-			            // REQUIRES MODULES 'SEND' and 'ICONV-LITE'
-			                var _server;
-			                var _httpServer;
-			                var PORT = subPort;
-			                var subtitlePath = {};
-			                var encoding = 'utf8';
-			                var send = require('send');
-			                var http = require('http');
-			                var path = require('path');
-			                var iconv = require('iconv-lite');
-			                var fs = require('fs');
-			                var url = require('url');
-			
-			                _server = http.createServer(function (req, res) {
-			                    var uri = url.parse(req.url);
-			                    var ext = path.extname(uri.pathname).substr(1);
-			                    var sub_path = subtitlePath[ext];
-			                    var sub_dir = path.dirname(sub_path);
-			                    var sub_uri = '/' + path.basename(sub_path);
-			
-			                    var headers = function (res, path, stat) {
-			                        if (req.headers.origin) {
-			                            res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
-			                        }
-			                        res.setHeader('Content-Type', 'text/' + ext + ';charset=' + encoding);
-			                        console.debug('SubtitlesServer: served vtt/srt with encoding: ' + encoding);
-			                    };
-			
-			                    if (ext in subtitlePath) {
-			                        send(req, sub_uri, {
-			                                root: sub_dir
-			                            })
-			                            .on('headers', headers)
-			                            .pipe(res);
-			                    } else {
-			                        res.writeHead(404);
-			                        res.end();
-			                        console.error('SubtitlesServer: No subtitle with format %s available.', ext);
-			                    }
-			                });
-			
-			                function startListening(cb) {
-			                    _httpServer = _server.listen(PORT);
-			                }
-			
-			                function stopServer(cb) {
-			                    _httpServer.close(function () {
-			                        _httpServer = null;
-			                        if (cb) {
-			                            cb();
-			                        }
-			                    });
-			                }
-			
-			                dlna.instance.subServer = {
-			                    start: function (data, cb) {
-			                        iconv.extendNodeEncodings();
-			
-			                        encoding = data.encoding || 'utf8';
-			                        console.debug('SubtitleServer: loading', data.srt || data.vtt);
-			                        if (data.vtt) {
-			                            fs.readFile(data.vtt, function (err, data) {
-			                                if (err) {
-			                                    console.error('SubtitlesServer: Unable to load VTT file');
-			                                    return;
-			                                }
-			                            });
-			                            subtitlePath['vtt'] = data.vtt;
-			                        }
-			
-			                        if (data.srt) {
-			                            fs.readFile(data.srt, function (err, data) {
-			                                if (err) {
-			                                    console.error('SubtitlesServer: Unable to load SRT file');
-			                                    return;
-			                                }
-			                            });
-			                            subtitlePath['srt'] = data.srt;
-			                        }
-			
-			                        if (!_httpServer) {
-			                            startListening(cb);
-			                        }
-			                    },
-			
-			                    stop: function () {
-			                        if (_httpServer) {
-			                            stopServer();
-			                        }
-			                    }
-			                };
-					dlna.instance.subServer.start({
-						encoding: "utf8",
-						srt: subtitle
-					});
+
+				// now let's make the video / subtitle servers
+				utils.unusedPort(function(subPort) {
+					dlnaReconnect = typeof dlnaReconnect !== 'undefined' ? dlnaReconnect : false;
+				
+					dlna.saved.allowOnce = true;
+				
+					var MediaRendererClient = require('upnp-mediarenderer-client');
 					
-					options.metadata.subtitlesUrl = httpServer.split(':')[0] + ':' + httpServer.split(':')[1] + ':' + subPort + '/video.srt';
-					console.log('SERVED SUB:', options.metadata.subtitlesUrl);
-			        }
-			}
-// END SUBTITLE SERVER - @vankasteelj
-///////////////////////////////////////////////////////
-        
-		//	console.log(" - "+httpServer);
-			if (!dlnaReconnect) { dlna.instance.controls.load(httpServer, options, dlna.listeners.onLoad); }
-			else dlna.instance.controls.load(httpServer, options, function() {});
-			
-			dlna.instance.interval = setInterval(function(){
-				if (dlna.instance.duration) {
-					dlna.instance.controls.getPosition(function(err, position) {
-						if (position > 0) dlna.sendData(position,dlna.instance.duration);
-					});
-				} else {
-					dlna.instance.controls.getDuration(function(err, duration) {
-						dlna.instance.duration = duration;
-						if (dlna.instance.duration > 0) {
+					if (!dlnaReconnect) {
+						player.setOpeningText(i18n("Starting DLNA Server ..."));
+						clearTimeout(dlna.notFoundTimer);
+						dlna.instance.controls = new MediaRendererClient(dlna.instance.clients[0]);
+						oldClients = JSON.parse(localStorage.dlnaClients);
+						var votedClient = false;
+						for (var k in oldClients) if (oldClients.hasOwnProperty(k)) {
+							if (k == dlna.instance.clients[0]) {
+								oldClients[k] = oldClients[k] +1;
+								votedClient = true;
+								break;
+							}
+						}
+						if (!votedClient) oldClients[dlna.instance.clients[0]] = 1;
+						localStorage.dlnaClients = JSON.stringify(oldClients);
+						localStorage.lastDlna = dlna.instance.clients[0];
+						dlna.instance.controls.on('status', dlna.listeners.onStatus);
+						dlna.instance.controls.on('playing', dlna.listeners.onPlaying);
+						dlna.instance.controls.on('paused', dlna.listeners.onPaused);
+					}
+					dlna.castData.casting = 0;
+					dlna.instance.checks = 0;
+					dlna.instance.paused = false;
+				
+					var options = {
+						autoplay: true,
+						metadata: {
+							title: require('normalize-for-search')(player.vlc.playlist.items[dlna.instance.lastIndex].title.replace("[custom]","")),
+			                        	type: 'video',
+			                        	url: httpServer
+						}
+					};
+		/////////////////////////////////////////////
+		// START SUBTITLE SERVER - @vankasteelj
+					if (dlna.savedSub) {
+					        var subtitle = dlna.savedSub;
+					        dlna.savedSub = null;
+					        if (subtitle) {
+					            // REQUIRES MODULES 'SEND' and 'ICONV-LITE'
+					                var _server;
+					                var _httpServer;
+					                var PORT = subPort;
+					                var subtitlePath = {};
+					                var encoding = 'utf8';
+					                var send = require('send');
+					                var http = require('http');
+					                var path = require('path');
+					                var iconv = require('iconv-lite');
+					                var fs = require('fs');
+					                var url = require('url');
+					
+					                _server = http.createServer(function (req, res) {
+					                    var uri = url.parse(req.url);
+					                    var ext = path.extname(uri.pathname).substr(1);
+					                    var sub_path = subtitlePath[ext];
+					                    var sub_dir = path.dirname(sub_path);
+					                    var sub_uri = '/' + path.basename(sub_path);
+					
+					                    var headers = function (res, path, stat) {
+					                        if (req.headers.origin) {
+					                            res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
+					                        }
+					                        res.setHeader('Content-Type', 'text/' + ext + ';charset=' + encoding);
+					                        console.debug('SubtitlesServer: served vtt/srt with encoding: ' + encoding);
+					                    };
+					
+					                    if (ext in subtitlePath) {
+					                        send(req, sub_uri, {
+					                                root: sub_dir
+					                            })
+					                            .on('headers', headers)
+					                            .pipe(res);
+					                    } else {
+					                        res.writeHead(404);
+					                        res.end();
+					                        console.error('SubtitlesServer: No subtitle with format %s available.', ext);
+					                    }
+					                });
+					
+					                function startListening(cb) {
+					                    _httpServer = _server.listen(PORT);
+					                }
+					
+					                function stopServer(cb) {
+					                    _httpServer.close(function () {
+					                        _httpServer = null;
+					                        if (cb) {
+					                            cb();
+					                        }
+					                    });
+					                }
+					
+					                dlna.instance.subServer = {
+					                    start: function (data, cb) {
+					                        iconv.extendNodeEncodings();
+					
+					                        encoding = data.encoding || 'utf8';
+					                        console.debug('SubtitleServer: loading', data.srt || data.vtt);
+					                        if (data.vtt) {
+					                            fs.readFile(data.vtt, function (err, data) {
+					                                if (err) {
+					                                    console.error('SubtitlesServer: Unable to load VTT file');
+					                                    return;
+					                                }
+					                            });
+					                            subtitlePath['vtt'] = data.vtt;
+					                        }
+					
+					                        if (data.srt) {
+					                            fs.readFile(data.srt, function (err, data) {
+					                                if (err) {
+					                                    console.error('SubtitlesServer: Unable to load SRT file');
+					                                    return;
+					                                }
+					                            });
+					                            subtitlePath['srt'] = data.srt;
+					                        }
+					
+					                        if (!_httpServer) {
+					                            startListening(cb);
+					                        }
+					                    },
+					
+					                    stop: function () {
+					                        if (_httpServer) {
+					                            stopServer();
+					                        }
+					                    }
+					                };
+							dlna.instance.subServer.start({
+								encoding: "utf8",
+								srt: subtitle
+							});
+							
+							options.metadata.subtitlesUrl = httpServer.split(':')[0] + ':' + httpServer.split(':')[1] + ':' + subPort + '/video.srt';
+							console.log('SERVED SUB:', options.metadata.subtitlesUrl);
+					        }
+					}
+		// END SUBTITLE SERVER - @vankasteelj
+		///////////////////////////////////////////////////////
+		        
+				//	console.log(" - "+httpServer);
+					if (!dlnaReconnect) { dlna.instance.controls.load(httpServer, options, dlna.listeners.onLoad); }
+					else dlna.instance.controls.load(httpServer, options, function() {});
+					
+					dlna.instance.interval = setInterval(function(){
+						if (dlna.instance.duration) {
 							dlna.instance.controls.getPosition(function(err, position) {
 								if (position > 0) dlna.sendData(position,dlna.instance.duration);
 							});
+						} else {
+							dlna.instance.controls.getDuration(function(err, duration) {
+								dlna.instance.duration = duration;
+								if (dlna.instance.duration > 0) {
+									dlna.instance.controls.getPosition(function(err, position) {
+										if (position > 0) dlna.sendData(position,dlna.instance.duration);
+									});
+								}
+							});
 						}
-					});
+					},1000);
 				}
-			},1000);
-		}
+			}
+		}(nowMS, nowExt), skipDownload);
 	},
 	
 	createProxy: function(urlParser) {
