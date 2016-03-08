@@ -227,7 +227,7 @@ var dlna = {
 						autoplay: true,
 						metadata: {
 							title: require('normalize-for-search')(player.vlc.playlist.items[dlna.instance.lastIndex].title.replace("[custom]","")),
-			                        	type: 'video',
+			                        	type: powGlobals.lists.media && powGlobals.lists.media.length && powGlobals.lists.media[dlna.instance.lastIndex] ? powGlobals.lists.media[dlna.instance.lastIndex].isVideo ? 'video' : 'audio' : 'video',
 			                        	url: httpServer
 						}
 					};
