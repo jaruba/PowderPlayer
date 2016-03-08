@@ -138,6 +138,10 @@ var dlna = {
 	},
 	
 	stop: function(noSubs) {
+		
+		// stopping, hide subtitle button
+		player.wrapper.find(".wcp-subtitle-but").hide(0);
+
 		win.gui.setMinimumSize(372, 210);
 		if (dlna.notFoundTimer) clearTimeout(dlna.notFoundTimer);
 		if (dlna.bestMatches && dlna.bestMatches.length) dlna.bestMatches = [];
@@ -360,6 +364,10 @@ var dlna = {
 							});
 						}
 					},1000);
+					
+					// server started, show subtitle menu button
+					player.wrapper.find(".wcp-subtitle-but").show(0);
+
 				}
 			}
 		}(nowMS, nowExt), skipDownload);
