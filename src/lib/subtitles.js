@@ -36,12 +36,14 @@ subtitles.finishedCB = function (subs) {
 	if (!subs) {
 		player.notify(i18n('No Subtitles Found'));
 	} else {
-		if (player.itemCount() > 0 && !player.itemDesc(player.currentItem()).setting.checkedSubs) {
-			newSettings = player.vlc.playlist.items[player.currentItem()].setting;
+		var vidIndex = dlna.initiated ? dlna.instance.lastIndex : player.currentItem();
+
+		if (player.itemCount() > 0 && !player.itemDesc(vidIndex).setting.checkedSubs) {
+			newSettings = player.vlc.playlist.items[vidIndex].setting;
 			if (utils.isJsonString(newSettings)) {
 				newSettings = JSON.parse(newSettings);
 				if (newSettings.subtitles) {
-					$.extend( newSettings.subtitles, subs2 );
+					$.extend( newSettings.subtitles, subs );
 				} else {
 					newSettings.subtitles = subs;
 				}
@@ -51,15 +53,15 @@ subtitles.finishedCB = function (subs) {
 			}
 			newSettings.checkedSubs = true;
 			setTimeout(function() {
-				player.vlc.playlist.items[player.currentItem()].setting = JSON.stringify(newSettings);
-				setTimeout(function() { remote.updateVal("subCount",player.subCount()); },100);
+				player.vlc.playlist.items[vidIndex].setting = JSON.stringify(newSettings);
 				if (!dlna.initiated) {
+					setTimeout(function() { remote.updateVal("subCount",player.subCount()); },100);
 					subtitles.updateSub();
-					player.wrapper.find(".wcp-subtitle-but").show(0);
 					player.wrapper.find(".wcp-show-subtitles").css('display', 'inline-block');
-					if (player.fullscreen()) player.notify('<i class="wcp-subtitle-icon-big"></i>');
-					else player.notify('<i class="wcp-subtitle-icon"></i>');
 				}
+				player.wrapper.find(".wcp-subtitle-but").show(0);
+				if (player.fullscreen()) player.notify('<i class="wcp-subtitle-icon-big"></i>');
+				else player.notify('<i class="wcp-subtitle-icon"></i>');
 			},100);
 		}
 	}
@@ -69,13 +71,15 @@ subtitles.fetchSubs = function () {
     
     if (subFinder) subFinder.terminate();
 
-    objective = {
-		filepath: powGlobals.lists.media[player.currentItem()].path,
-		fps: player.vlc.input.fps
+	var vidIndex = dlna.initiated ? dlna.instance.lastIndex : player.currentItem();
+	objective = {
+		filepath: powGlobals.lists.media[vidIndex].path
 	};
+	
+	if (!dlna.initiated && player.vlc.input.fps) objective.fps = player.vlc.input.fps;
 
-	if (powGlobals.lists.media[player.currentItem()].byteLength)
-		objective.byteLength = powGlobals.lists.media[player.currentItem()].byteLength;
+	if (powGlobals.lists.media[vidIndex].byteLength)
+		objective.byteLength = powGlobals.lists.media[vidIndex].byteLength;
 
 	if (powGlobals.torrent && powGlobals.torrent.engine && powGlobals.torrent.engine.infoHash) {
 		objective.torrentHash = powGlobals.torrent.engine.infoHash;
