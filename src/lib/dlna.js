@@ -109,7 +109,9 @@ var dlna = {
 				delete dlna.instance.proxy;
 			}
 			delete dlna.instance.server;
-			dlna.instance.subServer.stop();
+			if (dlna.instance.subServer && dlna.instance.subServer.stop) {
+				dlna.instance.subServer.stop();
+			}
 			dlna.instance.files = [];
 		}
 	},
