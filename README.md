@@ -20,7 +20,7 @@ It can do everything that a Torrent Client can, everything that a Video/Audio Pl
 
      grunt release
 
-**Screenshots:**
+**Screenshots of v1.0 (nightly):**
 
 ![powder-1](https://cloud.githubusercontent.com/assets/1777923/12089348/91da628c-b2ec-11e5-9244-47e4e350d35a.png)
 
