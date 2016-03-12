@@ -55,7 +55,8 @@
         "adm-zip": "*",
         "readdirp": "^2.0.0",
         "bluebird": "*",
-        "workerjs": "*"
+        "workerjs": "*",
+        "parse-torrent": "*"
     },
     "optionalDependencies": {
         "node-windows": "*",
