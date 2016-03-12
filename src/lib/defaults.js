@@ -33,7 +33,7 @@ if (localStorage.length == 0) {
 	}
 }
 
-localStorage.powderVersion = "0.98";
+localStorage.powderVersion = "0.99";
 
 if (!localStorage.maxPeers) localStorage.maxPeers = 200;
 if (!localStorage.tmpDir) localStorage.tmpDir = 'Temp';
