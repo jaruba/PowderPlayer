@@ -3,6 +3,10 @@
 // prevent default behavior from changing page on file drop
 window.ondragover = function(e) { e.preventDefault(); return false };
 window.ondrop = function(e) { e.preventDefault(); return false };
+window.resetFile = function(e) {
+    e.wrap('<form>').closest('form').get(0).reset();
+    e.unwrap();
+}
 
 // drag and drop over main menu
 var holder = document.getElementById('holder');
@@ -36,6 +40,7 @@ $('#torrentDialog').change(function(evt) {
 			if (torDial.val().indexOf(";") > -1) load.multiple(torDial.val().split(";"));
 			else load.url(torDial.val());
 		} else $('.easy-modal-animated').trigger('openModal');
+		resetFile($("#torrentDialog"));
 	});
 });
 
@@ -53,12 +58,14 @@ $('#folderDialog').change(function(evt) {
 $('#addPlaylistDialog').change(function(evt) {
 	if ($(this).val().indexOf(";") > -1) $(this).val().split(";").forEach(function(e) { load.playlistItem(e); });
 	else load.playlistItem($(this).val());
+	resetFile($('#addPlaylistDialog'));
 });
 
 $('#fileDialog').change(function(evt) {
 	utils.resetPowGlobals();
 	if ($(this).val().indexOf(";") > -1) load.multiple($(this).val().split(";"));
 	else load.url($(this).val());
+	resetFile($('#fileDialog'));
 });
 
 $('#subtitleDialog').change(function(evt) {
