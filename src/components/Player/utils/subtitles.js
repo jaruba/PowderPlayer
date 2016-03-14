@@ -40,7 +40,11 @@ subtitles.fetchSubs = (newObjective) => {
     
     if (subFinder) subFinder.terminate();
     
-    subFinder = new worker('../../js/components/Player/workers/subtitles/find.js', true);
+    if (process.env['devMode']) {
+        subFinder = new worker('../../build/js/components/Player/workers/subtitles/find.js', true);
+    } else {
+        subFinder = new worker('../../js/components/Player/workers/subtitles/find.js', true);
+    }
     subFinder.addEventListener('message', msg => {
         if (msg.data) {
             if (msg.data == 'null') {
@@ -60,7 +64,11 @@ subtitles.processSub = (srt, extension, cb) => {
 
     if (subParser) subParser.terminate();
 
-    subParser = new worker('../../js/components/Player/workers/subtitles/parse.js', true);
+    if (process.env['devMode']) {
+        subParser = new worker('../../build/js/components/Player/workers/subtitles/parse.js', true);
+    } else {
+        subParser = new worker('../../js/components/Player/workers/subtitles/parse.js', true);
+    }
     
     subParser.addEventListener('message', msg => {
         if (msg.data) {

@@ -45,6 +45,7 @@ app.on('ready', () => {
     });
 
     if (args.dev) {
+        process.env['devMode'] = 1;
         mainWindow.show();
         mainWindow.toggleDevTools();
         mainWindow.focus();
