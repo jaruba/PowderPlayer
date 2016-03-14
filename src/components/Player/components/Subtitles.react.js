@@ -54,12 +54,10 @@ default React.createClass({
     },
     componentWillMount() {
         VisibilityStore.listen(this.update);
-        SubtitleStore.listen(this.update);
     },
 
     componentWillUnmount() {
         VisibilityStore.unlisten(this.update);
-        SubtitleStore.unlisten(this.update);
     },
     update() {
         if (this.isMounted()) {
