@@ -102,9 +102,10 @@ class SubtitleActions {
                 this.actions.settingChange({
                     subtitle: parsedSub,
                     delay: 0,
-                    trackSub: -1
+                    trackSub: -1,
+                    text: ''
                 });
-                player.fields.subDelay.refs['input'].defaultValue = '0 ms';
+                player.fields.subDelay.value = '0 ms';
                 player.wcjs.subtitles.delay = 0;
             }
         });

@@ -46,7 +46,7 @@ default React.createClass({
         return (
             <div className={this.state.uiHidden ? 'playlist-container' : this.state.open ? 'playlist-container show' : 'playlist-container'}>
                 <div className="playlist-controls" / >
-                <div className="playlist-holder settings-holder" style={{marginLeft: '0', height: '100%'}}>
+                <div className="playlist-holder settings-holder" style={{marginLeft: '0', height: '100%', textAlign: 'center'}}>
                     <SettingsPanel />
                 </div> 
             </div>

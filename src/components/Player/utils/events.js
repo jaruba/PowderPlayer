@@ -79,9 +79,9 @@ events.stopped = () => {
 }
 
 events.playing = () => {
-//    console.log(3);
+
     if (!player.firstPlay) {
-//    console.log(4);
+
         // catch first play event
         player.wcjs.subtitles.track = 0;
             
@@ -117,7 +117,7 @@ events.playing = () => {
         }
     }
 
-    player.fields.audioTrack.refs['input'].value = player.wcjs.audio[1];
+    player.fields.audioTrack.value = player.wcjs.audio[1];
     player.events.emit('controlsUpdate');
 }
 
@@ -127,6 +127,7 @@ events.paused = () => {
 }
 
 events.resetUI = () => {
+
     ControlActions.settingChange({
         foundSubs: false
     });
@@ -212,9 +213,9 @@ events.ended = () => {
 }
 
 events.close = () => {
-    
+
     events.resetUI();
-    
+
     VisibilityActions.settingChange({
         uiShown: true,
         playlist: false,

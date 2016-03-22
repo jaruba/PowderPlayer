@@ -3,11 +3,6 @@ import PureRenderMixin from 'react-addons-pure-render-mixin';
 import ModalActions from '../actions';
 import ModalStore from '../store';
 import _ from 'lodash';
-import {
-    RaisedButton
-}
-from 'material-ui';
-
 
 export
 default React.createClass({
@@ -28,6 +23,14 @@ default React.createClass({
         };
     },
 
+    componentDidMount() {
+        this.refs['dialog'].open();
+    },
+    
+    componentDidUpdate() {
+//        this.refs['dialog'].open();
+    },
+
     componentWillMount() {
         ModalStore.listen(this.update);
     },
@@ -37,7 +40,7 @@ default React.createClass({
     },
 
     handelCancel() {
-        ModalActions.close();
+
     },
 
     update() {
@@ -78,12 +81,13 @@ default React.createClass({
     render() {
         var statusText = this.state.stats.peers.total ? <p className="peers" >Connected to {this.state.stats.peers.total} Peers</p> : <p className="peers">Processing URL</p>;
         return (
-            <div>
-                <div className="loader"></div>
-                <div style={{height: '15px'}}/>    
-                <RaisedButton onClick={this.handelCancel} style={{float: 'right', 'marginTop': '15px' }} label="Cancel" />
+            <paper-dialog ref="dialog" style={{width: '440px', textAlign: 'left', borderRadius: '3px'}} entry-animation="slide-from-top-animation" opened={false} with-backdrop>
+                <div style={{width: '394px', overflow: 'hidden', position: 'relative', marginBottom: '15px'}}>
+                    <paper-progress indeterminate style={{width: '100%'}}></paper-progress>
+                </div>
+                <paper-button raised onClick={this.handelCancel} style={{float: 'right', marginRight: '22px', padding: '8px 15px', fontWeight: 'bold', marginTop: '0px', textTransform: 'none'}} dialog-dismiss>Cancel</paper-button>
                 {statusText}
-            </div>
+            </paper-dialog>
         );
     }
 });

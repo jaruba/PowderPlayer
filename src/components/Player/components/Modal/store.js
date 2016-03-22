@@ -8,11 +8,8 @@ class darkModalStore {
 
         this.open = false;
         this.type = false;
-        this.thinking = false;
         this.meta = false;
-        this.fileSelectorFiles = {};
         this.data = false;
-        this.theme = 'DarkRawTheme';
 
     }
 
@@ -20,8 +17,7 @@ class darkModalStore {
         this.setState({
             open: true,
             data: data,
-            type: data.type,
-            theme: data.theme ? data.theme : 'DarkRawTheme'
+            type: data.type
         });
     }
 
@@ -31,24 +27,10 @@ class darkModalStore {
         });
     }
 
-    onThinking() {
-        this.setState({
-            type: 'thinking'
-        });
-    }
-
-    onFileSelector(files) {
-        this.setState({
-            fileSelectorFiles: files,
-            type: 'fileSelctor'
-        });
-    }
-
     onClose() {
         this.setState({
             open: false,
             data: false,
-            thinking: false,
             type: false
         });
     }

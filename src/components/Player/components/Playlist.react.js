@@ -1,10 +1,6 @@
 ﻿import React from 'react';
 import _ from 'lodash';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
-import {
-    IconButton, Paper
-}
-from 'material-ui';
 import PlayerStore from '../store';
 import PlayerActions from '../actions';
 import VisibilityStore from './Visibility/store';
@@ -64,7 +60,7 @@ default React.createClass({
         return (
             <div className={this.state.uiHidden ? 'playlist-container' : this.state.open ? 'playlist-container show' : 'playlist-container'}>
                 <div className="playlist-controls" / >
-                <div className="playlist-holder">
+                <div className="playlist-holder playlist-holder-contain">
                     <div ref="playlist-title" className="droid-sans playlist-title">Playlist</div>
                     <div className="playlist-inner">
                         {
@@ -79,9 +75,9 @@ default React.createClass({
                                 }
 
                                 return (
-                                    <Paper onClick={player.playItem.bind(this,idx)} id={'item'+idx} className="item" key={idx} zDepth={1} style={{background: 'url(' + item.image + ') no-repeat'}}>
+                                    <paper-material onClick={player.playItem.bind(this,idx)} id={'item'+idx} className="item" key={idx} elevation={1} style={{background: 'url(' + item.image + ') no-repeat', borderRadius: '2px'}}>
                                         <p id={'itemTitle'+idx} className="title">{(path.isAbsolute(item.title)) ? path.normalize(path.parse(item.title).name) : item.title }</p>
-                                    </Paper>
+                                    </paper-material>
                                     )
                             }, this)
                         }

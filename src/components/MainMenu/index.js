@@ -1,9 +1,5 @@
 import React from 'react';
 import Dropzone from 'react-dropzone';
-import {
-    RaisedButton, Paper, IconButton
-}
-from 'material-ui';
 
 import sorter from './../Player/utils/sort';
 import parser from './../Player/utils/parser';
@@ -13,6 +9,7 @@ import PlayerActions from '../../components/Player/actions';
 import ModalActions from './../Modal/actions';
 import MessageActions from '../Message/actions';
 import metaParser from '../../components/Player/utils/metaParser';
+import ModalAddUrl from '../Modal/URLadd';
 
 import remote from 'remote';
 
@@ -139,8 +136,8 @@ default React.createClass({
                         <div>
                             <div className="mainButtonHolder">
                                  <div className="inButtonHolder">
-                                    <IconButton iconClassName="material-icons" iconStyle={{color: '#767A7B', fontSize: '30px', top: '-2px', right: '2px'}} className="settings" >settings</IconButton>
-                                    <IconButton iconClassName="material-icons" iconStyle={{color: '#767A7B', fontSize: '30px', top: '-2px', right: '2px'}} className="torrent-dash" >view_compact</IconButton>
+                                    <paper-icon-button id="main_settings_but" icon="settings" alt="settings" style={{color: '#767A7B', width: '48px', height: '48px', right: '2px', position: 'absolute'}}></paper-icon-button>
+                                    <paper-tooltip for="main_settings_but" offset="0">Settings</paper-tooltip>
                                 </div>
                             </div>
     
@@ -152,27 +149,27 @@ default React.createClass({
                             <br/>
                             <br/>
                             <div className="mainButHold">
-                                <RaisedButton style={{float: 'left', width: '130px', height: '108px'}} onClick={MainMenuActions.openLocal.bind(this, 'torrent')} label="Add Torrent">
-                                    <img src="images/icons/torrent-icon.png" style={{marginTop: '13px'}}/>
+                                <paper-button raised style={{float: 'left', width: '130px', height: '108px', background: '#00b850'}} onClick={MainMenuActions.openLocal.bind(this, 'torrent')}>
+                                    <img src="images/icons/torrent-icon.png" style={{marginTop: '2px'}}/>
                                     <br/>
-                                    <span className="fl_sl lbl" style={{marginTop: '11px'}}>
+                                    <span className="fl_sl lbl" style={{marginTop: '11px', textTransform: 'none'}}>
                                     Add Torrent
                                     </span>
-                                </RaisedButton>
-                                <RaisedButton style={{width: '130px', height: '108px'}} onClick={MainMenuActions.openLocal.bind(this, 'video')} label="Add Video">
-                                    <img src="images/icons/video-icon.png" style={{marginTop: '18px'}}/>
+                                </paper-button>
+                                <paper-button raised style={{float: 'left', width: '130px', height: '108px', background: '#1ca8ed', margin: '0 1.2em'}} onClick={MainMenuActions.openLocal.bind(this, 'video')}>
+                                    <img src="images/icons/video-icon.png" style={{marginTop: '7px'}}/>
                                     <br/>
-                                    <span className="fl_sl lbl" style={{marginTop: '15px'}}>
+                                    <span className="fl_sl lbl" style={{marginTop: '15px', textTransform: 'none'}}>
                                     Add Video
                                     </span>
-                                </RaisedButton>
-                                <RaisedButton style={{float: 'right', width: '130px', height: '108px'}} onClick={MainMenuActions.openURL} label="Use a URL">
-                                    <img src="images/icons/link-icon.png" style={{marginTop: '17px'}}/>
+                                </paper-button>
+                                <paper-button raised style={{float: 'left', width: '130px', height: '108px', background: '#f1664f'}} onClick={MainMenuActions.openURL}>
+                                    <img src="images/icons/link-icon.png" style={{marginTop: '5px'}}/>
                                     <br/>
-                                    <span className="fl_sl lbl" style={{marginTop: '10px'}}>
+                                    <span className="fl_sl lbl" style={{marginTop: '11px', textTransform: 'none'}}>
                                     Use a URL
                                     </span>
-                                </RaisedButton>
+                                </paper-button>
                             </div>
                         </div>
                     </Dropzone>

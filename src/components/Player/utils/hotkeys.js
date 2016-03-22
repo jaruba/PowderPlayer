@@ -154,41 +154,41 @@ hotkeys.attach = (props) => {
 
     props.bindShortcut('g', (event) => {
         var subDelayField = player.fields.subDelay;
-        var newValue = parseInt(subDelayField.getValue()) - 50;
+        var newValue = parseInt(subDelayField.value) - 50;
         player.wcjs.subtitles.delay = newValue;
         player.set({
             subDelay: newValue
         });
-        subDelayField.refs['input'].value = newValue + ' ms';
+        subDelayField.value = newValue + ' ms';
         PlayerActions.announcement('Subtitle Delay: ' + newValue + ' ms');
     });
 
     props.bindShortcut('h', (event) => {
         var subDelayField = player.fields.subDelay;
-        var newValue = parseInt(subDelayField.getValue()) + 50;
+        var newValue = parseInt(subDelayField.value) + 50;
         player.wcjs.subtitles.delay = newValue;
         player.set({
             subDelay: newValue
         });
-        subDelayField.refs['input'].value = newValue + ' ms';
+        subDelayField.value = newValue + ' ms';
         PlayerActions.announcement('Subtitle Delay: ' + newValue + ' ms');
     });
 
     props.bindShortcut('j', (event) => {
         var audioDelayField = player.fields.audioDelay;
-        var newValue = parseInt(audioDelayField.getValue()) - 50;
+        var newValue = parseInt(audioDelayField.value) - 50;
         player.wcjs.audio.delay = newValue;
         player.set({
             audioDelay: newValue
         });
-        audioDelayField.refs['input'].value = newValue + ' ms';
+        audioDelayField.value = newValue + ' ms';
         PlayerActions.announcement('Audio Delay: ' + newValue + ' ms');
     });
 
     props.bindShortcut('k', (event) => {
         var audioDelayField = player.fields.audioDelay;
-        var newValue = parseInt(audioDelayField.getValue()) + 50;
-        audioDelayField.refs['input'].value = newValue + ' ms';
+        var newValue = parseInt(audioDelayField.value) + 50;
+        audioDelayField.value = newValue + ' ms';
         player.wcjs.audio.delay = newValue;
         player.set({
             audioDelay: newValue
@@ -201,7 +201,7 @@ hotkeys.attach = (props) => {
         if (newValue > 500) newValue = 500;
         ls('customSubSize', newValue);
         PlayerActions.announcement('Subtitle Size ' + newValue + '%');
-        player.fields.subSize.refs['input'].value = newValue + '%';
+        player.fields.subSize.value = newValue + '%';
         player.events.emit('subtitleUpdate');
     });
 
@@ -210,7 +210,7 @@ hotkeys.attach = (props) => {
         if (newValue < 5) newValue = 5;
         ls('customSubSize', newValue);
         PlayerActions.announcement('Subtitle Size ' + newValue + '%');
-        player.fields.subSize.refs['input'].value = newValue + '%';
+        player.fields.subSize.value = newValue + '%';
         player.events.emit('subtitleUpdate');
     });
 
@@ -246,7 +246,7 @@ hotkeys.attach = (props) => {
         if ((curRate + newRate) >= 0.125) {
             player.wcjs.input.rate = curRate - newRate;
             var newValue = parseFloat(Math.round(player.wcjs.input.rate * 100) / 100).toFixed(2);
-            player.fields.speed.refs['input'].value = newValue + 'x';
+            player.fields.speed.value = newValue + 'x';
             PlayerActions.announcement('Speed: ' + newValue + 'x');
         }
     });
@@ -265,7 +265,7 @@ hotkeys.attach = (props) => {
         if ((curRate + newRate) < 100) {
             player.wcjs.input.rate = curRate + newRate;
             var newValue = parseFloat(Math.round(player.wcjs.input.rate * 100) / 100).toFixed(2);
-            player.fields.speed.refs['input'].value = newValue + 'x';
+            player.fields.speed.value = newValue + 'x';
             PlayerActions.announcement('Speed: ' + newValue + 'x');
         }
     });
@@ -274,7 +274,7 @@ hotkeys.attach = (props) => {
         var newRate = 0;
         player.wcjs.input.rate = 1.0;
         var newValue = parseFloat(Math.round(player.wcjs.input.rate * 100) / 100).toFixed(2);
-        player.fields.speed.refs['input'].value = newValue + 'x';
+        player.fields.speed.value = newValue + 'x';
         PlayerActions.announcement('Speed: ' + newValue + 'x');
     });
 

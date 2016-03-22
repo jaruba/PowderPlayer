@@ -1,11 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
-import MUI from 'material-ui';
 
-const {
-    RaisedButton, Toggle, Tabs, Tab, TextField, IconButton
-} = MUI;
 import PlayerStore from '../store';
 import PlayerActions from '../actions';
 
@@ -17,25 +13,12 @@ import Register from '../../../utils/registerUtil';
 import player from '../utils/player';
 import ls from 'local-storage';
 
-var injectTapEventPlugin = require("react-tap-event-plugin");
-injectTapEventPlugin();
-
 import webFrame from 'web-frame';
 
 const dialog = require('remote').require('dialog');
 
 export
 default React.createClass({
-
-    childContextTypes: {
-        muiTheme: React.PropTypes.object,
-    },
-
-    getChildContext() {
-        return {
-            muiTheme: MUI.Styles.ThemeManager.getMuiTheme(MUI.Styles['DarkRawTheme'])
-        };
-    },
 
     mixins: [PureRenderMixin],
 
@@ -48,6 +31,7 @@ default React.createClass({
             trakt: traktUtil.loggedIn ? true : false,
             traktScrobble: ls.isSet('traktScrobble') ? ls('traktScrobble') : true,
             findSubs: ls.isSet('findSubs') ? ls('findSubs') : true,
+            askFiles: ls.isSet('askFiles') ? ls('askFiles') : false,
             autoSub: ls.isSet('autoSub') ? ls('autoSub') : true,
             menuFlags: ls.isSet('menuFlags') ? ls('menuFlags') : true,
             subDelay: player.subDelay,
@@ -124,6 +108,8 @@ default React.createClass({
 
     componentWillUnmount() {
         player.events.removeListener('settingsUpdate', this.update);
+        
+        // remember to remove listeners from polymer
     },
     
     componentDidMount() {
@@ -141,6 +127,29 @@ default React.createClass({
             }
         });
         player.events.on('settingsUpdate', this.update);
+
+        // tab change logic
+        var pages = document.querySelector('iron-pages');
+        var tabs = document.querySelector('paper-tabs');
+    
+        tabs.addEventListener('iron-select', () => {
+            pages.selected = tabs.selected;
+        });
+        
+        // set tab line color
+        document.querySelector('paper-tabs').$.selectionBar.style.backgroundColor = '#ff4081';
+        
+        // add event listeners for togglers
+        var that = this;
+        [].forEach.call(document.querySelectorAll('.playerTogglers'), el => {
+            el.addEventListener("change", (event) => {
+                var id = event.path[0].id;
+                var funcName = document.querySelector('#' + id).getAttribute('funcName');
+                var toggled = document.querySelector('#' + id).checked;
+                that['_handle' + funcName](event, toggled, id);
+            });
+        });
+
     },
 
     update() {
@@ -162,6 +171,7 @@ default React.createClass({
                 audioTrack: player.audioTrack,
                 encoding: ls.isSet('selectedEncoding') ? ls('selectedEncoding') : 0,
                 findSubs: ls.isSet('findSubs') ? ls('findSubs') : true,
+                askFiles: ls.isSet('askFiles') ? ls('askFiles') : false,
                 autoSub: ls.isSet('autoSub') ? ls('autoSub') : true,
                 menuFlags: ls.isSet('menuFlags') ? ls('menuFlags') : true
             });
@@ -210,8 +220,8 @@ default React.createClass({
     },
 
     _handleSubDelay(event, direction) {
-       var newValue = parseInt(this.refs['subDelayInput'].getValue()) + (direction * 50);
-       this.refs['subDelayInput'].refs['input'].value = newValue + ' ms';
+       var newValue = parseInt(this.refs['subDelayInput'].value) + (direction * 50);
+       this.refs['subDelayInput'].value = newValue + ' ms';
        if (event) {
             player.wcjs.subtitles.delay = newValue;
             player.set({
@@ -229,16 +239,16 @@ default React.createClass({
             this._handleSubDelay(null, -1);
         } else if ([13, 27].indexOf(event.keyCode) > -1) {
             event.preventDefault();
-            this.refs['subDelayInput'].blur();
+            this.refs['subDelayInput'].$.input.blur();
         }
     },
     
     _handleSubDelayBlur(event) {
-        var newValue = parseInt(this.refs['subDelayInput'].getValue());
+        var newValue = parseInt(this.refs['subDelayInput'].value);
         if (isNaN(newValue))
             newValue = 0;
 
-        this.refs['subDelayInput'].refs['input'].value = newValue + ' ms';
+        this.refs['subDelayInput'].value = newValue + ' ms';
         player.wcjs.subtitles.delay = newValue;
         player.set({
             subDelay: newValue
@@ -246,8 +256,8 @@ default React.createClass({
     },
 
     _handleAudioDelay(event, direction) {
-        var newValue = parseInt(this.refs['audioDelayInput'].getValue()) + (direction * 50);
-        this.refs['audioDelayInput'].refs['input'].value = newValue + ' ms';
+        var newValue = parseInt(this.refs['audioDelayInput'].value) + (direction * 50);
+        this.refs['audioDelayInput'].value = newValue + ' ms';
         player.set({
             audioDelay: newValue
         });
@@ -263,16 +273,16 @@ default React.createClass({
             this._handleAudioDelay(null, -1);
         } else if ([13, 27].indexOf(event.keyCode) > -1) {
             event.preventDefault();
-            this.refs['audioDelayInput'].blur();
+            this.refs['audioDelayInput'].$.input.blur();
         }
     },
     
     _handleAudioDelayBlur(event) {
-        var newValue = parseInt(this.refs['audioDelayInput'].getValue());
+        var newValue = parseInt(this.refs['audioDelayInput'].value);
         if (isNaN(newValue))
             newValue = 0;
 
-        this.refs['audioDelayInput'].refs['input'].value = newValue + ' ms';
+        this.refs['audioDelayInput'].value = newValue + ' ms';
         player.set({
             audioDelay: newValue
         });
@@ -310,7 +320,7 @@ default React.createClass({
                 speed: newValue
             });
             newValue = parseFloat(Math.round(newValue * 100) / 100).toFixed(2);
-            this.refs['speedInput'].refs['input'].value = newValue + 'x';
+            this.refs['speedInput'].value = newValue + 'x';
         }
     },
     
@@ -323,12 +333,12 @@ default React.createClass({
             this._handleSpeed(null, -1);
         } else if ([13, 27].indexOf(event.keyCode) > -1) {
             event.preventDefault();
-            this.refs['speedInput'].blur();
+            this.refs['speedInput'].$.input.blur();
         }
     },
     
     _handleSpeedBlur(event) {
-        var newValue = parseFloat(this.refs['speedInput'].getValue());
+        var newValue = parseFloat(this.refs['speedInput'].value);
         if (isNaN(newValue))
             newValue = 0.125;
 
@@ -339,17 +349,17 @@ default React.createClass({
 
         var newValue = parseFloat(Math.round(newValue * 100) / 100).toFixed(2);
 
-        this.refs['speedInput'].refs['input'].value = newValue + 'x';
+        this.refs['speedInput'].value = newValue + 'x';
         player.wcjs.input.rate = newValue;
     },
     
     _handleSubSize(event, direction) {
-        var newValue = parseInt(this.refs['subSizeInput'].getValue()) + (direction * 5);
+        var newValue = parseInt(this.refs['subSizeInput'].value) + (direction * 5);
         if (newValue < 5)
             newValue = 5;
         else if (newValue > 400)
             newValue = 400;
-        this.refs['subSizeInput'].refs['input'].value = newValue + '%';
+        this.refs['subSizeInput'].value = newValue + '%';
         if (event) {
             ls('customSubSize', newValue);
             player.events.emit('subtitleUpdate');
@@ -365,12 +375,12 @@ default React.createClass({
             this._handleSubSize(null, -1);
         } else if ([13, 27].indexOf(event.keyCode) > -1) {
             event.preventDefault();
-            this.refs['subSizeInput'].blur();
+            this.refs['subSizeInput'].$.input.blur();
         }
     },
     
     _handleSubSizeBlur(event) {
-        var newValue = parseInt(this.refs['subSizeInput'].getValue());
+        var newValue = parseInt(this.refs['subSizeInput'].value);
         if (isNaN(newValue))
             newValue = 5;
             
@@ -379,7 +389,7 @@ default React.createClass({
         else if (newValue > 400)
             newValue = 400;
 
-        this.refs['subSizeInput'].refs['input'].value = newValue + '%';
+        this.refs['subSizeInput'].value = newValue + '%';
         
         if (event) {
             ls('customSubSize', newValue);
@@ -388,8 +398,8 @@ default React.createClass({
     },
 
     _handleZoomLevel(event, direction) {
-        var newValue = parseFloat(this.refs['zoomLevelInput'].getValue()) + (direction / 2);
-        this.refs['zoomLevelInput'].refs['input'].value = newValue;
+        var newValue = parseFloat(this.refs['zoomLevelInput'].value) + (direction / 2);
+        this.refs['zoomLevelInput'].value = newValue;
         ls('zoomLevel', newValue);
         webFrame.setZoomLevel(newValue);
     },
@@ -404,7 +414,7 @@ default React.createClass({
         player.set({
             audioChannel: newChannel
         });
-        this.refs['audioChannelInput'].refs['input'].value = this.state.audioChannels[newChannel];
+        this.refs['audioChannelInput'].value = this.state.audioChannels[newChannel];
     },
     
     _handleSubColor(event, direction) {
@@ -419,7 +429,7 @@ default React.createClass({
 
         ls('subColor', newColor);
         player.events.emit('subtitleUpdate');
-        this.refs['subColorInput'].refs['input'].value = this.state.subColors[newColor];
+        this.refs['subColorInput'].value = this.state.subColors[newColor];
     },
     
     _handleAudioTrack(event, direction) {
@@ -437,7 +447,7 @@ default React.createClass({
         player.set({
             audioTrack: newTrack
         });
-        this.refs['audioTrackInput'].refs['input'].value = wcjs.audio[newTrack];
+        this.refs['audioTrackInput'].value = wcjs.audio[newTrack];
     },
     
     _handleSubEncoding(event, direction) {
@@ -452,17 +462,17 @@ default React.createClass({
         ls('selectedEncoding', newEncoding);
         ls('subEncoding', this.state.subEncodings[newEncoding][1]);
         
-        this.refs['subEncodingInput'].refs['input'].value = this.state.subEncodings[newEncoding][0];
+        this.refs['subEncodingInput'].value = this.state.subEncodings[newEncoding][0];
     },
     
     _handlePort(event, direction) {
-        var newValue = parseInt(this.refs['portInput'].getValue()) + direction;
+        var newValue = parseInt(this.refs['portInput'].value) + direction;
         if (newValue < 1)
             newValue = 1;
         if (newValue > 65535)
             newValue = 65535;
         
-        this.refs['portInput'].refs['input'].value = newValue;
+        this.refs['portInput'].value = newValue;
         if (event)
             ls('peerPort', newValue);
     },
@@ -476,28 +486,28 @@ default React.createClass({
             this._handlePort(null, -1);
         } else if ([13, 27].indexOf(event.keyCode) > -1) {
             event.preventDefault();
-            this.refs['portInput'].blur();
+            this.refs['portInput'].$.input.blur();
         }
     },
     
     _handlePortBlur(event) {
-        var newValue = parseInt(this.refs['portInput'].getValue());
+        var newValue = parseInt(this.refs['portInput'].value);
         if (isNaN(newValue) || newValue < 1)
             newValue = 1;
         if (newValue > 65535)
             newValue = 65535;
 
-        this.refs['portInput'].refs['input'].value = newValue;
+        this.refs['portInput'].value = newValue;
         ls('peerPort', newValue);
     },
     
     _handlePeers(event, direction) {
-        var newValue = parseInt(this.refs['peersInput'].getValue()) + direction;
+        var newValue = parseInt(this.refs['peersInput'].value) + direction;
         if (newValue < 1)
             newValue = 1;
         if (newValue > 100000)
             newValue = 100000;
-        this.refs['peersInput'].refs['input'].value = newValue;
+        this.refs['peersInput'].value = newValue;
         if (event)
             ls('maxPeers', newValue);
     },
@@ -511,28 +521,28 @@ default React.createClass({
             this._handlePeers(null, -1);
         } else if ([13, 27].indexOf(event.keyCode) > -1) {
             event.preventDefault();
-            this.refs['peersInput'].blur();
+            this.refs['peersInput'].$.input.blur();
         }
     },
     
     _handlePeersBlur(event) {
-        var newValue = parseInt(this.refs['peersInput'].getValue());
+        var newValue = parseInt(this.refs['peersInput'].value);
         if (isNaN(newValue) || newValue < 1)
             newValue = 1;
         if (newValue > 100000)
             newValue = 100000;
 
-        this.refs['peersInput'].refs['input'].value = newValue;
+        this.refs['peersInput'].value = newValue;
         ls('maxPeers', newValue);
     },
 
     _handleBufferSize(event, direction) {
-        var newValue = (parseFloat(this.refs['bufferSizeInput'].getValue()) * 1000) + (direction * 500);
+        var newValue = (parseFloat(this.refs['bufferSizeInput'].value) * 1000) + (direction * 500);
         if (newValue < 0)
             newValue = 0;
         if (newValue > 60000)
             newValue = 60000;
-        this.refs['bufferSizeInput'].refs['input'].value = (newValue/1000).toFixed(1) + ' sec';
+        this.refs['bufferSizeInput'].value = (newValue/1000).toFixed(1) + ' sec';
         if (event)
             ls('bufferSize', newValue);
     },
@@ -546,54 +556,51 @@ default React.createClass({
             this._handleBufferSize(null, -1);
         } else if ([13, 27].indexOf(event.keyCode) > -1) {
             event.preventDefault();
-            this.refs['bufferSizeInput'].blur();
+            this.refs['bufferSizeInput'].$.input.blur();
         }
     },
 
     _handleBufferSizeBlur(event) {
-        var newValue = parseFloat(this.refs['bufferSizeInput'].getValue()) * 1000;
+        var newValue = parseFloat(this.refs['bufferSizeInput'].value) * 1000;
         if (isNaN(newValue) || newValue < 0)
             newValue = 0;
         if (newValue > 60000)
             newValue = 60000;
 
-        this.refs['bufferSizeInput'].refs['input'].value = (newValue/1000).toFixed(1) + ' sec';
+        this.refs['bufferSizeInput'].value = (newValue/1000).toFixed(1) + ' sec';
         ls('bufferSize', newValue);
     },
 
     _handleClearDownload(event) {
         ls.remove('downloadFolder');
-        this.refs['downloadInput'].refs['input'].value = 'Temp';
+        this.refs['downloadInput'].value = 'Temp';
     },
 
     _handleDownloadFocus(event) {
-        this.refs['downloadInput'].blur();
+        event.preventDefault();
+        this.refs['downloadInput'].$.input.blur();
         dialog.showOpenDialog({
             title: 'Select folder',
             properties: ['openDirectory', 'createDirectory']
         }, (folder) => {
             if (folder && folder.length) {
                 ls('downloadFolder', folder[0]);
-                this.refs['downloadInput'].refs['input'].value = folder[0];
+                this.refs['downloadInput'].value = folder[0];
             }
         });
     },
 
-    _handlePulsingToggle(event) {
-        var newValue = this.refs['pulseInput'].getValue();
-        if (newValue == 'disabled') {
-            newValue = 'enabled';
+    _handlePulsingToggle(event, toggled) {
+        if (toggled) {
             PlayerActions.pulse();
-        } else if (newValue == 'enabled') {
-            newValue = 'disabled';
+        } else {
             PlayerActions.flood();
         }
-        ls('speedPulsing', newValue);
-        this.refs['pulseInput'].refs['input'].value = newValue;
+        ls('speedPulsing', toggled ? 'enabled' : 'disabled');
     },
     
     _videoField(field, value) {
-        this.refs[field + 'Input'].refs['input'].value = value;
+        this.refs[field + 'Input'].value = value;
         var obj = {
             aspect: true,
             crop: true,
@@ -602,7 +609,7 @@ default React.createClass({
         obj[field] = false;
         _.each(obj, (el, ij) => {
             if (el)
-                this.refs[ij + 'Input'].refs['input'].value = 'Default';
+                this.refs[ij + 'Input'].value = 'Default';
         });
     },
 
@@ -688,8 +695,8 @@ default React.createClass({
         });
     },
 
-    _handleRenderFreq(direction) {
-        var newFreq = parseInt(this.refs['renderFreqInput'].refs['input'].value);
+    _handleRenderFreq(event, direction) {
+        var newFreq = parseInt(this.refs['renderFreqInput'].value);
 
         if (direction < 0)
             newFreq = newFreq - 50;
@@ -699,7 +706,7 @@ default React.createClass({
         if (newFreq < 0) newFreq = 0;
         
         ls('renderFreq', newFreq);
-        this.refs['renderFreqInput'].refs['input'].value = newFreq + 'ms';
+        this.refs['renderFreqInput'].value = newFreq + 'ms';
     },
     
     _handleRenderFreqKeys(event) {
@@ -711,21 +718,23 @@ default React.createClass({
             this._handleRenderFreq(-1);
         } else if ([13, 27].indexOf(event.keyCode) > -1) {
             event.preventDefault();
-            this.refs['renderFreqInput'].blur();
+            this.refs['renderFreqInput'].$.input.blur();
         }
     },
     
     _handleRenderFreqBlur(event) {
-        var newValue = parseInt(this.refs['renderFreqInput'].getValue());
+        var newValue = parseInt(this.refs['renderFreqInput'].value);
         if (newValue < 0)
             newValue = 0;
 
         ls('renderFreq', newValue);
-        this.refs['renderFreqInput'].refs['input'].value = newValue + 'ms';
+        this.refs['renderFreqInput'].value = newValue + 'ms';
     },
     
     render() {
 
+        // this is where all the magic happens
+        // this object will be iterated to create the settings components
         var renderObj = {
 
             'General': [{
@@ -926,13 +935,14 @@ default React.createClass({
                 default: this.state.downloadFolder,
                 width: '280px'
             }, {
-                type: 'select',
+                type: 'toggle',
                 title: 'Speed Pulsing',
                 func: 'PulsingToggle',
-                tag: 'pulse',
-                width: '110px',
-                default: this.state.speedPulsing,
-                disabled: true
+                tag: 'speedPulsing'
+            }, {
+                type: 'toggle',
+                title: 'File Selector',
+                tag: 'askFiles'
             }]
         };
         
@@ -943,7 +953,8 @@ default React.createClass({
         };
         
         var klm = 1000;
-        var renderSettings = [];
+        var pages = [];
+        var tabs = [];
         
         _.each(indents, (el, ij) => {
             renderObj[ij].forEach(el => {
@@ -963,13 +974,15 @@ default React.createClass({
                     if (!el.func) el.func = 'Toggler';
 
                     indents[ij].push(
-                        <Toggle
+                        <paper-toggle-button
                             key={klm}
-                            name={el.tag}
-                            onToggle={(event, toggled) => this['_handle' + el.func](event, toggled, el.tag)}
-                            defaultToggled={this.state[el.tag]}
-                            label={el.title + ":"}
-                            style={{marginBottom: '7px'}} />
+                            id={el.tag}
+                            className="playerTogglers"
+                            funcName={el.func}
+                            checked={this.state[el.tag]}
+                            style={{display: 'block', height: '25px'}} >
+                        {el.title + ":"}
+                        </paper-toggle-button>
                     );
 
                 } else if (el.type == 'select') {
@@ -979,23 +992,26 @@ default React.createClass({
                     if (el.disabled)
 
                         var newTextField = (
-                            <TextField
-                                disabled={true}
+                            <paper-input
                                 ref={el.tag + 'Input'}
-                                defaultValue={el.default}
-                                style={{float: 'right', height: '32px', width: el.width, top: '-5px', marginRight: '4px'}} />
+                                value={el.default}
+                                style={{float: 'right', height: '32px', width: el.width, top: '-5px', marginRight: '4px', textAlign: 'right'}}
+                                no-label-float
+                                disabled={true}
+                                className="dark-input" />
                         );
 
                     else
 
                         var newTextField = (
-                            <TextField
+                            <paper-input
                                 onKeyDown={this['_handle' + el.func + 'Keys']}
                                 onBlur={this['_handle' + el.func + 'Blur']}
                                 ref={el.tag + 'Input'}
-                                defaultValue={el.default}
-                                onChange={this.onChangeFunction}
-                                style={{float: 'right', height: '32px', width: el.width, top: '-5px', marginRight: '4px'}} />
+                                value={el.default}
+                                style={{float: 'right', width: el.width, top: '-5px', marginRight: '4px', textAlign: 'right', marginTop: '-4px', marginBottom: '12px'}}
+                                no-label-float
+                                className="dark-input" />
                         );
 
                     indents[ij].push(
@@ -1004,18 +1020,22 @@ default React.createClass({
                                 <span style={{color: '#fff'}}>
                                     {el.title + ':'}
                                 </span>
-                                <IconButton
-                                    onClick={(event) => this['_handle' + el.func](event, -1)}
-                                    iconClassName="material-icons"
-                                    iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
-                                    keyboard_arrow_down
-                                </IconButton>
-                                <IconButton
-                                    onClick={(event) => this['_handle' + el.func](event, 1)}
-                                    iconClassName="material-icons"
-                                    iconStyle={{color: '#0097a7', fontSize: '22px', float: 'right'}}>
-                                    keyboard_arrow_up
-                                </IconButton>
+                                <div style={{marginTop: '-1px', display: 'inline-block', float: 'right', width: '18px', overflow: 'hidden', marginRight: '2px'}}>
+                                    <paper-icon-button
+                                        icon="hardware:keyboard-arrow-up"
+                                        onClick={(event) => this['_handle' + el.func](event, 1)}
+                                        alt="Increase"
+                                        noink={true}
+                                        style={{color: '#0097a7', width: '22px', height: '22px', right: '2px', padding: '0', marginLeft: '0'}} />
+                                </div>
+                                <div style={{marginTop: '-1px', display: 'inline-block', float: 'right', width: '18px', overflow: 'hidden', marginLeft: '4px'}}>
+                                    <paper-icon-button 
+                                        icon="hardware:keyboard-arrow-down"
+                                        onClick={(event) => this['_handle' + el.func](event, -1)}
+                                        alt="Decrease"
+                                        noink={true}
+                                        style={{color: '#0097a7', width: '22px', height: '22px', right: '2px', padding: '0', marginLeft: '0'}} />
+                                </div>
                                 {newTextField}
                             </div>
                             <div style={{clear: 'both'}} />
@@ -1032,19 +1052,19 @@ default React.createClass({
                                 <span style={{color: '#fff'}}>
                                     {el.title + ':'}
                                 </span>
-                                <IconButton
-                                    className={'clear-button'}
+                                <paper-icon-button
+                                    icon="clear"
                                     onClick={this['_handleClear' + el.func]}
-                                    iconClassName="material-icons"
-                                    iconStyle={{color: '#0097a7', fontSize: '18px', float: 'right'}}>
-                                    clear
-                                </IconButton>
-                                <TextField
+                                    alt="Clear"
+                                    noink={true}
+                                    style={{color: '#0097a7', width: '22px', height: '22px', right: '2px', padding: '2px', float: 'right', marginTop: '-1px'}} />
+                                <paper-input
+                                    onClick={this['_handle' + el.func + 'Focus']}
                                     ref={el.tag + 'Input'}
-                                    defaultValue={el.default}
-                                    onFocus={this['_handle' + el.func + 'Focus']}
-                                    style={{float: 'right', height: '32px', width: el.width, top: '-5px', marginRight: '4px'}}
-                                    inputStyle={{cursor: 'pointer'}} />
+                                    value={el.default}
+                                    style={{float: 'right', width: el.width, top: '-5px', marginRight: '4px', textAlign: 'right', marginTop: '-4px', marginBottom: '4px'}}
+                                    no-label-float
+                                    className="dark-input dl-input" />
                             </div>
                             <div style={{clear: 'both'}} />
                         </div>
@@ -1053,12 +1073,13 @@ default React.createClass({
                 } else if (el.type == 'button') {
                     
                     indents[ij].push(
-                        <RaisedButton
+                        <paper-button
+                            raised
                             key={klm}
-                            style={{marginBottom: '15px', marginRight: '11px', float: 'left'}}
-                            className='long-buttons'
                             onClick={el.func}
-                            label={el.title} />
+                            className='playerButtons' >
+                        {el.title}
+                        </paper-button>
                     );
 
                 } else if (el.type == 'clear') {
@@ -1069,33 +1090,47 @@ default React.createClass({
 
                     indents[ij].push(
                         <div key={klm}>
-                            <Toggle
-                                name="trakt-scrobble"
-                                onToggle={(event, toggled) => ls('traktScrobble', toggled)}
-                                defaultToggled={this.state.traktScrobble}
-                                style={{ 'display': (this.state.trakt ? 'block' : 'none') }}
-                                label="Trakt Scrobble:"
-                                style={{marginBottom: '7px'}} />
-                            <RaisedButton className='long-buttons' onClick={this._openTraktLogin} label={ this.state.trakt ? 'Trakt Logout' : 'Trakt Login' } />
+                            <paper-toggle-button
+                                id={'traktScrobble'}
+                                className="playerTogglers"
+                                funcName={'Toggler'}
+                                checked={this.state.traktScrobble}
+                                style={{display: 'block', height: '25px', display: (this.state.trakt ? 'block' : 'none') }} >
+                            {"Trakt Scrobble:"}
+                            </paper-toggle-button>
+                            <paper-button
+                                raised
+                                key={klm}
+                                onClick={this._openTraktLogin}
+                                style={{marginTop: '4px'}}
+                                className='playerButtons' >
+                            {this.state.trakt ? 'Trakt Logout' : 'Trakt Login'}
+                            </paper-button>
                         </div>
                     );
 
                 }
             })
             
-            renderSettings.push(
-                <Tab key={klm + 1000} label={ij} style={{height: '100%', textTransform: 'none', padding: '14px 12px'}}>
-                    <div className="playlist-inner" style={{maxWidth: '700px', maxHeight: 'calc(100% - 130px)'}}>
-                        {indents[ij]}
-                    </div>
-                </Tab>
+            tabs.push(
+                <paper-tab key={klm + 1000}>{ij}</paper-tab>
+            );
+            pages.push(
+                <div key={klm + 2000} className="playlist-inner" style={{maxWidth: '700px', maxHeight: 'calc(100% - 130px)'}}>
+                    {indents[ij]}
+                </div>
             );
         })
 
         return (
-            <Tabs style={{width: '70vw', maxWidth: '700px', marginTop: '11%', marginLeft: 'auto', marginRight: 'auto', height: '100%'}}>
-                {renderSettings}
-            </Tabs>
+            <div style={{display: 'inline-block', marginTop: '29px', textAlign: 'left', height: '100%'}}>
+                <paper-tabs selected="0" style={{backgroundColor: '#0097a7'}}>
+                    {tabs}
+                </paper-tabs>
+                <iron-pages selected="0" style={{height: '100%'}}>
+                    {pages}
+                </iron-pages>
+            </div>
         );
     }
 

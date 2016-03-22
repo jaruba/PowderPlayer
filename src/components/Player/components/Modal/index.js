@@ -1,12 +1,6 @@
 import React from 'react';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 
-import MUI from 'material-ui';
-
-const {
-    Dialog
-} = MUI;
-
 import ModalStore from './store';
 import ModalActions from './actions';
 
@@ -18,23 +12,12 @@ export
 default React.createClass({
 
     mixins: [PureRenderMixin],
-
-    childContextTypes: {
-        muiTheme: React.PropTypes.object,
-    },
-
-    getChildContext() {
-        return {
-            muiTheme: MUI.Styles.ThemeManager.getMuiTheme(MUI.Styles['DarkRawTheme'])
-        };
-    },
     
     getInitialState() {
 
         var modalState = ModalStore.getState();
 
         return {
-            Thinking: modalState.thinking,
             modalIsOpen: modalState.open,
             type: modalState.type,
             data: modalState.data,
@@ -58,8 +41,7 @@ default React.createClass({
             this.setState({
                 modalIsOpen: modalState.open,
                 data: modalState.data,
-                type: modalState.type,
-                Thinking: modalState.thinking
+                type: modalState.type
             });
         }
     },
@@ -74,18 +56,6 @@ default React.createClass({
         this.setState({
             modalIsOpen: false
         });
-    },
-
-    getStyle() {
-        if (this.state.data) {
-            switch (this.state.data.type) {
-                case 'URLAdd':
-                    return {
-                        height: '200px'
-                    };
-            }
-        } else
-            return {};
     },
 
     getContents() {
@@ -104,14 +74,9 @@ default React.createClass({
 
     render() {
         return (
-            <Dialog
-                style={this.getStyle()}
-                  open={this.state.modalIsOpen}
-                autoScrollBodyContent={true}
-                contentClassName={this.state.type == 'TraktSearch' ? 'material-dialog trakt-search' : 'material-dialog'}
-                onRequestClose={this.closeModal}>
+            <div style={{width: '0px', height: '0px'}}>
                 {this.getContents()}
-            </Dialog>
+            </div>
         );
     }
 });

@@ -6,10 +6,6 @@ import player from '../utils/player';
 import events from '../utils/events';
 import _ from 'lodash';
 import ls from 'local-storage';
-import {
-    RaisedButton
-}
-from 'material-ui';
 
 const appPath = require('remote').require('app');
 
@@ -116,6 +112,9 @@ default React.createClass({
 
         this.player = player.wcjs;
         this.pendingFiles = player.pendingFiles;
+        this.pendingSelected = player.pendingSelected;
+        player.pendingFiles = [];
+        player.pendingSelected = -1;
 
         var initializeSize = _.once(() => {
             if (!this.state.initialResize) {
@@ -231,7 +230,10 @@ default React.createClass({
                 }
             }
 
-            if (playAfter) player.wcjs.play();
+            if (this.pendingSelected > -1) {
+                this.player.playlist.playItem(this.pendingSelected);
+                this.pendingSelected = -1;
+            } else if (playAfter) player.wcjs.play();
 
         }
 
@@ -375,7 +377,9 @@ default React.createClass({
         };
         return (
             <div className='render-holder' onWheel={this.wheel}>
-                <RaisedButton id={'canvasEffect'} onClick={this.handleTogglePlay} onDoubleClick={ControlActions.toggleFullscreen} iconClassName="material-icons" className={this.state.rippleEffects ? this.state.clickPause ? 'over-canvas' : 'over-canvas no-ripples' : 'over-canvas no-ripples' } label="Canvas Overlay" />
+                <div className="controls-background" onClick={this.handleTogglePlay} onDoubleClick={ControlActions.toggleFullscreen} style={{zIndex: '1'}}>
+                    <paper-ripple id="rendererRipple" className="recenteringTouch" noink={this.state.rippleEffects ? this.state.clickPause ? false : true : true} fit />
+                </div>
                 <div ref="canvas-holder" className="canvas-holder" style={renderStyles.container}>
                     <canvas id={'playerCanvas'} style={renderStyles.canvas} onClick={this.handleTogglePlay} onDoubleClick={ControlActions.toggleFullscreen} ref="wcjs-render" />
                 </div>

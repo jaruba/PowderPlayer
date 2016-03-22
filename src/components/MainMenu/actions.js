@@ -26,6 +26,10 @@ class MainMenuActions {
 
     openLocal(type) {
         var filters;
+        
+        if (document.activeElement) {
+            document.activeElement.blur();
+        }
 
         switch (type) {
             case 'torrent':

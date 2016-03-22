@@ -1,8 +1,4 @@
 import React from 'react';
-import {
-    TextField, RaisedButton
-}
-from 'material-ui';
 import clipboard from 'clipboard';
 import _ from 'lodash';
 
@@ -16,11 +12,13 @@ export
 default React.createClass({
 
     componentDidMount() {
-        this.refs['codeInput'].focus();
+        this.refs.dialog.open();
+        _.delay(() => {
+            this.refs.codeInput.$.input.focus();
+        });
     },
-
     handleCodeAdd() {
-        var inputvalue = this.refs.codeInput.getValue();
+        var inputvalue = this.refs.codeInput.value;
         if (inputvalue.length) {
             ModalActions.close();
             try {
@@ -33,24 +31,56 @@ default React.createClass({
                 player.notifier.info('Error: '+e.message, '', 7000);
             }
         } else {
-            this.refs['codeInput'].focus();
+            this.refs.codeInput.$.input.focus();
             player.notifier.info('Error: Trakt Code is Required', '', 7000);
         }
     },
     pasteClipboard() {
-        this.refs['codeInput'].setValue(clipboard.readText('text/plain'));
+        this.refs.codeInput.value = clipboard.readText('text/plain');
     },
     getCode(event) {
         traktUtil.openTraktAuth();
     },
     render() {
         return (
-            <div>
-                <TextField ref="codeInput" style={{'marginBottom': '15px' }} fullWidth={true} onEnterKeyDown={this.handleCodeAdd} onContextMenu={this.pasteClipboard} hintText="Trakt Code" />
-                <RaisedButton secondary={true} onClick={this.handleCodeAdd} style={{float: 'right', }} label="Login" />
-                <RaisedButton onClick={this.getCode} style={{float: 'right', 'marginRight': '10px' }} label="Request Code" />
-                <RaisedButton onClick={ModalActions.close} style={{float: 'right', 'marginRight': '10px' }} label="Cancel" />
-            </div>
+            <paper-dialog
+                ref="dialog"
+                style={{width: '440px', textAlign: 'left', borderRadius: '3px', maxWidth: '90%', backgroundColor: '#303030', padding: '20px'}}
+                entry-animation="slide-from-top-animation"
+                opened={false}
+                with-backdrop >
+                
+                <paper-input
+                    ref={'codeInput'}
+                    label="Trakt Code"
+                    style={{float: 'right', height: '32px', top: '-5px', marginRight: '4px', textAlign: 'left', width: '100%', marginBottom: '15px', padding: '0', marginTop: '0', marginRight: '0'}}
+                    onKeyDown={event => event.keyCode === 13 ? this.handleCodeAdd() : void 0}
+                    onContextMenu={this.pasteClipboard}
+                    fullWidth={true}
+                    no-label-float
+                    className="dark-input dark-input-large" />
+                <paper-button
+                    raised
+                    onClick={this.handleCodeAdd}
+                    style={{float: 'right', marginRight: '0', marginBottom: '0'}}
+                    className='playerButtons-primary' >
+                Login
+                </paper-button>
+                <paper-button
+                    raised
+                    onClick={this.getCode}
+                    style={{float: 'right', marginBottom: '0'}}
+                    className='playerButtons' >
+                Request Code
+                </paper-button>
+                <paper-button
+                    raised
+                    onClick={ModalActions.close}
+                    style={{float: 'right', marginBottom: '0'}}
+                    className='playerButtons' >
+                Cancel
+                </paper-button>
+            </paper-dialog>
         );
     }
 });

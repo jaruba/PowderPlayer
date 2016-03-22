@@ -13,7 +13,8 @@ class VolumeActions {
         );
     }
     
-    handleVolume(event, t) {
+    handleVolume() {
+        var t = document.querySelector('.vol-slide').immediateValue;
         if (!throttlers.volume)
             throttlers.volume = _.throttle(this.actions.setVolume, 100);
         throttlers.volume(t);
@@ -68,12 +69,14 @@ class VolumeActions {
         if (i) {
             var volumeState = this.alt.stores.VolumeStore.state;
             if (!volumeState.volumeDragging) {
-                var volumeIndex = volumeState.volumeSlider.refs['track'].lastChild;
-                var volumeClass = volumeIndex.className.replace(' volume-hover', '');
+//                  document.querySelector('.vol-slide .sliderKnob').style.opacity = 0;
+//                var volumeIndex = volumeState.volumeSlider.refs['track'].lastChild;
+//                var volumeClass = volumeIndex.className.replace(' volume-hover', '');
+                var knob = document.querySelector('.vol-slide #sliderKnob');
                 if (i.type == 'react-mouseenter')
-                    volumeIndex.className = volumeClass;
+                    knob.style.transform = 'scale(1.0)';
                 else if (i.type == 'react-mouseleave')
-                    volumeIndex.className = volumeClass + ' volume-hover';
+                    knob.style.transform = 'scale(0)';
 
             } else if (i.type) {
                 this.actions.settingChange({
@@ -84,22 +87,22 @@ class VolumeActions {
     }
 
     volumeRippleEffect(c, i, a) {
-        if (a) {
-            var volumeState = this.alt.stores.VolumeStore.state;
-            if (!volumeState.volumeDragging) {
-                var volumeRipple = volumeState.volumeSlider.refs['track'].lastChild.firstChild;
-                var volumeClass = volumeRipple.className.replace(' volume-ripple-hover', '');
-                if (a.type == 'react-mouseenter')
-                    volumeRipple.className = volumeClass;
-                else if (a.type == 'react-mouseleave')
-                    volumeRipple.className = volumeClass + ' volume-ripple-hover';
-
-            } else if (a.type) {
-                this.actions.settingChange({
-                    volumePendingRipples: a.type
-                });
-            }
-        }
+//        if (a) {
+//            var volumeState = this.alt.stores.VolumeStore.state;
+//            if (!volumeState.volumeDragging) {
+//                var volumeRipple = volumeState.volumeSlider.refs['track'].lastChild.firstChild;
+//                var volumeClass = volumeRipple.className.replace(' volume-ripple-hover', '');
+//                if (a.type == 'react-mouseenter')
+//                    volumeRipple.className = volumeClass;
+//                else if (a.type == 'react-mouseleave')
+//                    volumeRipple.className = volumeClass + ' volume-ripple-hover';
+//
+//            } else if (a.type) {
+//                this.actions.settingChange({
+//                    volumePendingRipples: a.type
+//                });
+//            }
+//        }
     }
 
     volumeDragStart() {
@@ -109,6 +112,7 @@ class VolumeActions {
     }
 
     volumeDragStop() {
+        document.querySelector('.vol-slide').blur();
         var obj = {
             volumeDragging: false
         };
@@ -119,12 +123,12 @@ class VolumeActions {
             });
             obj.volumePendingEffects = '';
         }
-        if (volumeState.volumePendingRipples) {
-            this.actions.volumeRippleEffect(null, null, {
-                type: volumeState.volumePendingRipples
-            });
-            obj.volumePendingRipples = '';
-        }
+//        if (volumeState.volumePendingRipples) {
+//            this.actions.volumeRippleEffect(null, null, {
+//                type: volumeState.volumePendingRipples
+//            });
+//            obj.volumePendingRipples = '';
+//        }
         this.actions.settingChange(obj);
         ls('volume', volumeState.volume);
 

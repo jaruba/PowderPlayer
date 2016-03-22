@@ -1,12 +1,6 @@
 import React from 'react';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 
-import MUI from 'material-ui';
-
-const {
-    Dialog
-} = MUI;
-
 import ModalStore from './store';
 import ModalActions from './actions';
 
@@ -19,16 +13,6 @@ default React.createClass({
 
     mixins: [PureRenderMixin],
 
-    childContextTypes: {
-        muiTheme: React.PropTypes.object,
-    },
-
-    getChildContext() {
-        return {
-            muiTheme: MUI.Styles.ThemeManager.getMuiTheme(MUI.Styles['LightRawTheme'])
-        };
-    },
-    
     getInitialState() {
 
         var modalState = ModalStore.getState();
@@ -37,8 +21,7 @@ default React.createClass({
             Thinking: modalState.thinking,
             modalIsOpen: modalState.open,
             type: modalState.type,
-            data: modalState.data,
-            theme: modalState.theme
+            data: modalState.data
         };
     },
 
@@ -76,18 +59,6 @@ default React.createClass({
         });
     },
 
-    getStyle() {
-        if (this.state.data) {
-            switch (this.state.data.type) {
-                case 'URLAdd':
-                    return {
-                        height: '200px'
-                    };
-            }
-        } else
-            return {};
-    },
-
     getContents() {
         switch (this.state.type) {
             case 'URLAdd':
@@ -104,14 +75,9 @@ default React.createClass({
 
     render() {
         return (
-            <Dialog
-                style={this.getStyle()}
-                  open={this.state.modalIsOpen}
-                autoScrollBodyContent={true}
-                contentClassName={this.state.type == 'TraktSearch' ? 'material-dialog trakt-search' : 'material-dialog'}
-                onRequestClose={this.closeModal}>
+            <div style={{width: '0px', height: '0px'}}>
                 {this.getContents()}
-            </Dialog>
+            </div>
         );
     }
 });

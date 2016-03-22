@@ -1,8 +1,4 @@
 import React from 'react';
-import {
-    AutoComplete, RaisedButton
-}
-from 'material-ui';
 import clipboard from 'clipboard'
 
 import ModalActions from '../actions';
@@ -15,28 +11,54 @@ import player from '../../../utils/player';
 import _ from 'lodash';
 import ls from 'local-storage';
 
+var results = [],
+    optsResult = {},
+    traktResult = {};
+
 export
 default React.createClass({
 
     getInitialState() {
         return {
-            results: []
+            results: JSON.stringify([])
         }
     },
 
     componentDidMount() {
-        this.refs['searchInput'].refs['searchTextField'].focus();
+//        this.refs['searchInput'].$.input.focus()
+        this.refs.dialog.open();
+//        var that = this;
+        _.delay(() => {
+                document.querySelector('#input-remote').$.input.focus();
+                document.addEventListener('autocomplete.selected',this.selector);
+//                document.querySelector('#input-remote').addEventListener('selected',that.selectedF);
+        },500);
     },
-
+    arraysEqual(arr1, arr2) {
+        if(arr1.length !== arr2.length)
+            return false;
+        for(var i = arr1.length; i--;) {
+            if(arr1[i] !== arr2[i])
+                return false;
+        }
+    
+        return true;
+    },
     pasteClipboard() {
-        this.refs['searchInput'].setValue(clipboard.readText('text/plain'));
+        this.refs['searchInput'].value = clipboard.readText('text/plain');
     },
-    searchTrakt(t) {
+    searchTrakt() {
+        var t = this.refs['searchInput'].$.input.value;
+        var isSuggestion = false;
+        results.forEach( el => {
+            if (el == t) isSuggestion = true;
+        });
+        if (isSuggestion) return;
         if (!t) {
-            this.setState({
-                results: []
-            });
+            results = [];
+            document.querySelector('#input-remote').suggestions([]);
         } else {
+            var that = this;
             traktUtil.search({ query: t }).then( res => {
                 var resObj = [];
                 var optsObj = {};
@@ -54,20 +76,22 @@ default React.createClass({
                     return false;
                 });
     
-                if (Object.keys(resObj).length) {
-                    this.setState({
-                        results: resObj,
-                        optsResult: optsObj,
-                        traktResult: res
+                if (Object.keys(resObj).length && !this.arraysEqual(resObj, results)) {
+                    results = resObj;
+                    optsResult = optsObj;
+                    traktResult = res;
+                    var resObj = resObj.map(function(el) {
+                        return {text: el, value: el};
                     });
+                    document.querySelector('#input-remote').suggestions(resObj); 
                 }
             }).catch( err => { });
         }
     },
-    selected(e,t) {
-        var traktID = this.state.optsResult[e];
+    selected(e) {
+        var traktID = optsResult[e];
         
-        this.state.traktResult.some( el => {
+        traktResult.some( el => {
             if (el[el.type].ids.trakt == traktID) {
                 var desc = player.itemDesc();
                 var parsed = desc.setting.parsed;
@@ -127,7 +151,11 @@ default React.createClass({
                                     newObj.image = results.images.screenshot.thumb;
                                 } else if (results.images.fanart && results.images.fanart.thumb) {
                                     newObj.image = results.images.fanart.thumb;
+                                } else {
+                                    newObj.image = '';
                                 }
+                            } else {
+                                newObj.image = '';
                             }
 
                             newObj.parsed = parsed;
@@ -165,21 +193,41 @@ default React.createClass({
             return false;
         });
     },
+    selector(a) {
+        this.selected(a.detail.value);
+    },
     render() {
         return (
-            <div>
-                <AutoComplete
-                  ref="searchInput"
-                  fullWidth={true}
-                  filter={(searchText, key) => searchText !== ''}
-                  animated={false}
-                  dataSource={this.state.results}
-                  onUpdateInput={_.throttle(this.searchTrakt, 500)}
-                  onNewRequest={this.selected}
-                  hintText="Search Trakt" />
-                <RaisedButton onClick={ModalActions.close} style={{float: 'right'}} label="Cancel" />
+            <paper-dialog
+                ref="dialog"
+                style={{width: '440px', textAlign: 'left', borderRadius: '3px', maxWidth: '90%', backgroundColor: '#303030', padding: '20px'}}
+                entry-animation="slide-from-top-animation"
+                opened={false}
+                with-backdrop >
+
+                <paper-autocomplete
+                    id="input-remote"
+                    ref="searchInput"
+                    onKeyDown={_.throttle(this.searchTrakt, 500)}
+                    onContextMenu={this.pasteClipboard}
+                    remote-source="true"
+                    min-length="2"
+                    fullWidth={true}
+                    style={{width: '100%', padding: '0', margin: '0', height: '40px'}}
+                    showClear={false}
+                    no-label-float
+                    className="dark-input dark-input-large" />
+                    
+                <paper-button
+                    raised
+                    onClick={ModalActions.close}
+                    style={{ marginBottom: '0', marginRight: '0', float: 'right', marginTop: '7px' }}
+                    className='playerButtons-primary' >
+                Cancel
+                </paper-button>
+                
                 <div style={{clear:'both'}} />
-            </div>
+            </paper-dialog>
         );
     }
 });

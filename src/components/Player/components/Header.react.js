@@ -4,10 +4,6 @@ import {
     History
 }
 from 'react-router';
-import {
-    IconButton
-}
-from 'material-ui';
 
 import PlayerStore from '../store';
 import PlayerActions from '../actions';
@@ -16,6 +12,7 @@ import ModalActions from './Modal/actions';
 import ui from '../utils/ui';
 import player from '../utils/player';
 import events from '../utils/events';
+import _ from 'lodash';
 
 export
 default React.createClass({
@@ -72,13 +69,6 @@ default React.createClass({
         events.close();
         this.history.replaceState(null, '');
     },
-    handleOpenSettings() {
-        ModalActions.open({
-            title: 'Player Settings',
-            type: 'player-settings',
-            theme: 'DarkRawTheme'
-        });
-    },
     handleOpenTrakt() {
         ModalActions.open({
             title: 'Trakt Info',
@@ -86,18 +76,32 @@ default React.createClass({
             theme: 'DarkRawTheme'
         });
     },
-    handleOpenPlaylist() {
-
-
+    handleOpenSettings() {
+        ui.toggleMenu('settings');
+        
+        // this is a hack to show the underline for the settings menu tabs
+        _.defer(() => {
+            Polymer.dom().querySelector('paper-tabs').notifyResize();
+        });
     },
     render() {
         return (
             <div className={this.state.uiHidden ? 'header' : this.state.playlistOpen ? 'header playlist-head' : this.state.settingsOpen ? 'header settings-head' : this.state.uiShown ? 'header show' : 'header'}>
-                <IconButton onClick={this.handleClose} iconClassName="material-icons" iconStyle={{color: 'white', fontSize: '40px'}} tooltipPosition="bottom-right" tooltip="Main Menu" className="player-close" >arrow_back</IconButton>
-                <p className="title" style={{width: 'calc(100% - '+(this.state.foundTrakt ? '202' : '155')+'px)'}}>{this.state.title}</p> 
-                <IconButton onClick={ui.toggleMenu.bind(null, 'playlist')} iconClassName="material-icons" className="player-playlist" iconStyle={{color: 'white', fontSize: '30px', right: '-2px', top: '-1px'}} tooltipPosition="bottom-center" tooltip="Playlist">playlist_add_check</IconButton>
-                <IconButton onClick={ui.toggleMenu.bind(null, 'settings')} iconClassName="material-icons" iconStyle={{color: 'white', fontSize: '23px'}} tooltipPosition="bottom-center" tooltip="Player Settings" className="player-settings">tune</IconButton>
-                <IconButton onClick={this.handleOpenTrakt} iconClassName="material-icons" iconStyle={{color: 'white', fontSize: '23px'}} tooltipPosition="bottom-center" tooltip="Trakt Info" className="trakt-info" style={{ display: this.state.foundTrakt ? 'block' : 'none' }}></IconButton>
+                <paper-icon-button id="playerMainBack" onClick={this.handleClose} className="player-close" icon={'arrow-back'} noink={true} />
+                <paper-tooltip for="playerMainBack" offset="0" id="playerBackTooltip">Main Menu</paper-tooltip>
+
+                <p className="title" style={{width: 'calc(100% - '+(this.state.foundTrakt ? '202' : '155')+'px)'}}>{this.state.title}</p>
+
+                <paper-icon-button id="playerPlaylistBut" onClick={ui.toggleMenu.bind(null, 'playlist')} className="player-playlist" icon={'av:playlist-add-check'} noink={true} />
+                <paper-tooltip for="playerPlaylistBut" offset="0">Playlist</paper-tooltip>
+
+                <paper-icon-button id="playerSetBut" onClick={this.handleOpenSettings} className="player-settings" icon={'image:tune'} noink={true} />
+                <paper-tooltip for="playerSetBut" offset="0">Player Settings</paper-tooltip>
+
+
+                <paper-icon-button id="traktBut" onClick={this.handleOpenTrakt} className="trakt-info" src="./images/trakt-logo.png" style={{ display: this.state.foundTrakt ? 'block' : 'none' }} noink={true} />
+                <paper-tooltip for="traktBut" offset="0">Trakt Info</paper-tooltip>
+
             </div>
         );
     }

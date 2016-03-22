@@ -13,9 +13,9 @@ class mmessageStore {
 
     onOpen(message) {
         this.setState({
-            open: true,
             message: message
         });
+        document.querySelector('#main-toaster').open();
     }
 
     onClose() {

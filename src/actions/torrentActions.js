@@ -73,8 +73,6 @@ class torrentActions {
                         });
                     }
 
-//                  console.log(newFiles);
-
                     PlayerActions.addPlaylist(newFiles);
                     
             

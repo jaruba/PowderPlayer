@@ -61,6 +61,12 @@ class PlayerActions {
     }
     
     addPlaylist(data) {
+        var selected = -1;
+        if (data.selected) {
+            selected = data.selected;
+            data = data.files;
+        }
+        
         HistoryStore.getState().history.replaceState(null, 'player');
 
         var playerState = this.alt.stores.playerStore.getState();
@@ -70,7 +76,8 @@ class PlayerActions {
             if (data.length)
                 player.set({
                     pendingFiles: data,
-                    files: player.files.concat(data)
+                    files: player.files.concat(data),
+                    pendingSelected: selected
                 });
 
             this.actions.togglePowerSave(true);
@@ -113,7 +120,9 @@ class PlayerActions {
                 }
             }
 
-            if (playAfter) wcjs.playlist.playItem(0);
+            if (selected > -1) {
+                wcjs.playlist.playItem(selected);
+            } else if (playAfter) wcjs.playlist.playItem(0);
 
         }
     }

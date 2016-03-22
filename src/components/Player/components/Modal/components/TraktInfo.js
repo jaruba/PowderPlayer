@@ -1,8 +1,4 @@
 import React from 'react';
-import {
-    TextField, RaisedButton, List, ListItem
-}
-from 'material-ui';
 import shell from 'shell';
 import clipboard from 'clipboard';
 
@@ -32,6 +28,14 @@ default React.createClass({
         }
     },
     
+    componentDidMount() {
+        this.refs.dialog.open();
+    },
+    
+    componentDidUpdate() {
+        this.refs.dialog.open();
+    },
+    
     update() {
         var setting = player.itemDesc().setting;
         this.setState({
@@ -48,7 +52,7 @@ default React.createClass({
     },
 
     handleCodeAdd() {
-        var inputvalue = this.refs.codeInput.getValue();
+        var inputvalue = this.refs.codeInput.value;
         if (inputvalue.length) {
             ModalActions.close();
             try {
@@ -63,7 +67,7 @@ default React.createClass({
         }
     },
     pasteClipboard() {
-        this.refs['codeInput'].setValue(clipboard.readText('text/plain'));
+        this.refs['codeInput'].value = clipboard.readText('text/plain');
     },
     getCode(event) {
         traktUtil.openTraktAuth();
@@ -128,21 +132,59 @@ default React.createClass({
     },
     render() {
         return (
-            <div>
-                <img src={this.state.image} style={{float: 'left', maxWidth: '52%'}} />
-                <List style={{float: 'left', paddingTop: '0', marginLeft: '3%', maxWidth: '45%'}}>
-                  <ListItem className="inf" primaryText={this.state.parsedTitle}/>
-                  <ListItem className="inf" primaryText={this.state.parsedRating}/>
-                  <ListItem className="inf" primaryText={this.state.trakt.title} style={{ display: this.state.trakt.season ? 'block' : 'none' }} />
-                  <ListItem className="inf" primaryText={this.state.trakt.overview} style={{ display: this.state.trakt.overview ? 'block' : 'none' }} />
-                  <ListItem className="inf" primaryText={this.state.parsed.tag.join(', ')} style={{ display: true ? 'none' : this.state.parsed.tag.length ? 'block' : 'none' }} />
-                </List>
+            <paper-dialog
+                ref="dialog"
+                style={{width: '900px', textAlign: 'left', borderRadius: '3px', maxWidth: '90%', backgroundColor: '#303030', padding: '20px', overflowX: 'auto'}}
+                entry-animation="slide-from-top-animation"
+                opened={false}
+                className="trakt-info-dialog"
+                with-backdrop >
+                
+                <img className="trakt-info-img" src={this.state.image} style={{float: 'left', maxWidth: '52%', padding: '0', margin: '0'}} />
+
+                <div className={'trakt-info-desc' + (!this.state.image ? ' trakt-long-desc' : '')} style={{ fontSize: '15px', color: 'white', float: 'left', display: 'inline-block', padding: '0', margin: '0', marginLeft: '3%', maxWidth: '45%' }}>
+                  <div style={{ marginBottom: '7px' }}>{this.state.parsedTitle}</div>
+                  <div style={{ marginBottom: '7px' }}>{this.state.parsedRating}</div>
+                  <div style={{ marginBottom: '7px', display: this.state.trakt.season ? 'block' : 'none' }}>{this.state.trakt.title}</div>
+                  <div style={{ marginBottom: '7px', textAlign: 'justify', display: this.state.trakt.overview ? 'block' : 'none' }}>{this.state.trakt.overview}</div>
+                  <div style={{ display: true ? 'none' : this.state.parsed.tag.length ? 'block' : 'none' }}>{this.state.parsed.tag.join(', ')}</div>
+                </div>
+
                 <div style={{clear:'both', height: '10px'}} />
-                <RaisedButton onClick={this.openImdb} style={{float: 'left', 'marginRight': '10px', display: this.state.parsed.imdb ? 'block' : 'none' }} label="IMDB" />
-                <RaisedButton onClick={this.openTrailer} style={{float: 'left', display: this.state.parsed.imdb ? 'block' : 'none'}} label="Trailer" />
-                <RaisedButton secondary={true} onClick={ModalActions.close} style={{float: 'right'}} label="Back" />
-                <RaisedButton onClick={this.openSearch} style={{float: 'right', 'marginRight': '10px'}} label="Not Correct?" />
-            </div>
+                
+                <paper-button
+                    raised
+                    onClick={this.openImdb}
+                    style={{ marginBottom: '0', display: this.state.parsed.imdb ? 'block' : 'none' }}
+                    className='playerButtons' >
+                IMDB
+                </paper-button>
+                
+                <paper-button
+                    raised
+                    onClick={this.openTrailer}
+                    style={{ marginBottom: '0', display: this.state.parsed.imdb ? 'block' : 'none' }}
+                    className='playerButtons' >
+                Trailer
+                </paper-button>
+                
+                <paper-button
+                    raised
+                    onClick={ModalActions.close}
+                    style={{ marginBottom: '0', marginRight: '0', float: 'right' }}
+                    className='playerButtons-primary' >
+                Back
+                </paper-button>
+                
+                <paper-button
+                    raised
+                    onClick={this.openSearch}
+                    style={{ marginBottom: '0', float: 'right' }}
+                    className='playerButtons trakt-not-correct' >
+                Not Correct?
+                </paper-button>
+                
+            </paper-dialog>
         );
     }
 });

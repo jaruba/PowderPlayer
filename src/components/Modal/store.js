@@ -12,7 +12,6 @@ class modalStore {
         this.meta = false;
         this.fileSelectorFiles = {};
         this.data = false;
-        this.theme = 'LightRawTheme';
 
     }
 
@@ -20,8 +19,7 @@ class modalStore {
         this.setState({
             open: true,
             data: data,
-            type: data.type,
-            theme: data.theme ? data.theme : 'LightRawTheme'
+            type: data.type
         });
     }
 

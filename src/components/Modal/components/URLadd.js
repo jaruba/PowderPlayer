@@ -1,8 +1,4 @@
 import React from 'react';
-import {
-    TextField, RaisedButton
-}
-from 'material-ui';
 import clipboard from 'clipboard';
 
 import ModalActions from '../actions';
@@ -11,18 +7,23 @@ import MessageActions from '../../Message/actions';
 import PlayerActions from '../../Player/actions';
 
 import linkUtil from '../../../utils/linkUtil';
+import _ from 'lodash';
 
 
 export
 default React.createClass({
 
     componentDidMount() {
-        this.refs['urlInput'].focus();
+        this.refs['dialog'].open();
+        _.delay(() => {
+            this.refs.urlInput.$.input.focus()
+        });
     },
 
     handleURLAdd() {
         ModalActions.thinking(true);
-        var inputvalue = this.refs.urlInput.getValue();
+        var inputvalue = this.refs.urlInput.value;
+        this.refs.urlInput.value = '';
         linkUtil(inputvalue).then(url => {
             ModalActions.thinking(false);
         }).catch(error => {
@@ -35,15 +36,54 @@ default React.createClass({
         });
     },
     pasteClipboard() {
-        this.refs['urlInput'].setValue(clipboard.readText('text/plain'));
+        this.refs['urlInput'].value = clipboard.readText('text/plain');
+    },
+    clearValue() {
+        var that = this;
+        _.delay(() => {
+            that.refs.urlInput.value = '';
+        },500);
+    },
+    componentDidUpdate() {
+        this.refs['dialog'].open();
+        _.delay(() => {
+            this.refs['urlInput'].$.input.focus()
+        });
     },
     render() {
         return (
-            <div>
-                <TextField ref="urlInput" style={{'marginBottom': '15px' }} fullWidth={true} onEnterKeyDown={this.handleURLAdd} onContextMenu={this.pasteClipboard} hintText="Magnet/Torrent URI or Video URL" />
-                <RaisedButton secondary={true} onClick={this.handleURLAdd} style={{float: 'right', }} label="Stream" />
-                <RaisedButton onClick={ModalActions.close} style={{float: 'right', 'marginRight': '10px' }} label="Cancel" />
-            </div>
+            <paper-dialog
+                ref="dialog"
+                style={{width: '440px', textAlign: 'left', borderRadius: '3px'}}
+                entry-animation="slide-from-top-animation"
+                opened={false}
+                with-backdrop >
+
+                <paper-input
+                    ref="urlInput"
+                    style={{marginBottom: '15px', marginTop: '20px'}}
+                    fullWidth={true}
+                    onKeyDown={event => event.keyCode === 13 ? this.handleURLAdd() : void 0}
+                    onContextMenu={this.pasteClipboard}
+                    label="Magnet/Torrent URI or Video URL"
+                    no-label-float />
+                    
+                <paper-button
+                    raised
+                    onClick={this.handleURLAdd}
+                    style={{float: 'right', background: '#00bcd4', color: 'white', padding: '8px 15px', fontWeight: 'bold', marginRight: '22px', marginTop: '0px', textTransform: 'none'}}>
+                Stream
+                </paper-button>
+                
+                <paper-button
+                    raised
+                    onClick={this.clearValue}
+                    style={{float: 'right', marginRight: '10px', padding: '8px 15px', fontWeight: 'bold', marginTop: '0px', textTransform: 'none'}}
+                    dialog-dismiss>
+                Cancel
+                </paper-button>
+                
+            </paper-dialog>
         );
     }
 });

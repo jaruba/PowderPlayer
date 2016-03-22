@@ -1,9 +1,5 @@
 ﻿import React from 'react';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
-import {
-    IconButton, Slider
-}
-from 'material-ui';
 import ls from 'local-storage';
 import VolumeStore from './store';
 import VolumeActions from './actions';
@@ -26,9 +22,12 @@ default React.createClass({
         VolumeActions.settingChange({
             volumeSlider: this.refs['volume-slider']
         });
-        var volumeIndex = this.refs['volume-slider'].refs['track'].lastChild;
-        var volumeClass = volumeIndex.className.replace(' volume-hover', '');
-        volumeIndex.className = volumeClass + ' volume-hover';
+        this.refs['volume-slider'].addEventListener('immediate-value-change', VolumeActions.handleVolume);
+        this.refs['volume-slider'].addEventListener('mousedown', VolumeActions.volumeDragStart);
+        this.refs['volume-slider'].addEventListener('mouseup', VolumeActions.volumeDragStop);
+//        var volumeIndex = this.refs['volume-slider'].refs['track'].lastChild;
+//        var volumeClass = volumeIndex.className.replace(' volume-hover', '');
+//        volumeIndex.className = volumeClass + ' volume-hover';
     },
     componentWillUnmount() {
         VolumeStore.unlisten(this.update);
@@ -46,8 +45,8 @@ default React.createClass({
     render() {
         return (
             <div>
-                <IconButton onClick={VolumeActions.handleMute} iconClassName="material-icons" iconStyle={{color: '#e7e7e7'}} className="volume-button">{this.state.muted ? 'volume_off' : this.state.volume <= 0 ? 'volume_mute' : this.state.volume <= 120 ? 'volume_down' : 'volume_up' }</IconButton>
-                <Slider name="volume-slider" ref="volume-slider" defaultValue={this.state.volume} step={1} min={0} max={200} onChange={VolumeActions.handleVolume} value={this.state.muted ? 0 : this.state.volume} onMouseEnter={VolumeActions.volumeRippleEffect} onMouseLeave={VolumeActions.volumeRippleEffect} onDragStart={VolumeActions.volumeDragStart} onDragStop={VolumeActions.volumeDragStop} />
+                <paper-icon-button onClick={VolumeActions.handleMute} icon={ 'av:' + (this.state.muted ? 'volume-off' : this.state.volume <= 0 ? 'volume-mute' : this.state.volume <= 120 ? 'volume-down' : 'volume-up') } className="volume-button" noink={true} />
+                <paper-slider className="vol-slide" name="volume-slider" ref="volume-slider" min="0" max="200" steps="1" value={this.state.muted ? 0 : this.state.volume} noink={true}/>
             </div>
         );
     }

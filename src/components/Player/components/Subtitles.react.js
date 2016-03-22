@@ -1,16 +1,7 @@
 ﻿import React from 'react';
 import _ from 'lodash';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
-import MUI from 'material-ui';
 import ls from 'local-storage';
-
-const {
-    List, ListItem, Avatar
-} = MUI;
-
-import {SelectableContainerEnhance} from 'material-ui/lib/hoc/selectable-enhance';
-
-const SelectableList = SelectableContainerEnhance(List);
 
 import PlayerActions from '../actions';
 import SubtitleStore from './SubtitleText/store';
@@ -35,16 +26,6 @@ default React.createClass({
 
     mixins: [PureRenderMixin],
 
-    childContextTypes: {
-        muiTheme: React.PropTypes.object,
-    },
-
-    getChildContext() {
-        return {
-            muiTheme: MUI.Styles.ThemeManager.getMuiTheme(MUI.Styles['DarkRawTheme'])
-        };
-    },
-
     getInitialState() {
         return {
             open: false,
@@ -54,12 +35,10 @@ default React.createClass({
     },
     componentWillMount() {
         VisibilityStore.listen(this.update);
-        SubtitleStore.listen(this.update);
     },
 
     componentWillUnmount() {
         VisibilityStore.unlisten(this.update);
-        SubtitleStore.unlisten(this.update);
     },
     update() {
         if (this.isMounted()) {
@@ -95,7 +74,7 @@ default React.createClass({
                 selectedSub: itemId,
                 subtitle: [],
                 trackSub: -1,
-                subText: ''
+                text: ''
             });
         }
         VisibilityActions.settingChange({
@@ -131,43 +110,47 @@ default React.createClass({
     render() {
         var itemId = 1;
         if (!ls.isSet('menuFlags') || ls('menuFlags')) {
-            var none = <ListItem
-                    leftAvatar={<Avatar src='https://css-tricks.com/wp-content/csstricks-uploads/transpBlack25.png' />}
-                    value={1}
-                    key={'None'}
-                    primaryText={'None'}
-                    onClick={this.select.bind(this, 'none', '', 1)} />
+            var none = (
+                <paper-item key={itemId} style={{backgroundColor: '#303030', color: 'white', padding: '4px 12px'}} onClick={this.select.bind(this, 'none', '', 1)} className={this.state.playlistSelected == itemId ? 'iron-selected' : ''}>
+                      <span style={{width: '38px', height: '38px', borderRadius: '25px', backgroundColor: '#242424', margin: '4px', marginLeft: '0', marginRight: '15px'}} />
+                    <paper-item-body>
+                    None
+                    </paper-item-body>
+                </paper-item>
+            );
         } else {
-            var none = <ListItem
-                    value={1}
-                    key={'None'}
-                    primaryText={'None'}
-                    onClick={this.select.bind(this, 'none', '', 1)} />
+            var none = (
+                <paper-item key={itemId} style={{backgroundColor: '#303030', color: 'white', padding: '4px 22px'}} onClick={this.select.bind(this, 'none', '', 1)} className={this.state.playlistSelected == itemId ? 'iron-selected' : ''}>
+                <paper-item-body>
+                    None
+                </paper-item-body>
+                </paper-item>
+            );
         }
         return (
             <div className={this.state.open ? 'subtitle-list show' : 'subtitle-list'}>
-                <SelectableList valueLink={{value: this.state.playlistSelected}}>
-                    {none}
-                    {
+            <div style={{backgroundColor: '#303030', padding: '0'}}>
+                {none}
+                {
                         _.map(this.getInternalSubs(), (item, idx) => {
                             itemId++;
                             if (!ls.isSet('menuFlags') || ls('menuFlags')) {
                                 return (
-                                <ListItem
-                                  leftAvatar={<Avatar src={'./images/icons/internal-subtitle-icon.png'} />}
-                                  value={itemId}
-                                  key={item}
-                                  primaryText={item}
-                                  onClick={this.selectInternal.bind(this, (idx + 1), item, itemId)} />                                    
-                                )
+                                  <paper-item key={itemId} style={{backgroundColor: '#303030', color: 'white', padding: '4px 12px'}} onClick={this.selectInternal.bind(this, (idx + 1), item, itemId)} className={this.state.playlistSelected == itemId ? 'iron-selected' : ''}>
+                                  <span style={{width: '38px', height: '38px', borderRadius: '25px', backgroundImage: 'url(./images/icons/internal-subtitle-icon.png)', margin: '4px', marginLeft: '0', marginRight: '15px', backgroundSize: '38px 38px'}} />
+                    <paper-item-body>
+                                    {item}
+                                    </paper-item-body>
+                                  </paper-item>
+                                );
                             } else {
                                 return (
-                                <ListItem
-                                  value={itemId}
-                                  key={item}
-                                  primaryText={item}
-                                  onClick={this.selectInternal.bind(this, (idx + 1), item, itemId)} />                                    
-                                )
+                                  <paper-item key={itemId} style={{backgroundColor: '#303030', color: 'white', padding: '4px 22px'}} onClick={this.selectInternal.bind(this, (idx + 1), item, itemId)} className={this.state.playlistSelected == itemId ? 'iron-selected' : ''}>
+                                    <paper-item-body>
+                                    {item}
+                                    </paper-item-body>
+                                  </paper-item>
+                                );
                             }
                         })
                     }
@@ -178,25 +161,25 @@ default React.createClass({
                             if (lang2country[lang[1]]) lang[1] = lang2country[lang[1]];
                             if (!ls.isSet('menuFlags') || ls('menuFlags')) {
                                 return (
-                                <ListItem
-                                  leftAvatar={<Avatar src={'http://flagpedia.net/data/flags/small/'+lang[1]+'.png'} />}
-                                  value={itemId}
-                                  key={lang[0]}
-                                  primaryText={lang[0]}
-                                  onClick={this.select.bind(this, idx, item, itemId)} />
-                                )
+                                  <paper-item key={itemId} style={{backgroundColor: '#303030', color: 'white', padding: '4px 12px'}} onClick={this.select.bind(this, idx, item, itemId)} className={this.state.playlistSelected == itemId ? 'iron-selected' : ''}>
+                                      <span key={itemId} style={{width: '38px', height: '38px', borderRadius: '25px', backgroundImage: 'url(http://flagpedia.net/data/flags/small/'+lang[1]+'.png)', margin: '4px', marginLeft: '0', marginRight: '15px', backgroundSize: '38px 38px'}} />
+                    <paper-item-body>
+                                    {lang[0]}
+                                    </paper-item-body>
+                                  </paper-item>
+                                );
                             } else {
                                 return (
-                                <ListItem
-                                  value={itemId}
-                                  key={lang[0]}
-                                  primaryText={lang[0]}
-                                  onClick={this.select.bind(this, idx, item, itemId)} />
-                                )
+                                  <paper-item key={itemId} style={{backgroundColor: '#303030', color: 'white', padding: '4px 22px'}} onClick={this.select.bind(this, idx, item, itemId)} className={this.state.playlistSelected == itemId ? 'iron-selected' : ''}>
+                                    <paper-item-body>
+                                    {lang[0]}
+                                    </paper-item-body>
+                                  </paper-item>
+                                );
                             }
                         })
                     }
-                </SelectableList>
+            </div>
             </div>
         );
     }

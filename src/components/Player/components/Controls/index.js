@@ -1,10 +1,6 @@
 ﻿import React from 'react';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
 import {
-    IconButton
-}
-from 'material-ui';
-import {
     History
 }
 from 'react-router';
@@ -70,22 +66,30 @@ default React.createClass({
             });
         }
     },
+    rippleStart(e) {
+        document.querySelector('#controlsRipple').uiDownAction(e);
+    },
+    rippleEnd(e) {
+        document.querySelector('#controlsRipple').uiUpAction(e);
+    },
     render() {
         return (
             <div className={this.state.uiHidden ? 'control-bar' : this.state.uiShown ? 'control-bar show' : 'control-bar'} onMouseEnter={VolumeActions.volumeIndexEffect} onMouseLeave={VolumeActions.volumeIndexEffect}>
+                <div className="controls-background" onClick={ControlActions.handlePausePlay}>
+                    <paper-ripple id="controlsRipple" center noink={this.state.rippleEffects ? false : true} fit />
+                </div>
                 <ProgressBar />
                 <Tooltip />
                 <HumanTime />
 
-                <IconButton onClick={ControlActions.handlePausePlay} iconClassName="material-icons" iconStyle={{top: '-5px', left: '-1px'}} className={this.state.rippleEffects ? 'play-toggle' : 'play-toggle no-ripples'}>{this.state.playing ? 'pause' : 'play_arrow'}</IconButton>
+                <paper-icon-button onClick={ControlActions.handlePausePlay} onMouseDown={this.rippleStart} onMouseUp={this.rippleEnd} className={'play-toggle'} icon={'av:' + (this.state.playing ? 'pause' : 'play-arrow')} noink={true} />
 
-                <IconButton onClick={player.prev} iconClassName="material-icons" iconStyle={{top: '-6px'}} className={'prev-button'}>{'skip_previous'}</IconButton>
-
-                <IconButton onClick={player.next} iconClassName="material-icons" iconStyle={{top: '-6px'}} className={'next-button'}>{'skip_next'}</IconButton>
+                <paper-icon-button onClick={player.prev} className={'prev-button'} icon={'av:skip-previous'} noink={true} />
+                <paper-icon-button onClick={player.next} className={'next-button'} icon={'av:skip-next'} noink={true} />
 
                 <Volume />
-                <IconButton onClick={ControlActions.toggleFullscreen} iconClassName="material-icons" iconStyle={{color: '#e7e7e7', fontSize: '30px', top: '-5px', left: '-1px'}} className="fullscreen-toggle">{this.state.fullscreen ? 'fullscreen_exit' : 'fullscreen'}</IconButton>
-                <IconButton onClick={ui.toggleMenu.bind(null, 'subtitles')} iconClassName="material-icons" iconStyle={{color: this.state.subtitlesOpen ? '#00acff' : '#e7e7e7', fontSize: '26px', top: '-5px', left: '-1px'}} className="subtitles-toggle" style={{display: 'inline-block'}}>closed_caption</IconButton>
+                <paper-icon-button onClick={ControlActions.toggleFullscreen} className="fullscreen-toggle" icon={this.state.fullscreen ? 'fullscreen-exit' : 'fullscreen'} noink={true} />
+                <paper-icon-button onClick={ui.toggleMenu.bind(null, 'subtitles')} className={'subtitles-toggle' + (this.state.subtitlesOpen ? ' subtitles-toggle-active' : '')} icon={'av:closed-caption'} noink={true} />
 
             </div>
         );

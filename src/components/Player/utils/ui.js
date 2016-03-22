@@ -20,13 +20,13 @@ module.exports = {
         player.events.emit('subtitleUpdate');
 
         var playerState = player.fields;
-        if (playerState.speed.refs['input']) {
-            playerState.subDelay.refs['input'].value = '0 ms';
-            playerState.audioDelay.refs['input'].value = '0 ms';
-            playerState.audioChannel.refs['input'].value = 'Stereo';
-            playerState.aspect.refs['input'].value = 'Default';
-            playerState.crop.refs['input'].value = 'Default';
-            playerState.zoom.refs['input'].value = 'Default';
+        if (playerState.speed) {
+            playerState.subDelay.value = '0 ms';
+            playerState.audioDelay.value = '0 ms';
+            playerState.audioChannel.value = 'Stereo';
+            playerState.aspect.value = 'Default';
+            playerState.crop.value = 'Default';
+            playerState.zoom.value = 'Default';
         }
         player.set({
             aspect: 'Default',
