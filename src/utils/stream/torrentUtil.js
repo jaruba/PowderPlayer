@@ -1,4 +1,4 @@
-import peerflix from 'peerflix';
+import torrentWorker from 'torrent-worker';
 import path from 'path';
 const app = require('remote').require('app');
 import readTorrent from 'read-torrent';
@@ -37,19 +37,20 @@ module.exports = {
                     if (ls.isSet('downloadFolder'))
                         opts.path = ls('downloadFolder');
 
-                    var engine = peerflix(torrentInfo, opts);
-                    var streams = this.streams;
-                    let infoHash = engine.infoHash;
-                    let server = engine.server;
+                    var that = this,
+                        worker = new torrentWorker(),
+                        engine = worker.process(torrentInfo, opts);
 
-                    this.streams[engine.infoHash] = engine;
-
-                    engine.server.on('listening', () => {
-                        streams[infoHash]['stream-port'] = server.address().port;
+                    engine.on('listening', () => {
+                        that.streams[engine.infoHash]['stream-port'] = engine.server.address().port;
+                        engine = null;
                     });
 
-                    resolve(engine);
-                    engine = null;
+                    engine.on('ready', () => {
+                        that.streams[engine.infoHash] = engine;
+                        resolve(engine);
+                    });
+
                 })
                 .catch(reject);
         });
@@ -71,7 +72,26 @@ module.exports = {
     read(torrent) {
         return new Promise((resolve, reject) => {
             readTorrent(torrent, (err, parsedTorrent) => {
-                return (err || !parsedTorrent) ? reject(err) : resolve(parsedTorrent);
+                if (!err && require('path').isAbsolute(torrent)) {
+                    var trackers = '';
+
+                    if (parsedTorrent) {
+                        
+                        if (parsedTorrent.name)
+                            trackers += '&dn=' + parsedTorrent.name.toLowerCase().split(' ').join('+');
+                    
+                        if (parsedTorrent.announce && parsedTorrent.announce.length)
+                            for (var ldf = 0; parsedTorrent.announce[ldf]; ldf++)
+                                trackers += '&tr=' + encodeURIComponent(parsedTorrent.announce[ldf]);
+
+                    }
+                    
+                    readTorrent("magnet:?xt=urn:btih:" + parsedTorrent.infoHash + trackers, (err, parsedTorrent) => {
+                        return (err || !parsedTorrent) ? reject(err) : resolve(parsedTorrent);
+                    });
+                } else {
+                    return (err || !parsedTorrent) ? reject(err) : resolve(parsedTorrent);
+                }
             });
         });
     },

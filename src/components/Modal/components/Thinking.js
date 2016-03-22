@@ -61,21 +61,20 @@ default React.createClass({
     },
 
     updateStats(swarm) {
-        if (this.isMounted())
+        if (this.isMounted()) {
             this.setState({
                 stats: {
-                    uploadSpeed: swarm.uploadSpeed(),
-                    downloadSpeed: swarm.downloadSpeed(),
+                    uploadSpeed: swarm.uploadSpeed,
+                    downloadSpeed: swarm.downloadSpeed,
                     peers: {
-                        active: swarm.wires.filter((wire) => {
-                            return !wire.peerChoking;
-                        }).length,
-                        total: swarm.wires.length
+                        active: swarm.wires && swarm.wires.length ? swarm.wires.length : 0,
+                        total: swarm.wires && swarm.wires.length ? swarm.wires.length : 0
                     }
                 }
             });
-        if (this.isMounted())
-            _.delay(this.updateStats, 100, this.state.meta.data.swarm);
+
+            _.delay(this.updateStats, 500, this.state.meta.data.swarm);
+        }
     },
 
     render() {

@@ -34,14 +34,18 @@ class torrentActions {
             })
             .then((instance) => {
                 this.actions.add(instance);
-                return new Promise((resolve) => {
-                    instance.on('ready', function() {
-                        resolve(instance);
+                if (!EngineStore.state.torrents[instance.infoHash]['stream-port']) {
+                    return new Promise((resolve) => {
+                        instance.on('listening', function() {
+                            resolve(instance);
+                        });
                     });
-                });
+                } else {
+                    return instance;
+                }
             })
             .then((instance) => {
-                return TorrentUtil.getContents(instance.torrent.files, instance.infoHash);
+                return TorrentUtil.getContents(instance.files, instance.infoHash);
             })
             .then((files) => {
                if (ls('askFiles') && files.files_total > 1) {
@@ -59,14 +63,14 @@ class torrentActions {
                             if (file.name.toLowerCase().replace("sample","") == file.name.toLowerCase() && file.name != "ETRG.mp4" && file.name.toLowerCase().substr(0,5) != "rarbg") {
                                 newFiles.push({
                                     title: parser(file.name).name(),
-                                    uri: 'http://127.0.0.1:' + EngineStore.state.torrents[file.infoHash]['stream-port'] + '/' + file.id,
+                                    uri: 'http://127.0.0.1:' + EngineStore.state.torrents[file.infoHash].server.address().port + '/' + file.id,
                                     byteSize: file.size,
                                     torrentHash: file.infoHash,
                                     path: file.path
                                 });
                                 queueParser.push({
                                     idx: ij,
-                                    url: 'http://127.0.0.1:' + EngineStore.state.torrents[file.infoHash]['stream-port'] + '/' + file.id,
+                                    url: 'http://127.0.0.1:' + EngineStore.state.torrents[file.infoHash].server.address().port + '/' + file.id,
                                     filename: file.name
                                 });
                             }
