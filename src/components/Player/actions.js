@@ -5,6 +5,7 @@ import HistoryStore from '../../stores/historyStore';
 import torrentUtil from '../../utils/stream/torrentUtil';
 import player from './utils/player';
 import ls from 'local-storage';
+import wcjsRenderer from './utils/wcjs-renderer';
 
 class PlayerActions {
 
@@ -61,13 +62,21 @@ class PlayerActions {
     }
     
     addPlaylist(data) {
-        var selected = -1;
+        if (!player.wcjs) {
+            player.wcjsInit();
+        }
+        var selected = -1,
+            noStart = false;
         if (data.selected) {
             selected = data.selected;
             data = data.files;
         }
-        
-        HistoryStore.getState().history.replaceState(null, 'player');
+        if (data.noStart) {
+            noStart = true;
+            data = data.files;
+        } else {
+            HistoryStore.getState().history.replaceState(null, 'player');
+        }
 
         var playerState = this.alt.stores.playerStore.getState();
         var wcjs = player.wcjs;
@@ -120,9 +129,11 @@ class PlayerActions {
                 }
             }
 
-            if (selected > -1) {
-                wcjs.playlist.playItem(selected);
-            } else if (playAfter) wcjs.playlist.playItem(0);
+            if (!noStart) {
+                if (selected > -1) {
+                    wcjs.playlist.playItem(selected);
+                } else if (playAfter) wcjs.playlist.playItem(0);
+            }
 
         }
     }

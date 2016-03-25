@@ -1,14 +1,194 @@
 <!DOCTYPE html>
 <html>
   <head>
-  	<link href='https://fonts.googleapis.com/css?family=Roboto:400,300,500,300italic,400italic,500italic,100,700,700italic,100italic' rel='stylesheet' type='text/css'/>
+    <script src="./bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+    <link rel="import" href="./bower_components/paper-button/paper-button.html">
+    <link rel="import" href="./bower_components/paper-input/paper-input.html">
+    <link rel="import" href="./bower_components/paper-dialog/paper-dialog.html">
+    <link rel="import" href="./bower_components/paper-progress/paper-progress.html">
+    <link rel="import" href="./bower_components/paper-icon-button/paper-icon-button.html">
+    <link rel="import" href="./bower_components/paper-tooltip/paper-tooltip.html">
+    <link rel="import" href="./bower_components/paper-tabs/paper-tabs.html">
+    <link rel="import" href="./bower_components/paper-toggle-button/paper-toggle-button.html">
+    <link rel="import" href="./bower_components/paper-listbox/paper-listbox.html">
+    <link rel="import" href="./bower_components/paper-item/paper-item.html">
+    <link rel="import" href="./bower_components/paper-slider/paper-slider.html">
+    <link rel="import" href="./bower_components/paper-ripple/paper-ripple.html">
+    <link rel="import" href="./bower_components/paper-material/paper-material.html">
+    <link rel="import" href="./bower_components/paper-toast/paper-toast.html">
+    <link rel="import" href="./bower_components/paper-fab/paper-fab.html">
+    <link rel="import" href="./bower_components/paper-checkbox/paper-checkbox.html">
+
+    <link rel="import" href="./bower_components/iron-icon/iron-icon.html">
+    <link rel="import" href="./bower_components/iron-icons/iron-icons.html">
+    <link rel="import" href="./bower_components/iron-icons/hardware-icons.html">
+    <link rel="import" href="./bower_components/iron-icons/av-icons.html">
+    <link rel="import" href="./bower_components/iron-icons/image-icons.html">
+    <link rel="import" href="./bower_components/iron-pages/iron-pages.html">
+
+    <link rel="import" href="./bower_components/neon-animation/animations/slide-from-top-animation.html">
+    <link rel="import" href="./bower_components/neon-animation/animations/fade-out-animation.html">
+    
+    <link rel="import" href="./bower_components/paper-autocomplete/paper-autocomplete.html">
+    <link rel="import" href="./bower_components/progress-bubble/progress-bubble.html">
+
+     <link href='https://fonts.googleapis.com/css?family=Roboto:400,300,500,300italic,400italic,500italic,100,700,700italic,100italic' rel='stylesheet' type='text/css'/>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
     <link rel="stylesheet" href="css/fonts.css"/> 
     <link rel="stylesheet" href="css/main.css"/>
+    <style is="custom-style">
+    :root {
+        --paper-input-container-color: #737373;
+        --paper-input-container-focus-color: #00bcd4;
+        --paper-progress-active-color: #00bcd4;
+        --paper-tab-ink: #e3e3e3;
+        --paper-slider-secondary-color: #bdbdbd;
+        --paper-slider-active-color: #00bcd4;
+        --paper-slider-knob-color: #00bcd4;
+        
+        --progress-bubble-stroke-color: #4ac5f8;
+        --progress-bubble-bg-stroke-color: rgba(48, 48, 48, 0.4);
+        --progress-bubble-background: transparent;
+        --progress-bubble-reflection-display: none;
+    }
+    .torrentProgress {
+        --paper-progress-active-color: #07A3E7 !important;
+        --paper-progress-container-color: #272727 !important;
+        --paper-progress-height: 12px !important;
+    }
+    paper-input.dark-input {
+        --paper-input-container-color: #5c5e60;
+        --paper-input-container-focus-color: #00bcd4;
+        --paper-input-container-input-color: white;
+        --paper-input-container-disabled: {
+            opacity: 0.66;
+            padding: 0;
+            margin-top: -3px;
+        };
+        --paper-input-container: {
+            padding: 0;
+        };
+        --paper-input-container-input: {
+            height: 21px;
+        };
+    }
+    paper-input.dark-input-large {
+        --paper-input-container: {
+            padding: 8px 0;
+        };
+        --paper-input-container-input: {
+            height: 23.3px;
+        };
+    }
+    paper-input.dl-input {
+        --paper-input-container-input: {
+            cursor: pointer !important;
+        };
+    }
+    paper-toggle-button.playerTogglers {
+        --paper-toggle-button-checked-bar-color: #0097a7;
+        --paper-toggle-button-checked-button-color: #0097a7;
+        --paper-toggle-button-checked-ink-color: #0097a7;
+        --paper-toggle-button-unchecked-bar-color: #f50057;
+        --paper-toggle-button-unchecked-button-color: #f50057;
+        --paper-toggle-button-unchecked-ink-color: #f50057;
+    }
+
+     paper-fab.yellow {
+        --paper-fab-background: #e3b618 !important;
+    }
+
+     paper-fab.orange {
+        --paper-fab-background: #e38318 !important;
+    }
+
+     paper-fab.green {
+        --paper-fab-background: #11a34e !important;
+    }
+    
+    .dashboard-buttons iron-icon {
+       width: 30px !important;
+        height: 30px !important;
+     }
+    </style>
+    <style is="custom-style">
+      paper-checkbox.dark {
+        --paper-checkbox-unchecked-color: 'white';
+        --paper-checkbox-unchecked-ink-color: 'white';
+        --paper-checkbox-label-color: 'white';
+      }
+    </style>
+    <style>
+    .toggle-container {
+        float: right;
+    }
+    .toggle-label {
+        color: #fff !important;
+        padding: 0 !important;
+        vertical-align: middle;
+        float: left;
+    }
+    .playerButtons {
+        float: left;
+        background: #303030;
+        color: white;
+        padding: 8px 15px;
+        text-transform: none;
+        font-size: 15px;
+        font-weight: normal !important;
+        margin-top: 0px;
+        margin-right: 10px;
+        margin-bottom: 12px;
+        margin-left: 0px;
+    }
+    .playerButtons:hover {
+        background: #404040;
+    }
+    .playerButtons-primary {
+        float: left;
+        background: #0097a7;
+        color: #000;
+        padding: 8px 15px;
+        text-transform: none;
+        font-size: 15px;
+        font-weight: normal !important;
+        margin-top: 0px;
+        margin-right: 10px;
+        margin-bottom: 12px;
+        margin-left: 0px;
+    }
+    .playerButtons-primary:hover {
+        background: #136e77;
+    }
+    paper-autocomplete input {
+        color: white !important;
+    }
+    paper-autocomplete paper-material {
+        background-color: #1d1d1d !important;
+        color: white !important;
+        overflow: auto !important;
+    }
+    paper-autocomplete paper-item:hover {
+        background-color: #262626 !important;
+        color: white !important;
+    }
+    paper-autocomplete paper-item.active {
+        background-color: #262626 !important;
+        color: white !important;
+    }
+    paper-autocomplete paper-icon-button {
+        padding-right: 0 !important;
+       color: #4BABF4 !important;
+    }
+    .subtitle-list .iron-selected {
+        background-color: #444 !important;
+        font-weight: normal;
+    }
+    </style>
     <title>Powder Player</title>
   </head>
   <body>
-  	<div id="app"></div>
+     <div id="app"></div>
     
     <script type="text/javascript">
       if (process.env.NODE_ENV === 'development') {
@@ -20,6 +200,6 @@
       }
     </script>
 
-   	<script src="js/main.js"></script>
+      <script src="js/main.js"></script>
   </body>
 </html>

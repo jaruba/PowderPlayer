@@ -6,7 +6,7 @@ import nodeURL from 'url';
 import _ from 'lodash';
 
 const supported = {
-    all: [".mkv", ".avi", ".mp4", "m4v", ".mpg", ".mpeg", ".webm", ".flv", ".ogg", ".ogv", ".mov", ".wmv", ".3gp", ".3g2", ".m4a", ".mp3", ".flac"],
+    all: [".mkv", ".avi", ".mp4", ".m4v", ".mpg", ".mpeg", ".webm", ".flv", ".ogg", ".ogv", ".mov", ".wmv", ".3gp", ".3g2", ".m4a", ".mp3", ".flac"],
     video: ["mkv", "avi", "mp4", "m4v", "mpg", "mpeg", "webm", "flv", "ogg", "ogv", "mov", "wmv", "3gp", "3g2"],
     audio: ["m4a", "mp3", "flac"]
 };
@@ -60,7 +60,7 @@ default {
                             status: response.statusCode,
                             url: url,
                             title: path.basename(nodeURL.parse(url).pathname),
-                            category: (supported.all.indexOf('.' + type > -1) ? 'direct' : 'other'),
+                            category: (supported.all.indexOf('.' + type) > -1 ? 'direct' : 'other'),
                             type: {
                                 raw: response.headers['content-type'],
                                 parsed: type
@@ -69,5 +69,19 @@ default {
                     })
                     .on('error', reject);
             });
+        },
+        supportedMedia(file, type) {
+            // supported types: all, video, audio
+            var ext = /(?:\.([^.]+))?$/.exec(file)[1];
+
+            if (ext && supported[type]) {
+
+                var hasDot = '';
+                if (type == 'all') hasDot = '.';
+
+                if (supported[type].indexOf(hasDot + ext) > -1) return true;
+                else return false;
+                
+            } else return false;
         }
 };

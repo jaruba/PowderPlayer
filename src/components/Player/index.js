@@ -52,6 +52,7 @@ const Player = React.createClass({
         player.set({
             notifier: this.refs.notificator
         });
+        player.loadState();
     },
     update() {
 //        console.log('player update');

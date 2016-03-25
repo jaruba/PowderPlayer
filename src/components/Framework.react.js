@@ -40,6 +40,9 @@ const Framework = React.createClass({
         if (!ls.isSet('peerPort')) ls('peerPort', 6881);
         if (!ls.isSet('maxPeers')) ls('maxPeers', 200);
         if (!ls.isSet('bufferSize')) ls('bufferSize', 7000);
+        if (!ls.isSet('removeLogic')) ls('removeLogic', 0);
+        if (!ls.isSet('downloadType')) ls('downloadType', 0);
+        if (!ls.isSet('playerType')) ls('playerType', false);
 
         this.props.bindShortcut('ctrl+d', () => ipc.send('app:toggleDevTools'));
 
@@ -82,6 +85,7 @@ const Framework = React.createClass({
               <Modal />
               <DarkModal />
               <Message />
+              <canvas id="fake-canvas" style={{display: 'none'}} />
             </div>
         );
     }

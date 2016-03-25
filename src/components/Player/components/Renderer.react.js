@@ -68,13 +68,7 @@ default React.createClass({
         player.events.on('resizeNow', this.updateSize);
         player.events.on('rendererUpdate', this.update);
         if (!player.wcjs) {
-            player.wcjsInit(wcjsRenderer.init(this.refs['wcjs-render'], [
-                "--network-caching=" + ls('bufferSize'),
-                "--no-sub-autodetect-file"
-            ], {
-                fallbackRenderer: false,
-                preserveDrawingBuffer: true
-            }, wcjs));
+            player.wcjsInit(this.refs['wcjs-render'], wcjs);
         } else {
             wcjsRenderer.reinit(this.refs['wcjs-render'], player.wcjs, {
                 fallbackRenderer: false,

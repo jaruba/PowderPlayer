@@ -1,6 +1,6 @@
 import alt from '../../alt';
 import HeaderActions from './actions';
-
+import engineStore from '../../stores/engineStore';
 
 class HeaderStore {
     constructor() {
@@ -21,6 +21,7 @@ class HeaderStore {
             minimized: toggle,
         });
     }
+    
 }
 
 export

@@ -5,7 +5,7 @@ import {
 from 'react-router';
 import HeaderStore from './store';
 import HeaderActions from './actions';
-
+import engineStore from '../../stores/engineStore';
 
 export
 default React.createClass({
@@ -16,7 +16,8 @@ default React.createClass({
         return {
             maximized: false,
             minimized: false,
-            view: 'dashboard'
+            view: 'dashboard',
+            title: ''
         };
     },
     componentWillMount() {
@@ -45,6 +46,11 @@ default React.createClass({
         }
     },
     render() {
+        var engineState = engineStore.getState();
+        var title = '';
+        if (engineState.torrents && engineState.infoHash && engineState.torrents[engineState.infoHash] && engineState.torrents[engineState.infoHash].torrent && engineState.torrents[engineState.infoHash].torrent.name) {
+            title = engineState.torrents[engineState.infoHash].torrent.name;
+        }
         return (
             <header className={this.state.view}>
                 <div className={'controls ' + process.platform}>
@@ -58,6 +64,9 @@ default React.createClass({
                     <div className="minimize" onClick={HeaderActions.toggleMinimize}>
                         <i/>
                     </div>
+                </div>
+                <div style={{float: 'left', color: 'white', paddingTop: '6px', paddingLeft: '8px', fontSize:'15px' }}>
+                    {title}
                 </div>
             </header>
         );

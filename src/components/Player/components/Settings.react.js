@@ -50,6 +50,9 @@ default React.createClass({
             speedPulsing: ls('speedPulsing') ? ls('speedPulsing') : 'disabled',
             renderHidden: ls('renderHidden'),
             renderFreq: ls('renderFreq'),
+            removeLogic: ls('removeLogic') == 0 ? 'Always Ask' : ls('removeLogic') == 1 ? 'Always Remove' : 'Always Keep',
+            downloadType: ls('downloadType') == 0 ? 'Player' : 'Dashboard',
+            playerType: ls('playerType'),
 
             aspectRatios: ['Default','1:1','4:3','16:9','16:10','2.21:1','2.35:1','2.39:1','5:4'],
             crops: ['Default','16:10','16:9','1.85:1','2.21:1','2.35:1','2.39:1','5:3','4:3','5:4','1:1'],
@@ -173,7 +176,10 @@ default React.createClass({
                 findSubs: ls.isSet('findSubs') ? ls('findSubs') : true,
                 askFiles: ls.isSet('askFiles') ? ls('askFiles') : false,
                 autoSub: ls.isSet('autoSub') ? ls('autoSub') : true,
-                menuFlags: ls.isSet('menuFlags') ? ls('menuFlags') : true
+                menuFlags: ls.isSet('menuFlags') ? ls('menuFlags') : true,
+                removeLogic: ls('removeLogic') == 0 ? 'Always Ask' : ls('removeLogic') == 1 ? 'Always Remove' : 'Always Keep',
+                downloadType: ls('downloadType') == 0 ? 'Player' : 'Dashboard',
+                playerType: ls('playerType')
             });
         }
     },
@@ -694,7 +700,47 @@ default React.createClass({
 
         });
     },
+    
+    _handleRemoveLogic(event, direction) {
+        var newLogic = ls('removeLogic');
 
+        if (direction < 0) {
+            if (newLogic == 0) newLogic = 2;
+            else newLogic--;
+        } else {
+            if (newLogic == 2) newLogic = 0;
+            else newLogic++;
+        }
+        
+        ls('removeLogic', newLogic);
+        if (newLogic == 0) {
+            var newLabel = 'Always Ask';
+        } else if (newLogic == 1) {
+            var newLabel = 'Always Remove';
+        } else if (newLogic == 2) {
+            var newLabel = 'Always Keep';
+        }
+        
+        this.refs['removeLogicInput'].value = newLabel;
+    },
+     
+    _handleDownloadType(event, direction) {
+        var newLogic = ls('downloadType');
+
+        if (newLogic == 0) newLogic = 1;
+        else newLogic--;
+        
+        ls('downloadType', newLogic);
+        
+        if (newLogic == 0) {
+            var newLabel = 'Player';
+        } else if (newLogic == 1) {
+            var newLabel = 'Dashboard';
+        }
+        
+        this.refs['downloadTypeInput'].value = newLabel;
+    },
+   
     _handleRenderFreq(event, direction) {
         var newFreq = parseInt(this.refs['renderFreqInput'].value);
 
@@ -712,10 +758,10 @@ default React.createClass({
     _handleRenderFreqKeys(event) {
         if (event.keyCode == 38) {
             event.preventDefault();
-            this._handleRenderFreq(1);
+            this._handleRenderFreq(event, 1);
         } else if (event.keyCode == 40) {
             event.preventDefault();
-            this._handleRenderFreq(-1);
+            this._handleRenderFreq(event, -1);
         } else if ([13, 27].indexOf(event.keyCode) > -1) {
             event.preventDefault();
             this.refs['renderFreqInput'].$.input.blur();
@@ -943,6 +989,27 @@ default React.createClass({
                 type: 'toggle',
                 title: 'File Selector',
                 tag: 'askFiles'
+            }, {
+                type: 'select',
+                title: 'Remove Files',
+                tag: 'removeLogic',
+                default: this.state.removeLogic,
+                width: '120px',
+                disabled: true
+            }, {
+                type: 'header',
+                label: 'Media Handling'
+            }, {
+                type: 'select',
+                title: 'Start Media Torrents with',
+                tag: 'downloadType',
+                default: this.state.downloadType,
+                width: '120px',
+                disabled: true
+            }, {
+                type: 'toggle',
+                title: 'Use External Player',
+                tag: 'playerType'
             }]
         };
         

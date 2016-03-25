@@ -12,7 +12,21 @@ class modalStore {
         this.meta = false;
         this.fileSelectorFiles = {};
         this.data = false;
+        this.index = -1;
+        this.shouldExit = false;
 
+    }
+    
+    onSetIndex(index) {
+        this.setState({
+            index: index
+        });
+    }
+    
+    onShouldExit(shouldI) {
+        this.setState({
+            shouldExit: shouldI
+        });
     }
 
     onOpen(data) {

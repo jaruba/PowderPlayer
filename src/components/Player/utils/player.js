@@ -1,6 +1,8 @@
 import _ from 'lodash';
 import events from 'events';
 import traktUtil from './trakt';
+import wcjsRenderer from './wcjs-renderer';
+import ls from 'local-storage';
 
 var player = {
     aspect: 'Default',
@@ -19,17 +21,53 @@ var player = {
     pendingFiles: [],
     files: [],
     firstPlay: false,
-    lastItem: -1
+    lastItem: -1,
+    saveState: {}
 };
 
 player.events = new events.EventEmitter();
+
+player.loadState = () => {
+    if (typeof player.saveState.idx != 'undefined') {
+        
+        player.set({
+            lastItem: -1,
+            firstPlay: false,
+            foundTrakt: false
+        });
+
+        player.events.emit('foundTrakt', false);
+
+        player.wcjs.playlist.playItem(player.saveState.idx);
+
+        if (player.saveState.position)
+            player.wcjs.position = player.saveState.position;
+
+        player.saveState = {};
+
+    }
+};
 
 player.set = newObj =>  _.each(newObj, (el, ij) => {
     player[ij] = el;
 });
 
-player.wcjsInit = wcjs => {
-    player.wcjs = wcjs;
+player.wcjsInit = (canvas, wcjs) => {
+    if (!canvas) {
+        canvas = document.querySelector('#fake-canvas');
+    }
+    if (!wcjs) {
+        var wcjs_path = (process.env.NODE_ENV === 'development') ? require('path').join(__dirname, '../../../../../bin/wcjs/', 'WebChimera.js.node') : require('path').join(require('remote').require('app').getAppPath(), '../../../bin/wcjs/', 'WebChimera.js.node');
+        wcjs = require(wcjs_path);
+    }
+    
+    player.wcjs = wcjsRenderer.init(canvas, [
+        "--network-caching=" + ls('bufferSize'),
+        "--no-sub-autodetect-file"
+    ], {
+        fallbackRenderer: false,
+        preserveDrawingBuffer: true
+    }, wcjs);
 }
 
 player.itemDesc = i => {

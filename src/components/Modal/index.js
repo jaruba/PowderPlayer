@@ -7,6 +7,9 @@ import ModalActions from './actions';
 import FileStreamSelector from './components/fileStreamSelector';
 import URLContents from './components/URLadd';
 import Thinking from './components/Thinking';
+import DashboardMenu from './components/dashboardMenu';
+import DashboardFileMenu from './components/dashboardFileMenu';
+import AskRemove from './components/askRemove';
 
 export
 default React.createClass({
@@ -69,6 +72,15 @@ default React.createClass({
                 break;
             case 'thinking':
                 return <Thinking />;
+                break;
+            case 'dashboardMenu':
+                return <DashboardMenu />;
+                break;
+            case 'dashboardFileMenu':
+                return <DashboardFileMenu />;
+                break;
+            case 'askRemove':
+                return <AskRemove />;
                 break;
         }
     },

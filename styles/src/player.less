@@ -1,639 +1,705 @@
 @font-face {
-    font-family: 'trakt';
-    src: url('http://powder.media/fonts/trakt-icon.ttf');
+  font-family: 'trakt';
+  src: url('http://powder.media/fonts/trakt-icon.ttf');
 }
 
 .header.player {
-    display: none;
+  display: none;
 }
 
 .canvas-holder {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    overflow: hidden;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  overflow: hidden;
 }
 
-.render-holder > div:first-of-type {
-    background-color: rgb(0, 0, 0) !important;
-    box-shadow: none !important
+.wcjs-player #rendererRipple {
+  color: #eee;
 }
 
-.over-canvas {
-    position: absolute !important;
-    width: 100% !important;
-    height: 100% !important;
-    left: 0;
-    padding: 0 !important;
-    z-index: 1;
-    background-color: transparent !important;
-    border: 0 !important;
-    margin: 0 !important;
-    cursor: inherit !important;
-}
-
-.over-canvas > div:first-of-type {
-    height: 100% !important;
-    width: 100% !important;
-}
-
-.over-canvas > div:first-of-type > span {
-    height: 100%;
-    width: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-}
-
-.over-canvas > div:first-of-type > span div {
-    background-color: #fff !important;
-}
-
-.over-canvas > div:first-of-type > div {
-    top: 0px;
-    width: 100%;
-    height: 100%;
-    background-color: transparent !important;
-}
-
-.over-canvas > div:first-of-type > div:first-of-type > span {
-    display: none
+.wcjs-player #controlsRipple {
+  color: #565656;
 }
 
 .wcjs-player {
-    height: 100vh;
-    width: 100vw;
-    background-color: black;
-    background-position: center;
-    background-size: contain;
+  height: 100vh;
+  width: 100vw;
+  background-color: black;
+  background-position: center;
+  background-size: contain;
 }
 
 .wcjs-player .header {
-    opacity: 0;
-    position: absolute;
-    width: 100vw;
-    transition: opacity 300ms ease-in-out;
-    z-index: 2;
-    height: 62px;
-    background: -webkit-linear-gradient(rgba(0,0,0,0.8) 0%,transparent 100%);
+  opacity: 0;
+  position: absolute;
+  width: 100vw;
+  transition: opacity 300ms ease-in-out;
+  z-index: 2;
+  height: 62px;
+  background: -webkit-linear-gradient(rgba(0,0,0,0.8) 0%,transparent 100%);
 }
 
 .wcjs-player .header.show{
-    opacity: 1;
-    transition: none;
+  opacity: 1;
+  transition: none;
 }
 
 .wcjs-player .header .player-close {
-    -webkit-app-region: no-drag;
-    font-size: 28px;
-    margin-top: 0px;
-    margin-left: 0px;
-    width: 58px !important;
-    height: 63px !important;
-    float: left;
-    margin-top: 1px;
-    margin-left: 0;
+  -webkit-app-region: no-drag;
+  font-size: 28px;
+  width: 47px;
+  height: 47px;
+  float: left;
+  margin-top: -2px;
+  margin-right: 4px;
+  margin-left: 0;
+  color: white;
+}
+
+.wcjs-player #playerBackTooltip {
+  left: 6px !important;
 }
 
 .wcjs-player .header .player-close div {
-    padding: 0;
-    margin-top: -10px;
+  padding: 0;
+  margin-top: -10px;
 }
 
 .wcjs-player .header .player-close div div {
-    margin-top: -4px;
+  margin-top: -4px;
 }
 
 .wcjs-player .tooltip {
-    position: absolute;
-    font-family: Roboto, sans-serif;
-    font-size: 13px;
-    line-height: 22px;
-    padding: 0px 8px;
-    color: rgb(255, 255, 255);
-    overflow: hidden;
-    border-radius: 2px;
-    opacity: 0.9;
-    transition: top 0ms cubic-bezier(0.23, 1, 0.32, 1) 0ms, transform 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms, opacity 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
-    box-sizing: border-box;
-    -webkit-user-select: none;
-    transform: translate3d(0px, 14px, 0px);
-    background: #5b5c5e;
-    top: -51px;
-    display: none;
+  position: absolute;
+  font-family: Roboto, sans-serif;
+  font-size: 13px;
+  line-height: 22px;
+  padding: 0px 8px;
+  color: rgb(255, 255, 255);
+  overflow: hidden;
+  border-radius: 2px;
+  opacity: 0.9;
+  transition: top 0ms cubic-bezier(0.23, 1, 0.32, 1) 0ms, transform 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms, opacity 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+  box-sizing: border-box;
+  -webkit-user-select: none;
+  transform: translate3d(0px, 14px, 0px);
+  background: #5b5c5e;
+  top: -51px;
+  display: none;
 }
 
 .wcjs-player .header .player-close div div div {
-    border-radius: 2px !important;
+  border-radius: 2px !important;
 }
 
 .wcjs-player .header .player-close .material-icons {
-    margin-top: -10px;
-    font-size: 28px !important;
+  margin-top: -10px;
+  font-size: 28px !important;
 }
 
 .wcjs-player .trakt-info .material-icons {
-    font-family: 'trakt';
+  font-family: 'trakt';
 }
 
 .wcjs-player .trakt-info .material-icons:before {
-    content: "\0041";
+  content: "\0041";
 }
 
 .wcjs-player .header .player-playlist {
-    -webkit-app-region: no-drag;
-    margin-top: 15px;
-    margin-right: 2px;
-    width: 55px;
-    height: 55px;
-    float: right;
-    margin-top: 0;
-    padding-left: 6px !important;
+  -webkit-app-region: no-drag;
+  width: 42px;
+  height: 42px;
+  float: right;
+  margin-top: 4px;
+  margin-right: 6px;
+  margin-left: 2px;
+  padding: 4px;
+  padding-bottom: 2px;
+  color: white;
 }
 
 .wcjs-player .header .player-settings {
-    -webkit-app-region: no-drag;
-    margin-top: 16px;
-    width: 55px;
-    height: 55px;
-    float: right;
-    margin-top: 0;
-    padding-right: 6px !important;
-    padding-left: 6px !important;
+  -webkit-app-region: no-drag;
+  margin-top: 16px;
+  width: 40px;
+  height: 40px;
+  float: right;
+  margin-top: 4px;
+  color: white;
 }
 
 .trakt-search > div > div {
-    overflow: visible !important;
+  overflow: visible !important;
 }
 
 .wcjs-player .header .trakt-info {
-    -webkit-app-region: no-drag;
-    float: right;
-    padding-right: 6px !important;
-    padding-left: 6px !important;
+  -webkit-app-region: no-drag;
+  float: right;
+  padding: 8px;
+  margin-top: 4px;
 }
 
 .inf > div > div {
-    padding: 8px !important
+  padding: 8px !important
 }
 
 .trakt-message .notification-bar-action {
-    display: none
+  display: none
 }
 
 .wcjs-player .header .title {
-    float: left;
-    font-size: 19px;
-    color: white;
-    margin-top: 11px;
-    margin-left: -2px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    -webkit-app-region: drag;
-    display: inline-block;
+  float: left;
+  font-size: 19px;
+  color: white;
+  margin-top: 11px;
+  margin-left: -2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-app-region: drag;
+  display: inline-block;
 }
 
 .wcjs-player .control-bar{
-    opacity: 0;
-    background-color: rgba(29, 31, 35, 0.82);
-    width: 100vw;
-    position: absolute;
-    bottom: 0;
-    height: 64px;
-    z-index: 10;
-    transition: opacity 300ms ease-in-out;
+  opacity: 0;
+  background-color: rgba(29, 31, 35, 0.82);
+  width: 100vw;
+  position: absolute;
+  bottom: 0;
+  height: 64px;
+  z-index: 10;
+  transition: opacity 300ms ease-in-out;
 }
 .wcjs-player .control-bar.show{
-    opacity: 1;
-    transition: none;
+  opacity: 1;
+  transition: none;
 }
 
 .wcjs-player .control-bar .scrobbler-padding {
-    top: -16px;
-    height: 16px;
-    position: relative;
-    z-index: 2;
+  top: -16px;
+  height: 16px;
+  position: relative;
+  z-index: 2;
 }
 
 .wcjs-player .control-bar .scrobbler-padding:hover + .scrobbler {
-    top: -6px;
-    height: 6px;
+  top: -6px;
+  height: 6px;
 }
 
 .wcjs-player .control-bar .scrobbling {
-    top: -6px !important;
-    height: 6px !important;
+  top: -6px !important;
+  height: 6px !important;
 }
 
 .wcjs-player .control-bar .scrobbler {
-    top: -4px;
-    height: 4px;
-    width: 100vw;
-    position: absolute;
-    background-color: rgba(0,0,0,0.8);
+  top: -4px;
+  height: 4px;
+  width: 100vw;
+  position: absolute;
+  background-color: rgba(0,0,0,0.8);
 }
 
 .wcjs-player .control-bar .scrobbler .handle {
-    height: 12px;
-    opacity: 0;
-    width: 12px;
-    position: absolute;
-    bottom: -3px;
-    left: 0%;
-    cursor: pointer;
-    border-radius: 50%;
-    transition: opacity 100ms ease-in-out;
-    background-color: rgba(0, 144, 255, 0.82);
-    display: none !important;
+  height: 12px;
+  opacity: 0;
+  width: 12px;
+  position: absolute;
+  bottom: -3px;
+  left: 0%;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: opacity 100ms ease-in-out;
+  background-color: rgba(0, 144, 255, 0.82);
+  display: none !important;
 }
 
 .wcjs-player .control-bar .scrobbler .time {
-    width: 0%;
-    height: 100%;
-    position: absolute;
-    bottom: 0;
-    background: -webkit-linear-gradient(left, #a259fe 0%,#1f99ff 100%);
+  width: 0%;
+  height: 100%;
+  position: absolute;
+  bottom: 0;
+  background: -webkit-linear-gradient(left, #a259fe 0%,#1f99ff 100%);
 }
 
 .wcjs-player .control-bar .scrobbler .buffer {
-    width: 0%;
-    position: absolute;
-    background-color: rgba(255, 255, 255, 0.23);
-    height: 50%;
-    min-height: 3px;
-    bottom: 0;
+  width: 0%;
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.23);
+  height: 50%;
+  min-height: 3px;
+  bottom: 0;
 }
 
 .wcjs-player .control-bar .time-info{
-    font-size: 15px;
-    margin-top: 5px;
-    margin-left: 5px;
-    font-weight: 500;
-    color: #565e6a;
+  font-size: 15px;
+  margin-top: 5px;
+  margin-left: 5px;
+  font-weight: 500;
+  color: #565e6a;
 }
 
 .wcjs-player .control-bar .time-info .current {
-     color: rgba(0, 144, 255, 0.79);
+   color: rgba(0, 144, 255, 0.79);
 }
 
 
-.wcjs-player .control-bar .fullscreen-toggle{
-    float: right;
-    margin-right: 5px;
-    margin-top: 2px;
+.wcjs-player .control-bar .fullscreen-toggle {
+  padding-top: 9px !important;
+  position: absolute !important;
+  top: 31px;
+  right: -18px;
+  transform: translate(-50%, -50%);
+  width: 49px;
+  height: 49px;
+  color: #e7e7e7;
 }
 
 .wcjs-player .control-bar .subtitles-toggle{
-    float: right;
-    margin-right: 5px;
-    margin-top: 2px;
+  float: right;
+  margin-right: 5px;
+  margin-top: 2px;
 }
 
 .wcjs-player .control-bar .play-toggle {
-    position: absolute !important;
-    top: 47%;
-    left: 50%;
-    transform: translate(-50%, -50%) !important;
-    width: 100% !important;
-    padding: 12px;
-    
+  position: absolute !important;
+  background-image: url('../images/play-background.png');
+  background-size: cover;
+  width: 36px;
+  height: 36px;
+  top: 30px;
+  transform: translate(-50%, -50%) !important;
+  padding: 7px;
+  color: #00c2f9;
+  left: 50%;
+}
+
+.wcjs-player .controls-background {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
 }
 
 .wcjs-player .control-bar .play-toggle .material-icons {
-    margin-top: -1px;
-    padding: 7px;
-    background-image: url('../images/play-background.png');
-    background-size: 36px;
-    background-repeat: no-repeat;
-    color: #00c2f9 !important;
-    font-size: 22px !important;
+  margin-top: -1px;
+  padding: 7px;
+  background-image: url('../images/play-background.png');
+  background-size: 36px;
+  background-repeat: no-repeat;
+  color: #00c2f9 !important;
+  font-size: 22px !important;
 }
 
 .wcjs-player .control-bar .subtitles-toggle {
-    position: absolute !important;
-    top: 16%;
-    right: 42px;
-    transform: translate(-50%, -50%);
-    padding-top: 10px !important;
+  position: absolute !important;
+  top: 28px;
+  right: 25px;
+  transform: translate(-50%, -50%);
+  padding-top: 10px !important;
+  color: #e7e7e7;
+  width: 46px;
+  height: 46px;
 }
 
-.wcjs-player .control-bar .fullscreen-toggle {
-    padding-top: 9px !important;
-    position: absolute !important;
-    top: 16%;
-    right: 3px;
-    transform: translate(-50%, -50%);
+.wcjs-player .control-bar .subtitles-toggle-active {
+  color: #00acff;
 }
 
 .wcjs-player .control-bar .shownTime {
-    position: absolute;
-    bottom: 40px;
-    left: 10px;
-    font-size: 14px;
-    font-weight: bold;
-    color: #6c7581;
-    opacity: 1;
+  position: absolute;
+  bottom: 40px;
+  left: 10px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #6c7581;
+  opacity: 1;
 }
 
 .wcjs-player .control-bar .currentTime {
-     color: #8d96a3;
+   color: #8d96a3;
 }
 
 
 .wcjs-player .playlist-container{
-    display: none;
-    opacity: 0;
-    position: absolute;
-    z-index: 1;
-    top: 0;
-    height: ~"calc(100vh - 68px)";
-    background-color: rgba(29, 31, 35, 0.82);
-    width: 100vw;
+  display: none;
+  opacity: 0;
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  height: ~"calc(100vh - 68px)";
+  background-color: rgba(29, 31, 35, 0.82);
+  width: 100vw;
 }
 .wcjs-player .playlist-container.show{
-    display: block;
-    opacity: 1;
+  display: block;
+  opacity: 1;
 }
 
 
 .wcjs-player .playlist-container .playlist-inner{
-    width: 70vw;
-    padding-right: 10px;
-    height: 70%;
-    overflow: hidden;
-    overflow-y: scroll;
-    margin-top: 2%;
+  width: 70vw;
+  padding-right: 10px;
+  height: 70%;
+  overflow: hidden;
+  overflow-y: auto;
+  margin-top: 2%;
+}
+
+.wcjs-player .mini-menu {
+  padding: 0px;
+  margin: 0px;
+  cursor: pointer;
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  width: 160px;
+  display: none;
+  max-height: 95%;
+  overflow-x: auto;
+  z-index: 11;
+  background-color: rgb(48, 48, 48);
+}
+
+.wcjs-player .sleep-menu {
+  padding: 0px;
+  margin: 0px;
+  cursor: pointer;
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  width: 160px;
+  display: none;
+  max-height: 95%;
+  overflow-x: auto;
+  z-index: 11;
+  background-color: rgb(48, 48, 48);
 }
 
 .wcjs-player .playlist-container .playlist-inner::-webkit-scrollbar {
-    width: 10px;
-    background-color: rgba(0, 0, 0, 0.3);
-    border-radius: 3px;
+  width: 10px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 3px;
 }
  
 .wcjs-player .playlist-container .playlist-inner::-webkit-scrollbar-track {
-    background-color: transparent;
+  background-color: transparent;
 }
  
 .wcjs-player .playlist-container .playlist-inner::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.35);
-    border-radius: 3px;
+  background-color: rgba(0, 0, 0, 0.35);
+  border-radius: 3px;
 }
 .wcjs-player .playlist-container .playlist-inner::-webkit-scrollbar-corner{ 
-    background-color: transparent; 
+  background-color: transparent; 
 }
 
 
 .wcjs-player .playlist-container .playlist-inner .item{
-    width: 230px;
-    float: left;
-    height: 170px;
-    margin-right: 30px;
-    margin-bottom: 30px;
-    background-size: cover !important;
-    background-position: center !important;
-    position: relative;
-    max-width: 43%;
-    max-height: 43%;
+  width: 230px;
+  float: left;
+  height: 170px;
+  margin-right: 30px;
+  margin-bottom: 30px;
+  background-size: cover !important;
+  background-position: center !important;
+  position: relative;
+  max-width: 43%;
+  max-height: 43%;
 }
 
 @media screen and (max-width: 629px) {
-    .wcjs-player .playlist-container .playlist-inner .item{
-        max-width: 92%;
-    }
+  .wcjs-player .playlist-container .playlist-inner .item{
+    max-width: 92%;
+  }
+  .trakt-info-img {
+  display: block !important;
+  float: none !important;
+  max-width: 100% !important;
+  }
+  .trakt-info-desc {
+  max-width: 100% !important;
+  margin-top: 10px !important;
+  margin-left: 0 !important;
+  }
+}
+
+.trakt-long-desc {
+  max-width: 100% !important;
+  margin-top: 0px !important;
+  margin-left: 0 !important;
+}
+
+@media screen and (max-width: 505px) {
+  .trakt-not-correct {
+  margin-right: 0px !important;
+  margin-left: 10px !important;
+  margin-top: 12px !important;
+  }
 }
 
 .wcjs-player .playlist-container .playlist-inner .item p{
-    color: rgba(255, 255, 255, 0.5);
-    text-transform: uppercase;
-    font-size: 13.5px;
-    font-weight: normal;
-    text-align: center;
-    line-height: 45px;
-    height: 40px;
-    width: 100%;
-    position: absolute;
-    bottom: 0px;
-    background-color: rgba(26, 27, 31, 0.82);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  font-size: 13.5px;
+  font-weight: normal;
+  text-align: center;
+  line-height: 45px;
+  height: 40px;
+  width: 100%;
+  position: absolute;
+  bottom: 0px;
+  background-color: rgba(26, 27, 31, 0.82);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .wcjs-player .playlist-head {
-    opacity: 1;
-    background: transparent;
+  opacity: 1;
+  background: transparent;
 }
 
 .wcjs-player .playlist-head {
-    opacity: 1;
-    background: transparent;
+  opacity: 1;
+  background: transparent;
 }
 
 .wcjs-player .playlist-head .player-close {
-    display: none !important;
+  display: none !important;
 }
 
 .wcjs-player .playlist-head .title {
-    display: none;
+  display: none;
 }
 
-.wcjs-player .playlist-head .player-playlist .material-icons {
-    color: #00acff !important;
-}
-
-.wcjs-player .settings-head {
-    opacity: 1;
-    background: transparent;
+.wcjs-player .playlist-head .player-playlist {
+  color: #00acff !important;
 }
 
 .wcjs-player .settings-head {
-    opacity: 1;
-    background: transparent;
+  opacity: 1;
+  background: transparent;
+}
+
+.wcjs-player .settings-head {
+  opacity: 1;
+  background: transparent;
 }
 
 .wcjs-player .settings-head .player-close {
-    display: none !important;
+  display: none !important;
 }
 
 .wcjs-player .settings-head .title {
-    display: none;
+  display: none;
 }
 
-.wcjs-player .settings-head .player-settings .material-icons {
-    color: #00acff !important;
+.wcjs-player .settings-head .player-settings {
+  color: #00acff !important;
 }
 
 .wcjs-player .playlist-container .playlist-title {
-    color: #00abfe;
-    font-weight: 600;
-    font-size: 4vw;
-    position: relative;
+  color: #00abfe;
+  font-weight: 600;
+  font-size: 4vw;
+  position: relative;
 }
 
 .wcjs-player .playlist-holder {
-    margin-left: 15vw;
-    margin-top: 5%;
-    height: 100%;
+  margin-left: 15vw;
+  margin-top: 5%;
+  height: 100%;
 }
 
 @media screen and (min-width: 790px) {
-    .wcjs-player .playlist-container .playlist-title {
-        font-size: 32px !important;
-    }
+  .wcjs-player .playlist-container .playlist-title {
+    font-size: 32px !important;
+  }
 }
 
 @media screen and (max-width: 433px) {
-    .wcjs-player .playlist-container .playlist-title {
-        display: none
-    }
-    .wcjs-player .playlist-holder {
-        margin-top: 17% !important;
-    }
+  .wcjs-player .playlist-container .playlist-title {
+    display: none
+  }
+  .playlist-holder-contain {
+  margin-top: 14% !important;
+  }
 }
 
 .no-ripples > div:first-of-type > span div {
-    background-color: transparent !important;
+  background-color: transparent !important;
 }
 
 .wcjs-player .prev-button {
-    position: absolute !important;
-    left: ~"calc(50% - 64px)";
-    top: 12px;
-    height: 39px !important;
-    overflow: hidden !important;
+  position: absolute !important;
+  left: ~"calc(50% - 55px)";
+  padding: 3px;
+  top: 15px;
+  height: 30px;
+  width: 30px;
+  overflow: hidden !important;
+  color: #00c2f9;
 }
 
 .wcjs-player .next-button {
-    position: absolute !important;
-    left: ~"calc(50% + 14px)";
-    top: 12px;
-    height: 39px !important;
-    overflow: hidden !important;
+  position: absolute !important;
+  left: ~"calc(50% + 23px)";
+  padding: 3px;
+  top: 15px;
+  height: 30px;
+  width: 30px;
+  overflow: hidden !important;
+  color: #00c2f9;
 }
 
 .wcjs-player .volume-button {
-    position: absolute !important;
-    left: ~"calc(50% + 50px)";
-    top: 7px;
-    height: 39px !important;
-    overflow: hidden !important;
+  position: absolute !important;
+  left: ~"calc(50% + 53px)";
+  top: 9px;
+  height: 43px !important;
+  overflow: hidden !important;
+  color: #e7e7e7;
 }
 
 .wcjs-player .prev-button div span {
-    color: #00c2f9 !important;
-    font-size: 22px;
+  color: #00c2f9 !important;
+  font-size: 22px;
 }
 
 .wcjs-player .next-button div span {
-    color: #00c2f9 !important;
-    font-size: 22px;
+  color: #00c2f9 !important;
+  font-size: 22px;
 }
 
 .wcjs-player .volume-button div span {
-    font-size: 22px !important;
+  font-size: 22px !important;
 }
 
-.wcjs-player div[name=volume-slider] {
-    width: 100px;
-    position: absolute !important;
-    left: ~"calc(50% + 98px)";
-    top: -2px;
-    height: 39px !important;
+.wcjs-player .vol-slide {
+  width: 100px;
+  position: absolute !important;
+  left: ~"calc(50% + 98px)";
+  top: 11px;
+  height: 39px !important;
+  cursor: pointer;
+}
+
+.wcjs-player .vol-slide #sliderKnob {
+  transform: scale(0);
+  transition: transform .2s ease-in-out;
+}
+
+.wcjs-player .control-bar:hover .vol-slide #sliderKnob {
+  transform: scale(1.0);
+}
+
+
+.wcjs-player .vol-slide #sliderContainer {
+  margin: 0;
 }
 
 .wcjs-player .wcjs-announce {
-    color: white;
-    font-family: "Roboto", sans-serif;
-    text-align: center;
-    display: block;
-    opacity: 0;
-    position: relative;
-    top: 38px;
-    font-weight: 500;
-    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+  color: white;
+  font-family: "Roboto", sans-serif;
+  text-align: center;
+  display: block;
+  opacity: 0;
+  position: relative;
+  top: 38px;
+  font-weight: 500;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
 }
 
 .wcjs-player .wcjs-subtitle-text {
-    color: white;
-    font-family: "Roboto", sans-serif;
-    text-align: center;
-    display: block;
-    position: absolute;
-    width: 100%;
-    bottom: 70px;
-    font-weight: 500;
-    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
-    white-space: pre-wrap;
+  color: white;
+  font-family: "Roboto", sans-serif;
+  text-align: center;
+  display: block;
+  position: absolute;
+  width: 100%;
+  bottom: 70px;
+  font-weight: 500;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+  white-space: pre-wrap;
 }
 
 .wcjs-player .volume-hover {
-    width: 0px !important;
-    height: 0px !important;
-}
-
-.wcjs-player .volume-ripple {
-    transition: opacity 450ms ease-in-out;
-}
-
-.wcjs-player .volume-ripple-hover {
-    opacity: 0 !important;
-    transition: none;
+  width: 0px !important;
+  height: 0px !important;
 }
 
 .wcjs-player .subtitle-list {
-    width: 70vw;
-    height: 70%;
-    overflow: hidden;
-    overflow-y: scroll;
-    max-width: 278px;
-    max-height: ~"calc(100% - 132px)";
-    right: 2%;
-    position: absolute;
-    bottom: 0px;
-    border: 10px solid rgba(29,31,35,0.82);
-    border-radius: 4px;
-    bottom: 70px;
-    background-color: rgba(29,31,35,0.82);
-    z-index: 10;
-    display: none;
-    opacity: 0;
+  width: 70vw;
+  height: 70%;
+  overflow: hidden;
+  overflow-y: scroll;
+  max-width: 278px;
+  max-height: ~"calc(100% - 132px)";
+  right: 2%;
+  position: absolute;
+  bottom: 0px;
+  border: 10px solid rgba(29,31,35,0.82);
+  border-radius: 4px;
+  bottom: 70px;
+  background-color: rgba(29,31,35,0.82);
+  z-index: 10;
+  display: none;
+  opacity: 0;
 }
 
 .wcjs-player .subtitle-list.show {
-    display: block;
-    opacity: 1;
-    background-color: #303030;
+  display: block;
+  opacity: 1;
+  background-color: #303030;
 }
 
 .wcjs-player .subtitle-list > div {
-    padding: 0 !important
+  padding: 0 !important
 }
 
 .wcjs-player .subtitle-list::-webkit-scrollbar {
-    width: 10px;
-    background-color: rgba(22,25,27,1);
-    border-radius: 3px;
+  width: 10px;
+  background-color: rgba(22,25,27,1);
+  border-radius: 3px;
 }
  
 .wcjs-player .subtitle-list::-webkit-scrollbar-track {
-    background-color: transparent;
+  background-color: transparent;
 }
  
 .wcjs-player .subtitle-list::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.6);
-    border-radius: 3px;
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 3px;
 }
 .wcjs-player .subtitle-list::-webkit-scrollbar-corner{ 
-    background-color: transparent; 
+  background-color: transparent; 
+}
+
+.trakt-info-dialog::-webkit-scrollbar {
+  width: 10px;
+  background-color: rgba(22,25,27,1);
+  border-radius: 3px;
+}
+ 
+.trakt-info-dialog::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+ 
+.trakt-info-dialog::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 3px;
+}
+.trakt-info-dialog::-webkit-scrollbar-corner{ 
+  background-color: transparent; 
 }
 
 @media screen and (max-width: 595px) {
-    .wcjs-player div[name=volume-slider] {
-        display: none;
-    }
+  .wcjs-player .vol-slide {
+    display: none !important;
+  }
 }
 
 .notify-container {
@@ -663,11 +729,11 @@
 }
  
 @-webkit-keyframes slide {
-    100% { right: 0; }
+  100% { right: 0; }
 }
 
 @keyframes slide {
-    100% { right: 0; }
+  100% { right: 0; }
 }
 
 .notify-item:hover {
@@ -700,47 +766,47 @@
 }
 
 @media screen and (max-height: 700px) {
-    .wcjs-player .settings-holder > div > div:last-of-type {
-        height: 100%
-    }
-    .wcjs-player .settings-holder > div > div:last-of-type > div {
-        height: 100%
-    }
+  .wcjs-player .settings-holder > div > div:last-of-type {
+    height: 100%
+  }
+  .wcjs-player .settings-holder > div > div:last-of-type > div {
+    height: 100%
+  }
 }
 
 .wcjs-player .sub-delay-setting button {
-    width: inherit !important;
-    height: 20px !important;
-    top: -3px;
-    float: right;
-    margin-right: -2px;
-    padding: 0 !important;
+  width: inherit !important;
+  height: 20px !important;
+  top: -3px;
+  float: right;
+  margin-right: -2px;
+  padding: 0 !important;
 }
 
 .wcjs-player .sub-delay-setting .clear-button {
-    top: 0px !important;
-    margin-right: 0px !important;
+  top: 0px !important;
+  margin-right: 0px !important;
 }
 
 .wcjs-player .sub-delay-setting input {
-    text-align: right;
+  text-align: right;
 }
 
 .wcjs-player .setting-header {
-    color: #fff;
-    font-size: 16px;
-    padding: 5px;
-    background-color: rgba(0,0,0,0.25);
-    margin-bottom: 10px;
-    text-align: center;
+  color: #fff;
+  font-size: 16px;
+  padding: 5px;
+  background-color: rgba(0,0,0,0.25);
+  margin-bottom: 10px;
+  text-align: center;
 }
 
 .wcjs-player .settings-holder .long-buttons span {
-    font-size: 15px !important;
-    text-transform: inherit !important;
-    font-weight: 400 !important;
+  font-size: 15px !important;
+  text-transform: inherit !important;
+  font-weight: 400 !important;
 }
 
 .notify-container {
-    z-index: 2002 !important;
+  z-index: 2002 !important;
 }

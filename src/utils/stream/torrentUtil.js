@@ -32,7 +32,8 @@ module.exports = {
                         port: ls.isSet('peerPort') && ls('peerPort') != '6881' ? ls('peerPort') : port,
                         tmp: temp,
                         buffer: (1.5 * 1024 * 1024).toString(),
-                        connections: ls('maxPeers')
+                        connections: ls('maxPeers'),
+                        withResume: true
                     };
                     if (ls.isSet('downloadFolder'))
                         opts.path = ls('downloadFolder');

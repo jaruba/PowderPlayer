@@ -19,6 +19,8 @@
     "iron-pages": "PolymerElements/iron-pages#^1.0.7",
     "neon-animation": "PolymerElements/neon-animation#^1.1.1",
     "paper-autocomplete": "~1.0.5",
-    "paper-toast": "~1.2.1"
+    "paper-toast": "~1.2.1",
+    "progress-bubble": "~1.2.0",
+    "paper-fab": "~1.2.0"
   }
 }

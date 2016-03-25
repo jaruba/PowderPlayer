@@ -1,18 +1,43 @@
 * { margin: 0 }
 html, body { height: 100% }
 body {
-    font-family: 'Roboto', sans-serif;
-    font-weight: 400; 
-    background: #fff;
-    overflow-y:hidden;
-    overflow-x:hidden;
-    height: 100%;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -webkit-user-drag: none;
-    img {
-        pointer-events: none;
-    }
+  font-family: 'Roboto', sans-serif;
+  font-weight: 400; 
+  background: #fff;
+  overflow-y:hidden;
+  overflow-x:hidden;
+  height: 100%;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+  img {
+    pointer-events: none;
+  }
+}
+
+.prettyScrollWhite::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+.prettyScrollWhite::-webkit-scrollbar-button {
+  width: 0px;
+  height: 0px;
+}
+.prettyScrollWhite::-webkit-scrollbar-thumb {
+  background: #e1e1e1;
+  border: 0px none #ffffff;
+  border-radius: 2px;
+}
+.prettyScrollWhite::-webkit-scrollbar-track {
+  background: #666666;
+  border: 0px none #ffffff;
+  border-radius: 2px;
+}
+.prettyScrollWhite::-webkit-scrollbar-track:hover {
+  background: #666666;
+}
+.prettyScrollWhite::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
 @font-face {
@@ -34,68 +59,68 @@ body {
 }
 
 #main, #app {
-    height: 100%;
-    width: 100%;
-    display: table;
+  height: 100%;
+  width: 100%;
+  display: table;
 }
 
 #main .holder {
-    min-height: 428px;
+  min-height: 428px;
 }
 
 #main .holder-hover {
-    border-color: #383838 !important;
+  border-color: #383838 !important;
 }
 
 #main .mainButHold div > button > div > div > span:nth-of-type(2) {
-    display: none
+  display: none
 }
 
 #main .mainButHold div > button > div {
-    height: 100%;
+  height: 100%;
 }
 
 #main .mainButHold > div:first-of-type button {
-    background: rgb(0, 184, 80) !important;
+  background: rgb(0, 184, 80) !important;
 }
 
 #main .mainButHold > div:first-of-type + div button {
-    background: rgb(28, 168, 237) !important;
+  background: rgb(28, 168, 237) !important;
 }
 
 #main .mainButHold > div:first-of-type + div + div button {
-    background: rgb(241, 102, 79) !important;
+  background: rgb(241, 102, 79) !important;
 }
 
 #main .mainButHold .lbl {
-    color: #fff;
-    font-size: 17px;
+  color: #fff;
+  font-size: 17px;
 }
 
 .loader {
-    height: 4px;
-    width: 100%;
-    position: relative;
-    overflow: hidden;
-    background-color: #ddd;
+  height: 4px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  background-color: #ddd;
 }
 
 .loader:before{
-    display: block;
-    position: absolute;
-    content: "";
-    left: -200px;
-    width: 200px;
-    height: 4px;
-    background-color: #00bcd4;
-    animation: loading 2s linear infinite;
+  display: block;
+  position: absolute;
+  content: "";
+  left: -200px;
+  width: 200px;
+  height: 4px;
+  background-color: #00bcd4;
+  animation: loading 2s linear infinite;
 }
 
 @keyframes loading {
-    from {left: -200px; width: 30%;}
-    50% {width: 30%;}
-    70% {width: 70%;}
-    80% { left: 50%;}
-    95% {left: 120%;}
-    to {left: 100%;}
+  from {left: -200px; width: 30%;}
+  50% {width: 30%;}
+  70% {width: 70%;}
+  80% { left: 50%;}
+  95% {left: 120%;}
+  to {left: 100%;}
 }

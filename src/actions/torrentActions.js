@@ -8,6 +8,7 @@ import path from 'path';
 import ipc from 'ipc';
 import ls from 'local-storage';
 import parser from '../components/Player/utils/parser';
+import player from '../components/Player/utils/player';
 import metaParser from '../components/Player/utils/metaParser';
 
 class torrentActions {
@@ -15,9 +16,7 @@ class torrentActions {
     constructor() {
         this.generateActions(
             'add',
-            'remove',
-            'change',
-            'selectFile'
+            'clear'
         );
     }
 
@@ -77,9 +76,23 @@ class torrentActions {
                         });
                     }
 
-                    PlayerActions.addPlaylist(newFiles);
-                    
-            
+                    if (ls('downloadType') == 0 && !ls('playerType')) {
+                        // start with internal player
+                        PlayerActions.addPlaylist(newFiles);
+                    } else if (ls('downloadType') == 1 || ls('playerType')) {
+                        if (ls('playerType') && ls('playerPath')) {
+                            // start with external player
+                            // player.generatePlaylist(newFiles);
+                        }
+                        // start torrent dashboard
+                        var newData = { noStart: true, files: newFiles };
+    
+                        PlayerActions.addPlaylist(newData);
+
+                        HistoryStore.getState().history.replaceState(null, 'torrentDashboard');
+                    }
+
+
                     // start searching for thumbnails after 1 second
                     _.delay(() => {
                         if (queueParser.length) {

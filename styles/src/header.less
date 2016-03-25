@@ -1,96 +1,107 @@
 header {
-    height: 30px;
-    position: fixed;
-    width: 100vw;
-    -webkit-app-region: drag;
-    background-color: #0173c7;
+  height: 30px;
+  position: fixed;
+  width: 100vw;
+  -webkit-app-region: drag;
+  background-color: #3a60db;
+}
+
+header.menusDashboard {
+  -webkit-app-region: no-drag;
+  margin: 0 !important;
+  position: relative;
+  padding-left: 0;
+  width: 100%;
+  padding-right: 0;
+  height: 35px;
+  line-height: 25px;
 }
 
 header.player{
-    opacity: 0;
+  opacity: 0;
 }
 
 header.player div{
-    display: none;
+  display: none;
 }
 
 header .controls.win32 div {
-    -webkit-app-region: no-drag;
-    height: 30px;
-    width: 46px;
-    float: right;
-    transition: background-color 30ms linear;
+  -webkit-app-region: no-drag;
+  height: 30px;
+  width: 46px;
+  float: right;
+  transition: background-color 30ms linear;
 }
 
 header .controls.win32 div.close i {
-    font-size: 25px;
-    position: relative;
-    margin-left: 19px;
-    color: white;
+  font-size: 25px;
+  position: relative;
+  margin-left: 19px;
+  color: white;
 }
 
 header .controls.win32 div.close:hover {
-    background-color: #E81123;
+  background-color: #E81123;
 }
 
 header .controls.win32 div.minimize i {
-    position: absolute;
-    margin-left: 19px;
-    background-color: #fff;
-    margin-top: 15px;
-    width: 10px;
-    height: 0.5px;
+  position: absolute;
+  margin-left: 19px;
+  background-color: #fff;
+  margin-top: 15px;
+  width: 10px;
+  height: 0.5px;
 }
 
 header .controls.win32 div.minimize:hover {
-    background-color: rgba(255, 255, 255, 0.25);
+  background-color: rgba(255, 255, 255, 0.25);
 }
 
 header .controls.win32 div.toggle i {
-    position: absolute;
-    background-color: transparent;
-    border: 1px solid #fff;
-    width: 8px;
-    height: 7.5px;
+  position: absolute;
+  background-color: transparent;
+  border: 1px solid #fff;
+  width: 8px;
+  height: 7.5px;
 }
 
 header .controls.win32 div.toggle i:first-of-type {
-    margin-left: 19px;
-    margin-top: 10px;
-    z-index: 2;
-    background-color: #0173c7;
+  margin-left: 19px;
+  margin-top: 10px;
+  z-index: 2;
+  background-color: #3a60db;
 }
 
 header .controls.win32 div.toggle i:nth-of-type(2) {
-    display: none;
-    margin-left: 21px;
-    margin-top: 8px;
-    z-index: 1;
+  display: none;
+  margin-left: 21px;
+  margin-top: 8px;
+  z-index: 1;
 }
 
 header .controls.win32 div.toggle:hover i {
-    background-color: #4096d5;
+  background-color: #6b87e4;
 }
 
 header .controls.win32 div.toggle:hover {
-    background-color: rgba(255, 255, 255, 0.25);
+  background-color: rgba(255, 255, 255, 0.25);
 }
 
 header .controls {
-    position: absolute;
-    height: 100%;
-    width: 90%;
-    right: 0px
+  position: absolute;
+  height: 100%;
+  width: 90%;
+  right: 0px
 }
 
 header .controls div {}
 
 header h1 {
-    text-align: center;
-    color: aliceblue;
-    font-size: 15px;
-    width: 100px;
-    margin: auto;
-    margin-top: 7px;
-    font-weight: 300;
+  text-align: center;
+  color: aliceblue;
+  font-size: 15px;
+  width: 100px;
+  margin: auto;
+  margin-top: 7px;
+  font-weight: 300;
 }
