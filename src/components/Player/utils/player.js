@@ -57,7 +57,7 @@ player.wcjsInit = (canvas, wcjs) => {
         canvas = document.querySelector('#fake-canvas');
     }
     if (!wcjs) {
-        var wcjs_path = (process.env.NODE_ENV === 'development') ? require('path').join(__dirname, '../../../../../bin/wcjs/', 'WebChimera.js.node') : require('path').join(require('remote').require('app').getAppPath(), '../../../bin/wcjs/', 'WebChimera.js.node');
+        var wcjs_path = (process.env.NODE_ENV === 'development') ? require('path').join(__dirname, '../../../../../bin/wcjs/', 'WebChimera.js.node') : require('path').join(require('remote').require('app').getAppPath(), '../bin/', 'WebChimera.js.node');
         wcjs = require(wcjs_path);
     }
     
