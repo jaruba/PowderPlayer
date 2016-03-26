@@ -9,8 +9,6 @@ import PlayerActions from '../../components/Player/actions';
 import ModalActions from './../Modal/actions';
 import MessageActions from '../Message/actions';
 import metaParser from '../../components/Player/utils/metaParser';
-import ModalAddUrl from '../Modal/URLadd';
-
 import remote from 'remote';
 
 import webFrame from 'web-frame';
