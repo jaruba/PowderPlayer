@@ -128,7 +128,7 @@ default React.createClass({
                     <div style={{float: 'right', position: 'relative', right: '12px', top: '12px', zIndex: '1'}}>
                         <paper-fab icon={ fileFinished ? 'menu' : el.selected ? 'av:pause' : 'av:play-arrow' } onClick={this.decideFileAction.bind(this, ij)} className="dashboard-buttons" style={{ backgroundColor: fileFinished ? '#11a34e' : el.selected ? '#e38318' : '#e3b618' }} />
                     </div>
-                    <div className="torrentFile" style={{cursor: 'pointer'}} onClick={this.openFileMenu.bind(this, ij)}>
+                    <div className="torrentFile" style={{cursor: 'pointer', overflow: 'hidden'}} onClick={this.openFileMenu.bind(this, ij)}>
                         <div style={{float: 'left'}}>
                             <progress-bubble value={fileProgress} max="100" stroke-width="5" style={{width: '60px', height: '60px'}}>
                                 <strong style={{fontWeight: 'normal', fontSize: '17px', textShadow: '0px 1px 0px rgba(61, 61, 61, 0.5)'}}>{fileProgress}<span style={{fontSize: '13px'}}>%</span></strong>

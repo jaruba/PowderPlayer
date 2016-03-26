@@ -9,6 +9,40 @@
   max-width: ~"calc(100% - 290px)";
 }
 
+.torrentFileList {
+  height: ~"calc(100% - 98px)";
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.torrentFileList::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.torrentFileList::-webkit-scrollbar-button {
+  width: 0px;
+  height: 0px;
+}
+.torrentFileList::-webkit-scrollbar-thumb {
+  background: #bebebe;
+  border: 0px none #ffffff;
+  border-radius: 0px;
+}
+.torrentFileList::-webkit-scrollbar-thumb:hover {
+  background: #d3d3d3;
+}
+.torrentFileList::-webkit-scrollbar-thumb:active {
+  background: #d3d3d3;
+}
+.torrentFileList::-webkit-scrollbar-track {
+  background: #666666;
+  border: 0px none #ffffff;
+  border-radius: 0px;
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
 .dashboardMenuButton {
   background-color: #303030;
   color: white;

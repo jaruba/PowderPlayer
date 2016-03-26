@@ -65,7 +65,7 @@ default React.createClass({
                         <i/>
                     </div>
                 </div>
-                <div style={{float: 'left', color: 'white', paddingTop: '6px', paddingLeft: '8px', fontSize:'15px' }}>
+                <div className="windowTitle"> 
                     {title}
                 </div>
             </header>
