@@ -54,6 +54,11 @@ class ProgressStore {
             });
         }
 
+        if (player.wcjs.state == 6) {
+            // if playback ended, restart last item
+            player.playItem( player.wcjs.playlist.itemCount - 1 , true );
+        }
+
         player.wcjs.time = time;
 
         traktUtil.handleScrobble('start', player.itemDesc(), player.wcjs.position);

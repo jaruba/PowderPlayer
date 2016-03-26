@@ -345,8 +345,13 @@ default React.createClass({
 
     },
     handleTogglePlay() {
-        if (this.state.clickPause)
-            player.wcjs.togglePause();
+        if (player.wcjs.state == 6) {
+            // if playback ended, restart last item
+            player.playItem( player.wcjs.playlist.itemCount - 1 , true );
+        } else {
+            if (this.state.clickPause)
+                player.wcjs.togglePause();
+        }
     },
     wheel(event) {
         var volume = (event.deltaY < 0) ? this.player.volume + 5 : this.player.volume - 5;

@@ -114,8 +114,8 @@ player.next = () => {
     }
 };
 
-player.playItem = (idx) => {
-    if (idx != player.wcjs.playlist.currentItem) {
+player.playItem = (idx, force) => {
+    if (idx != player.wcjs.playlist.currentItem || force) {
         player.foundTrakt = false;
         player.events.emit('foundTrakt', false);
 

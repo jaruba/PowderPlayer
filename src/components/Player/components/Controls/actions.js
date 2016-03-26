@@ -13,7 +13,12 @@ class ControlActions {
     }
 
     handlePausePlay() {
-        player.wcjs.togglePause();
+        if (player.wcjs.state == 6) {
+            // if playback ended, restart last item
+            player.playItem( player.wcjs.playlist.itemCount - 1 , true );
+        } else {
+            player.wcjs.togglePause();
+        }
     }
 
     toggleFullscreen(state) {
