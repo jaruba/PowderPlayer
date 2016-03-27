@@ -65,7 +65,7 @@ default React.createClass({
                         <i/>
                     </div>
                 </div>
-                <div className="windowTitle"> 
+                <div className="windowTitle">
                     {title}
                 </div>
             </header>

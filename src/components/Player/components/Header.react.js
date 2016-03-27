@@ -194,6 +194,11 @@ default React.createClass({
         document.querySelector('.mini-menu').style.display = 'none';
     },
     render() {
+        var engineState = engineStore.getState();
+        var isTorrent = false;
+        if (engineState.infoHash && engineState.torrents[engineState.infoHash]) {
+            isTorrent = true;
+        }
         return (
             <div>
                 <div className={this.state.uiHidden ? 'header' : this.state.playlistOpen ? 'header playlist-head' : this.state.settingsOpen ? 'header settings-head' : this.state.uiShown ? 'header show' : 'header'}>
@@ -217,7 +222,7 @@ default React.createClass({
                 <div className="trakt-info-dialog mini-menu">
                     <paper-item className="dashboardMenuButton dashboardBorder">Cast to Device</paper-item>
                     <paper-item className="dashboardMenuButton dashboardBorder" onClick={this.handleOpenSleepMenu}>Sleep Timer</paper-item>
-                    <paper-item className="dashboardMenuButton dashboardBorder" onClick={this.handleOpenDashboard}>Torrent Data</paper-item>
+                    <paper-item className="dashboardMenuButton dashboardBorder" onClick={this.handleOpenDashboard} style={{display: (isTorrent ? 'flex' : 'none')}}>Torrent Data</paper-item>
                     <paper-item className="dashboardMenuButton dashboardBorder" onClick={this.handleOpenSettings}>Advanced Settings</paper-item>
                     <paper-item className="dashboardMenuButton dashboardBorder" onClick={this.handleClosePowder}>Close Powder</paper-item>
                     <paper-item className="dashboardMenuButton" onClick={this.handleCloseMiniMenu}>Close Menu</paper-item>
