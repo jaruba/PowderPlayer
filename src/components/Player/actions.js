@@ -1,6 +1,9 @@
 import alt from '../../alt'
 import _ from 'lodash';
-import ipc from 'ipc';
+import {
+    ipcRenderer
+}
+from 'electron';
 import HistoryStore from '../../stores/historyStore';
 import torrentUtil from '../../utils/stream/torrentUtil';
 import player from './utils/player';
@@ -210,11 +213,11 @@ class PlayerActions {
     }
 
     toggleAlwaysOnTop(state = true) {
-        ipc.send('app:alwaysOnTop', state);
+        ipcRenderer.send('app:alwaysOnTop', state);
     }
 
     togglePowerSave(state = true) {
-        ipc.send('app:powerSaveBlocker', state);
+        ipcRenderer.send('app:powerSaveBlocker', state);
     }
 
 }

@@ -7,7 +7,9 @@ import events from '../utils/events';
 import _ from 'lodash';
 import ls from 'local-storage';
 
-const appPath = require('remote').require('app');
+import {
+    app
+} from 'remote';
 
 import PlayerActions from '../actions';
 import PlayerStore from '../store';
@@ -19,7 +21,7 @@ import TimeActions from './Controls/components/HumanTime/actions';
 import SubtitleActions from './SubtitleText/actions';
 
 try {
-    var wcjs_path = (process.env.NODE_ENV === 'development') ? path.join(__dirname, '../../../../bin/', 'WebChimera.js.node') : path.join(appPath.getAppPath(), '../bin/', 'WebChimera.js.node');
+    var wcjs_path = (process.env.NODE_ENV === 'development') ? path.join(__dirname, '../../../../bin/', 'WebChimera.js.node') : path.join(app.getAppPath(), '../bin/', 'WebChimera.js.node');
     var wcjs = require(wcjs_path);
 } catch (e) {
     console.error('WCJS Load Error:', e);

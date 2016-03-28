@@ -11,7 +11,10 @@ import MessageActions from '../Message/actions';
 import metaParser from '../../components/Player/utils/metaParser';
 import remote from 'remote';
 
-import webFrame from 'web-frame';
+import {
+    webFrame
+}
+from 'electron';
 
 import linkUtil from '../../utils/linkUtil';
 

@@ -1,8 +1,4 @@
 import React from 'react';
-import {
-    Card, CardActions, CardExpandable, CardHeader, CardText
-}
-from 'material-ui';
 
 import engineStore from '../../stores/engineStore';
 import torrentActions from '../../actions/torrentActions';

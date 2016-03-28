@@ -6,7 +6,10 @@ from 'react-router';
 import engineStore from '../../../stores/engineStore';
 import torrentActions from '../../../actions/torrentActions';
 import ModalStore from '../store';
-import ipc from 'ipc';
+import {
+    ipcRenderer
+}
+from 'electron';
 import events from '../../Player/utils/events';
 import _ from 'lodash';
 import ls from 'local-storage';
@@ -49,7 +52,7 @@ default React.createClass({
             this.history.replaceState(null, '');
         else
             torrent.kill(() => {
-                ipc.send('app:close');
+                ipcRenderer.send('app:close');
             });
     },
     handleNo() {
@@ -73,7 +76,7 @@ default React.createClass({
             this.history.replaceState(null, '');
         else
             torrent.softKill(() => {
-                ipc.send('app:close');
+                ipcRenderer.send('app:close');
             });
     },
     render() {

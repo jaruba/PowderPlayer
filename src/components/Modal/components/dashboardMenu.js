@@ -4,7 +4,9 @@ import {
     History
 }
 from 'react-router';
-import clipboard from 'clipboard';
+import {
+    clipboard, shell
+} from 'electron';
 import _ from 'lodash';
 
 import ModalActions from '../actions';
@@ -16,8 +18,6 @@ import torrentActions from '../../../actions/torrentActions';
 import events from '../../Player/utils/events';
 import player from '../../Player/utils/player';
 import ls from 'local-storage';
-
-var shell = remote.require('shell');
 
 export
 default React.createClass({

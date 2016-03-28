@@ -79,10 +79,10 @@
     "grunt-npm-command": "^0.1.0",
     "grunt-shell": "^1.1.2",
     "grunt-shell-spawn": "^0.3.10",
-    "grunt-vlc-libs": "0.0.1",
+    "grunt-vlc-libs": "jaruba/grunt-vlc-libs",
     "load-grunt-tasks": "^3.3.0"
   },
   "optionalDependencies": {
-    "electron-prebuilt": "0.33.9"
+    "electron-prebuilt": "0.37.2"
   }
 }

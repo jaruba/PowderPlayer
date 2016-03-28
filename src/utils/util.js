@@ -3,7 +3,9 @@ import Promise from 'bluebird';
 import fs from 'fs';
 import path from 'path';
 import _ from 'lodash';
-import shell from 'shell';
+import {
+    shell
+} from 'electron';
 
 
 export

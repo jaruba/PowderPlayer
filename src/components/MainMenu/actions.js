@@ -1,5 +1,8 @@
-const dialog = require('remote').require('dialog');
-
+import {
+    dialog
+}
+from 'remote';
+ 
 import alt from '../../alt';
 
 import ModalActions from './../Modal/actions';

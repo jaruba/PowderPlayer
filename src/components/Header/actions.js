@@ -1,5 +1,8 @@
 import alt from '../../alt'
-import ipc from 'ipc';
+import {
+    ipcRenderer
+}
+from 'electron';
 import remote from 'remote';
 import engineStore from '../../stores/engineStore';
 import ModalActions from '../Modal/actions';
@@ -15,8 +18,8 @@ class HeaderActions {
 
     toggleMaximize() {
         this.dispatch();
-        let state = !ipc.sendSync('app:get:maximized');
-        ipc.send('app:maximize', state);
+        let state = !ipcRenderer.sendSync('app:get:maximized');
+        ipcRenderer.send('app:maximize', state);
         this.actions.maximize(state);
         document.querySelector('header .controls.win32 div.toggle i:nth-of-type(2)').style.display = state ? 'block' : 'none';
     }
@@ -40,16 +43,16 @@ class HeaderActions {
 
                 if (ls('removeLogic') == 1) {
                     torrent.kill(() => {
-                        ipc.send('app:close');
+                        ipcRenderer.send('app:close');
                     });
                 } else if (ls('removeLogic') == 2) {
                     torrent.softKill(() => {
-                        ipc.send('app:close');
+                        ipcRenderer.send('app:close');
                     });
                 }
             }
         } else {
-            ipc.send('app:close');
+            ipcRenderer.send('app:close');
         }
     }
 }

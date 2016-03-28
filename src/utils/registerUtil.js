@@ -1,8 +1,12 @@
-import shell from 'shell';
 import child from 'child_process';
 import fs from 'fs';
-const app = require('remote').require('app');
-
+import {
+    shell
+}
+from 'electron';
+import {
+    app
+} from 'remote';
 const dataPath = app.getPath('userData');
 
 var register = {};

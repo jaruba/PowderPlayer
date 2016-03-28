@@ -5,7 +5,6 @@ import needle from 'needle';
 import _ from 'lodash';
 
 
-
 class supportedLinks {
     isSupportedLink(link) {
 

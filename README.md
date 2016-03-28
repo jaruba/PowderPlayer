@@ -7,6 +7,9 @@ Powder is the future of all torrent requirements, it's a hybrid between a Torren
 It can do everything that a Torrent Client can, everything that a Video/Audio Player can and much more!
 
 **Building Instructions**:
+For Windows only, you should also first set this environment variable:
+
+     set npm_config_arch="ia32"
 
      npm install
      bower install

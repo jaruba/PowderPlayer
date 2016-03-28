@@ -4,7 +4,10 @@ import {
     RouteContext, History
 }
 from 'react-router';
-import ipc from 'ipc';
+import {
+    ipcRenderer
+}
+from 'electron';
 import {
     mouseTrap
 }
@@ -44,7 +47,7 @@ const Framework = React.createClass({
         if (!ls.isSet('downloadType')) ls('downloadType', 0);
         if (!ls.isSet('playerType')) ls('playerType', false);
 
-        this.props.bindShortcut('ctrl+d', () => ipc.send('app:toggleDevTools'));
+        this.props.bindShortcut('ctrl+d', () => ipcRenderer.send('app:toggleDevTools'));
 
         subUtil.fetchOsCookie(true);
 
@@ -53,7 +56,7 @@ const Framework = React.createClass({
     },
 
     componentDidMount() {
-        ipc.send('app:startup', new Date().getTime());
+        ipcRenderer.send('app:startup', new Date().getTime());
 
         require('request')('https://www.google.com'); // Connect once to avoid cloggage
 

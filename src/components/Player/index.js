@@ -9,7 +9,9 @@ import SubtitleList from './components/Subtitles.react';
 import SubtitleText from './components/SubtitleText';
 import Announcement from './components/Announcement.react';
 
-import webFrame from 'web-frame';
+import {
+    webFrame
+} from 'electron';
 import remote from 'remote';
 import ls from 'local-storage';
 import player from './utils/player';

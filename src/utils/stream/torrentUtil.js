@@ -1,6 +1,8 @@
 import torrentWorker from 'torrent-worker';
 import path from 'path';
-const app = require('remote').require('app');
+import {
+    app
+} from 'remote';
 import readTorrent from 'read-torrent';
 import Promise from 'bluebird';
 import getPort from 'get-port';

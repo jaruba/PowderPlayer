@@ -9,7 +9,10 @@ import PlayerStore from '../store';
 import PlayerActions from '../actions';
 import VisibilityStore from './Visibility/store';
 import ModalActions from './Modal/actions';
-import ipc from 'ipc';
+import {
+    ipcRenderer
+}
+from 'electron';
 import BaseModalActions from '../../Modal/actions';
 import torrentActions from '../../../actions/torrentActions';
 import engineStore from '../../../stores/engineStore';
@@ -159,16 +162,16 @@ default React.createClass({
 
                 if (ls('removeLogic') == 1) {
                     torrent.kill(() => {
-                        ipc.send('app:close');
+                        ipcRenderer.send('app:close');
                     });
                 } else if (ls('removeLogic') == 2) {
                     torrent.softKill(() => {
-                        ipc.send('app:close');
+                        ipcRenderer.send('app:close');
                     });
                 }
             }
         } else {
-            ipc.send('app:close');
+            ipcRenderer.send('app:close');
         }
     },
     sleepFor(pauseIn) {

@@ -1,5 +1,7 @@
 import Trakt from 'trakt.tv';
-import shell from 'shell';
+import {
+    shell
+} from 'electron';
 import ls from 'local-storage';
 
 var trakttv = new Trakt({

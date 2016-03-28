@@ -1,5 +1,7 @@
 import React from 'react';
-import clipboard from 'clipboard';
+import {
+    clipboard
+} from 'electron';
 import _ from 'lodash';
 
 import ModalActions from '../actions';

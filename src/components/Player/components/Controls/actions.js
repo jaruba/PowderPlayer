@@ -1,7 +1,10 @@
 import alt from '../../../../alt';
 import _ from 'lodash';
 import ls from 'local-storage';
-import ipc from 'ipc';
+import {
+    ipcRenderer
+}
+from 'electron';
 import player from '../../utils/player';
 
 class ControlActions {
@@ -29,7 +32,7 @@ class ControlActions {
             window.document.querySelector(".render-holder > div:first-of-type").style.display = 'block';
         }, 500);
 
-        ipc.send('app:fullscreen', state);
+        ipcRenderer.send('app:fullscreen', state);
         this.actions.settingChange({
             fullscreen: state
         });

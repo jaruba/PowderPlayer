@@ -1,6 +1,7 @@
 import React from 'react';
-import shell from 'shell';
-import clipboard from 'clipboard';
+import {
+    shell
+} from 'electron';
 
 import ModalActions from '../actions';
 
@@ -11,7 +12,9 @@ import player from '../../../utils/player';
 
 import MetaInspector from 'node-metainspector';
 
-const BrowserWindow = require('remote').require('browser-window');
+import {
+    BrowserWindow
+} from 'remote';
 
 
 export
@@ -65,9 +68,6 @@ default React.createClass({
             this.refs['codeInput'].focus();
             player.notifier.info('Error: Trakt Code is Required');
         }
-    },
-    pasteClipboard() {
-        this.refs['codeInput'].value = clipboard.readText('text/plain');
     },
     getCode(event) {
         traktUtil.openTraktAuth();

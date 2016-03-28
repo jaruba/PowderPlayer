@@ -13,9 +13,13 @@ import Register from '../../../utils/registerUtil';
 import player from '../utils/player';
 import ls from 'local-storage';
 
-import webFrame from 'web-frame';
+import {
+    webFrame
+} from 'electron';
 
-const dialog = require('remote').require('dialog');
+import {
+    dialog
+} from 'remote';
 
 export
 default React.createClass({

@@ -2,13 +2,18 @@ import app from 'app';
 import BrowserWindow from 'browser-window';
 import rimraf from 'rimraf';
 import path from 'path';
-import powerSaveBlocker from 'power-save-blocker';
-import ipc from 'ipc';
+import {
+    ipcMain, powerSaveBlocker
+}
+from 'electron';
 import yargs from 'yargs';
 
 const args = yargs(process.argv.slice(1)).wrap(100).argv;
 const startupTime = new Date().getTime();
 var powerSaveBlockerState = false;
+
+if (/^win/.test(process.platform))
+    process.env['VLC_PLUGIN_PATH'] = require('path').join(__dirname, '../bin/plugins');
 
 const parseTime = s => {
     var ms = s % 1000;
@@ -19,7 +24,7 @@ const parseTime = s => {
     return mins + ' minutes ' + secs + '.' + ms + ' seconds';
 }
 
-ipc.on('app:startup', (event, time) => {
+ipcMain.on('app:startup', (event, time) => {
     console.log('App Startup Time:', parseTime(Math.floor(time - startupTime)));
 });
 
@@ -45,13 +50,14 @@ app.on('ready', () => {
     });
 
     if (args.dev) {
+        process.env['devMode'] = 1;
         mainWindow.show();
         mainWindow.toggleDevTools();
         mainWindow.focus();
         console.info('Dev Mode Active: Developer Tools Enabled.');
     }
 
-    mainWindow.loadUrl('file://' + path.join(__dirname, '../index.html'));
+    mainWindow.loadURL('file://' + path.join(__dirname, '../index.html'));
 
 
     mainWindow.webContents.on('new-window', (e) => e.preventDefault());
@@ -70,30 +76,30 @@ app.on('ready', () => {
 
     mainWindow.on('close', app.quit);
 
-    ipc.on('app:get:fullscreen', (event) => {
+    ipcMain.on('app:get:fullscreen', (event) => {
         event.returnValue = mainWindow.isFullScreen();
     });
 
-    ipc.on('app:get:maximized', (event) => {
+    ipcMain.on('app:get:maximized', (event) => {
         event.returnValue = mainWindow.isMaximized();
     });
 
-    ipc.on('app:fullscreen', (event, state) => mainWindow.setFullScreen(state));
+    ipcMain.on('app:fullscreen', (event, state) => mainWindow.setFullScreen(state));
 
-    ipc.on('app:maximize', (event, state) => {
+    ipcMain.on('app:maximize', (event, state) => {
         state ? mainWindow.maximize() : mainWindow.unmaximize();
     });
 
-    ipc.on('app:alwaysOnTop', (event, state) => mainWindow.setAlwaysOnTop(state));
+    ipcMain.on('app:alwaysOnTop', (event, state) => mainWindow.setAlwaysOnTop(state));
 
-    ipc.on('app:setThumbarButtons', (event, buttons) => mainWindow.setThumbarButtons(buttons));
+    ipcMain.on('app:setThumbarButtons', (event, buttons) => mainWindow.setThumbarButtons(buttons));
 
-    ipc.on('app:bitchForAttention', (event, state = true) => {
+    ipcMain.on('app:bitchForAttention', (event, state = true) => {
         if (!mainWindow.isFocused())
             mainWindow.flashFrame(state);
     });
 
-    ipc.on('app:powerSaveBlocker', (event, state) => {
+    ipcMain.on('app:powerSaveBlocker', (event, state) => {
         let enablePowerBlock = () => {
             powerSaveBlockerState = powerSaveBlocker.start('prevent-display-sleep');
         };
@@ -105,18 +111,18 @@ app.on('ready', () => {
         state ? enablePowerBlock() : disablePowerBlock();
     });
 
-    ipc.on('app:toggleDevTools', () => {
+    ipcMain.on('app:toggleDevTools', () => {
         mainWindow.show();
         mainWindow.toggleDevTools();
         mainWindow.focus();
         console.info('Developer Tools Toggled.');
     });
 
-    ipc.on('app:get:powerSaveBlocker', (event) => {
+    ipcMain.on('app:get:powerSaveBlocker', (event) => {
         event.returnValue = powerSaveBlockerState ? powerSaveBlocker.isStarted(powerSaveBlockerState) : false;
     });
 
-    ipc.on('app:close', app.quit);
+    ipcMain.on('app:close', app.quit);
 
 });
 
