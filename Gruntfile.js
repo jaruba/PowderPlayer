@@ -107,6 +107,11 @@ module.exports = function(grunt) {
                     cwd: 'fonts/',
                     src: ['**/*'],
                     dest: 'build/fonts/'
+                }, {
+                    expand: true,
+                    cwd: 'bower_components/',
+                    src: ['**/*'],
+                    dest: 'build/bower_components/'
                 }]
             },
             videoDev: {
