@@ -3,6 +3,7 @@ import events from 'events';
 import traktUtil from './trakt';
 import wcjsRenderer from './wcjs-renderer';
 import ls from 'local-storage';
+import engineStore from '../../../stores/engineStore';
 
 var player = {
     aspect: 'Default',
@@ -45,6 +46,44 @@ player.loadState = () => {
 
         player.saveState = {};
 
+    } else {
+        // if it's a torrent and is just starting, show prebuffering
+        var engineState = engineStore.getState();
+        if (engineState.torrents && engineState.infoHash && engineState.torrents[engineState.infoHash] && engineState.torrents[engineState.infoHash].torrent && !engineState.prebuffed[engineState.infoHash]) {
+            
+            clearTimeout(player.announceTimer);
+            player.events.emit('announce', {
+                text: 'Prebuffering 0%',
+                effect: false
+            });
+            
+            function onPiece() {
+                
+                // get current file
+                var file = engineState.torrents[engineState.infoHash].files[player.itemDesc(0).setting.idx];
+                var fileProgress = Math.round(engineState.torrents[engineState.infoHash].torrent.pieces.bank.filePercent(file.offset, file.length) * 100);
+                var prebuf = Math.floor( fileProgress * 45 );
+
+                var announcer = {};
+                announcer.text = 'Prebuffering ' + prebuf + '%';
+                clearTimeout(player.announceTimer);
+        
+                if (prebuf >= 100) {
+                    // remove this listener, we don't need it anymore
+                    engineState.torrents[engineState.infoHash].removeListener('download', onPiece);
+                    
+                    announcer.text = 'Prebuffering 100%';
+                    
+                    announcer.effect = false;
+                } else if (player.announceEffect)
+                    announcer.effect = false;
+
+                if (Object.keys(announcer).length)
+                    player.events.emit('announce', announcer);
+            }
+            
+            engineState.torrents[engineState.infoHash].on('download', onPiece);
+        }
     }
 };
 

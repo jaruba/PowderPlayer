@@ -14,6 +14,7 @@ import TimeActions from '../components/Controls/components/HumanTime/actions';
 import ProgressActions from '../components/Controls/components/ProgressBar/actions';
 import VisibilityActions from '../components/Visibility/actions';
 import SubtitleActions from '../components/SubtitleText/actions';
+import engineStore from '../../../stores/engineStore';
 
 var events = {};
 
@@ -22,7 +23,13 @@ events.buffering = (perc) => {
     var isLocal = (itemDesc.mrl && itemDesc.mrl.indexOf('file://') == 0);
     if (!isLocal) {
         var announcer = {};
-        announcer.text = 'Buffering ' + perc + '%';
+
+        var engineState = engineStore.getState();
+        if (engineState.torrents && engineState.infoHash && engineState.torrents[engineState.infoHash] && engineState.torrents[engineState.infoHash].torrent && !engineState.torrents[engineState.infoHash].torrent.pieces.bank.get().downloaded && perc == 0) {
+            announcer.text = 'Prebuffering 0%';
+        } else {
+            announcer.text = 'Buffering ' + perc + '%';
+        }
         clearTimeout(player.announceTimer);
 
         if (perc === 100) {
