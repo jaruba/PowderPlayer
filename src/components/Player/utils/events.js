@@ -47,6 +47,24 @@ events.buffering = (perc) => {
 
 events.opening = () => {
 
+    var itemDesc = player.itemDesc();
+    var isLocal = (itemDesc.mrl && itemDesc.mrl.indexOf('file://') == 0);
+    if (!isLocal) {
+        
+        var announcer = {};
+    
+        announcer.text = 'Opening Media';
+        clearTimeout(player.announceTimer);
+    
+        if (player.announceEffect)
+            announcer.effect = false;
+    
+        if (Object.keys(announcer).length)
+            player.events.emit('announce', announcer);
+            
+    }
+
+
     if (player.wcjs.playlist.currentItem != player.lastItem) {
         if (player.wcjs.volume != ls('volume'))
             player.wcjs.volume = ls('volume');
