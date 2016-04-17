@@ -79,7 +79,7 @@ events.opening = () => {
 
 //        _.defer(() => {
             PlayerActions.updateImage(image);
-            ControlActions.settingChange({
+            ProgressActions.settingChange({
                 position: 0
             });
             player.events.emit('setTitle', player.wcjs.playlist.items[player.wcjs.playlist.currentItem].title);
@@ -162,7 +162,8 @@ events.resetUI = () => {
         length: 0
     });
     ProgressActions.settingChange({
-        position: 0
+        position: 0,
+        cache: 0
     });
     SubtitleActions.settingChange({
         subtitle: [],

@@ -15,6 +15,7 @@ import {
 import remote from 'remote';
 import ls from 'local-storage';
 import player from './utils/player';
+import cacheUtil from './utils/cache';
 import hotkeys from './utils/hotkeys';
 
 import ControlStore from './components/Controls/store';
@@ -45,6 +46,7 @@ const Player = React.createClass({
     componentWillUnmount() {
         VisibilityStore.unlisten(this.update);
         hotkeys.detach(this.props);
+        cacheUtil.stop();
     },
     componentDidMount() {
         var announcer = document.getElementsByClassName('wcjs-announce')[0];
@@ -54,6 +56,7 @@ const Player = React.createClass({
         player.set({
             notifier: this.refs.notificator
         });
+        cacheUtil.start(player);
         player.loadState();
     },
     update() {

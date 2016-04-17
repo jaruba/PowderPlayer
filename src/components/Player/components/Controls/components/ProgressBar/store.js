@@ -24,11 +24,18 @@ class ProgressStore {
         this.scrobbleHeight = 'scrobbler';
         this.scrobbling = false;
         this.seekable = true;
+        this.cache = 0;
 
     }
 
     onSettingChange(setting) {
         this.setState(setting);
+    }
+    
+    onSetCache(float) {
+        this.setState({
+            cache: float
+        });
     }
 
 

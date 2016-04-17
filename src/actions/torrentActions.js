@@ -68,6 +68,7 @@ class torrentActions {
                                     uri: 'http://127.0.0.1:' + EngineStore.state.torrents[file.infoHash].server.address().port + '/' + file.id,
                                     byteSize: file.size,
                                     torrentHash: file.infoHash,
+                                    streamID: file.id,
                                     path: file.path
                                 });
                                 queueParser.push({

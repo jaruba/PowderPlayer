@@ -120,6 +120,7 @@ class PlayerActions {
                             idx: keeper.idx,
                             byteSize: keeper.byteSize,
                             torrentHash: keeper.torrentHash,
+                            streamID: keeper.streamID,
                             path: keeper.path
                         });
                     } else if (data[i].path) {

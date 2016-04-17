@@ -3,6 +3,8 @@ import _ from 'lodash';
 import TooltipActions from '../Tooltip/actions';
 import VisibilityActions from '../../../Visibility/actions';
 import {handleTime} from '../../../../utils/time';
+import cacheUtil from '../../../../utils/cache';
+import player from '../../../../utils/player';
 
 var throttlers = {};
 
@@ -15,7 +17,8 @@ class ProgressActions {
             'position',
             'scrobble',
             'seekable',
-            'delayScrobbleGUI'
+            'delayScrobbleGUI',
+            'setCache'
         );
     }
 
@@ -100,6 +103,9 @@ class ProgressActions {
 
                 this.actions.delayScrobbleGUI();
                 var percent_done = event.pageX / document.body.clientWidth;
+
+                cacheUtil.checkCache(player, percent_done);
+
                 this.actions.scrobble(timeState.length * percent_done);
             }
         }, 100);

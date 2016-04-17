@@ -17,7 +17,8 @@ default React.createClass({
             scrobbling: false,
             keepScrobble: false,
             seekPerc: 0,
-            scrobbleHeight: 'scrobbler'
+            scrobbleHeight: 'scrobbler',
+            cache: 0
         }
     },
     componentWillMount() {
@@ -49,7 +50,8 @@ default React.createClass({
                 scrobbleHeight: progressState.scrobbleHeight,
 
                 keepScrobble: progressState.keepScrobble,
-                seekPerc: progressState.seekPerc
+                seekPerc: progressState.seekPerc,
+                cache: progressState.cache
             });
         }
     },
@@ -57,6 +59,9 @@ default React.createClass({
         var scrobblerStyles = {
             time: {
                 width: (this.state.scrobbling || this.state.keepScrobble ? this.state.seekPerc : this.state.position) * 100 + '%'
+            },
+            buffer: {
+                width: this.state.cache * 100 + '%'
             }
         };
         return (
@@ -69,7 +74,7 @@ default React.createClass({
                     onMouseOut={ProgressActions.handleDragEnd}
                     onMouseMove={this.throttleScrobblerHover} />
                 <div ref="scrobbler-height" className={this.state.scrobbleHeight}>
-                    <div className="buffer"/>
+                    <div style={scrobblerStyles.buffer} className="buffer"/>
                     <div ref="scrobbler-time" style={scrobblerStyles.time} className="time"/>
                     <div ref="scrobbler-handle" className="handle"/>
                 </div>
