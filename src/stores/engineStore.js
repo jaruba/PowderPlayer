@@ -11,6 +11,7 @@ class engineStore {
         this.torrents = {};
         this.localFiles = [];
         this.hosted = [];
+
     }
 
     onNewTorrent(instance) {
@@ -20,7 +21,7 @@ class engineStore {
             infoHash: instance.infoHash
         });
     }
-    
+
     onClearTorrents() {
         this.setState({
             torrents: {},

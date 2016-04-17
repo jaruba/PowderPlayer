@@ -1,0 +1,84 @@
+import engineStore from '../../../stores/engineStore';
+
+var player = {};
+var prebufMap = [];
+var current;
+
+function onPiece() {
+
+    var engineState = engineStore.getState();
+
+    if (player.wcjs.state > 1) {
+        prebuffering.end();
+        return;
+    }
+
+    // get file progress
+
+    if (!player.itemDesc(current) || !player.itemDesc(current).setting || typeof player.itemDesc(current).setting.streamID == 'undefined') {
+        var fileSel = 0;
+    } else {
+        var fileSel = player.itemDesc(current).setting.streamID;
+    }
+
+    var file = engineState.torrents[engineState.infoHash].files[fileSel];
+    var fileProgress = Math.round(engineState.torrents[engineState.infoHash].torrent.pieces.bank.filePercent(file.offset, file.length) * 100);
+    var prebuf = Math.floor( fileProgress * 45 );
+
+    var announcer = {};
+    announcer.text = 'Prebuffering ' + prebuf + '%';
+
+    clearTimeout(player.announceTimer);
+
+    if (prebuf >= 100) {
+
+        prebuffering.end();
+
+        announcer.text = 'Opening Media';
+        announcer.effect = false;
+
+    } else if (player.announceEffect)
+        announcer.effect = false;
+
+    if (Object.keys(announcer).length)
+        player.events.emit('announce', announcer);
+}
+
+var prebuffering = {
+    start: (playerObj) => {
+
+        player = playerObj;
+
+        var engineState = engineStore.getState();
+        if (engineState.torrents && engineState.infoHash && engineState.torrents[engineState.infoHash] && engineState.torrents[engineState.infoHash].torrent) { 
+            // it's a torrent
+            if (!prebufMap[engineState.infoHash]) prebufMap[engineState.infoHash] = [];
+
+            if (player.wcjs.playlist.currentItem == -1) current = 0;
+            else current = player.wcjs.playlist.currentItem;
+
+            if (!prebufMap[engineState.infoHash][current]) {
+
+                // video is opening for the first time, show prebuffering
+
+                clearTimeout(player.announceTimer);
+                player.events.emit('announce', {
+                    text: 'Prebuffering 0%',
+                    effect: false
+                });
+
+                engineState.torrents[engineState.infoHash].on('download', onPiece);
+            }
+        }
+    },
+
+    end: () => {
+        if (current && !prebufMap[engineState.infoHash][current]) {
+            engineState.torrents[engineState.infoHash].removeListener('download', onPiece);
+            prebufMap[engineState.infoHash][current] = true;
+        }
+    }
+
+}
+
+module.exports = prebuffering;

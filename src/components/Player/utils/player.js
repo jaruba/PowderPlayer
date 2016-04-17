@@ -49,65 +49,6 @@ player.loadState = () => {
 
         player.saveState = {};
 
-    } else {
-        
-        var engineState = engineStore.getState();
-        if (engineState.torrents && engineState.infoHash && engineState.torrents[engineState.infoHash] && engineState.torrents[engineState.infoHash].torrent) { 
-            // it's a torrent
-                        
-            if (!engineState.prebuffed[engineState.infoHash]) {
-
-                // if it's just starting, show prebuffering
-                
-                clearTimeout(player.announceTimer);
-                player.events.emit('announce', {
-                    text: 'Prebuffering 0%',
-                    effect: false
-                });
-                
-                function onPiece() {
-                    
-                    if (player.wcjs.state > 1) {
-                        engineState.torrents[engineState.infoHash].removeListener('download', onPiece);
-                        return;
-                    }
-                    
-                    // get file progress
-                    if (player.wcjs.playlist.currentItem == -1) var current = 0;
-                    else var current = player.wcjs.playlist.currentItem;
-                    
-                    if (!player.itemDesc(current) || !player.itemDesc(current).setting || typeof player.itemDesc(current).setting.streamID == 'undefined') {
-                        var fileSel = 0;
-                    } else {
-                        var fileSel = player.itemDesc(current).setting.streamID;
-                    }
-
-                    var file = engineState.torrents[engineState.infoHash].files[fileSel];
-                    var fileProgress = Math.round(engineState.torrents[engineState.infoHash].torrent.pieces.bank.filePercent(file.offset, file.length) * 100);
-                    var prebuf = Math.floor( fileProgress * 45 );
-    
-                    var announcer = {};
-                    announcer.text = 'Prebuffering ' + prebuf + '%';
-
-                    clearTimeout(player.announceTimer);
-            
-                    if (prebuf >= 100) {
-                        // remove this listener, we don't need it anymore
-                        engineState.torrents[engineState.infoHash].removeListener('download', onPiece);
-                        
-                        announcer.text = 'Opening Media';
-                        
-                        announcer.effect = false;
-                    } else if (player.announceEffect)
-                        announcer.effect = false;
-    
-                    if (Object.keys(announcer).length)
-                        player.events.emit('announce', announcer);
-                }
-                
-                engineState.torrents[engineState.infoHash].on('download', onPiece);
-            }
-        }
     }
 };
 

@@ -12,8 +12,13 @@ const args = yargs(process.argv.slice(1)).wrap(100).argv;
 const startupTime = new Date().getTime();
 var powerSaveBlockerState = false;
 
-if (/^win/.test(process.platform))
-    process.env['VLC_PLUGIN_PATH'] = require('path').join(__dirname, '../bin/plugins');
+if (/^win/.test(process.platform)) {
+    if (args.dev) {
+        process.env['VLC_PLUGIN_PATH'] = require('path').join(__dirname, '../bin/plugins');
+    } else {
+        process.env['VLC_PLUGIN_PATH'] = require('path').join(__dirname, '../../bin/plugins');
+    }
+}
 
 const parseTime = s => {
     var ms = s % 1000;

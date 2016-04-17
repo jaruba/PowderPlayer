@@ -16,6 +16,7 @@ var cacher = {
     },
     checkCache: (player, nextPos) => {
         var engineState = engineStore.getState();
+
         if (engineState.torrents && engineState.infoHash && engineState.torrents[engineState.infoHash] && engineState.torrents[engineState.infoHash].torrent) {
             if (player.wcjs.playlist.currentItem == -1) return;
             var current = player.wcjs.playlist.currentItem;

@@ -5,6 +5,7 @@ import player from './player';
 import traktUtil from './trakt';
 import ui from './ui';
 import linkSupport from './supportedLinks';
+import prebuffering from './prebuffering';
 
 import PlayerActions from '../actions';
 import ProgressStore from '../components/Controls/components/ProgressBar/store';
@@ -108,6 +109,8 @@ events.playing = () => {
     if (!player.firstPlay) {
 
         // catch first play event
+        prebuffering.end();
+
         player.wcjs.subtitles.track = 0;
             
         player.set({
@@ -180,6 +183,10 @@ events.resetUI = () => {
 }
 
 events.mediaChanged = () => {
+
+    prebuffering.end();
+    prebuffering.start(player);
+
     events.resetUI();
 
     VisibilityActions.settingChange({
