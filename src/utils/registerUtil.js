@@ -8,6 +8,7 @@ import {
     app
 } from 'remote';
 const dataPath = app.getPath('userData');
+import player from '../components/Player/utils/player';
 
 var register = {};
 
@@ -108,41 +109,10 @@ register.magnet = () => {
             var tempMime = 'x-scheme-handler/magnet';
             child.exec('gnome-terminal -x bash -c "echo \'Associating Files or URls with Applications requires Admin Rights\'; echo; sudo echo; sudo echo \'Authentication Successful\'; sudo echo; sudo mv -f '+desktopFile+' /usr/share/applications; sudo xdg-mime default powder.desktop '+tempMime+'; sudo gvfs-mime --set '+tempMime+' powder.desktop; echo; echo \'Association Complete! Press any key to close ...\'; read" & disown');
         });
-    } else if (process.platform == 'darwin') {
-        var powderPath = process.execPath.substr(0,process.execPath.lastIndexOf("/")+1)+"../../../../Resources/app.nw/";
-        child.exec('"'+powderPath+'src/duti/duti" -s media.powder.player magnet');
-        alert("Successfully Associated with Magnet Links");
     } else {
-        fs.writeFile(dataPath + '\\register-magnet.reg', 'REGEDIT4\r\n'+
-            '[HKEY_CLASSES_ROOT\\Magnet]\r\n'+
-            '@="URL:magnet Protocol"\r\n'+
-            '"Content Type"="application/x-magnet"\r\n'+
-            '"URL Protocol"=""\r\n'+
-
-            '\[HKEY_CLASSES_ROOT\\Magnet\\DefaultIcon]\r\n'+
-            '@="\\"' + process.execPath.split("\\").join("\\\\") + '\\"\r\n'+
-
-            '[HKEY_CLASSES_ROOT\\Magnet\\shell]\r\n'+
-            '[HKEY_CLASSES_ROOT\\Magnet\\shell\\open]\r\n'+
-            '[HKEY_CLASSES_ROOT\\Magnet\\shell\\open\\command]\r\n'+
-            '@="\\"' + process.execPath.split("\\").join("\\\\") + '\\" \\"%1\\""\r\n'+
-
-            '[HKEY_CURRENT_USER\\Software\\Classes\\Magnet]\r\n'+
-            '@="URL:magnet Protocol"\r\n'+
-            '"Content Type"="application/x-magnet"\r\n'+
-            '"URL Protocol"=""\r\n'+
-
-            '[HKEY_CURRENT_USER\\Software\\Classes\\Magnet\\DefaultIcon]\r\n'+
-            '@="\\"' + process.execPath.split("\\").join("\\\\") + '\\"\r\n'+
-
-            '[HKEY_CURRENT_USER\\Software\\Classes\\Magnet\\shell]\r\n'+
-            '[HKEY_CURRENT_USER\\Software\\Classes\\Magnet\\shell\\open]\r\n'+
-            '[HKEY_CURRENT_USER\\Software\\Classes\\Magnet\\shell\\open\\command]\r\n'+
-            '@="\\"' + process.execPath.split("\\").join("\\\\") + '\\" \\"%1\\""', err => {
-                if (err) throw err;
-                shell.openItem(dataPath+'\\register-magnet.reg'); 
-            });
+		app.setAsDefaultProtocolClient('magnet');
     }
+	player.notifier.info('Associated', '', 4000);
 };
 
 register.powLinks = () => {
@@ -153,10 +123,10 @@ register.powLinks = () => {
             var tempMime = 'x-scheme-handler/pow';
             child.exec('gnome-terminal -x bash -c "echo \'Associating Files or URls with Applications requires Admin Rights\'; echo; sudo echo; sudo echo \'Authentication Successful\'; sudo echo; sudo mv -f '+desktopFile+' /usr/share/applications; sudo xdg-mime default powder.desktop '+tempMime+'; sudo gvfs-mime --set '+tempMime+' powder.desktop; echo; echo \'Association Complete! Press any key to close ...\'; read" & disown');
         });
-    } else if (process.platform == 'darwin') {
-        var powderPath = process.execPath.substr(0,process.execPath.lastIndexOf("/")+1)+"../../../../Resources/app.nw/";
-        child.exec('"'+powderPath+'src/duti/duti" -s media.powder.player pow');
+    } else {
+        app.setAsDefaultProtocolClient('pow');
     }
+	player.notifier.info('Associated', '', 4000);
 };
 
 module.exports = register;
