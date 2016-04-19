@@ -18,15 +18,21 @@ var cacher = {
         var engineState = engineStore.getState();
 
         if (engineState.torrents && engineState.infoHash && engineState.torrents[engineState.infoHash] && engineState.torrents[engineState.infoHash].torrent) {
+            // we have a running torrent
+
             if (player.wcjs.playlist.currentItem == -1) return;
             var current = player.wcjs.playlist.currentItem;
 
             if (!player.itemDesc(current)) return
+
+            // make sure that the currently running playlist item is a file from the torrent
+            if (typeof player.itemDesc(current).setting.streamID == 'undefined') return
+
             var file = engineState.torrents[engineState.infoHash].files[player.itemDesc(current).setting.streamID];
             if (!file) return;
 
             var pieceInfo = engineState.torrents[engineState.infoHash].torrent.pieces.bank.get();
-            
+
             if (pieceInfo.downloaded == pieceInfo.total) {
                 _.defer(() => {
                     ProgressActions.setCache(1);
@@ -51,24 +57,33 @@ var cacher = {
 
                 var bank = pieceInfo.map;
 
-                if (!bank[targetPos]) targetPos--;
+                var last = fileOffset + fileLength; // last piece related to this file
 
-                var last = fileOffset + fileLength;
+                // we selected this piece based on a percentage so it may still be an inexact piece index
+                // a situation in which this can be wrong is when 2-3 files share the same start / end piece
+                // this should be thought about more in the future, as it should to be exact
+                if (!bank[targetPos] && bank[targetPos-1] && targetPos > 0) targetPos--;
+                else if (!bank[targetPos] && bank[targetPos+1] && targetPos < last) targetPos++;
 
                 if (targetPos > last) targetPos = last;
 
                 if (bank[targetPos]) {
-                    for (var jhk = targetPos; bank[jhk] && jhk <= last; jhk++) { }
-                    jhk--;
-                    if (typeof jhk !== 'undefined' && jhk <= last) {
-                        if (jhk == last) {
-                            var cachePos = 1;
+
+                    // find last sequencial piece
+                    var lastSeq = targetPos;
+                    for (var jhk = targetPos; bank[jhk] && jhk <= last; jhk++) {
+                        lastSeq = jhk;
+                    }
+
+                    if (lastSeq <= last) {
+                        if (lastSeq == last) {
+                            var cachePos = 1; // fully downloaded
                         } else {
-                            playingPart = jhk;
-                            var cachePos = (jhk - fileOffset) / fileLength;
+                            playingPart = lastSeq;
+                            var cachePos = (lastSeq - fileOffset) / fileLength;
                         }
                         _.defer(() => {
-                            ProgressActions.setCache(cachePos);
+                            ProgressActions.setCache(cachePos); // print cache bar
                         });
                     }
                 }

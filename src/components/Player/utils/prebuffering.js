@@ -1,8 +1,20 @@
 import engineStore from '../../../stores/engineStore';
 
-var player = {};
+var player;
 var prebufMap = [];
 var current;
+
+// helper functions
+
+function isDefined(param) {
+    return typeof param != 'undefined';
+}
+
+function isFileFromTorrent() {
+    return player && isDefined(current) && isDefined(player.itemDesc(current).setting.streamID) ? true : false;
+}
+
+// end helper functions
 
 function onPiece() {
 
@@ -15,12 +27,13 @@ function onPiece() {
 
     // get file progress
 
-    if (!player.itemDesc(current) || !player.itemDesc(current).setting || typeof player.itemDesc(current).setting.streamID == 'undefined') {
-        var fileSel = 0;
-    } else {
-        var fileSel = player.itemDesc(current).setting.streamID;
-    }
+    var fileSel = player.itemDesc(current).setting.streamID;
 
+    // buffering with WebChimera.js is set in time, not byte length
+    // we can never know the real prebuffering percent because we can't know
+    // the amount of playback time that a piece holds or the duration of
+    // the video, no excuse for the silly logic in the next 3 lines, but
+    // it takes into account file lengths, more often then not it's correct
     var file = engineState.torrents[engineState.infoHash].files[fileSel];
     var fileProgress = Math.round(engineState.torrents[engineState.infoHash].torrent.pieces.bank.filePercent(file.offset, file.length) * 100);
     var prebuf = Math.floor( fileProgress * 45 );
@@ -40,7 +53,7 @@ function onPiece() {
     } else if (player.announceEffect)
         announcer.effect = false;
 
-    if (Object.keys(announcer).length)
+    if (Object.keys(announcer).length && player)
         player.events.emit('announce', announcer);
 }
 
@@ -51,11 +64,15 @@ var prebuffering = {
 
         var engineState = engineStore.getState();
         if (engineState.torrents && engineState.infoHash && engineState.torrents[engineState.infoHash] && engineState.torrents[engineState.infoHash].torrent) { 
-            // it's a torrent
+            // we have a torrent running
+
             if (!prebufMap[engineState.infoHash]) prebufMap[engineState.infoHash] = [];
 
             if (player.wcjs.playlist.currentItem == -1) current = 0;
             else current = player.wcjs.playlist.currentItem;
+
+            // make sure that the currently running playlist item is a file from the torrent
+            if (!isFileFromTorrent()) return
 
             if (!prebufMap[engineState.infoHash][current]) {
 
@@ -68,14 +85,24 @@ var prebuffering = {
                 });
 
                 engineState.torrents[engineState.infoHash].on('download', onPiece);
+
             }
         }
     },
 
     end: () => {
-        if (current && !prebufMap[engineState.infoHash][current]) {
-            engineState.torrents[engineState.infoHash].removeListener('download', onPiece);
-            prebufMap[engineState.infoHash][current] = true;
+        if (isFileFromTorrent()) {
+
+            var engineState = engineStore.getState();
+
+            if (!prebufMap[engineState.infoHash][current]) {
+                engineState.torrents[engineState.infoHash].removeListener('download', onPiece);
+                prebufMap[engineState.infoHash][current] = true;
+            }
+
+            // clear these so garbage collection can take care of it
+            player = null;
+            current = null;
         }
     }
 
