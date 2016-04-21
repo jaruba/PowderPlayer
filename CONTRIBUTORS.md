@@ -4,8 +4,7 @@
 * Jean van Kasteel | [GitHub](https://github.com/vankasteelj)
 * Ivo Georgiev | <ivo@strem.io> | [GitHub](https://github.com/Ivshti)
 
-# Translators:
+# Active Translators:
 * Tomasz Stanisz | Polish & Russian
 * Jean van Kasteel | French
-* Yilmaz Hanemer | French
 * Branza Victor-Alexandru | Romanian
