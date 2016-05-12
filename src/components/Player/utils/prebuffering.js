@@ -53,7 +53,7 @@ function onPiece() {
     } else if (player.announceEffect)
         announcer.effect = false;
 
-    if (Object.keys(announcer).length && player)
+    if (Object.keys(announcer).length)
         player.events.emit('announce', announcer);
 }
 

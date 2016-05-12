@@ -75,7 +75,7 @@ default React.createClass({
                                 }
 
                                 return (
-                                    <paper-material onClick={player.playItem.bind(this,idx)} id={'item'+idx} className="item" key={idx} elevation={1} style={{background: 'url(' + item.image + ') no-repeat', borderRadius: '2px'}}>
+                                    <paper-material onClick={player.playItem.bind(this,idx)} id={'item'+idx} className="item" key={idx} elevation={1} style={{background: 'url(' + item.image + ') no-repeat, url(../images/video-placeholder.svg) no-repeat', borderRadius: '2px'}}>
                                         <p id={'itemTitle'+idx} className="title">{(path.isAbsolute(item.title)) ? path.normalize(path.parse(item.title).name) : item.title }</p>
                                     </paper-material>
                                     )

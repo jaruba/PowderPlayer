@@ -12,6 +12,7 @@ import {
     mouseTrap
 }
 from 'react-mousetrap';
+import plugins from '../utils/plugins';
 import Modal from './Modal';
 import DarkModal from './Player/components/Modal';
 import Message from './Message';
@@ -30,6 +31,8 @@ const Framework = React.createClass({
     mixins: [PureRenderMixin, RouteContext, History],
 
     componentWillMount() {
+		
+		plugins.update();
 
         Promise.config({
             warnings: {
@@ -46,6 +49,7 @@ const Framework = React.createClass({
         if (!ls.isSet('removeLogic')) ls('removeLogic', 0);
         if (!ls.isSet('downloadType')) ls('downloadType', 0);
         if (!ls.isSet('playerType')) ls('playerType', false);
+		if (!ls.isSet('adultContent')) ls('adultContent', false);
 
         this.props.bindShortcut('ctrl+d', () => ipcRenderer.send('app:toggleDevTools'));
 
@@ -58,7 +62,7 @@ const Framework = React.createClass({
     componentDidMount() {
         ipcRenderer.send('app:startup', new Date().getTime());
 
-        require('request')('https://www.google.com'); // Connect once to avoid cloggage
+        request('https://www.google.com'); // Connect once to avoid cloggage
 
         // login trakt
         if (ls('traktTokens'))

@@ -378,6 +378,7 @@ default React.createClass({
         };
         return (
             <div className='render-holder' onWheel={this.wheel}>
+                <div id="canvasEffect" style={{ position: 'absolute', width: '100%', height: '100%' }} />
                 <div className="controls-background" onClick={this.handleTogglePlay} onDoubleClick={ControlActions.toggleFullscreen} style={{zIndex: '1'}}>
                     <paper-ripple id="rendererRipple" className="recenteringTouch" noink={this.state.rippleEffects ? this.state.clickPause ? false : true : true} fit />
                 </div>

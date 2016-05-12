@@ -17,6 +17,8 @@ import VisibilityActions from '../components/Visibility/actions';
 import SubtitleActions from '../components/SubtitleText/actions';
 import engineStore from '../../../stores/engineStore';
 
+import ytdl from 'youtube-dl';
+
 var events = {};
 
 events.buffering = (perc) => {
@@ -51,6 +53,52 @@ events.opening = () => {
     var itemDesc = player.itemDesc();
     var isLocal = (itemDesc.mrl && itemDesc.mrl.indexOf('file://') == 0);
     if (!isLocal) {
+        
+        var timestamp = new Date().getTime();
+
+        if (itemDesc && itemDesc.setting.youtubeDL && itemDesc.setting.timestamp < timestamp -1000) {
+            // this is a youtube-dl supported link, let's refresh it to make sure the link didn't expire
+            
+            var currentItem = player.wcjs.playlist.currentItem;
+            
+            console.log('stopping item: '+currentItem);
+            console.log(itemDesc);
+            
+            player.wcjs.stop();
+            
+            console.log('starting ytdl on ' + itemDesc.setting.originalURL);
+            
+            var video = ytdl(itemDesc.setting.originalURL, ['-g']);
+             
+            video.on('info', function(info) {
+                console.log('got info');
+                console.log(info);
+                _.defer(() => {
+                    console.log('replace mrl data');
+                    console.log({
+                        autoplay: true,
+                        x: currentItem,
+                        mrl: {
+                            title: info.fulltitle ? info.fulltitle : null,
+                            thumbnail: info.thumbnail ? info.thumbnail : null,
+                            uri: info.url ? info.url : null,
+                            youtubeDL: true
+                        }
+                    });
+                    PlayerActions.replaceMRL({
+                        autoplay: true,
+                        x: currentItem,
+                        mrl: {
+                            title: info.fulltitle ? info.fulltitle : null,
+                            thumbnail: info.thumbnail ? info.thumbnail : null,
+                            uri: info.url ? info.url : null,
+                            youtubeDL: true
+                        }
+                    });
+                });
+            });
+            
+        }
         
         var announcer = {};
     
@@ -107,6 +155,11 @@ events.stopped = () => {
 events.playing = () => {
 
     if (!player.firstPlay) {
+
+        _.delay(() => {
+            // i don't like it, but if a delay is not set it sometimes bugs
+            PlayerActions.updateImage(player.itemDesc().setting.image);
+        }, 500);
 
         // catch first play event
         prebuffering.end();
@@ -209,6 +262,8 @@ events.error = () => {
     var itemDesc = player.itemDesc();
 
     traktUtil.handleScrobble('stop', itemDesc, player.wcjs.position);
+
+console.log(itemDesc);
 
     if (itemDesc.mrl.startsWith('https://player.vimeo.com/')) {
 

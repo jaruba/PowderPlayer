@@ -128,6 +128,16 @@ class PlayerActions {
                             idx: keeper.idx,
                             path: keeper.path
                         });
+                    } else if (data[i].youtubeDL) {
+                        var timestamp = 
+                        this.actions.setDesc({
+                            idx: keeper.idx,
+                            timestamp: 0,
+                            youtubeDL: true,
+                            originalURL: keeper.originalURL,
+                            image: keeper.image ? keeper.image : null,
+                            title: keeper.title ? keeper.title : null,
+                        });
                     }
 
                 }
@@ -172,6 +182,23 @@ class PlayerActions {
 
         wcjs.playlist.items[newX].setting = wcjs.playlist.items[newX + 1].setting;
         wcjs.playlist.removeItem(newX + 1);
+
+        var newData = {};
+        
+        newData.title = newMRL.title ? newMRL.title : null;
+            
+        newData.image = newMRL.thumbnail ? newMRL.thumbnail : null;
+        
+        if (newMRL.youtubeDL)
+            newData.timestamp = new Date().getTime();
+        
+        if (newData.title || newData.image || newData.timestamp) {
+            newData.idx = newX;
+            this.actions.setDesc(newData);
+        }
+
+        if (newObj.autoplay)
+            wcjs.playlist.playItem(newObj.x);
     }
 
     pulse() {
@@ -200,7 +227,7 @@ class PlayerActions {
     updateImage(image) {
         if (document.getElementById('canvasEffect')) {
             var wcjs = player.wcjs;
-            if (wcjs.playlist.items[wcjs.playlist.currentItem].mrl.indexOf('soundcloud.com') > -1 && image) {
+            if (!wcjs.input.hasVout && image) {
                 var image = image.replace('large', 't500x500');
                 document.getElementById('canvasEffect').parentNode.style.cssText = "background-color: transparent !important";
                 document.getElementById('playerCanvas').style.display = "none";

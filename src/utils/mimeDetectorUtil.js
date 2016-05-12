@@ -25,6 +25,11 @@ default {
                                 category: 'torrent'
                             });
                             break;
+                        case 'other':
+                            // validate as correct anyway, we might still be able to play it
+                            headers.category = 'direct';
+                            resolve(headers);
+                            break;
                         default:
                             if (headers.type.parsed === 'torrent')
                                 return resolve({

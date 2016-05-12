@@ -3,11 +3,14 @@ import PlayerActions from '../actions';
 import PlayerStore from '../store';
 import needle from 'needle';
 import _ from 'lodash';
+import ytdl from 'youtube-dl';
+import async from 'async';
+import ytdlSupported from './ytdl-extractor';
+import plugins from '../../../utils/plugins'
 
 
 class supportedLinks {
     isSupportedLink(link) {
-
         if (link.includes('youtube.com/watch?v=')) {
             return true;
         }
@@ -45,35 +48,11 @@ class supportedLinks {
         return false;
     }
 
-
-    iframeToLink(el) {
-
-        if (el.includes('youtube.com/embed/')) {
-            el = el.substr(el.indexOf('youtube.com/embed/') + 18);
-            if (el.includes('?'))
-                el = el.substr(0, el.indexOf('?'));
-
-            el = 'https://www.youtube.com/watch?v=' + el;
-        }
-
-        if (el.includes('player.vimeo.com/video/')) {
-            el = el.substr(el.indexOf('player.vimeo.com/video') + 23);
-            if (el.includes('?'))
-                el = el.substr(0, el.indexOf('?'));
-
-            el = 'https://vimeo.com/' + el;
-        }
-
-        return el;
-    }
-
-
-    handleURL(parsed) {
+    handleURL(parsed, plugin) {
         return new Promise((resolve, reject) => {
-            if (!this.isSupportedLink(parsed.url)) {
 
                 var client = new MetaInspector(parsed.url, {
-                    timeout: 5000
+                    timeout: 10000
                 });
 
                 client.on("fetch", () => {
@@ -89,61 +68,167 @@ class supportedLinks {
                         else if (client.links.absolute.https)
                             links = client.links.absolute.https;
                     }
-
+                    console.log('links found on page');
+                    console.log(links);
                     var iframes = client.iframes;
 
                     var queueParser = [];
+                    var uniqueIDs = [];
+                    
+                    var iframeToLink = function(el) {
 
-                    links.forEach((el, ij) => {
-                        if (noDupes.indexOf(el) == -1 && this.isSupportedLink(el)) {
-                            queueParser.push({
-                                idx: ij,
-                                url: el
-                            });
-                            newFiles.push({
-                                uri: el
-                            });
+                        if (el.includes('youtube.com/embed/')) {
+                            el = el.substr(el.indexOf('youtube.com/embed/') + 18);
+                            if (el.includes('?'))
+                                el = el.substr(0, el.indexOf('?'));
+                
+                            el = 'https://www.youtube.com/watch?v=' + el;
                         }
-                        noDupes.push(el);
-                    });
+                
+                        if (el.includes('player.vimeo.com/video/')) {
+                            el = el.substr(el.indexOf('player.vimeo.com/video') + 23);
+                            if (el.includes('?'))
+                                el = el.substr(0, el.indexOf('?'));
+                
+                            el = 'https://vimeo.com/' + el;
+                        }
+                
+                        return el;
+                    };
+                    
+                    var newLinks = [];
 
-                    client.host = client.host.replace('www.', '');
+                    var processSecondLevel = function (aLinks, rLinks, iLinks) {
+                        console.log('start processing');
+                        console.log(aLinks);
+                        async.forEachOfLimit(aLinks, 2, processLink, err => {
+    
+                            client.host = client.host.replace('www.', '');
+                            
+    //                        console.log('relative links');
+    //                        console.log(rLinks);
+                            if (rLinks) {
+                                async.forEachOfLimit(rLinks, 2, (el, ij, next) => {
+                                    el = parsed.domain + el.substr(1);
 
-                    if (['soundcloud.com', 'youtube.com', 'vimeo.com'].indexOf(client.host) > -1) {
-                        var relatives = client.links.relative;
-                        relatives.forEach((el, ij) => {
-                            el = 'https://' + client.host + el;
-
-                            if (noDupes.indexOf(el) == -1 && this.isSupportedLink(el)) {
-
-                                queueParser.push({
-                                    idx: ij,
-                                    url: el
+                                    processLink(el, ij, next);
+                                }, function() {
+                                    if (iLinks) {
+                                        async.forEachOfLimit(iLinks, 2, (el, ij, next) => {
+                                            el = iframeToLink(el);
+                                            processLink(el, ij, next);
+                                        }, done);
+                                    } else done();
                                 });
-                                newFiles.push({
-                                    uri: el
-                                });
-                            }
-                            noDupes.push(el);
+                            } else if (iLinks) {
+                                async.forEachOfLimit(iLinks, 2, (el, ij, next) => {
+                                    el = iframeToLink(el);
+                                    processLink(el, ij, next);
+                                }, done);
+                            } else done();
                         });
+
                     }
 
-                    iframes.forEach((el, ij) => {
+                    var processFirstLevel = function (el, ij, next) {
+                        var gClient = new MetaInspector(el, {
+                            timeout: 10000
+                        });
+                        
+                        gClient.on("fetch", () => {
 
-                        el = this.iframeToLink(el);
+                            var newNewLinks = gClient.document.match(/(https?:\/\/drive.google.com\/file\/d\/[^\/]+\/view)/g);
+                            if (newNewLinks) newLinks.concat(newNewLinks);
 
-                        if (noDupes.indexOf(el) == -1 && this.isSupportedLink(el)) {
-                            queueParser.push({
-                                idx: ij,
-                                url: el
+                            if (gClient.links.absolute && gClient.links.absolute.https)
+                                gClient.links.absolute.https.forEach( el => {
+                                    if (el.match(/https?:\/\/w?w?w?\.?openload\.co\//g)) {
+                                        console.log('pushing '+ el);
+                                        newLinks.push(el);
+                                    }
+                                });
+
+                            gClient.links.relative.forEach( el => {
+                                if (el.startsWith('/watch?v=')) {
+                                    el = 'https://www.youtube.com/' + el.substr(1);
+                                    newLinks.push(el);
+                                }
                             });
-                            newFiles.push({
-                                uri: el
-                            });
-                        }
-                        noDupes.push(el);
+
+                            next();
+                        });
+                        
+                        gClient.on("error", () => {
+                            next();
+                        });
+        
+                        gClient.fetch();
+                    };
+                    
+                    var processLink = function (el, ij, next) {
+
+                        if (noDupes.indexOf(el) == -1) {
+                            noDupes.push(el);
+
+                            var shouldPass = plugin ? plugins.perfectMatch(el, plugin) : ytdlSupported(el);
+                            if (shouldPass) {
+
+                                var video = ytdl(el, ['-g']);
+
+                                video.on('error', function(err) {
+                                    next();
+                                });
+    
+                                video.on('info', function(info) {
+                                    if (!(info['display_id'] && uniqueIDs.indexOf(info['display_id']) > -1) && info.url) {
+                                        info['display_id'] && uniqueIDs.push(info['display_id']);
+                                        console.log(info);
+                                        queueParser.push({
+                                            idx: ij,
+                                            url: el
+                                        });
+                                        newFiles.push({
+                                            originalURL: el,
+                                            uri: parsed.url,
+                                            youtubeDL: true,
+                                            image: info.thumbnail,
+                                            title: info.fulltitle
+                                        });
+                                    }
+                                    next();
+                                });
+                            } else next();
+                        } else next();
+                    };
+                    
+                    var done = function(err) {
+                        console.log('ended parsing page');
+                        console.log(newFiles);
+                        resolve([newFiles, queueParser]);
+                    };
+                    
+                    if (parsed.url.match(/https?:\/\/drive\.google\.com\/folderview/g)) {
+                        // this is a google drive folder
+                        // we'll fetch the links for it ourselves
+                        links = client.document.match(/(https?:\/\/drive.google.com\/file\/d\/[^\/]+\/view)/g);
+                    }
+
+                    var firstLevelLinks = [];
+
+                    links.forEach( el => {
+                        if (el.match(/https?:\/\/drive\.google\.com\/folderview/g) || el.match(/https?:\/\/www\.youtube\.com\/playlist\?list=/g) || el.match(/https?:\/\/w?w?w?\.?pastelink\.net\/[^\/]+$/g) || el.match(/https?:\/\/w?w?w?\.?keeplinks\.eu\/p\//g)) {
+                            firstLevelLinks.push(el);
+                        } else newLinks.push(el);
                     });
-                    resolve([newFiles, queueParser]);
+
+                    if (firstLevelLinks.length) {
+                        // there are multiple google drive folders on this page
+                        async.forEachOfLimit(firstLevelLinks, 2, processFirstLevel, err => {
+                            processSecondLevel(newLinks, client.links.relative, iframes);
+                        });
+                    } else {
+                        processSecondLevel(links, client.links.relative, iframes);
+                    }
 
                 });
 
@@ -151,69 +236,9 @@ class supportedLinks {
 
                 client.fetch();
 
-            } else {
-                PlayerActions.addPlaylist([{
-                    uri: parsed.url,
-                    title: parsed.title
-                }]);
-            }
         });
     }
 
-    fixVimeo(wcjs, lastItem, itemDesc) {
-
-        var url = itemDesc.mrl;
-
-        wcjs.stop();
-
-        needle.get(url, function(error, response) {
-            if (!error && response.statusCode == 200) {
-                var bestMRL;
-
-                // this can also be used to make a quality selector
-                // currently selecting 720p or best
-                response.body.request.files.progressive.some(el => {
-                    if (el.quality == '720p') {
-                        bestMRL = el.url;
-                        return true;
-                    } else {
-                        bestMRL = el.url;
-                        return false;
-                    }
-                });
-
-                var image;
-
-                if (response.body.video.thumbs && response.body.video.thumbs.base)
-                    image = response.body.video.thumbs.base + '_320.jpg';
-
-                // player.playlist.clear();
-
-                PlayerActions.replaceMRL({
-                    x: lastItem,
-                    mrl: {
-                        title: response.body.video.title,
-                        uri: bestMRL
-                    }
-                });
-
-                wcjs.playlist.playItem(lastItem);
-
-                if (document.getElementById('item' + lastItem)) {
-                    document.getElementById('item' + lastItem).style.background = "url('" + image + "')";
-                    document.getElementById('itemTitle' + lastItem).innerHTML = response.body.video.title;
-                }
-                if (image)
-                    _.delay(() => {
-                        PlayerActions.setDesc({
-                            idx: lastItem,
-                            image: image
-                        });
-                    }, 500);
-            }
-        });
-
-    }
 }
 
 export

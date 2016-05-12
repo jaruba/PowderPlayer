@@ -15,7 +15,7 @@ var parserQueue = async.queue((task, cb) => {
     var wcjs = player.wcjs;
     if (task.url && !task.filename) {
         var client = new MetaInspector(task.url, {
-            timeout: 5000
+            timeout: 10000
         });
 
         client.on("fetch", function() {
@@ -42,8 +42,15 @@ var parserQueue = async.queue((task, cb) => {
                     image: client.image
                 });
 
-                if (idx == wcjs.playlist.currentItem)
+                if (idx == wcjs.playlist.currentItem) {
                     player.events.emit('setTitle', client.title);
+                    if (!wcjs.input.hasVout && client.image) {
+                        // it's an audio file, change background
+                        _.defer(() => {
+                            PlayerActions.updateImage(client.image);
+                        });
+                    }
+                }
 
             }
             _.delay(() => {
