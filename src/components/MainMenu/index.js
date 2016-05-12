@@ -8,8 +8,10 @@ import MainMenuActions from './actions';
 import PlayerActions from '../../components/Player/actions';
 import ModalActions from './../Modal/actions';
 import MessageActions from '../Message/actions';
+import TorrentActions from '../../actions/torrentActions';
 import metaParser from '../../components/Player/utils/metaParser';
 import remote from 'remote';
+import path from 'path';
 
 import {
     webFrame
@@ -74,35 +76,48 @@ default React.createClass({
     onDrop(files,e) {
         if (files && files.length) {
 
-            var newFiles = [];
-            var queueParser = [];
-            
-            if (parser(files[0].name).shortSzEp())
-                files = sorter.episodes(files, 2);
-            else
-                files = sorter.naturalSort(files, 2);
-            
-            files.forEach( (file, ij) => {
-                newFiles.push({
-                    title: parser(file.name).name(),
-                    uri: 'file:///'+file.path,
-                    path: file.path
-                });
-                queueParser.push({
-                    idx: ij,
-                    url: 'file:///'+file.path,
-                    filename: file.name
-                });
-            });
+            var ext = path.extname(files[0].path);
 
-            PlayerActions.addPlaylist(newFiles);
-            
-            // start searching for thumbnails after 1 second
-            _.delay(() => {
-                queueParser.forEach( el => {
-                    metaParser.push(el);
+            if (['.torrent', '.magnet'].indexOf(ext) > -1) {
+
+                ModalActions.open({
+                    type: 'thinking'
                 });
-            },1000);
+
+                TorrentActions.addTorrent(files[0].path);
+                
+            } else {
+
+                var newFiles = [];
+                var queueParser = [];
+                
+                if (parser(files[0].name).shortSzEp())
+                    files = sorter.episodes(files, 2);
+                else
+                    files = sorter.naturalSort(files, 2);
+                
+                files.forEach( (file, ij) => {
+                    newFiles.push({
+                        title: parser(file.name).name(),
+                        uri: 'file:///'+file.path,
+                        path: file.path
+                    });
+                    queueParser.push({
+                        idx: ij,
+                        url: 'file:///'+file.path,
+                        filename: file.name
+                    });
+                });
+    
+                PlayerActions.addPlaylist(newFiles);
+                
+                // start searching for thumbnails after 1 second
+                _.delay(() => {
+                    queueParser.forEach( el => {
+                        metaParser.push(el);
+                    });
+                },1000);
+            }
         } else {
             var droppedLink = e.dataTransfer.getData("text/plain");
             if (droppedLink) {

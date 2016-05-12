@@ -21,6 +21,7 @@ default {
                             resolve(headers); //its streamable -- send to player direct
                             break;
                         case 'magnet':
+                        case 'torrent':
                             resolve({
                                 category: 'torrent'
                             });
@@ -49,8 +50,10 @@ default {
             });
         },
         getHeaders(url) {
+
             if (nodeURL.parse(url).protocol === 'magnet:')
                 var magnet = true;
+
             return new Promise((resolve, reject) => {
                 if (magnet) {
                     return resolve({
@@ -61,6 +64,11 @@ default {
                     .get(url)
                     .on('response', (response) => {
                         var type = mime.extension(response.headers['content-type']);
+                        if (type && type == 'torrent') {
+                            return resolve({
+                                category: 'torrent'
+                            });
+                        }
                         resolve({
                             status: response.statusCode,
                             url: url,

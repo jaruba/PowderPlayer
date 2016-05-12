@@ -22,7 +22,15 @@ import ytdl from 'youtube-dl';
 var events = {};
 
 events.buffering = (perc) => {
+
     var itemDesc = player.itemDesc();
+    if (player.secondPlay && perc == 100) {
+        player.secondPlay = false;
+        _.delay(() => {
+            // i don't like it, but if a delay is not set it sometimes bugs
+            PlayerActions.updateImage(player.itemDesc().setting.image);
+        }, 500);
+    }
     var isLocal = (itemDesc.mrl && itemDesc.mrl.indexOf('file://') == 0);
     if (!isLocal) {
         var announcer = {};
@@ -153,8 +161,10 @@ events.stopped = () => {
 }
 
 events.playing = () => {
-
+        
     if (!player.firstPlay) {
+        
+        player.secondPlay = true;
 
         _.delay(() => {
             // i don't like it, but if a delay is not set it sometimes bugs
