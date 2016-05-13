@@ -42,11 +42,15 @@ default React.createClass({
             });
         }
     },
+    setVolume() {
+        var t = document.querySelector('.vol-slide').immediateValue;
+        VolumeActions.setVolume(t);
+    },
     render() {
         return (
             <div>
                 <paper-icon-button onClick={VolumeActions.handleMute} icon={ 'av:' + (this.state.muted ? 'volume-off' : this.state.volume <= 0 ? 'volume-mute' : this.state.volume <= 120 ? 'volume-down' : 'volume-up') } className="volume-button" noink={true} />
-                <paper-slider className="vol-slide" name="volume-slider" ref="volume-slider" min="0" max="200" steps="1" value={this.state.muted ? 0 : this.state.volume} noink={true}/>
+                <paper-slider onClick={this.setVolume} className="vol-slide" name="volume-slider" ref="volume-slider" min="0" max="200" steps="1" value={this.state.muted ? 0 : this.state.volume} noink={true}/>
             </div>
         );
     }
