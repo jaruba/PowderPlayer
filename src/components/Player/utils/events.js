@@ -161,9 +161,11 @@ events.stopped = () => {
 }
 
 events.playing = () => {
-        
+
+    player.events.emit('playlistUpdate');
+
     if (!player.firstPlay) {
-        
+
         player.secondPlay = true;
 
         _.delay(() => {
@@ -213,6 +215,7 @@ events.playing = () => {
 }
 
 events.paused = () => {
+    player.events.emit('playlistUpdate');
     player.events.emit('controlsUpdate');
     traktUtil.handleScrobble('pause', player.itemDesc(), player.wcjs.position);
 }
@@ -263,6 +266,9 @@ events.mediaChanged = () => {
     });
 
     ui.defaultSettings();
+
+    player.events.emit('playlistUpdate');
+
 }
 
 events.error = () => {

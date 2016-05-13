@@ -7,6 +7,19 @@
   display: none;
 }
 
+.miniControls {
+  position: absolute;
+  top: 0; bottom: 0; left: 0; right: 0;
+}
+
+.playlist-progress {
+  position: absolute;
+  bottom: 40px;
+  left: 0;
+  height: 2px;
+  background: -webkit-linear-gradient(left, #a259fe 0, #1f99ff 100%);
+}
+
 .canvas-holder {
   position: absolute;
   top: 50%;
@@ -407,6 +420,77 @@
   position: relative;
   max-width: 43%;
   max-height: 43%;
+}
+
+.playlist-center-holder {
+  display: table;
+  width: 100%;
+  height: 100%;
+}
+.playlist-center {
+  display: table-cell;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.playlist-play-holder {
+  display: inline-block;
+  position: relative;
+  margin-top: -8%;
+  width: 22%;
+}
+
+.playlist-play-dummy {
+  margin-top: 100%
+}
+
+.playlist-play {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #03adeb;
+  color: #fff;
+  border-radius: 50%;
+}
+
+@media screen and (max-height: 415px) {
+
+  .wcjs-player .playlist-container .playlist-inner .item {
+    background: black !important;
+    height: 37px;
+    box-shadow: none;
+    overflow: hidden;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    border-radius: 0 !important;
+  }
+
+  .wcjs-player .playlist-container .playlist-inner .item .playlist-center {
+    display: none !important;
+  }
+
+  .wcjs-player .playlist-container .playlist-inner .item:hover {
+    background: gray !important;
+  }
+  
+  .wcjs-player .playlist-container .playlist-inner .playlist-selected {
+    background: #00adeb !important;
+  }
+  
+  .wcjs-player .playlist-container .playlist-inner .playlist-selected p {
+    color: rgba(255, 255, 255, 0.8) !important;
+  }
+  
+  .wcjs-player .playlist-container .playlist-inner .item p {
+    text-align: left !important;
+    padding-left: 15px;
+  }
+
 }
 
 @media screen and (max-width: 629px) {

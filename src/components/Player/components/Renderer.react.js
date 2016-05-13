@@ -129,6 +129,7 @@ default React.createClass({
             var visibilityState = VisibilityStore.getState();
             if (ls('renderHidden') || ((visibilityState.uiShown && !visibilityState.uiHidden) || (visibilityState.playlist || visibilityState.settings)))
                 ProgressActions.position(pos);
+                player.events.emit('playlistUpdate');
             initializeSize();
         }, ls('renderFreq'));
 
