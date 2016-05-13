@@ -113,26 +113,32 @@ class ProgressActions {
     }
 
     handleDragStart(event) {
+        
+        if (player.wcjs.length) {
 
-        var progressState = this.alt.stores.ProgressStore.state,
-            percent_done = event.pageX / document.body.clientWidth;
+            var progressState = this.alt.stores.ProgressStore.state,
+                percent_done = event.pageX / document.body.clientWidth;
+    
+            this.actions.settingChange({
+                keepScrobble: true,
+                seekPerc: percent_done,
+                scrobbling: true,
+                scrobbleHeight: progressState.scrobbleHeight + ' scrobbling'
+            });
+            this.actions.delayScrobbleGUI();
 
-        this.actions.settingChange({
-            keepScrobble: true,
-            seekPerc: percent_done,
-            scrobbling: true,
-            scrobbleHeight: progressState.scrobbleHeight + ' scrobbling'
-        });
-        this.actions.delayScrobbleGUI();
+        }
     }
 
     handleDragEnter(event) {
-        this.actions.settingChange({
-            progressHover: true
-        });
-        TooltipActions.settingChange({
-            progressHover: true
-        });
+        if (player.wcjs.length) {
+            this.actions.settingChange({
+                progressHover: true
+            });
+            TooltipActions.settingChange({
+                progressHover: true
+            });
+        }
     }
 
     handleDragEnd() {

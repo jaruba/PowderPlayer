@@ -3,6 +3,7 @@ import PureRenderMixin from 'react-addons-pure-render-mixin';
 
 import TooltipStore from './store';
 import TooltipActions from './actions';
+import player from '../../../../utils/player';
 
 export
 default React.createClass({
@@ -38,7 +39,7 @@ default React.createClass({
             tooltip: {
                 marginLeft: '-' + this.state.tooltipHalf + 'px',
                 left: this.state.tooltipLeft,
-                display: this.state.progressHover ? 'inline-block' : this.state.scrobbleTooltip
+                display: player.wcjs.length ? this.state.progressHover ? 'inline-block' : this.state.scrobbleTooltip : 'none'
             }
         };
         return (
