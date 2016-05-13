@@ -17,6 +17,7 @@ import ls from 'local-storage';
 import player from './utils/player';
 import cacheUtil from './utils/cache';
 import hotkeys from './utils/hotkeys';
+import contextMenu from './utils/contextMenu';
 
 import ControlStore from './components/Controls/store';
 import VisibilityStore from './components/Visibility/store';
@@ -47,6 +48,7 @@ const Player = React.createClass({
         VisibilityStore.unlisten(this.update);
         hotkeys.detach(this.props);
         cacheUtil.stop();
+        window.removeListener('contextmenu', contextMenu.listen);
     },
     componentDidMount() {
         var announcer = document.getElementsByClassName('wcjs-announce')[0];
@@ -58,6 +60,7 @@ const Player = React.createClass({
         });
         cacheUtil.start(player);
         player.loadState();
+        window.addEventListener('contextmenu', contextMenu.listen, false);
     },
     update() {
 //        console.log('player update');

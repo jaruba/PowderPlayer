@@ -22,8 +22,6 @@ import player from '../utils/player';
 import events from '../utils/events';
 import _ from 'lodash';
 
-var sleeper = null;
-
 export
 default React.createClass({
 
@@ -110,17 +108,7 @@ default React.createClass({
             theme: 'DarkRawTheme'
         });
     },
-    toggleMiniMenu() {
-        var visibilityState = VisibilityStore.getState();
-
-        if (!visibilityState.settings) {
-            document.querySelector('.mini-menu').style.display = 'block';
-        } else {
-            ui.toggleMenu('settings');
-        }
-    },
     handleOpenSettings() {
-        document.querySelector('.mini-menu').style.display = 'none';
 
         ui.toggleMenu('settings');
         
@@ -141,67 +129,7 @@ default React.createClass({
 
         this.history.replaceState(null, 'torrentDashboard');
     },
-    handleOpenSleepMenu() {
-        document.querySelector('.mini-menu').style.display = 'none';
-        document.querySelector('.sleep-menu').style.display = 'block';
-    },
-    handleClosePowder() {
-        document.querySelector('.mini-menu').style.display = 'none';
-        var engineState = engineStore.getState();
-        
-        if (engineState.infoHash && engineState.torrents[engineState.infoHash]) {
-            // it's a torrent, let's see if we should remove the files
-            if (ls('removeLogic') < 1) {
-                BaseModalActions.shouldExit(true);
-                BaseModalActions.open({ type: 'askRemove' });
-            } else {
-                var torrent = engineState.torrents[engineState.infoHash];
-    
-                torrentActions.clear();
-                events.close();
-
-                if (ls('removeLogic') == 1) {
-                    torrent.kill(() => {
-                        ipcRenderer.send('app:close');
-                    });
-                } else if (ls('removeLogic') == 2) {
-                    torrent.softKill(() => {
-                        ipcRenderer.send('app:close');
-                    });
-                }
-            }
-        } else {
-            ipcRenderer.send('app:close');
-        }
-    },
-    sleepFor(pauseIn) {
-        document.querySelector('.sleep-menu').style.display = 'none';
-        if (sleeper) {
-            clearTimeout(sleeper);
-            sleeper = null;
-        }
-        if (pauseIn.time) {
-            sleeper = setTimeout(() => {
-                sleeper = null;
-                player.wcjs.pause();
-                PlayerActions.announcement('Sleep Timer Triggered');
-            }, (pauseIn.time * 1000));
-        }
-        if (!pauseIn.time) {
-            PlayerActions.announcement('Sleep Timer Disabled');
-        } else {
-            PlayerActions.announcement('Sleep Timer: ' + pauseIn.label);
-        }
-    },
-    handleCloseMiniMenu() {
-        document.querySelector('.mini-menu').style.display = 'none';
-    },
     render() {
-        var engineState = engineStore.getState();
-        var isTorrent = false;
-        if (engineState.infoHash && engineState.torrents[engineState.infoHash]) {
-            isTorrent = true;
-        }
         return (
             <div>
                 <div className={this.state.uiHidden ? 'header' : this.state.playlistOpen ? 'header playlist-head' : this.state.settingsOpen ? 'header settings-head' : this.state.uiShown ? 'header show' : 'header'}>
@@ -213,7 +141,7 @@ default React.createClass({
                     <paper-icon-button id="playerPlaylistBut" onClick={ui.toggleMenu.bind(null, 'playlist')} className="player-playlist" icon={'av:playlist-add-check'} noink={true} />
                     <paper-tooltip for="playerPlaylistBut" offset="0">Playlist</paper-tooltip>
     
-                    <paper-icon-button id="playerSetBut" className="dropdown-trigger player-settings" icon={'image:tune'} noink={true} onClick={this.toggleMiniMenu} />
+                    <paper-icon-button id="playerSetBut" className="dropdown-trigger player-settings" icon={'image:tune'} noink={true} onClick={this.handleOpenSettings} />
                     <paper-tooltip for="playerSetBut" offset="0">Settings</paper-tooltip>
     
     
@@ -221,26 +149,6 @@ default React.createClass({
                     <paper-tooltip for="traktBut" offset="0">Trakt Info</paper-tooltip>
     
                 </div>
-
-                <div className="trakt-info-dialog mini-menu">
-                    <paper-item className="dashboardMenuButton dashboardBorder">Cast to Device</paper-item>
-                    <paper-item className="dashboardMenuButton dashboardBorder" onClick={this.handleOpenSleepMenu}>Sleep Timer</paper-item>
-                    <paper-item className="dashboardMenuButton dashboardBorder" onClick={this.handleOpenDashboard} style={{display: (isTorrent ? 'flex' : 'none')}}>Torrent Data</paper-item>
-                    <paper-item className="dashboardMenuButton dashboardBorder" onClick={this.handleOpenSettings}>Advanced Settings</paper-item>
-                    <paper-item className="dashboardMenuButton dashboardBorder" onClick={this.handleClosePowder}>Close Powder</paper-item>
-                    <paper-item className="dashboardMenuButton" onClick={this.handleCloseMiniMenu}>Close Menu</paper-item>
-                </div>
-
-                <div className="trakt-info-dialog sleep-menu">
-                    <paper-item className="dashboardMenuButton dashboardBorder" onClick={this.sleepFor.bind(this, { time: 0 })}>Disabled</paper-item>
-                    <paper-item className="dashboardMenuButton dashboardBorder" onClick={this.sleepFor.bind(this, { time: 900, label: '15 min' })}>15 min</paper-item>
-                    <paper-item className="dashboardMenuButton dashboardBorder" onClick={this.sleepFor.bind(this, { time: 1800, label: '30 min' })}>30 min</paper-item>
-                    <paper-item className="dashboardMenuButton dashboardBorder" onClick={this.sleepFor.bind(this, { time: 2700, label: '45 min' })}>45 min</paper-item>
-                    <paper-item className="dashboardMenuButton dashboardBorder" onClick={this.sleepFor.bind(this, { time: 3600, label: '1 hour' })}>1 hour</paper-item>
-                    <paper-item className="dashboardMenuButton dashboardBorder" onClick={this.sleepFor.bind(this, { time: 5400, label: '1 hour 30 min' })}>1 hour 30 min</paper-item>
-                    <paper-item className="dashboardMenuButton dashboardBorder" onClick={this.sleepFor.bind(this, { time: 7200, label: '2 hours' })}>2 hours</paper-item>
-                </div>
-
             </div>
         );
     }

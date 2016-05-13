@@ -10,6 +10,7 @@ import Thinking from './components/Thinking';
 import DashboardMenu from './components/dashboardMenu';
 import DashboardFileMenu from './components/dashboardFileMenu';
 import AskRemove from './components/askRemove';
+import About from './components/about';
 
 export
 default React.createClass({
@@ -81,6 +82,9 @@ default React.createClass({
                 break;
             case 'askRemove':
                 return <AskRemove />;
+                break;
+            case 'about':
+                return <About />;
                 break;
         }
     },
