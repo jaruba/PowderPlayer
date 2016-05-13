@@ -48,7 +48,7 @@ const Player = React.createClass({
         VisibilityStore.unlisten(this.update);
         hotkeys.detach(this.props);
         cacheUtil.stop();
-        window.removeListener('contextmenu', contextMenu.listen);
+        window.removeEventListener('contextmenu', contextMenu.listen);
     },
     componentDidMount() {
         var announcer = document.getElementsByClassName('wcjs-announce')[0];
