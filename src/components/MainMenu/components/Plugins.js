@@ -364,7 +364,7 @@ default React.createClass({
             var generated = _.map(feed, (el, ij) => {
                 return (
                     <div key={ij} className="feed-element" onClick={this.setSelected.bind(this, el)}>
-                          <paper-icon-button className={'feed-interest'} src={'../images/icons/discover-icons/' + el.icon + '.png'} noink={true} style={{width: '60px', height: '60px', padding: '0', marginBottom: '7px' }} />
+                          <paper-icon-button className={'feed-interest'} src={'images/icons/discover-icons/' + el.icon + '.png'} noink={true} style={{width: '60px', height: '60px', padding: '0', marginBottom: '7px' }} />
                         <br />
                         {el.label}
                     </div>
