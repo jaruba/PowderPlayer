@@ -15,6 +15,112 @@ body {
   }
 }
 
+.feed-element {
+  display: inline-block;
+  font-size: 15px;
+  text-align: center;
+  width: 130px;
+  height: 95px;
+  line-height: 25px;
+  padding: 5px;
+  padding-top: 11px;
+  margin: 10px;
+  background: white;
+  border-radius: 7px;
+  color: #1ca8ed;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+.tag {
+  padding: 3px 7px;
+  color: #333;
+  background-color: #bcbcc4;
+  border-radius: 3px;
+  font-size: 12px;
+  color: white;
+  background-color: #1ca8ed;
+  margin: 3px;
+  cursor: pointer;
+  display: inline-block;
+}
+.tag-selected {
+  background-color: #036FA4;
+}
+.tag:hover {
+  background-color: #036FA4;
+}
+.plugin-container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0 5%;
+  background: white;
+  display: none;
+}
+.plugin-list {
+  overflow-y: auto;
+  margin-right: 0;
+  position: relative;
+  width: 100%;
+  height: 68%;
+  text-align: center;
+}
+.plugin-url {
+  cursor: pointer;
+  color: #1ca8ed;
+  white-space: nowrap;
+  overflow: hidden;
+  width: 100%;
+  text-overflow: ellipsis;
+  display: inline-block;
+}
+.pluginModal {
+  overflow-x: auto;
+}
+.pluginModal::-webkit-scrollbar {
+  background: whiteSmoke;
+}
+.pluginModal::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border: solid whiteSmoke 4px;
+}
+.pluginModal::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+.plugin-list::-webkit-scrollbar {
+  background: whiteSmoke;
+}
+.plugin-list::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border: solid whiteSmoke 4px;
+}
+.plugin-list::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+.feed-logos {
+  width: 100%;
+  height: 60px;
+  background-size: contain !important;
+}
+
+.feed-element:hover {
+  color: #036FA4;
+}
+
+.extensionView #main_plugins_but {
+  color: #00adeb !important;
+}
+
+.extensionView .mainButHold {
+  display: none;
+}
+
+.extensionView .plugin-container {
+  display: block !important;
+}
+
 .prettyScrollWhite::-webkit-scrollbar {
   width: 9px;
   height: 9px;
