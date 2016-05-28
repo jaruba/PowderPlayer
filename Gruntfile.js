@@ -125,6 +125,16 @@ module.exports = function(grunt) {
                     cwd: 'bin/wcjs',
                     src: ['**/*'],
                     dest: 'build/bin/'
+                }, {
+                    expand: true,
+                    cwd: 'bin/youtube-dl',
+                    src: ['**/*'],
+                    dest: 'build/bin/youtube-dl/'
+                }, {
+                    expand: true,
+                    cwd: 'bin/ffmpeg',
+                    src: ['**/*'],
+                    dest: 'build/bin/ffmpeg/'
                 }]
             },
             videoWin: {
@@ -138,6 +148,16 @@ module.exports = function(grunt) {
                     cwd: 'bin/wcjs',
                     src: ['**/*'],
                     dest: 'dist/' + BASENAME + '-win32-' + arch + '/resources/bin'
+                }, {
+                    expand: true,
+                    cwd: 'bin/youtube-dl',
+                    src: ['**/*'],
+                    dest: 'dist/' + BASENAME + '-win32-' + arch + '/resources/bin/youtube-dl'
+                }, {
+                    expand: true,
+                    cwd: 'bin/ffmpeg',
+                    src: ['**/*'],
+                    dest: 'dist/' + BASENAME + '-win32-' + arch + '/resources/bin/ffmpeg'
                 }]
             },
             releaseOSX: {
