@@ -77,7 +77,7 @@ class PlayerActions {
         if (data.noStart) {
             noStart = true;
             data = data.files;
-        } else {
+        } else if (!player.wcjs.playlist.itemCount) {
             HistoryStore.getState().history.replaceState(null, 'player');
         }
 
@@ -129,12 +129,19 @@ class PlayerActions {
                             path: keeper.path
                         });
                     } else if (data[i].youtubeDL) {
-                        var timestamp = 
                         this.actions.setDesc({
                             idx: keeper.idx,
                             timestamp: 0,
                             youtubeDL: true,
                             originalURL: keeper.originalURL,
+                            image: keeper.image ? keeper.image : null,
+                            title: keeper.title ? keeper.title : null,
+                        });
+                    } else if (data[i].filmon) {
+                        this.actions.setDesc({
+                            idx: keeper.idx,
+                            filmon: true,
+                            filmonObj: keeper.filmonObj,
                             image: keeper.image ? keeper.image : null,
                             title: keeper.title ? keeper.title : null,
                         });
@@ -236,6 +243,9 @@ class PlayerActions {
                 document.getElementById('canvasEffect').parentNode.style.cssText = "background-color: #000 !important";
                 document.getElementById('playerCanvas').style.display = "block";
                 document.getElementsByClassName('wcjs-player')[0].style.background = "black";
+                _.defer(() => {
+                    player.events.emit('resizeNow');
+                });
             }
         }
     }

@@ -21,6 +21,7 @@ import ui from '../utils/ui';
 import player from '../utils/player';
 import events from '../utils/events';
 import _ from 'lodash';
+import LinkSupport from './../utils/supportedLinks';
 
 export
 default React.createClass({
@@ -74,8 +75,14 @@ default React.createClass({
         });
     },
     handleClose() {
+
+        var Linky = new LinkSupport;
+        Linky.stopParsing();
         
         var engineState = engineStore.getState();
+        
+        player.wcjs.stop();
+        player.wcjs.playlist.clear();
         
         if (engineState.infoHash && engineState.torrents[engineState.infoHash]) {
             // it's a torrent, let's see if we should remove the files

@@ -7,7 +7,10 @@ import ytdl from 'youtube-dl';
 import async from 'async';
 import ytdlSupported from './ytdl-extractor';
 import plugins from '../../../utils/plugins'
+import BaseModalActions from '../../Modal/actions';
+import ls from 'local-storage';
 
+var fullStop = false;
 
 class supportedLinks {
     isSupportedLink(link) {
@@ -47,15 +50,31 @@ class supportedLinks {
 
         return false;
     }
+    
+    stopParsing() {
+        fullStop = true;
+    }
 
-    handleURL(parsed, plugin) {
-        return new Promise((resolve, reject) => {
+    handleURL(parsed, plugin, cb, errorCB) {
+                fullStop = false;
+//        return new Promise((resolve, reject) => {
 
                 var client = new MetaInspector(parsed.url, {
                     timeout: 10000
                 });
 
                 client.on("fetch", () => {
+                    if (fullStop) return;
+                    var hasChildren = (arr) => {
+                        return arr && arr.length
+                    }
+                    if (hasChildren(client.torrents) || hasChildren(client.links.absolute.magnet)) {
+                        // has torrents
+                        fullStop = true;
+                        BaseModalActions.torrentSelector(parsed.url);
+                        return;
+                    }
+                    console.log(client);
                     var newFiles = [];
                     var noDupes = [];
                     var links = [];
@@ -105,12 +124,14 @@ class supportedLinks {
     
                             client.host = client.host.replace('www.', '');
                             
-    //                        console.log('relative links');
-    //                        console.log(rLinks);
+                            if (fullStop) {
+                                done();
+                                return;
+                            }
                             if (rLinks) {
                                 async.forEachOfLimit(rLinks, 2, (el, ij, next) => {
                                     el = parsed.domain + el.substr(1);
-
+                                    
                                     processLink(el, ij, next);
                                 }, function() {
                                     if (iLinks) {
@@ -166,6 +187,11 @@ class supportedLinks {
                     };
                     
                     var processLink = function (el, ij, next) {
+                        
+                        if (fullStop) {
+                            next();
+                            return;
+                        }
 
                         if (noDupes.indexOf(el) == -1) {
                             noDupes.push(el);
@@ -173,7 +199,14 @@ class supportedLinks {
                             var shouldPass = plugin ? plugins.perfectMatch(el, plugin) : ytdlSupported(el);
                             if (shouldPass) {
 
-                                var video = ytdl(el, ['-g']);
+                                var ytdlArgs = ['-g'];
+
+                                if (ls('ytdl-quality')) {
+                                    ytdlArgs.push('-f');
+                                    ytdlArgs.push('[height <=? ' + ls('ytdl-quality') + ']');
+                                }
+                                
+                                var video = ytdl(el, ytdlArgs);
 
                                 video.on('error', function(err) {
                                     next();
@@ -183,17 +216,23 @@ class supportedLinks {
                                     if (!(info['display_id'] && uniqueIDs.indexOf(info['display_id']) > -1) && info.url) {
                                         info['display_id'] && uniqueIDs.push(info['display_id']);
                                         console.log(info);
-                                        queueParser.push({
+                                        var queue = {
                                             idx: ij,
                                             url: el
-                                        });
-                                        newFiles.push({
+                                        };
+                                        var file = {
                                             originalURL: el,
                                             uri: parsed.url,
                                             youtubeDL: true,
                                             image: info.thumbnail,
                                             title: info.fulltitle
-                                        });
+                                        };
+                                        
+                                        if (!fullStop) {
+                                            cb([[file], [queue]]);
+                                            queueParser.push(queue);
+                                            newFiles.push(file);
+                                        }
                                     }
                                     next();
                                 });
@@ -202,9 +241,13 @@ class supportedLinks {
                     };
                     
                     var done = function(err) {
-                        console.log('ended parsing page');
-                        console.log(newFiles);
-                        resolve([newFiles, queueParser]);
+                        if (!fullStop) {
+                            console.log('ended parsing page');
+                            console.log(newFiles);
+                            if (!newFiles.length)
+                                errorCB(new Error('No Results'));
+    //                        resolve([newFiles, queueParser]);
+                        }
                     };
                     
                     if (parsed.url.match(/https?:\/\/drive\.google\.com\/folderview/g)) {
@@ -232,11 +275,11 @@ class supportedLinks {
 
                 });
 
-                client.on("error", reject);
+                client.on("error", errorCB);
 
                 client.fetch();
 
-        });
+//        });
     }
 
 }

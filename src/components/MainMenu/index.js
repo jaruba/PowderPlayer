@@ -10,6 +10,7 @@ import ModalActions from './../Modal/actions';
 import MessageActions from '../Message/actions';
 import TorrentActions from '../../actions/torrentActions';
 import metaParser from '../../components/Player/utils/metaParser';
+import Plugins from './components/Plugins';
 import remote from 'remote';
 import path from 'path';
 
@@ -28,7 +29,8 @@ default React.createClass({
     getInitialState() {
         return {
             dropBorderColor: '#ccc',
-            lastZoom: 0
+            lastZoom: 0,
+            extensionView: false
         }
     },
     componentWillMount() {
@@ -144,14 +146,32 @@ default React.createClass({
     onDragLeave() {
         document.querySelector('.wrapper .holder').classList.remove('holder-hover');
     },
+    extensionView() {
+        var viewHolder = window.document.querySelector(".wrapper");
+        if (viewHolder.className.includes('extensionView')) {
+            viewHolder.className = viewHolder.className.replace(' extensionView', '');
+            this.setState({
+                extensionView: false
+            });
+        } else {
+            viewHolder.className += ' extensionView';
+            this.setState({
+                extensionView: true
+            });
+        }
+    },
     render() {
+        var extensionView = this.state.extensionView ? (<Plugins />) : '';
         return (
             <div className="wrapper">
+               {extensionView}
                <center>
                     <Dropzone ref="dropper" disableClick={true} className="holder" onDragEnter={this.onDragEnter} onDragLeave={this.onDragLeave} onDrop={this.onDrop} style={{}}>
                         <div>
                             <div className="mainButtonHolder">
                                  <div className="inButtonHolder">
+                                    <paper-icon-button id="main_plugins_but" icon="extension" alt="plugins" style={{color: '#767A7B', width: '44px', height: '44px', right: '2px', position: 'absolute', marginRight: '48px', marginTop: '2px'}} onClick={this.extensionView}></paper-icon-button>
+                                    <paper-tooltip for="main_plugins_but" offset="0">Plugins</paper-tooltip>
                                     <paper-icon-button id="main_settings_but" icon="settings" alt="settings" style={{color: '#767A7B', width: '48px', height: '48px', right: '2px', position: 'absolute'}}></paper-icon-button>
                                     <paper-tooltip for="main_settings_but" offset="0">Settings</paper-tooltip>
                                 </div>

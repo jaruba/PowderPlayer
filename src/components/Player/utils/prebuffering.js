@@ -53,7 +53,7 @@ function onPiece() {
     } else if (player.announceEffect)
         announcer.effect = false;
 
-    if (Object.keys(announcer).length)
+    if (Object.keys(announcer).length && player)
         player.events.emit('announce', announcer);
 }
 
@@ -79,10 +79,11 @@ var prebuffering = {
                 // video is opening for the first time, show prebuffering
 
                 clearTimeout(player.announceTimer);
-                player.events.emit('announce', {
-                    text: 'Prebuffering 0%',
-                    effect: false
-                });
+                if (player)
+                    player.events.emit('announce', {
+                        text: 'Prebuffering 0%',
+                        effect: false
+                    });
 
                 engineState.torrents[engineState.infoHash].on('download', onPiece);
 

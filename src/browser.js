@@ -3,7 +3,7 @@ import BrowserWindow from 'browser-window';
 import rimraf from 'rimraf';
 import path from 'path';
 import {
-    ipcMain, powerSaveBlocker
+    ipcMain, powerSaveBlocker, Menu
 }
 from 'electron';
 import yargs from 'yargs';
@@ -80,6 +80,26 @@ app.on('ready', () => {
     });
 
     mainWindow.on('close', app.quit);
+
+    ipcMain.on('app:contextmenu', (event, template) => {
+        var passActions = function(temp) {
+            temp.forEach( (el, ij) => {
+                if (el.click) {
+                    temp[ij].click = function(clicker) {
+                        return () => {
+                            event.sender.send('context-action', clicker);
+                        }
+                    }(el.click)
+                } else if (el.submenu && el.submenu.length) {
+                    temp[ij].submenu = passActions(el.submenu);
+                }
+            })
+            return temp;
+        }
+        template = passActions(template);
+        var contextMenu = Menu.buildFromTemplate(template);
+        contextMenu.popup(mainWindow);
+    });
 
     ipcMain.on('app:get:fullscreen', (event) => {
         event.returnValue = mainWindow.isFullScreen();

@@ -27,10 +27,14 @@ class ControlActions {
     toggleFullscreen(state) {
         if (typeof state !== 'boolean') state = !this.alt.stores.ControlStore.state.fullscreen;
 
-        window.document.querySelector(".render-holder > div:first-of-type").style.display = 'none';
-        _.delay(() => {
-            window.document.querySelector(".render-holder > div:first-of-type").style.display = 'block';
-        }, 500);
+        var canvasEffect = window.document.querySelector(".render-holder > div:first-of-type");
+
+        if (canvasEffect) {
+            canvasEffect.style.display = 'none';
+            _.delay(() => {
+                canvasEffect.style.display = 'block';
+            }, 500);
+        }
 
         ipcRenderer.send('app:fullscreen', state);
         this.actions.settingChange({

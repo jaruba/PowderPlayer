@@ -1,10 +1,14 @@
 {
   "name": "Powder-Player",
   "version": "1.0.0",
-  "authors": [
-    "Branza Victor-Alexandru",
-    "Luigi Poole"
-  ],
+  "author": "Branza Victor-Alexandru <branza.alex@gmail.com>",
+  "contributors": [{
+    "name": "Luigi Poole",
+    "email": "luigi@violently.sexy"
+  },{
+    "name": "Jean van Kasteel",
+    "email": "vankasteelj@gmail.com"
+  }],
   "description": "Powder is the future of all torrent requirements, it's a hybrid between a Torrent Client (Peerflix) and a Customized Player (WebChimera.js).",
   "relese-name": "Nightingale",
   "homepage": "http://powder.media/",
@@ -56,7 +60,8 @@
     "workerjs": "^0.1.1",
     "react-polymer": "^1.1.0",
     "youtube-dl": "https://github.com/jaruba/node-youtube-dl/tarball/master",
-    "easy-ffmpeg": "https://github.com/jaruba/easy-ffmpeg/tarball/master"
+    "easy-ffmpeg": "https://github.com/jaruba/easy-ffmpeg/tarball/master",
+    "multipass-torrent": "https://github.com/DavyBavy/multipass-torrent/tarball/master"
   },
   "devDependencies": {
     "babel": "^6.3.13",

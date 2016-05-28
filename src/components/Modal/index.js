@@ -11,6 +11,11 @@ import DashboardMenu from './components/dashboardMenu';
 import DashboardFileMenu from './components/dashboardFileMenu';
 import AskRemove from './components/askRemove';
 import About from './components/about';
+import Plugin from './components/Plugin';
+import InstalledPlugin from './components/InstalledPlugin';
+import SearchPlugin from './components/SearchPlugin';
+import SearchPlugins from './components/SearchPlugins';
+import TorrentSelector from './components/torrentSelector';
 
 export
 default React.createClass({
@@ -85,6 +90,21 @@ default React.createClass({
                 break;
             case 'about':
                 return <About />;
+                break;
+            case 'plugin':
+                return <Plugin />;
+                break;
+            case 'installedPlugin':
+                return <InstalledPlugin />;
+                break;
+            case 'searchPlugin':
+                return <SearchPlugin />;
+                break;
+            case 'searchPlugins':
+                return <SearchPlugins />;
+                break;
+            case 'torrentSelector':
+                return <TorrentSelector />;
                 break;
         }
     },

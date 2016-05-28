@@ -9,6 +9,7 @@ import _ from 'lodash';
 import ytdl from 'youtube-dl';
 import ytdlSupported from './../components/Player/utils/ytdl-extractor';
 import plugins from './plugins';
+import ls from 'local-storage';
 
 module.exports = (inputvalue, cb) => {
     return new Promise((resolve, reject) => {
@@ -35,7 +36,7 @@ module.exports = (inputvalue, cb) => {
                                 function parseLinks(plugin) {
                                     // start scanning for media on the page
                                     var Linky = new LinkSupport;
-                                    Linky.handleURL(parsed, plugin).then(resolvedLink => {
+                                    Linky.handleURL(parsed, plugin, resolvedLink => {
                                         var newFiles = resolvedLink[0];
                                         var queueParser = resolvedLink[1];
                                         if (newFiles.length) {
@@ -48,8 +49,14 @@ module.exports = (inputvalue, cb) => {
                                             }), 1000);
                                         } else {
                                             // try youtube-dl with it, use media scanner as a fallback
+                                            var ytdlArgs = ['-g'];
+
+                                            if (ls('ytdl-quality')) {
+                                                ytdlArgs.push('-f');
+                                                ytdlArgs.push('[height <=? ' + ls('ytdl-quality') + ']');
+                                            }
                                             
-                                            var video = ytdl(parsed.url, ['-g']);
+                                            var video = ytdl(parsed.url, ytdlArgs);
                 
                                             video.on('error', function(err) {
                                                 ModalActions.close();
@@ -72,7 +79,7 @@ module.exports = (inputvalue, cb) => {
                                             });
                                             
                                         }
-                                    }).catch(reject);
+                                    }, reject);
                                 }
                                 
                                 // let's see if we have any plugin that can handle this link

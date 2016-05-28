@@ -3,6 +3,7 @@ import PureRenderMixin from 'react-addons-pure-render-mixin';
 import ModalActions from '../actions';
 import ModalStore from '../store';
 import _ from 'lodash';
+import LinkSupport from './../../Player/utils/supportedLinks';
 
 export
 default React.createClass({
@@ -40,7 +41,8 @@ default React.createClass({
     },
 
     handelCancel() {
-
+        var Linky = new LinkSupport;
+        Linky.stopParsing();
     },
 
     update() {

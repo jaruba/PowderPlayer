@@ -14,6 +14,10 @@ class modalStore {
         this.data = false;
         this.index = -1;
         this.shouldExit = false;
+        this.selectedPlugin = false;
+        this.installededPlugin = false;
+        this.searchPlugin = false;
+        this.parseLink = false;
 
     }
     
@@ -48,11 +52,45 @@ class modalStore {
             type: 'thinking'
         });
     }
+    
+    onPlugin(el) {
+        this.setState({
+            selectedPlugin: el,
+            type: 'plugin'
+        });
+    }
+    
+    onInstalledPlugin(el) {
+        this.setState({
+            installedPlugin: el,
+            type: 'installedPlugin'
+        });
+    }
+    
+    onSearchPlugin(el) {
+        this.setState({
+            searchPlugin: el,
+            type: 'searchPlugin'
+        });
+    }
+
+    onTorrentSelector(el) {
+        this.setState({
+            parseLink: el,
+            type: 'torrentSelector'
+        });
+    }
 
     onFileSelector(files) {
         this.setState({
             fileSelectorFiles: files,
             type: 'fileSelctor'
+        });
+    }
+    
+    onSearchPlugins() {
+        this.setState({
+            type: 'searchPlugins'
         });
     }
 
