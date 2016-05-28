@@ -24,7 +24,10 @@
     <link rel="import" href="./bower_components/iron-icons/hardware-icons.html">
     <link rel="import" href="./bower_components/iron-icons/av-icons.html">
     <link rel="import" href="./bower_components/iron-icons/image-icons.html">
+
     <link rel="import" href="./bower_components/iron-pages/iron-pages.html">
+    <link rel="import" href="./bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+    <link rel="import" href="./bower_components/paper-listbox/paper-listbox.html">
 
     <link rel="import" href="./bower_components/neon-animation/animations/slide-from-top-animation.html">
     <link rel="import" href="./bower_components/neon-animation/animations/fade-out-animation.html">
@@ -110,6 +113,10 @@
        width: 30px !important;
         height: 30px !important;
      }
+    paper-progress.green-progress {
+        --paper-progress-active-color: var(--paper-light-green-500);
+        --paper-progress-secondary-color: var(--paper-light-green-100);
+    }
     </style>
     <style is="custom-style">
       paper-checkbox.dark {
@@ -187,7 +194,7 @@
     </style>
     <title>Powder Player</title>
   </head>
-  <body>
+  <body tabindex="-1">
      <div id="app"></div>
     
     <script type="text/javascript">
