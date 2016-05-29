@@ -27,6 +27,8 @@ import ReactNotify from 'react-notify';
 
 import {mouseTrap} from 'react-mousetrap';
 
+var lastPos = false;
+
 const Player = React.createClass({
     mixins: [PureRenderMixin],
 
@@ -49,6 +51,7 @@ const Player = React.createClass({
         hotkeys.detach(this.props);
         cacheUtil.stop();
         window.removeEventListener('contextmenu', contextMenu.listen);
+        window.removeEventListener('mousemove', this.hover);
     },
     componentDidMount() {
         var announcer = document.getElementsByClassName('wcjs-announce')[0];
@@ -61,6 +64,7 @@ const Player = React.createClass({
         cacheUtil.start(player);
         player.loadState();
         window.addEventListener('contextmenu', contextMenu.listen, false);
+        window.addEventListener('mousemove', this.hover, false);
     },
     update() {
 //        console.log('player update');
@@ -77,17 +81,21 @@ const Player = React.createClass({
         else
             player.hoverTimeout = setTimeout(this.hideUI, 3000);
     },
-    hover(event) {
-        player.hoverTimeout && clearTimeout(player.hoverTimeout);
-        this.state.uiShown || VisibilityActions.uiShown(true);
-        player.hoverTimeout = setTimeout(this.hideUI, 3000);
+    hover(event,a,b,c,d) {
+        var curPos = event.pageX+'x'+event.pageY;
+        if (curPos != lastPos) {
+            lastPos = curPos;
+            player.hoverTimeout && clearTimeout(player.hoverTimeout);
+            this.state.uiShown || VisibilityActions.uiShown(true);
+            player.hoverTimeout = setTimeout(this.hideUI, 3000);
+        }
     },
     render() {
         var cursorStyle = {
             cursor: this.state.uiShown ? 'pointer' : 'none'
         };
         return (
-            <div onMouseMove={this.hover} className="wcjs-player" style={cursorStyle}>
+            <div className="wcjs-player" style={cursorStyle}>
                 <PlayerHeader />
                 <PlayerRender />
                 <Announcement />
