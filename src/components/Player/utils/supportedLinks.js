@@ -201,9 +201,10 @@ class supportedLinks {
 
                                 var ytdlArgs = ['-g'];
 
-                                if (ls('ytdl-quality')) {
+                                if (ls('ytdlQuality') < 4) {
+                                    var qualities = [360, 480, 720, 1080];
                                     ytdlArgs.push('-f');
-                                    ytdlArgs.push('[height <=? ' + ls('ytdl-quality') + ']');
+                                    ytdlArgs.push('[height <=? ' + qualities[ls('ytdlQuality')] + ']');
                                 }
                                 
                                 var video = ytdl(el, ytdlArgs);

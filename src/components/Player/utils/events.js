@@ -76,7 +76,15 @@ events.opening = () => {
             
             console.log('starting ytdl on ' + itemDesc.setting.originalURL);
             
-            var video = ytdl(itemDesc.setting.originalURL, ['-g']);
+            var ytdlArgs = ['-g'];
+
+            if (ls('ytdlQuality') < 4) {
+                var qualities = [360, 480, 720, 1080];
+                ytdlArgs.push('-f');
+                ytdlArgs.push('[height <=? ' + qualities[ls('ytdlQuality')] + ']');
+            }
+            
+            var video = ytdl(itemDesc.setting.originalURL, ytdlArgs);
              
             video.on('info', function(info) {
                 console.log('got info');

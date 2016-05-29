@@ -42,7 +42,7 @@ const Framework = React.createClass({
             }
         });
 
-        if (!ls.isSet('ytdl-quality')) ls('ytdl-quality', 720);
+        if (!ls.isSet('ytdlQuality')) ls('ytdlQuality', 2);
         if (!ls.isSet('renderFreq')) ls('renderFreq', 500);
         if (!ls.isSet('renderHidden')) ls('renderHidden', true);
         if (!ls.isSet('subEncoding')) ls('subEncoding', 'auto');

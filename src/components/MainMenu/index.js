@@ -11,6 +11,7 @@ import MessageActions from '../Message/actions';
 import TorrentActions from '../../actions/torrentActions';
 import metaParser from '../../components/Player/utils/metaParser';
 import Plugins from './components/Plugins';
+import Settings from './components/Settings';
 import remote from 'remote';
 import path from 'path';
 
@@ -30,7 +31,8 @@ default React.createClass({
         return {
             dropBorderColor: '#ccc',
             lastZoom: 0,
-            extensionView: false
+            extensionView: false,
+            settingsView: false
         }
     },
     componentWillMount() {
@@ -148,31 +150,59 @@ default React.createClass({
     },
     extensionView() {
         var viewHolder = window.document.querySelector(".wrapper");
+
+        if (viewHolder.className.includes('settingsView'))
+            viewHolder.className = viewHolder.className.replace(' settingsView', '');
+
         if (viewHolder.className.includes('extensionView')) {
             viewHolder.className = viewHolder.className.replace(' extensionView', '');
             this.setState({
+                settingsView: false,
                 extensionView: false
             });
         } else {
             viewHolder.className += ' extensionView';
             this.setState({
+                settingsView: false,
                 extensionView: true
+            });
+        }
+    },
+    settingsView() {
+        var viewHolder = window.document.querySelector(".wrapper");
+
+        if (viewHolder.className.includes('extensionView'))
+            viewHolder.className = viewHolder.className.replace(' extensionView', '');
+
+        if (viewHolder.className.includes('settingsView')) {
+            viewHolder.className = viewHolder.className.replace(' settingsView', '');
+            this.setState({
+                extensionView: false,
+                settingsView: false
+            });
+        } else {
+            viewHolder.className += ' settingsView';
+            this.setState({
+                extensionView: false,
+                settingsView: true
             });
         }
     },
     render() {
         var extensionView = this.state.extensionView ? (<Plugins />) : '';
+        var settingsView = this.state.settingsView ? (<Settings />) : '';
         return (
             <div className="wrapper">
                {extensionView}
+               {settingsView}
                <center>
                     <Dropzone ref="dropper" disableClick={true} className="holder" onDragEnter={this.onDragEnter} onDragLeave={this.onDragLeave} onDrop={this.onDrop} style={{}}>
                         <div>
                             <div className="mainButtonHolder">
                                  <div className="inButtonHolder">
-                                    <paper-icon-button id="main_plugins_but" icon="extension" alt="plugins" style={{color: '#767A7B', width: '44px', height: '44px', right: '2px', position: 'absolute', marginRight: '48px', marginTop: '2px'}} onClick={this.extensionView}></paper-icon-button>
+                                    <paper-icon-button id="main_plugins_but" icon="extension" alt="plugins" style={{color: '#767A7B', width: '44px', height: '44px', right: '2px', position: 'absolute', marginRight: '48px', marginTop: '2px'}} onClick={this.extensionView} />
                                     <paper-tooltip for="main_plugins_but" offset="0">Plugins</paper-tooltip>
-                                    <paper-icon-button id="main_settings_but" icon="settings" alt="settings" style={{color: '#767A7B', width: '48px', height: '48px', right: '2px', position: 'absolute'}}></paper-icon-button>
+                                    <paper-icon-button id="main_settings_but" icon="settings" alt="settings" style={{color: '#767A7B', width: '48px', height: '48px', right: '2px', position: 'absolute'}} onClick={this.settingsView} />
                                     <paper-tooltip for="main_settings_but" offset="0">Settings</paper-tooltip>
                                 </div>
                             </div>
