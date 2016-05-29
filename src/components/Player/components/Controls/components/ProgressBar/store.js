@@ -140,6 +140,7 @@ class ProgressStore {
     }
 
     onPosition(pos) {
+        if (player.wcjs.state == 5) pos = 0;
         if (this.position != pos)
             this.setState({
                 position: pos
