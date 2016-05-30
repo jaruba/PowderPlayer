@@ -876,7 +876,7 @@ default React.createClass({
 
         return (
             <div className="settings-container" style={{textAlign: 'center'}}>
-                <span style={{paddingTop: '64px', display: 'inline-block', fontSize: '21px', color: '#f1664f' , marginBottom: '0'}}>General Settings</span>
+                <span style={{paddingTop: '64px', display: 'inline-block', fontSize: '21px', color: '#e87272' , marginBottom: '0'}}>General Settings</span>
                 <br />
                 <div className="settings-list" style={{marginTop: '4%'}}>
                     {indents}
