@@ -116,9 +116,13 @@ class ProgressActions {
         
         if (player.wcjs.length) {
 
-            var progressState = this.alt.stores.ProgressStore.state,
+            var progressElem = document.querySelector('.wcjs-player .time'),
+                progressState = this.alt.stores.ProgressStore.state,
                 percent_done = event.pageX / document.body.clientWidth;
-    
+
+            // remove transition from progress bar
+            progressElem.className = progressElem.className.split(' smooth-progress').join('');
+
             this.actions.settingChange({
                 keepScrobble: true,
                 seekPerc: percent_done,
@@ -170,6 +174,11 @@ class ProgressActions {
                     TooltipActions.settingChange({
                         scrobbleTooltip: 'none'
                     });
+
+                    // add transition for progress bar
+                    var progressElem = document.querySelector('.wcjs-player .time');
+                    progressElem.className = progressElem.className + ' smooth-progress';
+
                 },100);
             },50);
         }

@@ -75,7 +75,7 @@ default React.createClass({
                     onMouseMove={this.throttleScrobblerHover} />
                 <div ref="scrobbler-height" className={this.state.scrobbleHeight}>
                     <div style={scrobblerStyles.buffer} className="buffer"/>
-                    <div ref="scrobbler-time" style={scrobblerStyles.time} className="time"/>
+                    <div ref="scrobbler-time" style={scrobblerStyles.time} className="time smooth-progress"/>
                     <div ref="scrobbler-handle" className="handle"/>
                 </div>
             </div>

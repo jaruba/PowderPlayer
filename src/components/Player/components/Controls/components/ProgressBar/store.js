@@ -29,6 +29,14 @@ class ProgressStore {
     }
 
     onSettingChange(setting) {
+        if (setting.position == 0) {
+            // remove transition for progress bar periodically
+            var progressElem = document.querySelector('.wcjs-player .time');
+            progressElem.className = progressElem.className.split(' smooth-progress').join('');
+            _.delay( () => {
+                progressElem.className = progressElem.className + ' smooth-progress';
+            }, 100);
+        }
         this.setState(setting);
     }
     

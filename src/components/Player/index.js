@@ -81,7 +81,7 @@ const Player = React.createClass({
         else
             player.hoverTimeout = setTimeout(this.hideUI, 3000);
     },
-    hover(event,a,b,c,d) {
+    hover(event) {
         var curPos = event.pageX+'x'+event.pageY;
         if (curPos != lastPos) {
             lastPos = curPos;
