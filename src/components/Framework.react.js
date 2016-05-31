@@ -22,6 +22,7 @@ import traktUtil from './Player/utils/trakt';
 import filmonUtil from './Player/utils/filmon';
 import request from 'request';
 import subUtil from './Player/utils/subtitles';
+import updater from './Player/utils/updates';
 import remote from 'remote';
 import clArgs from '../utils/clArgs';
 import ls from 'local-storage';
@@ -41,6 +42,8 @@ const Framework = React.createClass({
                 wForgottenReturn: false
             }
         });
+
+		updater.checkUpdates();
 
         if (!ls.isSet('ytdlQuality')) ls('ytdlQuality', 2);
         if (!ls.isSet('renderFreq')) ls('renderFreq', 500);
