@@ -155,7 +155,7 @@ default React.createClass({
         this.refs['dialog'].open();
         _.delay(() => {
             this.refs['urlInput'].$.input.focus()
-        });
+        }, 100);
     },
     render() {
         return (
