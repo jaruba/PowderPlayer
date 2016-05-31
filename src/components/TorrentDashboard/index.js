@@ -99,6 +99,10 @@ default React.createClass({
 
     render() {
         var torrent = this.state.torrents[this.state.infoHash];
+
+        if (!torrent)
+            return (<div />);
+
         var fileList = [];
         var backColor = '#3e3e3e';
         var progress = torrent.torrent.pieces.downloaded / torrent.torrent.pieces.length;
