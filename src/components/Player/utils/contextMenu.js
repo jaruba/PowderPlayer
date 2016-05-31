@@ -166,6 +166,7 @@ var actions = {
             alwaysOnTop: toggled
         });
         PlayerActions.toggleAlwaysOnTop(toggled);
+        window.document.querySelector('#alwaysOnTop').checked = toggled;
     },
     sleepFor(pauseIn) {
         if (sleeper) {

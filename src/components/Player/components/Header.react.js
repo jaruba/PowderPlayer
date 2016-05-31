@@ -76,6 +76,13 @@ default React.createClass({
     },
     handleClose() {
 
+        if (player.alwaysOnTop) {
+            player.set({
+                alwaysOnTop: false
+            });
+            PlayerActions.toggleAlwaysOnTop(false);
+        }
+
         var Linky = new LinkSupport;
         Linky.stopParsing();
         
