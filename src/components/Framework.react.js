@@ -43,7 +43,7 @@ const Framework = React.createClass({
             }
         });
 
-		updater.checkUpdates();
+        updater.checkUpdates();
 
         if (!ls.isSet('ytdlQuality')) ls('ytdlQuality', 2);
         if (!ls.isSet('renderFreq')) ls('renderFreq', 500);
