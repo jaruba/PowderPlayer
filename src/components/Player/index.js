@@ -56,6 +56,12 @@ const Player = React.createClass({
         cacheUtil.stop();
         window.removeEventListener('contextmenu', contextMenu.listen);
         window.removeEventListener('mousemove', this.hover);
+        var handler = document.getElementsByClassName("wcjs-player")[0];
+
+        handler.removeEventListener('dragover', this.nullEvent);
+        handler.removeEventListener('dragleave', this.nullEvent);
+        handler.removeEventListener('dragend', this.nullEvent);
+        handler.removeEventListener('drop', this.fileDrop);
     },
     componentDidMount() {
         var announcer = document.getElementsByClassName('wcjs-announce')[0];
@@ -72,31 +78,8 @@ const Player = React.createClass({
 
         var handler = document.getElementsByClassName("wcjs-player")[0];
 
-        handler.ondragover = handler.ondragleave = handler.ondragend = function () {
-            return false;
-        };
-
-        handler.ondrop = function (e) {
-            e.preventDefault();
-            var file = e.dataTransfer.files[0];
-            if (file.path) {
-                if (file.path.endsWith('.sub') || file.path.endsWith('.srt') || file.path.endsWith('.vtt')) {
-                    var subs = player.itemDesc().setting.subtitles || {};
-                    subs[path.basename(file.path)] = file.path;
-                    PlayerActions.setDesc({
-                        subtitles: subs
-                    });
-                    player.wcjs.subtitles.track = 0;
-                    SubtitleActions.loadSub(file.path);
-                    console.log('setting selected: '+ (_.size(subs) + (player.wcjs.subtitles.count || 1)));
-                    SubtitleActions.settingChange({
-                        selectedSub: _.size(subs) + (player.wcjs.subtitles.count || 1),
-                    });
-                    player.notifier.info('Subtitle Loaded', '', 3000);
-                }
-            }
-            return false;
-        };
+        handler.ondragover = handler.ondragleave = handler.ondragend = this.nullEvent;
+        handler.ondrop = this.fileDrop;
 
     },
     update() {
@@ -107,6 +90,29 @@ const Player = React.createClass({
                 uiShown: visibilityState.uiShown
             });
         }
+    },
+    nullEvent() {
+        return false;
+    },
+    fileDrop(e) {
+        e.preventDefault();
+        var file = e.dataTransfer.files[0];
+        if (file.path) {
+            if (file.path.endsWith('.sub') || file.path.endsWith('.srt') || file.path.endsWith('.vtt')) {
+                var subs = player.itemDesc().setting.subtitles || {};
+                subs[path.basename(file.path)] = file.path;
+                PlayerActions.setDesc({
+                    subtitles: subs
+                });
+                player.wcjs.subtitles.track = 0;
+                SubtitleActions.loadSub(file.path);
+                SubtitleActions.settingChange({
+                    selectedSub: _.size(subs) + (player.wcjs.subtitles.count || 1),
+                });
+                player.notifier.info('Subtitle Loaded', '', 3000);
+            }
+        }
+        return false;
     },
     hideUI() {
         if (!ControlStore.getState().scrobbling)
