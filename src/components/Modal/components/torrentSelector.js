@@ -156,7 +156,8 @@ multipass.on("starterInfo", function(starterSource,starterTorrent) {
                         that.setState({ allFiles: tempState });
                     });
                     _.delay(() => {
-                        Polymer.dom().querySelector('#torrentSelDialog').center();
+                        var torrentSel = Polymer.dom().querySelector('#torrentSelDialog');
+                        torrentSel && torrentSel.center();
                     });
                 }
             });
@@ -223,7 +224,8 @@ multipass.on("found", function(source, torrent) {
                     that.setState({ allFiles: tempState });
                 });
                 _.delay(() => {
-                    Polymer.dom().querySelector('#torrentSelDialog').center();
+                    var torrentSel = Polymer.dom().querySelector('#torrentSelDialog');
+                    torrentSel && torrentSel.center();
                 });
                 console.log('error parsing title');
             } else {
@@ -303,7 +305,8 @@ multipass.on("found", function(source, torrent) {
                     that.setState({ allFiles: tempState });
                 });
                 _.delay(() => {
-                    Polymer.dom().querySelector('#torrentSelDialog').center();
+                    var torrentSel = Polymer.dom().querySelector('#torrentSelDialog');
+                    torrentSel && torrentSel.center();
                 });
             }
         });
@@ -365,10 +368,10 @@ multipass.import(this.state.parseLink);
         }
         var selDialog = Polymer.dom().querySelector('#torrentSelDialog');
         _.delay(() => {
-            selDialog.center();
+            selDialog && selDialog.center();
         }, 250);
         _.delay(() => {
-            selDialog.center();
+            selDialog && selDialog.center();
         }, 500);
     },
 

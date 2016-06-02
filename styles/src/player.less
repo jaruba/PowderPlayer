@@ -97,13 +97,13 @@
 .wcjs-player .header .player-close {
   -webkit-app-region: no-drag;
   font-size: 28px;
-  width: 47px;
-  height: 47px;
+  width: 45px;
+  height: 45px;
   float: left;
-  margin-top: -2px;
-  margin-right: 4px;
-  margin-left: 0;
+  margin-top: 1px;
+  margin-left: 5px;
   color: white;
+  margin-right: 4px;
 }
 
 .wcjs-player #playerBackTooltip {
@@ -157,15 +157,16 @@
 
 .wcjs-player .header .player-playlist {
   -webkit-app-region: no-drag;
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
   float: right;
   margin-top: 4px;
-  margin-right: 6px;
+  margin-right: 0;
   margin-left: 2px;
   padding: 4px;
   padding-bottom: 2px;
   color: white;
+  padding-right: 0;
 }
 
 .wcjs-player .header .player-settings {
@@ -185,8 +186,26 @@
 .wcjs-player .header .trakt-info {
   -webkit-app-region: no-drag;
   float: right;
+  padding: 9px;
+  margin-top: 5px;
+  margin-right: -1px;
+}
+
+.wcjs-player .header .close-app {
+  -webkit-app-region: no-drag;
+  float: right;
   padding: 8px;
-  margin-top: 4px;
+  margin-top: 3px;
+  color: white;
+  padding-left: 0;
+  cursor: pointer;
+  height: 42px;
+  width: 42px;
+}
+
+.wcjs-player .header .close-but-tooltip {
+  right: 5px !important;
+  left: inherit !important;
 }
 
 .inf > div > div {
@@ -201,7 +220,7 @@
   float: left;
   font-size: 19px;
   color: white;
-  margin-top: 11px;
+  margin-top: 14px;
   margin-left: -2px;
   white-space: nowrap;
   overflow: hidden;

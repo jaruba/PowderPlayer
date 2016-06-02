@@ -115,6 +115,48 @@ default React.createClass({
             
         }
     },
+    handleCloseApp() {
+        if (player.alwaysOnTop) {
+            player.set({
+                alwaysOnTop: false
+            });
+            PlayerActions.toggleAlwaysOnTop(false);
+        }
+
+        var Linky = new LinkSupport;
+        Linky.stopParsing();
+        
+        var engineState = engineStore.getState();
+        
+        player.wcjs.stop();
+        player.wcjs.playlist.clear();
+        
+        if (engineState.infoHash && engineState.torrents[engineState.infoHash]) {
+            // it's a torrent, let's see if we should remove the files
+            if (ls('removeLogic') < 1) {
+                BaseModalActions.shouldExit(true);
+                BaseModalActions.open({ type: 'askRemove' });
+            } else {
+                var torrent = engineState.torrents[engineState.infoHash];
+    
+                if (ls('removeLogic') == 1) {
+                    torrent.kill(() => {
+                        ipcRenderer.send('app:close');
+                    });
+                } else if (ls('removeLogic') == 2) {
+                    torrent.softKill(() => {
+                        ipcRenderer.send('app:close');
+                    });
+                }
+                torrentActions.clear();
+                events.close();
+            }
+        } else {
+            events.close();
+            ipcRenderer.send('app:close');
+            
+        }
+    },
     handleOpenTrakt() {
         ModalActions.open({
             title: 'Trakt Info',
@@ -150,7 +192,10 @@ default React.createClass({
                     <paper-icon-button id="playerMainBack" onClick={this.handleClose} className="player-close" icon={'arrow-back'} noink={true} />
                     <paper-tooltip for="playerMainBack" offset="0" id="playerBackTooltip">Main Menu</paper-tooltip>
     
-                    <p className="title" style={{width: 'calc(100% - '+(this.state.foundTrakt ? '202' : '155')+'px)'}}>{this.state.title}</p>
+                    <p className="title" style={{width: 'calc(100% - '+(this.state.foundTrakt ? '216' : '176')+'px)'}}>{this.state.title}</p>
+    
+                    <paper-icon-button id="closeBut" className="close-app" icon={'icons:close'} noink={true} onClick={this.handleCloseApp} />
+                    <paper-tooltip for="closeBut" className="close-but-tooltip" offset="0">Close</paper-tooltip>
     
                     <paper-icon-button id="playerPlaylistBut" onClick={ui.toggleMenu.bind(null, 'playlist')} className="player-playlist" icon={'av:playlist-add-check'} noink={true} />
                     <paper-tooltip for="playerPlaylistBut" offset="0">Playlist</paper-tooltip>
