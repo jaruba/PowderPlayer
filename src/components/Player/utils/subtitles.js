@@ -108,12 +108,14 @@ subtitles.loadSubtitle = (subtitleElement, cb) => {
 //              window.torrent.flood.start();
                 subtitles.processSub(res, subtitleElement.split('.').pop(), cb);
             },{ charset: ls('subEncoding') });
+            return;
         } else
             cb(null);
     } else {
         retriever.retrieveSrt(subtitleElement, (err, res) => {
             subtitles.processSub(res, subtitleElement.split('.').pop(), cb);
         },{ charset: ls('subEncoding') });
+        return;
     }
     var resData = "";
 

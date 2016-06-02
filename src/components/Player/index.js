@@ -7,7 +7,11 @@ import Playlist from './components/Playlist.react';
 import Settings from './components/MenuHolders/Settings';
 import SubtitleList from './components/Subtitles.react';
 import SubtitleText from './components/SubtitleText';
+import SubtitleActions from './components/SubtitleText/actions';
 import Announcement from './components/Announcement.react';
+import PlayerActions from './actions';
+import path from 'path';
+import _ from 'lodash';
 
 import {
     webFrame
@@ -65,6 +69,35 @@ const Player = React.createClass({
         player.loadState();
         window.addEventListener('contextmenu', contextMenu.listen, false);
         window.addEventListener('mousemove', this.hover, false);
+
+        var handler = document.getElementsByClassName("wcjs-player")[0];
+
+        handler.ondragover = handler.ondragleave = handler.ondragend = function () {
+            return false;
+        };
+
+        handler.ondrop = function (e) {
+            e.preventDefault();
+            var file = e.dataTransfer.files[0];
+            if (file.path) {
+                if (file.path.endsWith('.sub') || file.path.endsWith('.srt') || file.path.endsWith('.vtt')) {
+                    var subs = player.itemDesc().setting.subtitles || {};
+                    subs[path.basename(file.path)] = file.path;
+                    PlayerActions.setDesc({
+                        subtitles: subs
+                    });
+                    player.wcjs.subtitles.track = 0;
+                    SubtitleActions.loadSub(file.path);
+                    console.log('setting selected: '+ (_.size(subs) + (player.wcjs.subtitles.count || 1)));
+                    SubtitleActions.settingChange({
+                        selectedSub: _.size(subs) + (player.wcjs.subtitles.count || 1),
+                    });
+                    player.notifier.info('Subtitle Loaded', '', 3000);
+                }
+            }
+            return false;
+        };
+
     },
     update() {
 //        console.log('player update');
