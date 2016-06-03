@@ -14,6 +14,8 @@ import Plugins from './components/Plugins';
 import Settings from './components/Settings';
 import remote from 'remote';
 import path from 'path';
+import fs from 'fs';
+import player from '../Player/utils/player';
 
 import {
     webFrame
@@ -92,6 +94,8 @@ default React.createClass({
                 
             } else {
 
+                var supported = [".mkv", ".avi", ".mp4", ".m4v", ".mpg", ".mpeg", ".webm", ".flv", ".ogg", ".ogv", ".mov", ".wmv", ".3gp", ".3g2", ".m4a", ".mp3", ".flac"];
+
                 var newFiles = [];
                 var queueParser = [];
                 
@@ -99,18 +103,61 @@ default React.createClass({
                     files = sorter.episodes(files, 2);
                 else
                     files = sorter.naturalSort(files, 2);
+
+                var itemCount = player && player.wcjs ? player.wcjs.playlist.itemCount : 0;
                 
+                var idx = itemCount;
+        
+                var addFile = (filePath) => {
+                    if (isSupported(filePath)) {
+                        newFiles.push({
+                            title: parser(filePath).name(),
+                            uri: 'file:///'+filePath,
+                            path: filePath
+                        });
+                        queueParser.push({
+                            idx: idx,
+                            url: 'file:///'+filePath,
+                            filename: filePath.replace(/^.*[\\\/]/, '')
+                        });
+                        idx++;
+                    }
+        
+                    return false;
+                };
+        
+                var addDir = (filePath) => {
+                    var newFiles = fs.readdirSync(filePath);
+        
+                    if (parser(newFiles[0]).shortSzEp())
+                        newFiles = sorter.episodes(newFiles, 1);
+                    else
+                        newFiles = sorter.naturalSort(newFiles, 1);
+        
+                    newFiles.forEach(( file, index ) => {
+                        var dummy = decide( path.join( filePath, file ) );
+                    });
+        
+                    return false;
+                };
+                
+                var decide = (filePath) => {
+                    if (fs.lstatSync(filePath).isDirectory())
+                        var dummy = addDir(filePath);
+                    else
+                        var dummy = addFile(filePath);
+        
+                    return false;
+                };
+                
+                var isSupported = (filePath) => {
+                    return supported.some( el => {
+                        if (filePath.endsWith(el)) return true;
+                    });
+                }
+
                 files.forEach( (file, ij) => {
-                    newFiles.push({
-                        title: parser(file.name).name(),
-                        uri: 'file:///'+file.path,
-                        path: file.path
-                    });
-                    queueParser.push({
-                        idx: ij,
-                        url: 'file:///'+file.path,
-                        filename: file.name
-                    });
+                    var dummy = decide(file.path);
                 });
     
                 PlayerActions.addPlaylist(newFiles);
