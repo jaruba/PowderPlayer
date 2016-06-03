@@ -14,6 +14,7 @@ import path from 'path';
 import _ from 'lodash';
 import metaParser from './utils/metaParser';
 import parser from './utils/parser';
+import sorter from './utils/sort';
 import fs from 'fs';
 
 import {
@@ -100,16 +101,17 @@ const Player = React.createClass({
     fileDrop(e) {
         e.preventDefault();
         var supported = [".mkv", ".avi", ".mp4", ".m4v", ".mpg", ".mpeg", ".webm", ".flv", ".ogg", ".ogv", ".mov", ".wmv", ".3gp", ".3g2", ".m4a", ".mp3", ".flac"];
-        var file = e.dataTransfer.files[0];
-        if (e.dataTransfer.files.length == 1 && file.path) {
-            if (file.path.endsWith('.sub') || file.path.endsWith('.srt') || file.path.endsWith('.vtt')) {
+        var files = e.dataTransfer.files;
+        
+        if (files.length == 1 && files[0].path) {
+            if (files[0].path.endsWith('.sub') || files[0].path.endsWith('.srt') || files[0].path.endsWith('.vtt')) {
                 var subs = player.itemDesc().setting.subtitles || {};
-                subs[path.basename(file.path)] = file.path;
+                subs[path.basename(files[0].path)] = files[0].path;
                 PlayerActions.setDesc({
                     subtitles: subs
                 });
                 player.wcjs.subtitles.track = 0;
-                SubtitleActions.loadSub(file.path);
+                SubtitleActions.loadSub(files[0].path);
                 SubtitleActions.settingChange({
                     selectedSub: _.size(subs) + (player.wcjs.subtitles.count || 1),
                 });
@@ -117,6 +119,11 @@ const Player = React.createClass({
                 return;
             }
         }
+
+        if (parser(files[0].name).shortSzEp())
+            files = sorter.episodes(files, 2);
+        else
+            files = sorter.naturalSort(files, 2);
 
         var newFiles = [];
         var queueParser = [];
@@ -144,7 +151,14 @@ const Player = React.createClass({
         };
 
         var addDir = (filePath) => {
-            fs.readdirSync(filePath).forEach(( file, index ) => {
+            var newFiles = fs.readdirSync(filePath);
+
+            if (parser(newFiles[0]).shortSzEp())
+                newFiles = sorter.episodes(newFiles, 1);
+            else
+                newFiles = sorter.naturalSort(newFiles, 1);
+
+            newFiles.forEach(( file, index ) => {
                 var dummy = decide( path.join( filePath, file ) );
             });
 
@@ -166,7 +180,7 @@ const Player = React.createClass({
             });
         }
 
-        _.forEach(e.dataTransfer.files, el => {
+        _.forEach(files, el => {
             var dummy = decide(el.path);
         });
 
