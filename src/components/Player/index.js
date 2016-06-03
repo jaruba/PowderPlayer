@@ -12,6 +12,9 @@ import Announcement from './components/Announcement.react';
 import PlayerActions from './actions';
 import path from 'path';
 import _ from 'lodash';
+import metaParser from './utils/metaParser';
+import parser from './utils/parser';
+import fs from 'fs';
 
 import {
     webFrame
@@ -96,8 +99,9 @@ const Player = React.createClass({
     },
     fileDrop(e) {
         e.preventDefault();
+        var supported = [".mkv", ".avi", ".mp4", ".m4v", ".mpg", ".mpeg", ".webm", ".flv", ".ogg", ".ogv", ".mov", ".wmv", ".3gp", ".3g2", ".m4a", ".mp3", ".flac"];
         var file = e.dataTransfer.files[0];
-        if (file.path) {
+        if (e.dataTransfer.files.length == 1 && file.path) {
             if (file.path.endsWith('.sub') || file.path.endsWith('.srt') || file.path.endsWith('.vtt')) {
                 var subs = player.itemDesc().setting.subtitles || {};
                 subs[path.basename(file.path)] = file.path;
@@ -110,8 +114,76 @@ const Player = React.createClass({
                     selectedSub: _.size(subs) + (player.wcjs.subtitles.count || 1),
                 });
                 player.notifier.info('Subtitle Loaded', '', 3000);
+                return;
             }
         }
+
+        var newFiles = [];
+        var queueParser = [];
+        
+        var itemCount = player.wcjs.playlist.itemCount;
+        
+        var idx = itemCount;
+
+        var addFile = (filePath) => {
+            if (isSupported(filePath)) {
+                newFiles.push({
+                    title: parser(filePath).name(),
+                    uri: 'file:///'+filePath,
+                    path: filePath
+                });
+                queueParser.push({
+                    idx: idx,
+                    url: 'file:///'+filePath,
+                    filename: filePath.replace(/^.*[\\\/]/, '')
+                });
+                idx++;
+            }
+
+            return false;
+        };
+
+        var addDir = (filePath) => {
+            fs.readdirSync(filePath).forEach(( file, index ) => {
+                var dummy = decide( path.join( filePath, file ) );
+            });
+
+            return false;
+        };
+        
+        var decide = (filePath) => {
+            if (fs.lstatSync(filePath).isDirectory())
+                var dummy = addDir(filePath);
+            else
+                var dummy = addFile(filePath);
+
+            return false;
+        };
+        
+        var isSupported = (filePath) => {
+            return supported.some( el => {
+                if (filePath.endsWith(el)) return true;
+            });
+        }
+
+        _.forEach(e.dataTransfer.files, el => {
+            var dummy = decide(el.path);
+        });
+
+        PlayerActions.addPlaylist(newFiles);
+
+        if (idx == itemCount)
+            player.notifier.info('File Not Supported', '', 3000);
+        else
+            player.notifier.info('Added to Playlist', '', 3000);
+
+        // start searching for thumbnails after 1 second
+        _.delay(() => {
+            queueParser.forEach( el => {
+                metaParser.push(el);
+            });
+        },1000);
+
         return false;
     },
     hideUI() {
