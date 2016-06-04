@@ -51,6 +51,7 @@ default React.createClass({
                         });
                     });
                 }
+                if (!ls('torrentContent') && plugin.torrent) plugin = null;
             }
 
             if (plugin) {
