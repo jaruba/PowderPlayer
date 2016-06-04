@@ -60,6 +60,13 @@ events.opening = () => {
 
     var itemDesc = player.itemDesc();
     var isLocal = (itemDesc.mrl && itemDesc.mrl.indexOf('file://') == 0);
+
+	if (itemDesc.artworkURL && !itemDesc.setting.image) {
+		PlayerActions.setDesc({
+			image: itemDesc.artworkURL
+		})
+	}
+
     if (!isLocal) {
         
         var timestamp = new Date().getTime();
