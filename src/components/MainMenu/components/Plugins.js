@@ -353,7 +353,10 @@ default React.createClass({
                 }
                 
             ];
-            
+
+            if (!ls('torrentContent'))
+                feed = _.filter(feed, el => { return el.icon != 'torrent' })
+
             if (ls('adultContent'))
                 feed.push({
                     label: 'Porn',
@@ -419,6 +422,9 @@ default React.createClass({
         } else {
             var title = this.state.search ? this.state.search.terms : this.state.matchWith ? this.state.selected.label +'  -  '+ this.state.matchWith.label : this.state.selected.label;
             var feed = this.state.search ? this.state.search.results : plugins.matchTags(this.state.selected.tag);
+
+            if (!ls('torrentContent'))
+                feed = _.filter(feed, el => { return !el.torrent })
 
             var tagMap =[];
             var tags = [];
