@@ -25,6 +25,7 @@ import subUtil from './Player/utils/subtitles';
 import updater from './Player/utils/updates';
 import remote from 'remote';
 import clArgs from '../utils/clArgs';
+import setDefaults from '../utils/defaults';
 import ls from 'local-storage';
 import Promise from 'bluebird';
 import _ from 'lodash';
@@ -45,20 +46,7 @@ const Framework = React.createClass({
 
         updater.checkUpdates();
 
-        if (!ls.isSet('torrentContent')) ls('torrentContent', true);
-        if (!ls.isSet('resizeOnPlaylist')) ls('resizeOnPlaylist', true);
-        if (!ls.isSet('ytdlQuality')) ls('ytdlQuality', 2);
-        if (!ls.isSet('renderFreq')) ls('renderFreq', 500);
-        if (!ls.isSet('renderHidden')) ls('renderHidden', true);
-        if (!ls.isSet('subEncoding')) ls('subEncoding', 'auto');
-        if (!ls.isSet('peerPort')) ls('peerPort', 6881);
-        if (!ls.isSet('maxPeers')) ls('maxPeers', 200);
-        if (!ls.isSet('bufferSize')) ls('bufferSize', 7000);
-        if (!ls.isSet('removeLogic')) ls('removeLogic', 0);
-        if (!ls.isSet('downloadType')) ls('downloadType', 0);
-        if (!ls.isSet('playerType')) ls('playerType', false);
-        if (!ls.isSet('adultContent')) ls('adultContent', false);
-        if (!ls.isSet('myFilmonPlugins')) ls('myFilmonPlugins', []);
+        setDefaults();
 
         filmonUtil.init();
 
