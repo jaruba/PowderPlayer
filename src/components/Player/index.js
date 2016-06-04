@@ -53,6 +53,9 @@ const Player = React.createClass({
         remote.getCurrentWindow().setMinimumSize(392, 228);
         webFrame.setZoomLevel(ls.isSet('zoomLevel') ? ls('zoomLevel') : 0);
         hotkeys.attach(this.props);
+
+        if (ls('resizeOnPlaylist'))
+            window.firstResize = true;
     },
     componentWillUnmount() {
         VisibilityStore.unlisten(this.update);

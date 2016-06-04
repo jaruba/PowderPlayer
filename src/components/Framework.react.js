@@ -45,6 +45,7 @@ const Framework = React.createClass({
 
         updater.checkUpdates();
 
+        if (!ls.isSet('resizeOnPlaylist')) ls('resizeOnPlaylist', true);
         if (!ls.isSet('ytdlQuality')) ls('ytdlQuality', 2);
         if (!ls.isSet('renderFreq')) ls('renderFreq', 500);
         if (!ls.isSet('renderHidden')) ls('renderHidden', true);
