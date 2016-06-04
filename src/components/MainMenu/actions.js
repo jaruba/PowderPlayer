@@ -12,6 +12,7 @@ import TorrentActions from '../../actions/torrentActions';
 import sorter from './../Player/utils/sort';
 import parser from './../Player/utils/parser';
 import metaParser from './../Player/utils/metaParser';
+import supported from '../../utils/isSupported';
 
 import _ from 'lodash';
 
@@ -38,13 +39,13 @@ class MainMenuActions {
             case 'torrent':
                 filters = [{
                     name: 'Torrents',
-                    extensions: ['TORRENT', 'MAGNET']
+                    extensions: supported.ext['torrent'].map( el => { return el.substr(1).toUpperCase() })
                 }]
                 break;
             case 'video':
                 filters = [{
                     name: 'Videos',
-                    extensions: ['MP4', 'MKV', 'MOV', 'AVI', 'WMV', 'WMA', 'ASF', '3GP', 'OGM', 'OGG', 'WAV', 'Real']
+                    extensions: supported.ext['video'].map( el => { return el.substr(1).toUpperCase() })
                 }]
                 break;
         }

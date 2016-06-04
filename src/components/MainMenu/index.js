@@ -16,6 +16,7 @@ import remote from 'remote';
 import path from 'path';
 import fs from 'fs';
 import player from '../Player/utils/player';
+import supported from '../../utils/isSupported';
 
 import {
     webFrame
@@ -94,8 +95,6 @@ default React.createClass({
                 
             } else {
 
-                var supported = [".mkv", ".avi", ".mp4", ".m4v", ".mpg", ".mpeg", ".webm", ".flv", ".ogg", ".ogv", ".mov", ".wmv", ".3gp", ".3g2", ".m4a", ".mp3", ".flac"];
-
                 var newFiles = [];
                 var queueParser = [];
                 
@@ -109,7 +108,7 @@ default React.createClass({
                 var idx = itemCount;
         
                 var addFile = (filePath) => {
-                    if (isSupported(filePath)) {
+                    if (supported.is(filePath, 'allMedia')) {
                         newFiles.push({
                             title: parser(filePath).name(),
                             uri: 'file:///'+filePath,
@@ -149,12 +148,6 @@ default React.createClass({
         
                     return false;
                 };
-                
-                var isSupported = (filePath) => {
-                    return supported.some( el => {
-                        if (filePath.endsWith(el)) return true;
-                    });
-                }
 
                 files.forEach( (file, ij) => {
                     var dummy = decide(file.path);

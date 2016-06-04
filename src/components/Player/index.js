@@ -16,6 +16,7 @@ import metaParser from './utils/metaParser';
 import parser from './utils/parser';
 import sorter from './utils/sort';
 import fs from 'fs';
+import supported from '../../utils/isSupported';
 
 import {
     webFrame
@@ -103,11 +104,10 @@ const Player = React.createClass({
     },
     fileDrop(e) {
         e.preventDefault();
-        var supported = [".mkv", ".avi", ".mp4", ".m4v", ".mpg", ".mpeg", ".webm", ".flv", ".ogg", ".ogv", ".mov", ".wmv", ".3gp", ".3g2", ".m4a", ".mp3", ".flac"];
         var files = e.dataTransfer.files;
         
         if (files.length == 1 && files[0].path) {
-            if (files[0].path.endsWith('.sub') || files[0].path.endsWith('.srt') || files[0].path.endsWith('.vtt')) {
+            if (supported.is(file[0].path, 'subs')) {
                 var subs = player.itemDesc().setting.subtitles || {};
                 subs[path.basename(files[0].path)] = files[0].path;
                 PlayerActions.setDesc({
@@ -136,7 +136,7 @@ const Player = React.createClass({
         var idx = itemCount;
 
         var addFile = (filePath) => {
-            if (isSupported(filePath)) {
+            if (supported.is(filePath, 'allMedia')) {
                 newFiles.push({
                     title: parser(filePath).name(),
                     uri: 'file:///'+filePath,
@@ -176,12 +176,6 @@ const Player = React.createClass({
 
             return false;
         };
-        
-        var isSupported = (filePath) => {
-            return supported.some( el => {
-                if (filePath.endsWith(el)) return true;
-            });
-        }
 
         _.forEach(files, el => {
             var dummy = decide(el.path);

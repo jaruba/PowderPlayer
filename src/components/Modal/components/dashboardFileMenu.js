@@ -15,7 +15,7 @@ import ModalStore from '../store';
 import remote from 'remote';
 
 import engineStore from '../../../stores/engineStore';
-import mimeUtil from '../../../utils/mimeDetectorUtil.js';
+import supported from '../../../utils/isSupported';
 import player from '../../Player/utils/player';
 
 export
@@ -107,7 +107,7 @@ default React.createClass({
         else if (fileProgress >= 100)
             finished = true;
             
-        if (mimeUtil.supportedMedia(file.path, 'all')) {
+        if (supported.is(file.path, 'allMedia')) {
             var newButton = (
                 <paper-item className="dashboardMenuButton dashboardBorder" onClick={this.playNow}>
                     <paper-item-body>
