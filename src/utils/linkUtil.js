@@ -123,6 +123,9 @@ module.exports = (inputvalue, cb) => {
     
                             } else {
                                 // it's not html, maybe it's some protocol vlc can handle
+                                _.defer(() => {
+                                    ModalActions.close();
+                                });
                                 PlayerActions.addPlaylist([parsed.url]);
                                 resolve(parsed.url);
                             }
