@@ -11,11 +11,11 @@ import ytdlSupported from './../components/Player/utils/ytdl-extractor';
 import plugins from './plugins';
 import ls from 'local-storage';
 
-module.exports = (inputvalue, cb) => {
+module.exports = (inputvalue) => {
     return new Promise((resolve, reject) => {
         if (inputvalue.length > 0) {
 
-            if (inputvalue.indexOf('://') == -1 && inputvalue.indexOf(':?') == -1 && inputvalue.indexOf('http') != 0) {
+            if (!inputvalue.includes('://') && !inputvalue.includes(':?') && !inputvalue.startsWith('http')) {
                 inputvalue = 'http://' + inputvalue;
             }
 
@@ -76,6 +76,7 @@ module.exports = (inputvalue, cb) => {
                                                         image: info.thumbnail,
                                                         title: info.fulltitle
                                                     }]);
+                                                    resolve(parsed.url);
                                                 } else parseLinks(plugin && plugin.checkFor ? plugin : null);
                                             });
                                             
@@ -114,6 +115,7 @@ module.exports = (inputvalue, cb) => {
                                                 image: info.thumbnail,
                                                 title: info.fulltitle
                                             }]);
+                                            resolve(parsed.url);
                                         } else parseLinks(plugin && plugin.checkFor ? plugin : null);
                                     });
 

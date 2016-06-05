@@ -33,6 +33,7 @@ import VisibilityStore from './components/Visibility/store';
 import VisibilityActions from './components/Visibility/actions';
 import torrentStream from 'torrent-stream';
 import torrentUtil from '../../utils/stream/torrentUtil';
+import linkUtil from '../../utils/linkUtil';
 import readTorrent from 'read-torrent';
 import getPort from 'get-port';
 
@@ -184,7 +185,11 @@ const Player = React.createClass({
     
                     engine.ready(handleTorrent);
                 } else {
-                    
+                    linkUtil(droppedLink).then(url => {
+                        player.notifier.info('Link Added', '', 3000);
+                    }).catch(error => {
+                        player.notifier.info(error.message, '', 3000);
+                    });
                 }
             }
             return;
