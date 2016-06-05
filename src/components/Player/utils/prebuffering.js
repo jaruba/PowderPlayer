@@ -11,7 +11,7 @@ function isDefined(param) {
 }
 
 function isFileFromTorrent() {
-    return player && isDefined(current) && isDefined(player.itemDesc(current).setting.streamID) ? true : false;
+    return player && current !== null && isDefined(current) && isDefined(player.itemDesc(current).setting.streamID) ? true : false;
 }
 
 // end helper functions
@@ -26,7 +26,6 @@ function onPiece() {
     }
 
     // get file progress
-
     var fileSel = player.itemDesc(current).setting.streamID;
 
     // buffering with WebChimera.js is set in time, not byte length
@@ -96,8 +95,12 @@ var prebuffering = {
 
             var engineState = engineStore.getState();
 
+            if (!prebufMap[engineState.infoHash]) prebufMap[engineState.infoHash] = [];
+
             if (!prebufMap[engineState.infoHash][current]) {
-                engineState.torrents[engineState.infoHash].removeListener('download', onPiece);
+                if (engineState.torrents[engineState.infoHash])
+                    engineState.torrents[engineState.infoHash].removeListener('download', onPiece);
+
                 prebufMap[engineState.infoHash][current] = true;
             }
 

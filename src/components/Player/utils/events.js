@@ -16,6 +16,8 @@ import ProgressActions from '../components/Controls/components/ProgressBar/actio
 import VisibilityActions from '../components/Visibility/actions';
 import SubtitleActions from '../components/SubtitleText/actions';
 import engineStore from '../../../stores/engineStore';
+import torrentUtil from '../../../utils/stream/torrentUtil';
+import torrentActions from '../../../actions/torrentActions';
 
 import ytdl from 'youtube-dl';
 
@@ -61,14 +63,14 @@ events.opening = () => {
     var itemDesc = player.itemDesc();
     var isLocal = (itemDesc.mrl && itemDesc.mrl.indexOf('file://') == 0);
 
-	if (itemDesc.artworkURL && !itemDesc.setting.image) {
-		PlayerActions.setDesc({
-			image: itemDesc.artworkURL
-		})
-	}
+    if (itemDesc.artworkURL && !itemDesc.setting.image) {
+        PlayerActions.setDesc({
+            image: itemDesc.artworkURL
+        })
+    }
 
     if (!isLocal) {
-        
+
         var timestamp = new Date().getTime();
 
         if (itemDesc && itemDesc.setting.youtubeDL && itemDesc.setting.timestamp < timestamp -1000) {
@@ -76,11 +78,10 @@ events.opening = () => {
             
             var currentItem = player.wcjs.playlist.currentItem;
             
-            console.log('stopping item: '+currentItem);
-            console.log(itemDesc);
-            
             player.wcjs.stop();
-            
+
+            player.wcjs.playlist.mode = 0;
+
             console.log('starting ytdl on ' + itemDesc.setting.originalURL);
             
             var ytdlArgs = ['-g'];
@@ -121,8 +122,75 @@ events.opening = () => {
                 });
             });
             
+            return;
+            
+        } else if (itemDesc && itemDesc.setting.torrentHash && itemDesc.setting.torrentHash != engineStore.getState().infoHash) {
+
+            window.nextHash = itemDesc.setting.torrentHash;
+
+            window.currentItem = player.wcjs.playlist.currentItem;
+
+            player.wcjs.playlist.mode = 0;
+
+            player.events.emit('playlistUpdate');
+
+            player.wcjs.stop();
+
+            var callback = () => {
+                torrentActions.clear();
+                torrentUtil.init('magnet:?xt=urn:btih:' + window.nextHash).then( instance => {
+                    var listener = () => {
+                        
+                        if (instance.infoHash == engineStore.getState().infoHash) {
+                            // just soft kill this case to remove duplicates
+                            instance.softKill();
+                        } else if (instance.infoHash !== window.nextHash) {
+                            if (ls('removeLogic') == 2) {
+                                instance.kill();
+                            } else {
+                                instance.softKill();
+                            }
+                        } else {
+                            torrentActions.add(instance);
+                            for (var i = 0; i < player.wcjs.playlist.itemCount; i++) {
+                                var pItemDesc = player.itemDesc(i);
+                                if (pItemDesc.setting && pItemDesc.setting.torrentHash && pItemDesc.setting.torrentHash == window.nextHash) {
+                                    PlayerActions.replaceMRL({
+                                        autoplay: (window.currentItem == i),
+                                        x: i,
+                                        mrl: {
+                                            title: pItemDesc.setting.title,
+                                            thumbnail: pItemDesc.setting.image,
+                                            uri: 'http://127.0.0.1:' + instance.server.port + '/' + pItemDesc.setting.streamID
+                                        }
+                                    })
+                                }
+                            }
+                            delete window.currentItem;
+                        }
+                    };
+                    if (instance.server && instance.server.port) listener();
+                    else instance.on('listening', listener);
+                })
+            }
+
+            var init = _.once(callback);
+
+            var engineState = engineStore.getState();
+
+            if (engineState.torrents[engineState.infoHash]) {
+                if (ls('removeLogic') == 2) {
+                    engineState.torrents[engineState.infoHash].kill(init);
+                } else {
+                    engineState.torrents[engineState.infoHash].softKill(init);
+                }
+                _.delay( init, 1000);
+            } else init();
+
+            return;
+
         }
-        
+
         var announcer = {};
     
         announcer.text = 'Opening Media';
@@ -176,6 +244,8 @@ events.stopped = () => {
 }
 
 events.playing = () => {
+
+    player.wcjs.playlist.mode = 1;
 
     player.events.emit('playlistUpdate');
 
@@ -294,17 +364,7 @@ events.error = () => {
 
     traktUtil.handleScrobble('stop', itemDesc, player.wcjs.position);
 
-console.log(itemDesc);
-
-    if (itemDesc.mrl.startsWith('https://player.vimeo.com/')) {
-
-        // fix vimeo links on vlc 2.2.1
-        
-        var Linky = new LinkSupport;
-        
-        Linky.fixVimeo(player.wcjs, player.lastItem, itemDesc);
-
-    }
+    console.log(itemDesc);
 
 }
 

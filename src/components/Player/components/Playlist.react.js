@@ -81,7 +81,11 @@ default React.createClass({
                                     item.image = 'images/video-placeholder.svg';
                                 }
                                 
-                                var showControls = (item.setting.idx == player.wcjs.playlist.currentItem);
+                                if (typeof window.currentItem !== 'undefined') {
+                                    var showControls = (item.setting.idx == window.currentItem);
+                                } else {
+                                    var showControls = (item.setting.idx == player.wcjs.playlist.currentItem);
+                                }
 
                                 return (
                                     <paper-material onClick={showControls ? ControlActions.handlePausePlay : player.playItem.bind(this,idx)} id={'item'+idx} className={'item' + (showControls ? ' playlist-selected' : '')} key={idx} elevation={1} style={{background: 'url(' + item.image + ') no-repeat, url(../images/video-placeholder.svg) no-repeat', borderRadius: '2px', textAlign: 'center'}}>

@@ -31,6 +31,10 @@ import contextMenu from './utils/contextMenu';
 import ControlStore from './components/Controls/store';
 import VisibilityStore from './components/Visibility/store';
 import VisibilityActions from './components/Visibility/actions';
+import torrentStream from 'torrent-stream';
+import torrentUtil from '../../utils/stream/torrentUtil';
+import readTorrent from 'read-torrent';
+import getPort from 'get-port';
 
 import ReactNotify from 'react-notify';
 
@@ -107,7 +111,7 @@ const Player = React.createClass({
         var files = e.dataTransfer.files;
         
         if (files.length == 1 && files[0].path) {
-            if (supported.is(file[0].path, 'subs')) {
+            if (supported.is(files[0].path, 'subs')) {
                 var subs = player.itemDesc().setting.subtitles || {};
                 subs[path.basename(files[0].path)] = files[0].path;
                 PlayerActions.setDesc({
@@ -120,6 +124,69 @@ const Player = React.createClass({
                 });
                 player.notifier.info('Subtitle Loaded', '', 3000);
                 return;
+            } else if (supported.is(files[0].path, 'torrent')) {
+
+                readTorrent(files[0].path, (err, parsedTorrent) => {
+                    if (err) {
+                        player.notifier.info(err.message, '', 3000);
+                    } else {
+                        var engine = new torrentStream(parsedTorrent, {
+                            connections: 30
+                        });
+        
+                        engine.ready( () => {
+                            torrentUtil.getContents(engine.torrent.files, engine.torrent.infoHash).then( files => {
+                                var fileSelectorData = _.omit(files, ['files_total', 'folder_status']);
+                                var folder = fileSelectorData[Object.keys(fileSelectorData)[0]];
+                                var file = folder[Object.keys(folder)[0]];
+                                var newFiles = [];
+                                var queueParser = [];
+
+                                if (files.ordered.length) {
+                                    var port = getPort();
+                                    var ij = player.wcjs.playlist.itemCount;
+                                    files.ordered.forEach( file => {
+                                        if (file.name.toLowerCase().replace("sample","") == file.name.toLowerCase() && file.name != "ETRG.mp4" && file.name.toLowerCase().substr(0,5) != "rarbg") {
+                                            newFiles.push({
+                                                title: parser(file.name).name(),
+                                                uri: 'http://127.0.0.1:' + port + '/' + file.id,
+                                                byteSize: file.size,
+                                                torrentHash: file.infoHash,
+                                                streamID: file.id,
+                                                path: file.path
+                                            });
+                                            queueParser.push({
+                                                idx: ij,
+                                                url: 'http://127.0.0.1:' + port + '/' + file.id,
+                                                filename: file.name
+                                            });
+                                            ij++;
+                                        }
+                                    });
+                                }
+            
+                                if (newFiles.length) {
+                                    PlayerActions.addPlaylist(newFiles);
+                                    // start searching for thumbnails after 1 second
+                                    _.delay(() => {
+                                        if (queueParser.length) {
+                                            queueParser.forEach( el => {
+                                                metaParser.push(el);
+                                            });
+                                        }
+                                    },1000);
+                                }
+
+                            });
+                            
+                            engine.remove( () => {
+                                engine.destroy();
+                            });
+                        });
+                    }
+                });
+                return;
+
             }
         }
 
