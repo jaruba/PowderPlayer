@@ -1,13 +1,15 @@
+import _ from 'lodash';
+
 var sorter = {
     
     parser: require('./parser'),
     
-    episodes: function(results,logic) {
+    episodes: (results, logic) => {
         logic = typeof logic !== 'undefined' ? logic : 1; // 1 - episode sort, 2 - episode sort (by .name)
         var perfect = false;
         while (!perfect) {
             perfect = true;
-            results.forEach(function(el,ij) {
+            _.forEach(results, (el, ij) => {
                 if (ij > 0) {
                     if (logic == 1) {
                         var clean = sorter.parser(el);
@@ -31,14 +33,14 @@ var sorter = {
         return results;
     },
     
-    naturalSort: function(arr,logic) {
+    naturalSort: (arr, logic) => {
         // natural sort order function for playlist and library
         logic = typeof logic !== 'undefined' ? logic : 1; // 1 - natural sort, 2 - natural sort (by .name)
         if (arr.length > 1) {
             var perfect = false;
             while (!perfect) {
                 perfect = true;
-                arr.forEach(function(el,ij) {
+                _.forEach(arr, (el, ij) => {
                     if (arr[ij+1]) {
                         if (logic == 1) var difference = sorter._alphanumCase(sorter.parser(el).name(),sorter.parser(arr[ij+1]).name());
                         else if (logic == 2) var difference = sorter._alphanumCase(sorter.parser(el.name).name(),sorter.parser(arr[ij+1].name).name());
@@ -54,8 +56,8 @@ var sorter = {
         return arr;
     },
 
-    _alphanumCase: function(a, b) {
-      function chunkify(t) {
+    _alphanumCase: (a, b) => {
+      var chunkify = (t) => {
         var tz = new Array();
         var x = 0, y = -1, n = 0, i, j;
         
