@@ -18,7 +18,8 @@ const lang2country = {
     he: 'il',
     el: 'gr',
     uk: 'ua',
-    fa: 'ir'
+    fa: 'ir',
+    vi: 'vn'
 }
 
 export
@@ -137,7 +138,7 @@ default React.createClass({
                             if (!ls.isSet('menuFlags') || ls('menuFlags')) {
                                 return (
                                   <paper-item key={itemId} style={{backgroundColor: '#303030', color: 'white', padding: '4px 12px'}} onClick={this.selectInternal.bind(this, (idx + 1), item, itemId)} className={this.state.playlistSelected == itemId ? 'iron-selected' : ''}>
-                                  <span style={{width: '38px', height: '38px', borderRadius: '25px', backgroundImage: 'url(./images/icons/internal-subtitle-icon.png)', margin: '4px', marginLeft: '0', marginRight: '15px', backgroundSize: '38px 38px'}} />
+                                  <span style={{width: '38px', height: '38px', borderRadius: '25px', backgroundImage: 'url(./images/icons/internal-subtitle-icon.png)', margin: '4px', marginLeft: '0', marginRight: '15px', backgroundSize: 'cover', backgroundPosition: 'center'}} />
                     <paper-item-body>
                                     {item}
                                     </paper-item-body>
@@ -162,16 +163,16 @@ default React.createClass({
                             if (!ls.isSet('menuFlags') || ls('menuFlags')) {
                                 return (
                                   <paper-item key={itemId} style={{backgroundColor: '#303030', color: 'white', padding: '4px 12px'}} onClick={this.select.bind(this, idx, item, itemId)} className={this.state.playlistSelected == itemId ? 'iron-selected' : ''}>
-                                      <span key={itemId} style={{width: '38px', height: '38px', borderRadius: '25px', backgroundImage: 'url(http://flagpedia.net/data/flags/small/'+lang[1]+'.png)', margin: '4px', marginLeft: '0', marginRight: '15px', backgroundSize: '38px 38px'}} />
-                    <paper-item-body>
+                                      <span key={itemId} style={{width: '38px', height: '38px', borderRadius: '25px', backgroundImage: 'url(' + (lang[1] ? 'http://flagpedia.net/data/flags/small/' + lang[1] : 'images/icons/external-subtitle-icon') + '.png)', margin: '4px', marginLeft: '0', marginRight: '15px', backgroundSize: 'cover', backgroundPosition: 'center'}} />
+                                    <paper-item-body style={{ overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: '1', WebkitBoxOrient: 'vertical', maxWidth: '192px' }}>
                                     {lang[0]}
                                     </paper-item-body>
                                   </paper-item>
                                 );
                             } else {
                                 return (
-                                  <paper-item key={itemId} style={{backgroundColor: '#303030', color: 'white', padding: '4px 22px'}} onClick={this.select.bind(this, idx, item, itemId)} className={this.state.playlistSelected == itemId ? 'iron-selected' : ''}>
-                                    <paper-item-body>
+                                  <paper-item key={itemId} style={{backgroundColor: '#303030', color: 'white', padding: '4px 22px' }} onClick={this.select.bind(this, idx, item, itemId)} className={this.state.playlistSelected == itemId ? 'iron-selected' : ''}>
+                                    <paper-item-body style={{ overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: '1', WebkitBoxOrient: 'vertical', maxWidth: '192px' }}>
                                     {lang[0]}
                                     </paper-item-body>
                                   </paper-item>

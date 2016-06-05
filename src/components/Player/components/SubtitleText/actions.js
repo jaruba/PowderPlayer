@@ -62,33 +62,36 @@ class SubtitleActions {
         ControlActions.settingChange({
             foundSubs: true
         });
+        var prevSubs = player.itemDesc().setting.subtitles || {};
+        subs = _.extend({}, prevSubs, subs);
         PlayerActions.setDesc({
             subtitles: subs
         });
         if ((!ls.isSet('playerNotifs') || ls('playerNotifs')) && announce)
             player.notifier.info('Found Subtitles', '', 6000);
 
-        if (!ls.isSet('autoSub') || ls('autoSub')) {
-            if (ls('lastLanguage') && ls('lastLanguage') != 'none') {
-                if (subs[ls('lastLanguage')]) {
-                    this.actions.loadSub(subs[ls('lastLanguage')]);
-                    // select it in the menu too
-                    if (player.wcjs.subtitles.count > 0)
-                        var itemIdx = player.wcjs.subtitles.count;
-                    else
-                        var itemIdx = 1;
+        var subtitleState = this.alt.stores.SubtitleStore.state;
 
-                    _.some(subs, (el, ij) => {
-                        itemIdx++;
-                        if (ij == ls('lastLanguage')) {
-                            this.actions.settingChange({
-                                selectedSub: itemIdx
-                            });
-                            return true;
-                        } else {
-                            return false;
-                        }
-                    })
+        if (subtitleState.selectedSub == 1) {
+            if (!ls.isSet('autoSub') || ls('autoSub')) {
+                if (ls('lastLanguage') && ls('lastLanguage') != 'none') {
+                    if (subs[ls('lastLanguage')]) {
+                        this.actions.loadSub(subs[ls('lastLanguage')]);
+                        // select it in the menu too
+                        var itemIdx = player.wcjs.subtitles.count || 1;
+    
+                        _.some(subs, (el, ij) => {
+                            itemIdx++;
+                            if (ij == ls('lastLanguage')) {
+                                this.actions.settingChange({
+                                    selectedSub: itemIdx
+                                });
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        })
+                    }
                 }
             }
         }
