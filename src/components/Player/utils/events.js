@@ -77,13 +77,13 @@ events.opening = () => {
             // this is a youtube-dl supported link, let's refresh it to make sure the link didn't expire
             
             var currentItem = player.wcjs.playlist.currentItem;
-            
+            window.currentItem = currentItem;
+            player.events.emit('playlistUpdate');
+
             player.wcjs.stop();
 
             player.wcjs.playlist.mode = 0;
 
-            console.log('starting ytdl on ' + itemDesc.setting.originalURL);
-            
             var ytdlArgs = ['-g'];
 
             if (ls('ytdlQuality') < 4) {
@@ -91,37 +91,27 @@ events.opening = () => {
                 ytdlArgs.push('-f');
                 ytdlArgs.push('[height <=? ' + qualities[ls('ytdlQuality')] + ']');
             }
-            
+
             var video = ytdl(itemDesc.setting.originalURL, ytdlArgs);
-             
+
             video.on('info', function(info) {
-                console.log('got info');
-                console.log(info);
-                _.defer(() => {
-                    console.log('replace mrl data');
-                    console.log({
-                        autoplay: true,
-                        x: currentItem,
-                        mrl: {
-                            title: info.fulltitle ? info.fulltitle : null,
-                            thumbnail: info.thumbnail ? info.thumbnail : null,
-                            uri: info.url ? info.url : null,
-                            youtubeDL: true
-                        }
+                if (window.currentItem == currentItem) {
+                    delete window.currentItem;
+                    _.defer(() => {
+                        PlayerActions.replaceMRL({
+                            autoplay: true,
+                            x: currentItem,
+                            mrl: {
+                                title: info.fulltitle ? info.fulltitle : null,
+                                thumbnail: info.thumbnail ? info.thumbnail : null,
+                                uri: info.url ? info.url : null,
+                                youtubeDL: true
+                            }
+                        });
                     });
-                    PlayerActions.replaceMRL({
-                        autoplay: true,
-                        x: currentItem,
-                        mrl: {
-                            title: info.fulltitle ? info.fulltitle : null,
-                            thumbnail: info.thumbnail ? info.thumbnail : null,
-                            uri: info.url ? info.url : null,
-                            youtubeDL: true
-                        }
-                    });
-                });
+                }
             });
-            
+
             return;
             
         } else if (itemDesc && itemDesc.setting.torrentHash && itemDesc.setting.torrentHash != engineStore.getState().infoHash) {
