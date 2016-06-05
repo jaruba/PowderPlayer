@@ -74,6 +74,12 @@ class modalStore {
         });
     }
 
+    onTorrentWarning() {
+        this.setState({
+            type: 'torrentWarning'
+        });
+    }
+
     onTorrentSelector(el) {
         this.setState({
             parseLink: el,

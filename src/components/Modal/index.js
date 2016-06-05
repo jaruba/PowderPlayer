@@ -16,6 +16,7 @@ import InstalledPlugin from './components/InstalledPlugin';
 import SearchPlugin from './components/SearchPlugin';
 import SearchPlugins from './components/SearchPlugins';
 import TorrentSelector from './components/torrentSelector';
+import TorrentWarning from './components/torrentWarning';
 
 export
 default React.createClass({
@@ -105,6 +106,9 @@ default React.createClass({
                 break;
             case 'torrentSelector':
                 return <TorrentSelector />;
+                break;
+            case 'torrentWarning':
+                return <TorrentWarning />;
                 break;
         }
     },

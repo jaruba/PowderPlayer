@@ -66,15 +66,20 @@ default React.createClass({
     },
     
     installPlugin(el) {
-        if (el.filmon) {
-            var filmonPlugins = ls('myFilmonPlugins');
-            filmonPlugins.push(el.name);
-            ls('myFilmonPlugins', filmonPlugins);
-        } else
-            plugins.install(el.name);
-
-        ModalActions.close(true);
-        ModalActions.installedPlugin(el);
+        if (el.torrent && ls('torrentWarning') == 1) {
+            ModalActions.close(true);
+            ModalActions.torrentWarning();
+        } else {
+            if (el.filmon) {
+                var filmonPlugins = ls('myFilmonPlugins');
+                filmonPlugins.push(el.name);
+                ls('myFilmonPlugins', filmonPlugins);
+            } else
+                plugins.install(el.name);
+    
+            ModalActions.close(true);
+            ModalActions.installedPlugin(el);
+        }
     },
 
     render() {

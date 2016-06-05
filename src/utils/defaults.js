@@ -15,7 +15,8 @@ var map = {
     downloadType: 0,
     playerType: false,
     adultContent: false,
-    myFilmonPlugins: []
+    myFilmonPlugins: [],
+    torrentWarning: 1
 }
 
 module.exports = () => {
