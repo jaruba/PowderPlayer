@@ -61,6 +61,10 @@ const Player = React.createClass({
 
         if (ls('resizeOnPlaylist'))
             window.firstResize = true;
+        
+        // fix window resize on top side    
+        if (document.querySelector('header'))
+            document.querySelector('header').style.WebkitAppRegion = "no-drag"
     },
     componentWillUnmount() {
         VisibilityStore.unlisten(this.update);
@@ -74,6 +78,10 @@ const Player = React.createClass({
         handler.removeEventListener('dragleave', this.nullEvent);
         handler.removeEventListener('dragend', this.nullEvent);
         handler.removeEventListener('drop', this.fileDrop);
+
+        // fix window resize on top side
+        if (document.querySelector('header'))
+            document.querySelector('header').style.WebkitAppRegion = "drag"
     },
     componentDidMount() {
         var announcer = document.getElementsByClassName('wcjs-announce')[0];
@@ -110,6 +118,78 @@ const Player = React.createClass({
         e.preventDefault();
         var files = e.dataTransfer.files;
         
+        var engine = {};
+        
+        var handleTorrent = () => {
+            torrentUtil.getContents(engine.torrent.files, engine.torrent.infoHash).then( files => {
+                var fileSelectorData = _.omit(files, ['files_total', 'folder_status']);
+                var folder = fileSelectorData[Object.keys(fileSelectorData)[0]];
+                var file = folder[Object.keys(folder)[0]];
+                var newFiles = [];
+                var queueParser = [];
+
+                if (files.ordered.length) {
+                    var port = getPort();
+                    var ij = player.wcjs.playlist.itemCount;
+                    files.ordered.forEach( file => {
+                        if (file.name.toLowerCase().replace("sample","") == file.name.toLowerCase() && file.name != "ETRG.mp4" && file.name.toLowerCase().substr(0,5) != "rarbg") {
+                            newFiles.push({
+                                title: parser(file.name).name(),
+                                uri: 'http://127.0.0.1:' + port + '/' + file.id,
+                                byteSize: file.size,
+                                torrentHash: file.infoHash,
+                                streamID: file.id,
+                                path: file.path
+                            });
+                            queueParser.push({
+                                idx: ij,
+                                url: 'http://127.0.0.1:' + port + '/' + file.id,
+                                filename: file.name
+                            });
+                            ij++;
+                        }
+                    });
+                }
+
+                if (newFiles.length) {
+                    PlayerActions.addPlaylist(newFiles);
+                    // start searching for thumbnails after 1 second
+                    _.delay(() => {
+                        if (queueParser.length) {
+                            queueParser.forEach( el => {
+                                metaParser.push(el);
+                            });
+                        }
+                    },1000);
+                }
+
+                player.notifier.info('Torrent Added', '', 3000);
+
+                player.events.emit('playlistUpdate');
+
+            });
+            
+            engine.remove( () => {
+                engine.destroy();
+            });
+        }
+        
+        if (!files.length) {
+            var droppedLink = e.dataTransfer.getData("text/plain");
+            if (droppedLink) {
+                if (droppedLink.startsWith('magnet:')) {
+                    engine = new torrentStream(droppedLink, {
+                        connections: 30
+                    });
+    
+                    engine.ready(handleTorrent);
+                } else {
+                    
+                }
+            }
+            return;
+        }
+        
         if (files.length == 1 && files[0].path) {
             if (supported.is(files[0].path, 'subs')) {
                 var subs = player.itemDesc().setting.subtitles || {};
@@ -130,59 +210,11 @@ const Player = React.createClass({
                     if (err) {
                         player.notifier.info(err.message, '', 3000);
                     } else {
-                        var engine = new torrentStream(parsedTorrent, {
+                        engine = new torrentStream(parsedTorrent, {
                             connections: 30
                         });
         
-                        engine.ready( () => {
-                            torrentUtil.getContents(engine.torrent.files, engine.torrent.infoHash).then( files => {
-                                var fileSelectorData = _.omit(files, ['files_total', 'folder_status']);
-                                var folder = fileSelectorData[Object.keys(fileSelectorData)[0]];
-                                var file = folder[Object.keys(folder)[0]];
-                                var newFiles = [];
-                                var queueParser = [];
-
-                                if (files.ordered.length) {
-                                    var port = getPort();
-                                    var ij = player.wcjs.playlist.itemCount;
-                                    files.ordered.forEach( file => {
-                                        if (file.name.toLowerCase().replace("sample","") == file.name.toLowerCase() && file.name != "ETRG.mp4" && file.name.toLowerCase().substr(0,5) != "rarbg") {
-                                            newFiles.push({
-                                                title: parser(file.name).name(),
-                                                uri: 'http://127.0.0.1:' + port + '/' + file.id,
-                                                byteSize: file.size,
-                                                torrentHash: file.infoHash,
-                                                streamID: file.id,
-                                                path: file.path
-                                            });
-                                            queueParser.push({
-                                                idx: ij,
-                                                url: 'http://127.0.0.1:' + port + '/' + file.id,
-                                                filename: file.name
-                                            });
-                                            ij++;
-                                        }
-                                    });
-                                }
-            
-                                if (newFiles.length) {
-                                    PlayerActions.addPlaylist(newFiles);
-                                    // start searching for thumbnails after 1 second
-                                    _.delay(() => {
-                                        if (queueParser.length) {
-                                            queueParser.forEach( el => {
-                                                metaParser.push(el);
-                                            });
-                                        }
-                                    },1000);
-                                }
-
-                            });
-                            
-                            engine.remove( () => {
-                                engine.destroy();
-                            });
-                        });
+                        engine.ready(handleTorrent);
                     }
                 });
                 return;
