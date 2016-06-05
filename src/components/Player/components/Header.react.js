@@ -193,6 +193,8 @@ default React.createClass({
                     <paper-tooltip for="playerMainBack" offset="0" id="playerBackTooltip">Main Menu</paper-tooltip>
     
                     <p className="title" style={{width: 'calc(100% - '+(this.state.foundTrakt ? '216' : '176')+'px)'}}>{this.state.title}</p>
+
+                    <p className="windowDrag" style={{width: 'calc(100% - '+(this.state.foundTrakt ? '216' : '176')+'px)'}} />
     
                     <paper-icon-button id="closeBut" className="close-app" icon={'icons:close'} noink={true} onClick={this.handleCloseApp} />
                     <paper-tooltip for="closeBut" className="close-but-tooltip" offset="0">Close</paper-tooltip>
