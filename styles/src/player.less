@@ -495,6 +495,24 @@
   border-radius: 50%;
 }
 
+.wcjs-player .playlist-container .playlist-inner .sortable-ghost {
+  border: 2px dashed #6e7171;
+  background: #2c3133 !important;
+  height: 166px;
+  width: 226px;
+  max-height: ~"calc(43% - 4px)";
+  max-width: ~"calc(43% - 4px)";
+  opacity: 0.7;
+}
+
+.wcjs-player .playlist-container .playlist-inner .sortable-ghost .miniControls {
+  display: none !important;
+}
+
+.wcjs-player .playlist-container .playlist-inner .sortable-ghost .title {
+  display: none !important;
+}
+
 @media screen and (max-height: 415px) {
 
   .wcjs-player .playlist-container .playlist-inner .item {
@@ -527,6 +545,16 @@
   .wcjs-player .playlist-container .playlist-inner .item p {
   text-align: left !important;
   padding-left: 15px;
+  }
+  .wcjs-player .playlist-container .playlist-inner .sortable-ghost {
+    border: 1px dashed #6e7171;
+    background: #2c3133 !important;
+    background-color: #2c3133 !important;
+    width: ~"calc(100% - 2px)";
+    max-width: ~"calc(100% - 2px)";
+  }
+  .wcjs-player .playlist-container .playlist-inner .sortable-ghost:hover {
+    background: #2c3133 !important;
   }
 
 }

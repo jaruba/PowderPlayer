@@ -59,6 +59,7 @@
     "yargs": "^3.31.0",
     "workerjs": "^0.1.1",
     "react-polymer": "^1.1.0",
+    "sortablejs": "^1.4.2",
     "youtube-dl": "https://github.com/jaruba/node-youtube-dl/tarball/master",
     "easy-ffmpeg": "https://github.com/jaruba/easy-ffmpeg/tarball/master",
     "multipass-torrent": "https://github.com/DavyBavy/multipass-torrent/tarball/master"

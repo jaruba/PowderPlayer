@@ -116,7 +116,11 @@ const Player = React.createClass({
         return false;
     },
     fileDrop(e) {
+
         e.preventDefault();
+
+        if (window.immuneToDrop) return false;
+
         var files = e.dataTransfer.files;
         
         var engine = {};
@@ -192,7 +196,7 @@ const Player = React.createClass({
                     });
                 }
             }
-            return;
+            return false;
         }
         
         if (files.length == 1 && files[0].path) {
@@ -208,7 +212,7 @@ const Player = React.createClass({
                     selectedSub: _.size(subs) + (player.wcjs.subtitles.count || 1),
                 });
                 player.notifier.info('Subtitle Loaded', '', 3000);
-                return;
+                return false;
             } else if (supported.is(files[0].path, 'torrent')) {
 
                 readTorrent(files[0].path, (err, parsedTorrent) => {
@@ -222,7 +226,7 @@ const Player = React.createClass({
                         engine.ready(handleTorrent);
                     }
                 });
-                return;
+                return false;
 
             }
         }

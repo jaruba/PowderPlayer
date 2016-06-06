@@ -6,6 +6,9 @@ import ControlActions from './Controls/actions';
 import VisibilityStore from './Visibility/store';
 import path from 'path';
 import player from '../utils/player';
+import Sortable from 'sortablejs';
+
+var sortable = {};
 
 export
 default React.createClass({
@@ -14,7 +17,6 @@ default React.createClass({
         return {
             playing: player.wcjs.playing,
             open: false,
-            playlist: player.wcjs.playlist || false,
             uiHidden: VisibilityStore.getState().uiHidden
         }
     },
@@ -33,7 +35,6 @@ default React.createClass({
             this.setState({
                 playing: player.wcjs.playing,
                 open: visibilityState.playlist,
-                playlist: player.wcjs.playlist || false,
                 uiHidden: visibilityState.uiHidden
             });
         }
@@ -54,13 +55,89 @@ default React.createClass({
 
     getItems() {
         let items = []
-        if (!this.state.playlist) return items;
+        if (!player.wcjs.playlist) return items;
+        for (var idx = 0; idx < player.wcjs.playlist.items.count; idx++) {
+            var item = player.itemDesc(idx);
 
-        for (var i = 0; i < this.state.playlist.items.count; i++) {
-            items.push(player.itemDesc(i));
+            if (!item.setting) item.setting = {};
+            if (item.artworkURL) {
+                item.image = item.artworkURL;
+            } else if (item.setting.image) {
+                item.image = item.setting.image;
+            } else {
+                item.image = 'images/video-placeholder.svg';
+            }
+            
+            if (typeof window.currentItem !== 'undefined') {
+                var showControls = (idx == window.currentItem);
+            } else {
+                var showControls = (idx == player.wcjs.playlist.currentItem);
+            }
+            
+            if (showControls) {
+                var miniControls = (
+                    <div className="miniControls" style={{ display: 'inline-block' }}>
+                        <div className="playlist-center-holder">
+                           <div className="playlist-center">
+                                <div className="playlist-play-holder">
+                                    <div className="playlist-play-dummy" />
+                                    <paper-icon-button className={'play-toggle playlist-play'} icon={'av:' + (this.state.playing ? 'pause' : 'play-arrow')} noink={true} />
+                                </div>
+                            </div>
+                        </div>
+                        <div className="playlist-progress" style={{ width: (player.wcjs.position * 100) + '%' }} />
+                    </div>
+                );
+            } else
+                var miniControls = ('');
+
+
+            items.push((
+                <paper-material onClick={showControls ? ControlActions.handlePausePlay : player.playItem.bind(this,idx)} id={'item'+idx} className={'item' + (showControls ? ' playlist-selected' : '')} key={idx} elevation={1} style={{background: 'url(' + item.image + ') no-repeat, url(../images/video-placeholder.svg) no-repeat', borderRadius: '2px', textAlign: 'center'}}>
+                    {miniControls}
+                    <p id={'itemTitle'+idx} className="title">{(path.isAbsolute(item.title)) ? path.normalize(path.parse(item.title).name) : item.title }</p>
+                </paper-material>
+            ));
         }
 
         return items;
+    },
+    
+    sortableGroupDecorator(componentBackingInstance) {
+        // check if backing instance not null
+        if (componentBackingInstance) {
+            let options = {
+                draggable: "paper-material",
+                group: "playlist",
+                onStart: evt => {
+                    window.immuneToDrop = true;
+                },
+                onSort: evt => {
+
+                    delete window.immuneToDrop;
+
+                    var oldId = evt.oldIndex,
+                        newId = evt.newIndex,
+                        reArrange = sortable.toArray(),
+                        oldSort = sortable.toArray();
+
+                    if (oldId < newId) {
+                        for (var i = oldId; i < newId; i++)
+                            reArrange[i+1] = oldSort[i];
+                    } else {
+                        for (var i = newId + 1; i <= oldId; i++)
+                            reArrange[i-1] = oldSort[i];
+                    }
+
+                    player.wcjs.playlist.advanceItem(oldId, newId - oldId);
+
+                    reArrange[oldId] = oldSort[newId];
+                    sortable.sort(reArrange);
+                    this.update();
+                },
+            };
+            sortable = Sortable.create(componentBackingInstance, options);
+        }
     },
 
     render() {
@@ -69,42 +146,8 @@ default React.createClass({
                 <div className="playlist-controls" / >
                 <div className="playlist-holder playlist-holder-contain">
                     <div ref="playlist-title" className="droid-sans playlist-title">Playlist</div>
-                    <div className="playlist-inner">
-                        {
-                            this.getItems().map((item, idx) => {
-                                if (!item.setting) item.setting = {};
-                                if (item.artworkURL) {
-                                    item.image = item.artworkURL;
-                                } else if (item.setting.image) {
-                                    item.image = item.setting.image;
-                                } else {
-                                    item.image = 'images/video-placeholder.svg';
-                                }
-                                
-                                if (typeof window.currentItem !== 'undefined') {
-                                    var showControls = (item.setting.idx == window.currentItem);
-                                } else {
-                                    var showControls = (item.setting.idx == player.wcjs.playlist.currentItem);
-                                }
-
-                                return (
-                                    <paper-material onClick={showControls ? ControlActions.handlePausePlay : player.playItem.bind(this,idx)} id={'item'+idx} className={'item' + (showControls ? ' playlist-selected' : '')} key={idx} elevation={1} style={{background: 'url(' + item.image + ') no-repeat, url(../images/video-placeholder.svg) no-repeat', borderRadius: '2px', textAlign: 'center'}}>
-                                        <div className="miniControls" style={{'display': (showControls ? 'inline-block' : 'none')}}>
-                                            <div className="playlist-center-holder">
-                                               <div className="playlist-center">
-                                                    <div className="playlist-play-holder">
-                                                        <div className="playlist-play-dummy" />
-                                                        <paper-icon-button className={'play-toggle playlist-play'} icon={'av:' + (this.state.playing ? 'pause' : 'play-arrow')} noink={true} />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="playlist-progress" style={{ width: (player.wcjs.position * 100) + '%' }} />
-                                        </div>
-                                        <p id={'itemTitle'+idx} className="title">{(path.isAbsolute(item.title)) ? path.normalize(path.parse(item.title).name) : item.title }</p>
-                                    </paper-material>
-                                    )
-                            }, this)
-                        }
+                    <div className="playlist-inner" ref={this.sortableGroupDecorator}>
+                        {this.getItems()}
                     </div>
                    </div> 
             </div>
