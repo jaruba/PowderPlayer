@@ -133,9 +133,9 @@ default React.createClass({
         }
 
         linkUtil(inputvalue).then(url => {
-            ModalActions.thinking(false);
+            ModalActions.close();
         }).catch(error => {
-            ModalActions.thinking(false);
+            ModalActions.close();
             ModalActions.open({
                 title: 'Add URL',
                 type: 'URLAdd'

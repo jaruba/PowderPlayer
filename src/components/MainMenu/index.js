@@ -172,9 +172,9 @@ default React.createClass({
                 });
 
                 linkUtil(droppedLink).then(url => {
-                    ModalActions.thinking(false);
+                    ModalActions.close();
                 }).catch(error => {
-                    ModalActions.thinking(false);
+                    ModalActions.close();
                     MessageActions.open(error.message);
                 });
 

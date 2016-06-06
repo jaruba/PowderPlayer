@@ -31,54 +31,66 @@ module.exports = (inputvalue) => {
                                 // if it's html, we have 2 choices
                                 // - try youtube-dl with it
                                 // - add all the media on the page to a playlist
-                                parsed.domain = parsed.url.match(/https?:\/\/[^\/]+\//g)[0];
+
+                                var parsedUrl = parsed.url.match(/https?:\/\/[^\/]+\//g) || (parsed.url + '/').match(/https?:\/\/[^\/]+\//g);
+                                if (!parsedUrl) {
+                                    reject(new Error('Not Supported'));
+                                    return;
+                                }
+                                parsed.domain = parsedUrl[0];
 
                                 function parseLinks(plugin) {
                                     // start scanning for media on the page
                                     var Linky = new LinkSupport;
                                     Linky.handleURL(parsed, plugin, resolvedLink => {
-                                        var newFiles = resolvedLink[0];
-                                        var queueParser = resolvedLink[1];
-                                        if (newFiles.length) {
-                                            ModalActions.close();
-                                            PlayerActions.addPlaylist(newFiles);
-    
-                                            // start searching for thumbnails after 1 second
-                                            _.delay(() => queueParser.forEach(el => {
-                                                metaParser.push(el);
-                                            }), 1000);
+                                        
+                                        if (!resolvedLink) {
+                                            reject(new Error('Not Supported'));
                                         } else {
-                                            // try youtube-dl with it, use media scanner as a fallback
-                                            var ytdlArgs = ['-g'];
-
-                                            if (ls('ytdlQuality') < 4) {
-                                                var qualities = [360, 480, 720, 1080];
-                                                ytdlArgs.push('-f');
-                                                ytdlArgs.push('[height <=? ' + qualities[ls('ytdlQuality')] + ']');
-                                            }
                                             
-                                            var video = ytdl(parsed.url, ytdlArgs);
-                
-                                            video.on('error', function(err) {
+                                            var newFiles = resolvedLink[0];
+                                            var queueParser = resolvedLink[1];
+                                            if (newFiles.length) {
                                                 ModalActions.close();
-                                                console.log('ytdl ending error');
-                                                reject(new Error('Error: Invalid URL'));
-                                            });
-                
-                                            video.on('info', function(info) {
-                                                if (info.url) {
+                                                PlayerActions.addPlaylist(newFiles);
+        
+                                                // start searching for thumbnails after 1 second
+                                                _.delay(() => queueParser.forEach(el => {
+                                                    metaParser.push(el);
+                                                }), 1000);
+                                            } else {
+                                                // try youtube-dl with it, use media scanner as a fallback
+                                                var ytdlArgs = ['-g'];
+    
+                                                if (ls('ytdlQuality') < 4) {
+                                                    var qualities = [360, 480, 720, 1080];
+                                                    ytdlArgs.push('-f');
+                                                    ytdlArgs.push('[height <=? ' + qualities[ls('ytdlQuality')] + ']');
+                                                }
+                                                
+                                                var video = ytdl(parsed.url, ytdlArgs);
+                    
+                                                video.on('error', function(err) {
                                                     ModalActions.close();
-                                                    console.log(info);
-                                                    PlayerActions.addPlaylist([{
-                                                        originalURL: inputvalue,
-                                                        uri: parsed.url,
-                                                        youtubeDL: true,
-                                                        image: info.thumbnail,
-                                                        title: info.fulltitle
-                                                    }]);
-                                                    resolve(parsed.url);
-                                                } else parseLinks(plugin && plugin.checkFor ? plugin : null);
-                                            });
+                                                    console.log('ytdl ending error');
+                                                    reject(new Error('Error: Invalid URL'));
+                                                });
+                    
+                                                video.on('info', function(info) {
+                                                    if (info.url) {
+                                                        ModalActions.close();
+                                                        console.log(info);
+                                                        PlayerActions.addPlaylist([{
+                                                            originalURL: inputvalue,
+                                                            uri: parsed.url,
+                                                            youtubeDL: true,
+                                                            image: info.thumbnail,
+                                                            title: info.fulltitle
+                                                        }]);
+                                                        resolve(parsed.url);
+                                                    } else parseLinks(plugin && plugin.checkFor ? plugin : null);
+                                                });
+                                            }
                                             
                                         }
                                     }, reject);
