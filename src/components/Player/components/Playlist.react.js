@@ -116,11 +116,14 @@ default React.createClass({
                 
                 onStart: evt => {
                     window.immuneToDrop = true;
-                    window.document.querySelector('.playlist-inner').className += ' playlist-dragging';
+                    // set a class to the playlist while dragging
+                    var playlistElem = window.document.querySelector('.playlist-inner');
+                    playlistElem.className += ' playlist-dragging';
                 },
                 
                 onEnd: evt => {
-                    window.document.querySelector('.playlist-inner').className = window.document.querySelector('.playlist-inner').className.split(' playlist-dragging').join('');
+                    var playlistElem = window.document.querySelector('.playlist-inner');
+                    playlistElem.className = playlistElem.className.split(' playlist-dragging').join('');
                 },
                 
                 onSort: evt => {

@@ -737,10 +737,10 @@ default React.createClass({
                 default: this.state.downloadType,
                 width: '120px',
                 disabled: true
-            }, {
-                type: 'toggle',
-                title: 'Use External Player',
-                tag: 'playerType'
+//            }, {
+//                type: 'toggle',
+//                title: 'Use External Player',
+//                tag: 'playerType'
             }
         ];
         
