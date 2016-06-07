@@ -13,6 +13,7 @@ import regFileW32 from './regFileWin';
 import path from 'path';
 import supported from './isSupported';
 import MessageActions from '../components/Message/actions';
+import duti from 'duti-prebuilt';
 
 var notify = () => {
     try {
@@ -49,7 +50,7 @@ register.torrent = () => {
         });
     } else if (process.platform == 'darwin') {
         var powderPath = process.execPath.substr(0,process.execPath.lastIndexOf("/")+1)+"../../../../Resources/app.nw/";
-        child.exec('"'+powderPath+'src/duti/duti" -s media.powder.player .torrent viewer');
+        duti('media.powder.player', '.torrent');
     } else {
         var iconPath = process.execPath;
         regFileW32('.torrent', 'powder.player.v1', 'BitTorrent Document', iconPath, [ process.execPath ]);
@@ -72,7 +73,7 @@ register.videos = () => {
     } else if (process.platform == 'darwin') {
         var powderPath = process.execPath.substr(0,process.execPath.lastIndexOf("/")+1)+"../../../../Resources/app.nw/";
         supported.ext.video.forEach( el => {
-            child.exec('"'+powderPath+'src/duti/duti" -s media.powder.player ' + el + ' viewer');
+            duti('media.powder.player', el);
         });
     } else {
         var iconPath = process.execPath;

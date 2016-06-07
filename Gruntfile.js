@@ -33,7 +33,7 @@ module.exports = function(grunt) {
     console.log(' ');
 
 
-    var BASENAME = 'Powder Player';
+    var BASENAME = 'Powder';
     var APPNAME = BASENAME;
 
     var OSX_OUT = './dist';
@@ -135,6 +135,11 @@ module.exports = function(grunt) {
                     cwd: 'bin/ffmpeg',
                     src: ['**/*'],
                     dest: 'build/bin/ffmpeg/'
+                }, {
+                    expand: true,
+                    cwd: 'bin/duti',
+                    src: ['**/*'],
+                    dest: 'build/bin/duti/'
                 }]
             },
             videoWin: {
@@ -158,6 +163,11 @@ module.exports = function(grunt) {
                     cwd: 'bin/ffmpeg',
                     src: ['**/*'],
                     dest: 'dist/' + BASENAME + '-win32-' + arch + '/resources/bin/ffmpeg'
+                }, {
+                    expand: true,
+                    cwd: 'bin/duti',
+                    src: ['**/*'],
+                    dest: 'dist/' + BASENAME + '-win32-' + arch + '/resources/bin/duti'
                 }]
             },
             releaseOSX: {
