@@ -48,6 +48,10 @@ default React.createClass({
         if (!this.state.uiHidden && this.state.open) this.update();
     },
 
+    removeItem(idx) {
+        player.wcjs.playlist.removeItem(idx);
+    },
+
     handleOpenPlaylist() {
 
 
@@ -74,28 +78,28 @@ default React.createClass({
                 var showControls = (idx == player.wcjs.playlist.currentItem);
             }
             
-            if (showControls) {
-                var miniControls = (
-                    <div className="miniControls" style={{ display: 'inline-block' }}>
-                        <div className="playlist-center-holder">
-                           <div className="playlist-center">
-                                <div className="playlist-play-holder">
-                                    <div className="playlist-play-dummy" />
-                                    <paper-icon-button className={'play-toggle playlist-play'} icon={'av:' + (this.state.playing ? 'pause' : 'play-arrow')} noink={true} />
-                                </div>
+            var miniControls = (
+                <div className="miniControls" style={{ display: showControls ? 'inline-block' : 'none' }}>
+                    <div className="playlist-center-holder">
+                       <div className="playlist-center">
+                            <div className="playlist-play-holder">
+                                <div className="playlist-play-dummy" />
+                                <paper-icon-button className={'play-toggle playlist-play'} icon={'av:' + (this.state.playing ? 'pause' : 'play-arrow')} noink={true} />
                             </div>
                         </div>
-                        <div className="playlist-progress" style={{ width: (player.wcjs.position * 100) + '%' }} />
                     </div>
-                );
-            } else
-                var miniControls = ('');
-
+                    <div className="playlist-progress" style={{ width: (player.wcjs.position * 100) + '%' }} />
+                </div>
+            );
 
             items.push((
-                <paper-material onClick={showControls ? ControlActions.handlePausePlay : player.playItem.bind(this,idx)} id={'item'+idx} className={'item' + (showControls ? ' playlist-selected' : '')} key={idx} elevation={1} style={{background: 'url(' + item.image + ') no-repeat, url(../images/video-placeholder.svg) no-repeat', borderRadius: '2px', textAlign: 'center'}}>
+                <paper-material id={'item'+idx} className={'item' + (showControls ? ' playlist-selected' : '')} key={idx} elevation={1} style={{background: 'url(' + item.image + ') no-repeat, url(../images/video-placeholder.svg) no-repeat', borderRadius: '2px', textAlign: 'center'}}>
                     {miniControls}
                     <p id={'itemTitle'+idx} className="title">{(path.isAbsolute(item.title)) ? path.normalize(path.parse(item.title).name) : item.title }</p>
+                    <div className="playlist-back" onClick={showControls ? ControlActions.handlePausePlay : player.playItem.bind(this,idx)} />
+                    <div className="playlist-close-hold" onClick={this.removeItem.bind(this,idx)} style={{display: showControls ? 'none' : 'block' }}>
+                        <paper-icon-button className="playlist-close" icon={'icons:close'} noink={true} />
+                    </div>
                 </paper-material>
             ));
         }

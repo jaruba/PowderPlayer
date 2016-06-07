@@ -12,12 +12,44 @@
   top: 0; bottom: 0; left: 0; right: 0;
 }
 
+.playlist-back {
+  position: absolute;
+  bottom: 0;
+  top: 0;
+  right: 0;
+  left: 0;
+}
+
 .playlist-progress {
   position: absolute;
   bottom: 40px;
   left: 0;
   height: 2px;
   background: -webkit-linear-gradient(left, #a259fe 0, #1f99ff 100%);
+}
+
+.playlist-close-hold {
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  overflow: hidden;
+  background-color: rgba(0,0,0,0.5);
+  border-radius: 50%;
+  margin: 5px;
+  -webkit-transition: opacity 0.4s ease-in-out;
+}
+
+.playlist-close-hold:hover {
+  background-color: rgba(0,0,0,0.8);
+}
+
+.playlist-close {
+  color: white;
+  width: 18px;
+  height: 18px;
+  padding: 2px;
+  padding-top: 0;
+  margin: 2px;
 }
 
 .menu-hide {
@@ -460,6 +492,10 @@
   max-height: 43%;
 }
 
+.wcjs-player .playlist-container .playlist-inner .item:hover .playlist-close-hold {
+  opacity: 1;
+}
+
 .playlist-center-holder {
   display: table;
   width: 100%;
@@ -555,6 +591,11 @@
   }
   .wcjs-player .playlist-container .playlist-inner .sortable-ghost:hover {
     background: #2c3133 !important;
+  }
+
+  .playlist-close-hold {
+    margin: 8px;
+    -webkit-transition: none;
   }
 
 }
