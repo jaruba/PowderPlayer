@@ -12,6 +12,15 @@ import player from '../components/Player/utils/player';
 import regFileW32 from './regFileWin';
 import path from 'path';
 import supported from './isSupported';
+import MessageActions from '../components/Message/actions';
+
+var notify = () => {
+    try {
+        player.notifier.info('Associated', '', 4000);
+    } catch(e) {
+        MessageActions.open('Associated');
+    }
+}
 
 var register = {};
 
@@ -41,11 +50,11 @@ register.torrent = () => {
     } else if (process.platform == 'darwin') {
         var powderPath = process.execPath.substr(0,process.execPath.lastIndexOf("/")+1)+"../../../../Resources/app.nw/";
         child.exec('"'+powderPath+'src/duti/duti" -s media.powder.player .torrent viewer');
-        alert("Successfully Associated with Torrent Files");
     } else {
         var iconPath = process.execPath;
         regFileW32('.torrent', 'powder.player.v1', 'BitTorrent Document', iconPath, [ process.execPath ]);
     }
+    notify();
 };
 
 register.videos = () => {
@@ -63,17 +72,15 @@ register.videos = () => {
     } else if (process.platform == 'darwin') {
         var powderPath = process.execPath.substr(0,process.execPath.lastIndexOf("/")+1)+"../../../../Resources/app.nw/";
         supported.ext.video.forEach( el => {
-            console.log('registering ' + el);
             child.exec('"'+powderPath+'src/duti/duti" -s media.powder.player ' + el + ' viewer');
         });
-        alert("Successfully Associated with Video Files");
     } else {
         var iconPath = process.execPath;
         supported.ext.video.forEach( el => {
-            console.log('registering ' + el);
             regFileW32(el, 'powder.player.v1', el.substr(1).toUpperCase() + ' Document', iconPath, [ process.execPath ]);
         });
     }
+    notify();
 };
 
 register.magnet = () => {
@@ -87,7 +94,7 @@ register.magnet = () => {
     } else {
         app.setAsDefaultProtocolClient('magnet');
     }
-    player.notifier.info('Associated', '', 4000);
+    notify();
 };
 
 register.powLinks = () => {
@@ -101,7 +108,7 @@ register.powLinks = () => {
     } else {
         app.setAsDefaultProtocolClient('pow');
     }
-    player.notifier.info('Associated', '', 4000);
+    notify();
 };
 
 module.exports = register;

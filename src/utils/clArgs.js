@@ -4,6 +4,7 @@ import parser from '../components/Player/utils/parser';
 import sorter from '../components/Player/utils/sort';
 import metaParser from '../components/Player/utils/metaParser';
 import TorrentActions from '../actions/torrentActions';
+import MessageActions from '../components/Message/actions';
 import linkUtil from './linkUtil';
 import _ from 'lodash';
 import url from 'url';
