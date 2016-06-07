@@ -110,4 +110,6 @@ trakt.movieInfo = trakttv.movies.summary;
 
 trakt.episodeInfo = trakttv.episodes.summary;
 
+trakt.showInfo = trakttv.shows.summary;
+
 module.exports = trakt;

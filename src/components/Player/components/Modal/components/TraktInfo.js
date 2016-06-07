@@ -131,6 +131,9 @@ default React.createClass({
         });
     },
     render() {
+        if (this.state.parsed && this.state.parsed.tag && this.state.parsed.tag.length) {
+            var tags = this.state.parsed.tag;
+        } else tags = [];
         return (
             <paper-dialog
                 ref="dialog"
@@ -147,7 +150,7 @@ default React.createClass({
                   <div style={{ marginBottom: '7px' }}>{this.state.parsedRating}</div>
                   <div style={{ marginBottom: '7px', display: this.state.trakt.season ? 'block' : 'none' }}>{this.state.trakt.title}</div>
                   <div style={{ marginBottom: '7px', textAlign: 'justify', display: this.state.trakt.overview ? 'block' : 'none' }}>{this.state.trakt.overview}</div>
-                  <div style={{ display: true ? 'none' : this.state.parsed.tag.length ? 'block' : 'none' }}>{this.state.parsed.tag.join(', ')}</div>
+                  <div style={{ display: true ? 'none' : tags.length ? 'block' : 'none' }}>{tags.join(', ')}</div>
                 </div>
 
                 <div style={{clear:'both', height: '10px'}} />

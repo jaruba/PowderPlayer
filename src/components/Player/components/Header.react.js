@@ -158,11 +158,19 @@ default React.createClass({
         }
     },
     handleOpenTrakt() {
-        ModalActions.open({
-            title: 'Trakt Info',
-            type: 'TraktInfo',
-            theme: 'DarkRawTheme'
-        });
+        if (this.state.foundTrakt) {
+            ModalActions.open({
+                title: 'Trakt Info',
+                type: 'TraktInfo',
+                theme: 'DarkRawTheme'
+            });
+        } else {
+            ModalActions.open({
+                title: 'Trakt Search',
+                type: 'TraktSearch',
+                theme: 'DarkRawTheme'
+            });
+        }
     },
     handleOpenSettings() {
 
@@ -186,15 +194,24 @@ default React.createClass({
         this.history.replaceState(null, 'torrentDashboard');
     },
     render() {
+        if (player && player.wcjs && player.wcjs.playlist.currentItem > -1) {
+            var isLocal = player.itemDesc().mrl.startsWith('file://');
+        } else var isLocal = false;
+
+        if (!isLocal) {
+            var engineState = engineStore.getState();
+            var isTorrent = !!(engineState.infoHash && engineState.torrents[engineState.infoHash]);
+        } else var isTorrent = false;
+
         return (
             <div>
                 <div className={this.state.uiHidden ? 'header' : this.state.playlistOpen ? 'header playlist-head' : this.state.settingsOpen ? 'header settings-head' : this.state.uiShown ? 'header show' : 'header'}>
                     <paper-icon-button id="playerMainBack" onClick={this.handleClose} className="player-close" icon={'arrow-back'} noink={true} />
                     <paper-tooltip for="playerMainBack" offset="0" id="playerBackTooltip">Main Menu</paper-tooltip>
     
-                    <p className="title" style={{width: 'calc(100% - '+(this.state.foundTrakt ? '216' : '176')+'px)'}}>{this.state.title}</p>
+                    <p className="title" style={{width: 'calc(100% - '+(this.state.foundTrakt || isLocal || isTorrent ? '216' : '176')+'px)'}}>{this.state.title}</p>
 
-                    <p className="windowDrag" style={{width: 'calc(100% - '+(this.state.foundTrakt ? '216' : '176')+'px)'}} />
+                    <p className="windowDrag" style={{width: 'calc(100% - '+(this.state.foundTrakt || isLocal || isTorrent ? '216' : '176')+'px)'}} />
     
                     <paper-icon-button id="closeBut" className="close-app" icon={'icons:close'} noink={true} onClick={this.handleCloseApp} />
                     <paper-tooltip for="closeBut" className="close-but-tooltip" offset="0">Close</paper-tooltip>
@@ -206,8 +223,8 @@ default React.createClass({
                     <paper-tooltip for="playerSetBut" offset="0">Settings</paper-tooltip>
     
     
-                    <paper-icon-button id="traktBut" onClick={this.handleOpenTrakt} className="trakt-info" src="./images/trakt-logo.png" style={{ display: this.state.foundTrakt ? 'block' : 'none' }} noink={true} />
-                    <paper-tooltip for="traktBut" offset="0">Trakt Info</paper-tooltip>
+                    <paper-icon-button id="traktBut" onClick={this.handleOpenTrakt} className={'trakt-info' + (!this.state.foundTrakt && (isLocal || isTorrent) ? ' semi-trakt' : '')} src="./images/trakt-logo.png" style={{ display: this.state.foundTrakt || isLocal || isTorrent ? 'block' : 'none' }} noink={true} />
+                    <paper-tooltip for="traktBut" offset="0">{!this.state.foundTrakt && (isLocal || isTorrent) ? 'Trakt Search' : 'Trakt Info'}</paper-tooltip>
     
                 </div>
             </div>
