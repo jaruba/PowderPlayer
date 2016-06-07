@@ -81,6 +81,15 @@ class ProgressActions {
     }
     
     handleScrobble(event) {
+        
+        if (player.wcjs.state != 3) {
+            // remove progress bar transition effect periodically
+            progressElem = document.querySelector('.wcjs-player .time');
+            progressElem.className = progressElem.className.split(' smooth-progress').join('');
+            _.delay(() => {
+                progressElem.className = progressElem.className + ' smooth-progress';
+            },500);
+        }
 
         var progressState = this.alt.stores.ProgressStore.getState(),
             timeState = this.alt.stores.TimeStore.getState();
