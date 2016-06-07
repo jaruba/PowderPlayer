@@ -43,6 +43,11 @@
   background-color: rgba(0,0,0,0.8);
 }
 
+.wcjs-player .playlist-container .playlist-dragging .playlist-close-hold {
+  display: none !important;
+  -webkit-transition: none !important;
+}
+
 .playlist-close {
   color: white;
   width: 18px;
@@ -351,7 +356,7 @@
 }
 
 .wcjs-player .control-bar .time-info .current {
-   color: rgba(0, 144, 255, 0.79);
+ color: rgba(0, 144, 255, 0.79);
 }
 
 
@@ -428,7 +433,7 @@
 }
 
 .wcjs-player .control-bar .currentTime {
-   color: #8d96a3;
+  color: #8d96a3;
 }
 
 .wcjs-player .playlist-container {
@@ -552,35 +557,39 @@
 @media screen and (max-height: 415px) {
 
   .wcjs-player .playlist-container .playlist-inner .item {
-  background: black !important;
-  height: 37px;
-  box-shadow: none;
-  overflow: hidden;
-  width: 100%;
-  max-width: 100%;
-  margin: 0;
-  border-radius: 0 !important;
+    background: black !important;
+    height: 37px;
+    box-shadow: none;
+    overflow: hidden;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    border-radius: 0 !important;
   }
 
   .wcjs-player .playlist-container .playlist-inner .item .playlist-center {
-  display: none !important;
+    display: none !important;
   }
 
   .wcjs-player .playlist-container .playlist-inner .item:hover {
-  background: gray !important;
+    background: gray !important;
+  }
+  
+  .wcjs-player .playlist-container .playlist-dragging .item:hover {
+    background: black !important;
   }
   
   .wcjs-player .playlist-container .playlist-inner .playlist-selected {
-  background: #00adeb !important;
+    background: #00adeb !important;
   }
   
   .wcjs-player .playlist-container .playlist-inner .playlist-selected p {
-  color: rgba(255, 255, 255, 0.8) !important;
+    color: rgba(255, 255, 255, 0.8) !important;
   }
   
   .wcjs-player .playlist-container .playlist-inner .item p {
-  text-align: left !important;
-  padding-left: 15px;
+    text-align: left !important;
+    padding-left: 15px;
   }
   .wcjs-player .playlist-container .playlist-inner .sortable-ghost {
     border: 1px dashed #6e7171;
@@ -602,17 +611,17 @@
 
 @media screen and (max-width: 629px) {
   .wcjs-player .playlist-container .playlist-inner .item {
-  max-width: 92%;
+    max-width: 92%;
   }
   .trakt-info-img {
-  display: block !important;
-  float: none !important;
-  max-width: 100% !important;
+    display: block !important;
+    float: none !important;
+    max-width: 100% !important;
   }
   .trakt-info-desc {
-  max-width: 100% !important;
-  margin-top: 10px !important;
-  margin-left: 0 !important;
+    max-width: 100% !important;
+    margin-top: 10px !important;
+    margin-left: 0 !important;
   }
 }
 
@@ -624,9 +633,9 @@
 
 @media screen and (max-width: 505px) {
   .trakt-not-correct {
-  margin-right: 0px !important;
-  margin-left: 10px !important;
-  margin-top: 12px !important;
+    margin-right: 0px !important;
+    margin-left: 10px !important;
+    margin-top: 12px !important;
   }
 }
 
@@ -706,16 +715,16 @@
 
 @media screen and (min-width: 790px) {
   .wcjs-player .playlist-container .playlist-title {
-  font-size: 32px !important;
+    font-size: 32px !important;
   }
 }
 
 @media screen and (max-width: 433px) {
   .wcjs-player .playlist-container .playlist-title {
-  display: none
+    display: none
   }
   .playlist-holder-contain {
-  margin-top: 14% !important;
+    margin-top: 14% !important;
   }
 }
 
@@ -957,10 +966,10 @@
 
 @media screen and (max-height: 700px) {
   .wcjs-player .settings-holder > div > div:last-of-type {
-  height: 100%
+    height: 100%
   }
   .wcjs-player .settings-holder > div > div:last-of-type > div {
-  height: 100%
+    height: 100%
   }
 }
 

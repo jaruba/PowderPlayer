@@ -113,9 +113,16 @@ default React.createClass({
             let options = {
                 draggable: "paper-material",
                 group: "playlist",
+                
                 onStart: evt => {
                     window.immuneToDrop = true;
+                    window.document.querySelector('.playlist-inner').className += ' playlist-dragging';
                 },
+                
+                onEnd: evt => {
+                    window.document.querySelector('.playlist-inner').className = window.document.querySelector('.playlist-inner').className.split(' playlist-dragging').join('');
+                },
+                
                 onSort: evt => {
 
                     delete window.immuneToDrop;
