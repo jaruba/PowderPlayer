@@ -10,6 +10,10 @@ import _ from 'lodash';
 import url from 'url';
 import path from 'path';
 
+var getParam = (el, arg) => {
+    return el.replace(arg + '=', '').split('"').join('');
+}
+
 module.exports = {
     process: (args) => {
         if (args.length) {
@@ -18,7 +22,13 @@ module.exports = {
             args.forEach( el => {
                 if (el.startsWith('--')) {
                     // command line args
-                    
+                    if (el == '--fs') {
+                        window.clFullscreen = true;
+                    } else if (el.startsWith('--sub-file=')) {
+                        window.clSub = getParam(el, '--sub-file');
+                    } else if (el.startsWith('--title=')) {
+                        window.clTitle = getParam(el, '--title');
+                    }
                 } else {
                     if (path.isAbsolute(el)) {
                         // local file

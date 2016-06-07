@@ -6,6 +6,7 @@ import traktUtil from './trakt';
 import ui from './ui';
 import linkSupport from './supportedLinks';
 import prebuffering from './prebuffering';
+import path from 'path';
 
 import PlayerActions from '../actions';
 import ProgressStore from '../components/Controls/components/ProgressBar/store';
@@ -275,6 +276,22 @@ events.playing = () => {
             SubtitleActions.foundSubs(itemDesc.subtitles, false);
         } else if (itemDesc.path && (!ls.isSet('findSubs') || ls('findSubs')))
             SubtitleActions.findSubs(itemDesc);
+
+        if (window.clSub) {
+            var subs = player.itemDesc().setting.subtitles || {};
+            subs[path.basename(window.clSub)] = window.clSub;
+            PlayerActions.setDesc({
+                subtitles: subs
+            });
+            player.wcjs.subtitles.track = 0;
+            SubtitleActions.loadSub(window.clSub);
+            SubtitleActions.settingChange({
+                selectedSub: _.size(subs) + (player.wcjs.subtitles.count || 1),
+            });
+            player.notifier.info('Subtitle Loaded', '', 3000);
+
+            delete window.clSub;
+        }
 
     } else {
         var itemDesc = player.itemDesc();

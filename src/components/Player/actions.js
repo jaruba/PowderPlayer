@@ -115,18 +115,25 @@ class PlayerActions {
 
                     let keeper = data[i];
 
+					if (window.clTitle) {
+						keeper.title = window.clTitle;
+						delete window.clTitle;
+					}
+
                     if (data[i].byteSize && data[i].torrentHash) {
                         this.actions.setDesc({
                             idx: keeper.idx,
                             byteSize: keeper.byteSize,
                             torrentHash: keeper.torrentHash,
                             streamID: keeper.streamID,
-                            path: keeper.path
+                            path: keeper.path,
+							title: keeper.title ? keeper.title : null
                         });
                     } else if (data[i].path) {
                         this.actions.setDesc({
                             idx: keeper.idx,
-                            path: keeper.path
+                            path: keeper.path,
+							title: keeper.title ? keeper.title : null
                         });
                     } else if (data[i].youtubeDL) {
                         this.actions.setDesc({
@@ -135,7 +142,7 @@ class PlayerActions {
                             youtubeDL: true,
                             originalURL: keeper.originalURL,
                             image: keeper.image ? keeper.image : null,
-                            title: keeper.title ? keeper.title : null,
+                            title: keeper.title ? keeper.title : null
                         });
                     } else if (data[i].filmon) {
                         this.actions.setDesc({
@@ -143,7 +150,7 @@ class PlayerActions {
                             filmon: true,
                             filmonObj: keeper.filmonObj,
                             image: keeper.image ? keeper.image : null,
-                            title: keeper.title ? keeper.title : null,
+                            title: keeper.title ? keeper.title : null
                         });
                     }
 

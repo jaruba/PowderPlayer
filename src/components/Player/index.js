@@ -29,6 +29,7 @@ import hotkeys from './utils/hotkeys';
 import contextMenu from './utils/contextMenu';
 
 import ControlStore from './components/Controls/store';
+import ControlActions from './components/Controls/actions';
 import VisibilityStore from './components/Visibility/store';
 import VisibilityActions from './components/Visibility/actions';
 import torrentStream from 'torrent-stream';
@@ -101,6 +102,11 @@ const Player = React.createClass({
 
         handler.ondragover = handler.ondragleave = handler.ondragend = this.nullEvent;
         handler.ondrop = this.fileDrop;
+
+        if (window.clFullscreen) {
+            delete window.clFullscreen;
+            ControlActions.toggleFullscreen();
+        }
 
     },
     update() {
