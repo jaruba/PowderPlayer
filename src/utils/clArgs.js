@@ -3,6 +3,7 @@ import PlayerActions from '../components/Player/actions';
 import parser from '../components/Player/utils/parser';
 import sorter from '../components/Player/utils/sort';
 import metaParser from '../components/Player/utils/metaParser';
+import TorrentActions from '../actions/torrentActions';
 import linkUtil from './linkUtil';
 import _ from 'lodash';
 import url from 'url';
@@ -20,10 +21,18 @@ module.exports = {
                 } else {
                     if (path.isAbsolute(el)) {
                         // local file
-                        files.push({
-                            name: parser(el).filename(),
-                            path: el
-                        });
+                        if (el.endsWith('.torrent')) {
+                            ModalActions.open({
+                                type: 'thinking'
+                            });
+            
+                            TorrentActions.addTorrent(el);
+                        } else {
+                            files.push({
+                                name: parser(el).filename(),
+                                path: el
+                            });
+                        }
                     } else if (url.parse(el).protocol) {
                         // url
                         ModalActions.open({
@@ -32,9 +41,9 @@ module.exports = {
                         });
         
                         linkUtil(el).then(url => {
-                            ModalActions.thinking(false);
+                            ModalActions.close();
                         }).catch(error => {
-                            ModalActions.thinking(false);
+                            ModalActions.close();
                             MessageActions.open(error.message);
                         });
                     }

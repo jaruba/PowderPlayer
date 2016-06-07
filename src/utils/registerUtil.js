@@ -9,6 +9,9 @@ import {
 } from 'remote';
 const dataPath = app.getPath('userData');
 import player from '../components/Player/utils/player';
+import regFileW32 from './regFileWin';
+import path from 'path';
+import supported from './isSupported';
 
 var register = {};
 
@@ -40,19 +43,8 @@ register.torrent = () => {
         child.exec('"'+powderPath+'src/duti/duti" -s media.powder.player .torrent viewer');
         alert("Successfully Associated with Torrent Files");
     } else {
-        fs.writeFile(dataPath+'\\register-torrent.reg', 'REGEDIT4\r\n'+
-            '[HKEY_CURRENT_USER\\Software\\Classes\\powder.player.v1\\DefaultIcon]\r\n'+
-            '@="' + process.execPath.split("\\").join("\\\\") + '"\r\n'+
-
-            '[HKEY_CURRENT_USER\\Software\\Classes\\powder.player.v1\\shell\\open\\command]\r\n'+
-            '@="\\"' + process.execPath.split("\\").join("\\\\") + '\\" \\"%1\\""\r\n'+
-
-            '[HKEY_CURRENT_USER\\Software\\Classes\\.torrent]\r\n'+
-            '@="powder.player.v1"\r\n'+
-            '"Content Type"="application/x-bittorrent"', err => {
-                if (err) throw err;
-                shell.openItem(dataPath+'\\register-torrent.reg');
-            });
+        var iconPath = process.execPath;
+        regFileW32('.torrent', 'powder.player.v1', 'BitTorrent Document', iconPath, [ process.execPath ]);
     }
 };
 
@@ -70,34 +62,17 @@ register.videos = () => {
         });
     } else if (process.platform == 'darwin') {
         var powderPath = process.execPath.substr(0,process.execPath.lastIndexOf("/")+1)+"../../../../Resources/app.nw/";
-        child.exec('"'+powderPath+'src/duti/duti" -s media.powder.player .mkv viewer');
-        child.exec('"'+powderPath+'src/duti/duti" -s media.powder.player .avi viewer');
-        child.exec('"'+powderPath+'src/duti/duti" -s media.powder.player .mp4 viewer');
-        child.exec('"'+powderPath+'src/duti/duti" -s media.powder.player .mpg viewer');
-        child.exec('"'+powderPath+'src/duti/duti" -s media.powder.player .mpeg viewer');
+        supported.ext.video.forEach( el => {
+            console.log('registering ' + el);
+            child.exec('"'+powderPath+'src/duti/duti" -s media.powder.player ' + el + ' viewer');
+        });
         alert("Successfully Associated with Video Files");
     } else {
-        fs.writeFile(dataPath + '\\register-videos.reg', 'REGEDIT4\r\n'+
-            '[HKEY_CURRENT_USER\\Software\\Classes\\powder.player.v1\\DefaultIcon]\r\n'+
-            '@="' + process.execPath.split("\\").join("\\\\") + '"\r\n'+
-
-            '[HKEY_CURRENT_USER\\Software\\Classes\\powder.player.v1\\shell\\open\\command]\r\n'+
-            '@="\\"' + process.execPath.split("\\").join("\\\\") + '\\" \\"%1\\""\r\n'+
-
-            '[HKEY_CURRENT_USER\\Software\\Classes\\.avi]\r\n'+
-            '@="powder.player.v1"\r\n'+
-            '"Content Type"="video/avi"\r\n'+
-
-            '[HKEY_CURRENT_USER\\Software\\Classes\\.mkv]\r\n'+
-            '@="powder.player.v1"\r\n'+
-            '"Content Type"="video/x-matroska"\r\n'+
-
-            '[HKEY_CURRENT_USER\\Software\\Classes\\.mp4]\r\n'+
-            '@="powder.player.v1"\r\n'+
-            '"Content Type"="video/mp4"', err => {
-                if (err) throw err;
-                shell.openItem(dataPath+'\\register-videos.reg'); 
-            });
+        var iconPath = process.execPath;
+        supported.ext.video.forEach( el => {
+            console.log('registering ' + el);
+            regFileW32(el, 'powder.player.v1', el.substr(1).toUpperCase() + ' Document', iconPath, [ process.execPath ]);
+        });
     }
 };
 
@@ -110,9 +85,9 @@ register.magnet = () => {
             child.exec('gnome-terminal -x bash -c "echo \'Associating Files or URls with Applications requires Admin Rights\'; echo; sudo echo; sudo echo \'Authentication Successful\'; sudo echo; sudo mv -f '+desktopFile+' /usr/share/applications; sudo xdg-mime default powder.desktop '+tempMime+'; sudo gvfs-mime --set '+tempMime+' powder.desktop; echo; echo \'Association Complete! Press any key to close ...\'; read" & disown');
         });
     } else {
-		app.setAsDefaultProtocolClient('magnet');
+        app.setAsDefaultProtocolClient('magnet');
     }
-	player.notifier.info('Associated', '', 4000);
+    player.notifier.info('Associated', '', 4000);
 };
 
 register.powLinks = () => {
@@ -126,7 +101,7 @@ register.powLinks = () => {
     } else {
         app.setAsDefaultProtocolClient('pow');
     }
-	player.notifier.info('Associated', '', 4000);
+    player.notifier.info('Associated', '', 4000);
 };
 
 module.exports = register;

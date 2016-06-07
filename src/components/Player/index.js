@@ -178,7 +178,6 @@ const Player = React.createClass({
                 engine.destroy();
             });
         }
-        
         if (!files.length) {
             var droppedLink = e.dataTransfer.getData("text/plain");
             if (droppedLink) {
@@ -198,7 +197,7 @@ const Player = React.createClass({
             }
             return false;
         }
-        
+
         if (files.length == 1 && files[0].path) {
             if (supported.is(files[0].path, 'subs')) {
                 var subs = player.itemDesc().setting.subtitles || {};
