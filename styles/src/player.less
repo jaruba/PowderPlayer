@@ -361,19 +361,23 @@
 
 
 .wcjs-player .control-bar .fullscreen-toggle {
-  padding-top: 9px !important;
   position: absolute !important;
   top: 31px;
-  right: -18px;
+  right: -6px;
   transform: translate(-50%, -50%);
-  width: 49px;
-  height: 49px;
+  width: 37px;
+  height: 37px;
+  padding: 2px;
   color: #e7e7e7;
 }
 
 .wcjs-player .control-bar .subtitles-toggle {
   float: right;
-  margin-right: 5px;
+  margin-top: 2px;
+}
+
+.wcjs-player .control-bar .casting-toggle {
+  float: right;
   margin-top: 2px;
 }
 
@@ -409,16 +413,32 @@
 
 .wcjs-player .control-bar .subtitles-toggle {
   position: absolute !important;
-  top: 28px;
-  right: 25px;
+  top: 29px;
+  right: 36px;
   transform: translate(-50%, -50%);
-  padding-top: 10px !important;
   color: #e7e7e7;
-  width: 46px;
-  height: 46px;
+  width: 32px;
+  height: 32px;
+  padding: 2px;
 }
 
 .wcjs-player .control-bar .subtitles-toggle-active {
+  color: #00acff;
+}
+
+.wcjs-player .control-bar .casting-toggle {
+  position: absolute !important;
+  top: 25px;
+  right: 70px;
+  transform: translate(-50%, -50%);
+  padding-top: 10px !important;
+  color: #e7e7e7;
+  width: 37px;
+  height: 37px;
+  padding: 2px;
+}
+
+.wcjs-player .control-bar .casting-toggle-active {
   color: #00acff;
 }
 
@@ -895,9 +915,15 @@
   background-color: transparent; 
 }
 
-@media screen and (max-width: 595px) {
+@media screen and (max-width: 665px) {
   .wcjs-player .vol-slide {
-  display: none !important;
+    display: none !important;
+  }
+}
+
+@media screen and (max-width: 419px) {
+  .wcjs-player .casting-toggle {
+    display: none !important;
   }
 }
 
@@ -1016,4 +1042,18 @@
 
 .semi-trakt:hover {
   opacity: 1;
+}
+
+.sub-menu-item:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.subtitle-list .iron-selected.sub-menu-item:hover {
+  background-color: #444 !important;
+}
+
+@media screen and (min-height: 311px) {
+  .casting-list {
+    max-height: 168px !important;
+  }
 }

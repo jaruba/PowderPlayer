@@ -112,7 +112,7 @@ default React.createClass({
         var itemId = 1;
         if (!ls.isSet('menuFlags') || ls('menuFlags')) {
             var none = (
-                <paper-item key={itemId} style={{backgroundColor: '#303030', color: 'white', padding: '4px 12px'}} onClick={this.select.bind(this, 'none', '', 1)} className={this.state.playlistSelected == itemId ? 'iron-selected' : ''}>
+                <paper-item key={itemId} style={{backgroundColor: '#303030', color: 'white', padding: '4px 12px'}} onClick={this.select.bind(this, 'none', '', 1)} className={'sub-menu-item' + (this.state.playlistSelected == itemId ? ' iron-selected' : '')}>
                       <span style={{width: '38px', height: '38px', borderRadius: '25px', backgroundColor: '#242424', margin: '4px', marginLeft: '0', marginRight: '15px'}} />
                     <paper-item-body>
                     None
@@ -121,7 +121,7 @@ default React.createClass({
             );
         } else {
             var none = (
-                <paper-item key={itemId} style={{backgroundColor: '#303030', color: 'white', padding: '4px 22px'}} onClick={this.select.bind(this, 'none', '', 1)} className={this.state.playlistSelected == itemId ? 'iron-selected' : ''}>
+                <paper-item key={itemId} style={{backgroundColor: '#303030', color: 'white', padding: '4px 22px'}} onClick={this.select.bind(this, 'none', '', 1)} className={'sub-menu-item' + (this.state.playlistSelected == itemId ? ' iron-selected' : '')}>
                 <paper-item-body>
                     None
                 </paper-item-body>
@@ -137,7 +137,7 @@ default React.createClass({
                             itemId++;
                             if (!ls.isSet('menuFlags') || ls('menuFlags')) {
                                 return (
-                                  <paper-item key={itemId} style={{backgroundColor: '#303030', color: 'white', padding: '4px 12px'}} onClick={this.selectInternal.bind(this, (idx + 1), item, itemId)} className={this.state.playlistSelected == itemId ? 'iron-selected' : ''}>
+                                  <paper-item key={itemId} style={{backgroundColor: '#303030', color: 'white', padding: '4px 12px'}} onClick={this.selectInternal.bind(this, (idx + 1), item, itemId)} className={'sub-menu-item' + (this.state.playlistSelected == itemId ? ' iron-selected' : '')}>
                                   <span style={{width: '38px', height: '38px', borderRadius: '25px', backgroundImage: 'url(./images/icons/internal-subtitle-icon.png)', margin: '4px', marginLeft: '0', marginRight: '15px', backgroundSize: 'cover', backgroundPosition: 'center'}} />
                     <paper-item-body>
                                     {item}
@@ -146,7 +146,7 @@ default React.createClass({
                                 );
                             } else {
                                 return (
-                                  <paper-item key={itemId} style={{backgroundColor: '#303030', color: 'white', padding: '4px 22px'}} onClick={this.selectInternal.bind(this, (idx + 1), item, itemId)} className={this.state.playlistSelected == itemId ? 'iron-selected' : ''}>
+                                  <paper-item key={itemId} style={{backgroundColor: '#303030', color: 'white', padding: '4px 22px'}} onClick={this.selectInternal.bind(this, (idx + 1), item, itemId)} className={'sub-menu-item' + (this.state.playlistSelected == itemId ? ' iron-selected' : '')}>
                                     <paper-item-body>
                                     {item}
                                     </paper-item-body>
@@ -162,7 +162,7 @@ default React.createClass({
                             if (lang2country[lang[1]]) lang[1] = lang2country[lang[1]];
                             if (!ls.isSet('menuFlags') || ls('menuFlags')) {
                                 return (
-                                  <paper-item key={itemId} style={{backgroundColor: '#303030', color: 'white', padding: '4px 12px'}} onClick={this.select.bind(this, idx, item, itemId)} className={this.state.playlistSelected == itemId ? 'iron-selected' : ''}>
+                                  <paper-item key={itemId} style={{backgroundColor: '#303030', color: 'white', padding: '4px 12px'}} onClick={this.select.bind(this, idx, item, itemId)} className={'sub-menu-item' + (this.state.playlistSelected == itemId ? ' iron-selected' : '')}>
                                       <span key={itemId} style={{width: '38px', height: '38px', borderRadius: '25px', backgroundImage: 'url(' + (lang[1] ? 'http://flagpedia.net/data/flags/small/' + lang[1] : 'images/icons/external-subtitle-icon') + '.png)', margin: '4px', marginLeft: '0', marginRight: '15px', backgroundSize: 'cover', backgroundPosition: 'center'}} />
                                     <paper-item-body style={{ overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: '1', WebkitBoxOrient: 'vertical', maxWidth: '192px' }}>
                                     {lang[0]}
@@ -171,7 +171,7 @@ default React.createClass({
                                 );
                             } else {
                                 return (
-                                  <paper-item key={itemId} style={{backgroundColor: '#303030', color: 'white', padding: '4px 22px' }} onClick={this.select.bind(this, idx, item, itemId)} className={this.state.playlistSelected == itemId ? 'iron-selected' : ''}>
+                                  <paper-item key={itemId} style={{backgroundColor: '#303030', color: 'white', padding: '4px 22px' }} onClick={this.select.bind(this, idx, item, itemId)} className={'sub-menu-item' + (this.state.playlistSelected == itemId ? ' iron-selected' : '')}>
                                     <paper-item-body style={{ overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: '1', WebkitBoxOrient: 'vertical', maxWidth: '192px' }}>
                                     {lang[0]}
                                     </paper-item-body>

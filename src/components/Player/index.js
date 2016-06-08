@@ -6,6 +6,7 @@ import PlayerRender from './components/Renderer.react';
 import Playlist from './components/Playlist.react';
 import Settings from './components/MenuHolders/Settings';
 import SubtitleList from './components/Subtitles.react';
+import CastingMenu from './components/CastingMenu.react';
 import SubtitleText from './components/SubtitleText';
 import SubtitleActions from './components/SubtitleText/actions';
 import Announcement from './components/Announcement.react';
@@ -339,6 +340,7 @@ const Player = React.createClass({
                 <Playlist />
                 <Settings />
                 <SubtitleList />
+                <CastingMenu />
                 <ReactNotify ref='notificator'/>
             </div>
         );

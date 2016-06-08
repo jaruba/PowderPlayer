@@ -9,6 +9,7 @@ import HistoryStore from '../../../stores/historyStore';
 
 import player from './player';
 import ls from 'local-storage';
+import ModalActions from '../components/Modal/actions';
 
 import {
     ipcRenderer, shell
@@ -23,6 +24,14 @@ var getAction = function(event, act) {
 };
 
 var actions = {
+    cast(type) {
+        _.defer(() => {
+            ModalActions.open({
+                type: 'CastingScanner',
+                method: { name: type }
+            });
+        });
+    },
     torrentData() {
 
         player.saveState = {
@@ -360,6 +369,24 @@ var contextMenu = {
             },
             {
                 type: 'separator'
+            },
+            {
+                label: 'Cast to',
+                enabled: (player && player.wcjs && [3,4].indexOf(player.wcjs.state) > -1),
+                submenu: [
+                    {
+                        label: 'DLNA',
+                        click: 'actions.cast(\"DLNA\")'
+                    },
+                    {
+                        label: 'Chromecast',
+                        click: 'actions.cast(\"Chromecast\")'
+                    },
+                    {
+                        label: 'Airplay',
+                        click: 'actions.cast(\"Airplay\")'
+                    }
+                ]
             },
             {
                 label: 'Sleep Timer',
