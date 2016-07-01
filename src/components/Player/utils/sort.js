@@ -20,7 +20,7 @@ var sorter = {
         logic = typeof logic !== 'undefined' ? logic : 1; // 1 - episode sort, 2 - episode sort (by .name)
         var perfect = false;
 
-        if (logic == 2)
+        if (results[0] && results[0].constructor == File)
             results = convertFileToObj(results);
 
         while (!perfect) {
@@ -50,7 +50,7 @@ var sorter = {
         // natural sort order function for playlist and library
         logic = typeof logic !== 'undefined' ? logic : 1; // 1 - natural sort, 2 - natural sort (by .name)
 
-        if (logic == 2)
+        if (arr[0] && arr[0].constructor == File)
             arr = convertFileToObj(arr);
 
         if (arr.length > 1) {

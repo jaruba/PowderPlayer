@@ -76,6 +76,8 @@ default React.createClass({
     },
     handleClose() {
 
+        player.events.emit('windowTitleUpdate', '');
+
         if (player.alwaysOnTop) {
             player.set({
                 alwaysOnTop: false

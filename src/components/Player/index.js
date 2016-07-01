@@ -341,6 +341,7 @@ const Player = React.createClass({
                 <Settings />
                 <SubtitleList />
                 <CastingMenu />
+                <div className="castingBackground" />
                 <ReactNotify ref='notificator'/>
             </div>
         );

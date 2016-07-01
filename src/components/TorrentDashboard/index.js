@@ -3,6 +3,7 @@ import React from 'react';
 import engineStore from '../../stores/engineStore';
 import torrentActions from '../../actions/torrentActions';
 import ModalActions from '../Modal/actions';
+import player from '../Player/utils/player';
 
 import _ from 'lodash';
 
@@ -36,9 +37,15 @@ default React.createClass({
     componentDidMount() {
         engineStore.listen(this.update);
         this.updateUI();
+        _.defer(() => {
+            player.events.emit('windowTitleUpdate', engineStore.getState().torrents[engineStore.getState().infoHash].torrent.name);
+        });
     },
     componentWillUnmount() {
         engineStore.unlisten(this.update);
+        _.defer(() => {
+            player.events.emit('windowTitleUpdate', '');
+        });
     },
     update() {
         if (this.isMounted()) {
@@ -169,8 +176,7 @@ default React.createClass({
                     </div>
                     <div className="rightSide" style={{float: 'right', marginRight: '15px', width: '55%'}}>
                         <div style={{float: 'right', marginTop: '-9px', marginRight: '-9px', marginBottom: '10px'}}>
-                            <paper-icon-button style={{color: '#cacaca'}} onClick={this.openMenu} icon="menu" />
-                            <paper-icon-button style={{color: '#cacaca'}} icon="settings" />
+                            <paper-icon-button style={{color: '#cacaca'}} onClick={this.openMenu} icon="settings" />
                         </div>
                         <div style={{clear: 'both'}} /> 
                         <div style={{textAlign: 'right', marginBottom: '5px'}}><span style={{display: 'inline-block', borderRadius: '3px', backgroundColor: ''}}>{Math.floor(( torrent.torrent.pieces.downloaded / torrent.torrent.pieces.length ) * 100) + '%'}</span></div>

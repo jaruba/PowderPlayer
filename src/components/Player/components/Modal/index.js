@@ -8,6 +8,14 @@ import TraktCode from './components/TraktCode';
 import TraktInfo from './components/TraktInfo';
 import TraktSearch from './components/TraktSearch';
 
+import CastingScanner from './components/Casting-dummy';
+import CastingSettings from './components/Casting-dummy';
+import CastingControls from './components/Casting-dummy';
+import CastingLink from './components/Casting-dummy';
+import CastingProcess from './components/Casting-dummy';
+import CastingPlayer from './components/Casting-dummy';
+import CastingPlayerScanner from './components/Casting-dummy';
+
 export
 default React.createClass({
 
@@ -69,6 +77,20 @@ default React.createClass({
             case 'TraktSearch':
                 return <TraktSearch />;
                 break;
+            case 'CastingScanner':
+                return <CastingScanner />;
+            case 'CastingSettings':
+                return <CastingSettings />;
+            case 'CastingControls':
+                return <CastingControls />;
+            case 'CastingLink':
+                return <CastingLink />;
+            case 'CastingProcess':
+                return <CastingProcess />;
+            case 'CastingPlayer':
+                return <CastingPlayer />;
+            case 'CastingPlayerScanner':
+                return <CastingPlayerScanner />;
         }
     },
 

@@ -19,8 +19,7 @@ import SubtitleActions from '../components/SubtitleText/actions';
 import engineStore from '../../../stores/engineStore';
 import torrentUtil from '../../../utils/stream/torrentUtil';
 import torrentActions from '../../../actions/torrentActions';
-
-import ytdl from 'youtube-dl';
+import sources from './sources';
 
 var events = {};
 
@@ -85,17 +84,7 @@ events.opening = () => {
 
             player.wcjs.playlist.mode = 0;
 
-            var ytdlArgs = ['-g'];
-
-            if (ls('ytdlQuality') < 4) {
-                var qualities = [360, 480, 720, 1080];
-                ytdlArgs.push('-f');
-                ytdlArgs.push('[height <=? ' + qualities[ls('ytdlQuality')] + ']');
-            }
-
-            var video = ytdl(itemDesc.setting.originalURL, ytdlArgs);
-
-            video.on('info', function(info) {
+            sources.youtubeDL(itemDesc.setting.originalURL, info => {
                 if (window.currentItem == currentItem) {
                     delete window.currentItem;
                     _.defer(() => {
@@ -278,6 +267,7 @@ events.playing = () => {
             SubtitleActions.findSubs(itemDesc);
 
         if (window.clSub) {
+            // if subtitle command line arg set, load it
             var subs = player.itemDesc().setting.subtitles || {};
             subs[path.basename(window.clSub)] = window.clSub;
             PlayerActions.setDesc({
@@ -360,6 +350,8 @@ events.mediaChanged = () => {
     ui.defaultSettings();
 
     player.events.emit('playlistUpdate');
+    
+    player.events.emit('setTitle', player.wcjs.playlist.items[player.wcjs.playlist.currentItem].title);
 
 }
 

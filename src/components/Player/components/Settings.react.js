@@ -51,6 +51,7 @@ default React.createClass({
             port: ls('peerPort'),
             peers: ls('maxPeers'),
             downloadFolder: ls('downloadFolder') ? ls('downloadFolder') : 'Temp',
+            cacheFolder: ls('cacheFolder') ? ls('cacheFolder') : 'Temp',
             bufferSize: parseInt(ls('bufferSize') / 1000).toFixed(1),
             speedPulsing: ls('speedPulsing') ? ls('speedPulsing') : 'disabled',
             renderHidden: ls('renderHidden'),
@@ -59,6 +60,8 @@ default React.createClass({
             downloadType: ls('downloadType') == 0 ? 'Player' : 'Dashboard',
             playerType: ls('playerType'),
 
+            dlnaFinder: ls('dlnaFinder'),
+            dlnaFinders: ['ssdp-js', 'node-ssdp', 'renderer-finder'],
             aspectRatios: ['Default','1:1','4:3','16:9','16:10','2.21:1','2.35:1','2.39:1','5:4'],
             crops: ['Default','16:10','16:9','1.85:1','2.21:1','2.35:1','2.39:1','5:3','4:3','5:4','1:1'],
             zooms: [['Default',1],['2x Double',2],['0.25x Quarter',0.25],['0.5x Half',0.5]],
@@ -583,6 +586,25 @@ default React.createClass({
         ls('bufferSize', newValue);
     },
 
+    _handleClearCacheFolder(event) {
+        ls.remove('cacheFolder');
+        this.refs['cacheFolderInput'].value = 'Temp';
+    },
+
+    _handleCacheFolderFocus(event) {
+        event.preventDefault();
+        this.refs['cacheFolderInput'].$.input.blur();
+        dialog.showOpenDialog({
+            title: 'Select folder',
+            properties: ['openDirectory', 'createDirectory']
+        }, (folder) => {
+            if (folder && folder.length) {
+                ls('cacheFolder', folder[0]);
+                this.refs['cacheFolderInput'].value = folder[0];
+            }
+        });
+    },
+
     _handleClearDownload(event) {
         ls.remove('downloadFolder');
         this.refs['downloadInput'].value = 'Temp';
@@ -705,6 +727,25 @@ default React.createClass({
             } else return false;
 
         });
+    },
+
+    _handleDlnaFinder(event, direction) {
+
+        var newValue = this.state.dlnaFinders.indexOf(this.refs['dlnaFinderInput'].value);
+
+        if (direction < 0)
+            newValue--;
+        else
+            newValue++;
+
+        if (newValue < 0)
+            newValue = 0;
+            
+        if (newValue > 2)
+            newValue = 2;
+
+        ls('dlnaFinder', newValue);
+        this.refs['dlnaFinderInput'].value = this.state.dlnaFinders[newValue];
     },
     
     _handleRemoveLogic(event, direction) {
@@ -896,6 +937,23 @@ default React.createClass({
                 label: 'Trakt'
             }, {
                 type: 'traktSettings'
+            }, {
+                type: 'clear'
+            }, {
+                type: 'header',
+                label: 'Casting'
+            }, {
+                type: 'select',
+                title: 'DLNA Finder',
+                tag: 'dlnaFinder',
+                default: this.state.dlnaFinders[this.state.dlnaFinder],
+                width: '110px'
+            }, {
+                type: 'selectFolder',
+                title: 'Cache Folder',
+                tag: 'cacheFolder',
+                default: this.state.cacheFolder,
+                width: '280px'
             }],
 
 

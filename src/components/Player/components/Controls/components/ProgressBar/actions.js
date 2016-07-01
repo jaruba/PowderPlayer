@@ -84,7 +84,7 @@ class ProgressActions {
         
         if (player.wcjs.state != 3) {
             // remove progress bar transition effect periodically
-            progressElem = document.querySelector('.wcjs-player .time');
+            var progressElem = document.querySelector('.wcjs-player .time');
             progressElem.className = progressElem.className.split(' smooth-progress').join('');
             _.delay(() => {
                 progressElem.className = progressElem.className + ' smooth-progress';

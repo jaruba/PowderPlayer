@@ -40,7 +40,7 @@ module.exports = {
 
                     engine.on('listening', () => {
                         that.streams[engine.infoHash]['stream-port'] = engine.server.address().port;
-                        engine = null;
+//                        engine = null;
                     });
 
                     engine.on('ready', () => {

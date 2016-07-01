@@ -106,19 +106,22 @@ class PlayerActions {
             for (var i = 0; data[i]; i++) {
                 if (typeof data[i] === 'string') {
                     wcjs.playlist.add(data[i]);
+                    wcjs.playlist.items[wcjs.playlist.items.count - 1].parseAsync();
                 } else if (data[i].uri) {
                     wcjs.playlist.add(data[i].uri);
                     if (data[i].title)
                         wcjs.playlist.items[wcjs.playlist.items.count - 1].title = data[i].title;
 
+                    wcjs.playlist.items[wcjs.playlist.items.count - 1].parseAsync();
+
                     data[i].idx = wcjs.playlist.items.count - 1;
 
                     let keeper = data[i];
 
-					if (window.clTitle) {
-						keeper.title = window.clTitle;
-						delete window.clTitle;
-					}
+                    if (window.clTitle) {
+                        keeper.title = window.clTitle;
+                        delete window.clTitle;
+                    }
 
                     if (data[i].byteSize && data[i].torrentHash) {
                         this.actions.setDesc({
@@ -127,13 +130,13 @@ class PlayerActions {
                             torrentHash: keeper.torrentHash,
                             streamID: keeper.streamID,
                             path: keeper.path,
-							title: keeper.title ? keeper.title : null
+                            title: keeper.title ? keeper.title : null
                         });
                     } else if (data[i].path) {
                         this.actions.setDesc({
                             idx: keeper.idx,
                             path: keeper.path,
-							title: keeper.title ? keeper.title : null
+                            title: keeper.title ? keeper.title : null
                         });
                     } else if (data[i].youtubeDL) {
                         this.actions.setDesc({

@@ -917,6 +917,24 @@
 
 @media screen and (max-width: 665px) {
   .wcjs-player .vol-slide {
+    width: 65px;
+  }
+}
+
+@media screen and (max-width: 591px) {
+  .wcjs-player .vol-slide {
+    width: 56px;
+  }
+}
+
+@media screen and (max-width: 573px) {
+  .wcjs-player .vol-slide {
+    max-width: ~"calc(100% - 503px)";
+  }
+}
+
+@media screen and (max-width: 532px) {
+  .wcjs-player .vol-slide {
     display: none !important;
   }
 }
@@ -1052,8 +1070,103 @@
   background-color: #444 !important;
 }
 
-@media screen and (min-height: 311px) {
+@media screen and (min-height: 355px) {
   .casting-list {
-    max-height: 168px !important;
+    max-height: 224px !important;
   }
+}
+
+.cast-slide #sliderContainer {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+.castingBackground {
+  background: none;
+  display: none;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.cast-view header {
+  opacity: 1;
+  z-index: 104;
+  height: 44px;
+  background: -webkit-linear-gradient(rgba(0,0,0,0.8) 0, transparent 100%);
+}
+
+.cast-view header .controls {
+  display: block;
+  padding-right: 5px;
+  padding-top: 5px;
+}
+
+.cast-view header .windowTitle {
+  font-size: 18px;
+  padding: 9px;
+  padding-left: 15px;
+  display: block;
+}
+
+.reverse-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-overflow: clip;
+  position: relative;
+  width: 284px;
+  margin-top: 0 !important;
+  margin-left: 13px !important;
+  margin-bottom: 15px !important;
+  margin-right: 0 !important;
+}
+
+.reverse-ellipsis:before {
+  content: '\02026';
+  position: absolute;
+  z-index: 1;
+  left: -1em;
+  background-color: inherit;
+  padding-left: 1em;
+  margin-left: 0.5em;
+}
+
+.reverse-ellipsis span {
+  min-width: 100%;
+  position: relative;
+  display: inline-block;
+  float: right;
+  overflow: visible;
+  background-color: inherit;
+  text-indent: 0.5em;
+}
+
+.reverse-ellipsis span:before {
+  content: '';
+  position: absolute;
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  background-color: inherit;
+  z-index: 200;
+  left: -.5em;
+}
+
+.ext-scanner-back {
+  width: 284px;
+  margin-top: 0 !important;
+  margin-left: 13px !important;
+  margin-right: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+#main_plugins_but iron-icon {
+  left: 1px;
 }

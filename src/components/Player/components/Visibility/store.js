@@ -9,6 +9,7 @@ class VisibilityStore {
         this.playlist = false;
         this.settings = false;
         this.subtitles = false;
+        this.casting = false;
         this.uiShown = true;
         this.uiHidden = false;
 
@@ -22,6 +23,7 @@ class VisibilityStore {
         var obj = {
             playlist: false,
             settings: false,
+            casting: false,
             subtitles: false
         };
         obj[menu] = !this[menu];

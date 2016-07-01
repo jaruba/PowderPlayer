@@ -38,6 +38,9 @@ default React.createClass({
             subColor: ls.isSet('subColor') ? ls('subColor') : 0,
             encoding: ls.isSet('selectedEncoding') ? ls('selectedEncoding') : 0,
             resizeOnPlaylist: ls.isSet('resizeOnPlaylist') ? ls('resizeOnPlaylist') : true,
+            cacheFolder: ls('cacheFolder') ? ls('cacheFolder') : 'Temp',
+            dlnaFinder: ls('dlnaFinder'),
+            dlnaFinders: ['ssdp-js', 'node-ssdp', 'renderer-finder'],
             port: ls('peerPort'),
             peers: ls('maxPeers'),
             downloadFolder: ls('downloadFolder') ? ls('downloadFolder') : 'Temp',
@@ -166,6 +169,25 @@ default React.createClass({
 
     _handleRippleEffects(event, toggled, type) {
         ls(type, toggled);
+    },
+
+    _handleDlnaFinder(event, direction) {
+
+        var newValue = this.state.dlnaFinders.indexOf(this.refs['dlnaFinderInput'].value);
+
+        if (direction < 0)
+            newValue--;
+        else
+            newValue++;
+
+        if (newValue < 0)
+            newValue = 0;
+            
+        if (newValue > 2)
+            newValue = 2;
+
+        ls('dlnaFinder', newValue);
+        this.refs['dlnaFinderInput'].value = this.state.dlnaFinders[newValue];
     },
     
     _handleSubSize(event, direction) {
@@ -345,6 +367,26 @@ default React.createClass({
 
         this.refs['bufferSizeInput'].value = (newValue/1000).toFixed(1) + ' sec';
         ls('bufferSize', newValue);
+    },
+
+
+    _handleClearCacheFolder(event) {
+        ls.remove('cacheFolder');
+        this.refs['cacheFolderInput'].value = 'Temp';
+    },
+
+    _handleCacheFolderFocus(event) {
+        event.preventDefault();
+        this.refs['cacheFolderInput'].$.input.blur();
+        dialog.showOpenDialog({
+            title: 'Select folder',
+            properties: ['openDirectory', 'createDirectory']
+        }, (folder) => {
+            if (folder && folder.length) {
+                ls('cacheFolder', folder[0]);
+                this.refs['cacheFolderInput'].value = folder[0];
+            }
+        });
     },
 
     _handleClearDownload(event) {
@@ -737,6 +779,21 @@ default React.createClass({
                 default: this.state.downloadType,
                 width: '120px',
                 disabled: true
+            }, {
+                type: 'header',
+                label: 'Casting'
+            }, {
+                type: 'select',
+                title: 'DLNA Finder',
+                tag: 'dlnaFinder',
+                default: this.state.dlnaFinders[this.state.dlnaFinder],
+                width: '110px'
+            }, {
+                type: 'selectFolder',
+                title: 'Cache Folder',
+                tag: 'cacheFolder',
+                default: this.state.cacheFolder,
+                width: '280px'
 //            }, {
 //                type: 'toggle',
 //                title: 'Use External Player',

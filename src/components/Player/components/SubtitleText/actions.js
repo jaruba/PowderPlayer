@@ -27,7 +27,7 @@ class SubtitleActions {
 
     }
 
-    findSubs(itemDesc) {
+    findSubs(itemDesc, cb, idx) {
 
         var subQuery = {
             filepath: itemDesc.path,
@@ -46,8 +46,9 @@ class SubtitleActions {
             if (!subs) {
                 if (!ls.isSet('playerNotifs') || ls('playerNotifs'))
                     player.notifier.info('Subtitles Not Found', '', 6000);
+                cb && cb(false);
             } else {
-                this.actions.foundSubs(subs, true);
+                this.actions.foundSubs(subs, true, idx, cb);
             }
         }
 
@@ -55,46 +56,24 @@ class SubtitleActions {
 
     }
     
-    foundSubs(subs, announce) {
+    foundSubs(subs, announce, idx, cb) {
 
+        if (!idx) idx = player.wcjs.playlist.currentItem;
         var playerState = PlayerStore.getState();
 
         ControlActions.settingChange({
             foundSubs: true
         });
-        var prevSubs = player.itemDesc().setting.subtitles || {};
+        var prevSubs = player.itemDesc(idx).setting.subtitles || {};
         subs = _.extend({}, prevSubs, subs);
         PlayerActions.setDesc({
+            idx: idx,
             subtitles: subs
         });
         if ((!ls.isSet('playerNotifs') || ls('playerNotifs')) && announce)
             player.notifier.info('Found Subtitles', '', 6000);
 
-        var subtitleState = this.alt.stores.SubtitleStore.state;
-
-        if (subtitleState.selectedSub == 1) {
-            if (!ls.isSet('autoSub') || ls('autoSub')) {
-                if (ls('lastLanguage') && ls('lastLanguage') != 'none') {
-                    if (subs[ls('lastLanguage')]) {
-                        this.actions.loadSub(subs[ls('lastLanguage')]);
-                        // select it in the menu too
-                        var itemIdx = player.wcjs.subtitles.count || 1;
-    
-                        _.some(subs, (el, ij) => {
-                            itemIdx++;
-                            if (ij == ls('lastLanguage')) {
-                                this.actions.settingChange({
-                                    selectedSub: itemIdx
-                                });
-                                return true;
-                            } else {
-                                return false;
-                            }
-                        })
-                    }
-                }
-            }
-        }
+        cb && cb(true);
     }
 
     loadSub(subLink) {

@@ -8,30 +8,35 @@ var channels = [];
 
 var getUri = (channel, cb) => {
     getKey( () => {
-        needle.post('http://www.filmon.com/tv/api/channel/' + channel.id, { 'session_key': key }, (err, res) => {
+        needle.get(atob('aHR0cDovL3d3dy5maWxtb24uY29tL3R2L2FwaS9jaGFubmVsLw==') + channel.id + atob('P3Nlc3Npb25fa2V5PQ==') + key, (err, res) => {
             if (err) {
                 cb(err.message);
             } else {
                 var mrlObj = {
                     title: res.body.title,
                     image: res.body.extra_big_logo ? res.body.extra_big_logo : res.body.big_logo,
-                    uri: false
+                    uri: false,
+                    streamName: false
                 };
                 var bestTimeout = 0;
-                console.log(res.body.streams);
+
                 if (res.body.streams && res.body.streams.length) {
                     res.body.streams.forEach( el => {
                         if (el.watch_timeout) {
                             if (parseInt(el.watch_timeout) > bestTimeout) {
                                 bestTimeout = parseInt(el.watch_timeout);
                                 mrlObj.uri = el.url;
+                                mrlObj.streamName = el.name;
                             }
                         } else if (!mrlObj.mrl) {
                             mrlObj.uri = el.url;
+                            mrlObj.streamName = el.name;
                         }
                     });
                 }
                 if (mrlObj.uri) {
+                    if (mrlObj.uri.startsWith('rtmp'))
+                        mrlObj.uri = mrlObj.uri.replace('rtmp:', 'http:').replace('/live/','/live/' + mrlObj.streamName + '/playlist.m3u8');
                     // add to playlist
                     cb(null, mrlObj);
                 } else {
@@ -49,7 +54,7 @@ var getKey = cb => {
         key = false;
 
     if (!key)
-        needle.post('http://www.filmon.com/tv/api/init', { 'app_id': 'foo', 'app_secret': 'bar' }, (err, res) => {
+        needle.get(atob('aHR0cDovL3d3dy5maWxtb24uY29tL3R2L2FwaS9pbml0P2FwcF9pZD1pcGhvbmUtaHRtbDUmYXBwX3NlY3JldD0lNUJlcWdicGxm'), (err, res) => {
             key = res.body['session_key'];
             timeout = new Date().getTime() / 1000;
             cb();
@@ -61,7 +66,7 @@ var getKey = cb => {
 var fetchFilmon = () => {
 
     var getGroups = () => {
-        needle.post('http://www.filmon.com/tv/api/groups', { 'session_key': key }, (err, res) => {
+        needle.get(atob('aHR0cDovL3d3dy5maWxtb24uY29tL3R2L2FwaS9ncm91cHM/c2Vzc2lvbl9rZXk9') + key, (err, res) => {
             if (err) _.delay(fetchFilmon, 600000);
             else {
                 var countAdult = 0;
@@ -82,7 +87,7 @@ var fetchFilmon = () => {
     }
     
     var getChannels = () => {
-        needle.post('http://www.filmon.com/tv/api/channels', { 'session_key': key }, (err, res) => {
+        needle.get(atob('aHR0cDovL3d3dy5maWxtb24uY29tL3R2L2FwaS9jaGFubmVscz9zZXNzaW9uX2tleT0=') + key, (err, res) => {
             if (err) _.delay(fetchFilmon, 600000);
             else {
                 res.body.forEach( el => {

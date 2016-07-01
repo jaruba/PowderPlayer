@@ -16,7 +16,10 @@ var map = {
     playerType: false,
     adultContent: false,
     myFilmonPlugins: [],
-    torrentWarning: 1
+    torrentWarning: 1,
+    casting: {},
+    extPlayers: [],
+    dlnaFinder: 0
 }
 
 module.exports = () => {

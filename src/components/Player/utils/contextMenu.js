@@ -25,12 +25,23 @@ var getAction = function(event, act) {
 
 var actions = {
     cast(type) {
-        _.defer(() => {
-            ModalActions.open({
-                type: 'CastingScanner',
-                method: { name: type }
+        if (type == 'Browser') {
+            _.defer(() => {
+                ModalActions.open({
+                    type: 'CastingSettings',
+                    castType: 'Browser',
+                    currentItem: player.wcjs.playlist.currentItem,
+                    name: 'Browser'
+                });
             });
-        });
+        } else {
+            _.defer(() => {
+                ModalActions.open({
+                    type: 'CastingScanner',
+                    method: { name: type }
+                });
+            });
+        }
     },
     torrentData() {
 
@@ -385,6 +396,10 @@ var contextMenu = {
                     {
                         label: 'Airplay',
                         click: 'actions.cast(\"Airplay\")'
+                    },
+                    {
+                        label: 'Browser',
+                        click: 'actions.cast(\"Browser\")'
                     }
                 ]
             },

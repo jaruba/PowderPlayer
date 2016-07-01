@@ -5,7 +5,7 @@ import {
 from 'react-router';
 import HeaderStore from './store';
 import HeaderActions from './actions';
-import engineStore from '../../stores/engineStore';
+import player from '../Player/utils/player';
 
 export
 default React.createClass({
@@ -23,16 +23,23 @@ default React.createClass({
     componentWillMount() {
         HeaderStore.listen(this.update);
         this.history.listen(this.updatehistory);
+        player.events.on('windowTitleUpdate', this.setTitle);
     },
     componentWillUnmount() {
         HeaderStore.unlisten(this.update);
         this.history.unlisten(this.updatehistory);
+        player.events.removeListener('windowTitleUpdate', this.setTitle);
     },
     updatehistory(n, location) {
         if (location.location.pathname)
             this.setState({
                 view: (location.location.pathname.substr(1) === '') ? 'dashboard' : location.location.pathname.substr(1)
             });
+    },
+    setTitle(title) {
+        this.setState({
+            title: title
+        });
     },
     update() {
         if (this.isMounted()) {
@@ -46,11 +53,6 @@ default React.createClass({
         }
     },
     render() {
-        var engineState = engineStore.getState();
-        var title = '';
-        if (engineState.torrents && engineState.infoHash && engineState.torrents[engineState.infoHash] && engineState.torrents[engineState.infoHash].torrent && engineState.torrents[engineState.infoHash].torrent.name) {
-            title = engineState.torrents[engineState.infoHash].torrent.name;
-        }
         return (
             <header className={this.state.view}>
                 <div className={'controls ' + process.platform}>
@@ -66,7 +68,7 @@ default React.createClass({
                     </div>
                 </div>
                 <div className="windowTitle">
-                    {title}
+                    {this.state.title}
                 </div>
             </header>
         );

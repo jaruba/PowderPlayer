@@ -81,6 +81,16 @@ const Framework = React.createClass({
             args.shift();
             clArgs.process(args);
         }
+
+        // analytics
+        var ua = require('universal-analytics');
+        if (!ls('cid')) {
+            var visitor = ua('UA-65979437-4');
+            ls('cid', visitor.cid);
+        } else {
+            var visitor = ua('UA-65979437-4', ls('cid'));
+        }
+        visitor.pageview("/").send();
     },
 
     componentWillUnmount() {

@@ -31,6 +31,7 @@ default React.createClass({
             uiShown: visibilityState.uiShown || visibilityState.playlist || visibilityState.settings,
             uiHidden: visibilityState.uiHidden,
             subtitlesOpen: visibilityState.subtitles,
+            castingOpen: visibilityState.casting,
             rippleEffects: ls.isSet('playerRippleEffects') ? ls('playerRippleEffects') : true,
 
             foundSubs: false
@@ -58,6 +59,7 @@ default React.createClass({
                 uiShown: visibilityState.uiShown || visibilityState.playlist || visibilityState.settings,
                 uiHidden: visibilityState.uiHidden,
                 subtitlesOpen: visibilityState.subtitles,
+                castingOpen: visibilityState.casting,
                 rippleEffects: ls.isSet('playerRippleEffects') ? ls('playerRippleEffects') : true,
 
                 foundSubs: controlState.foundSubs,
@@ -90,6 +92,7 @@ default React.createClass({
                 <Volume />
                 <paper-icon-button onClick={ControlActions.toggleFullscreen} className="fullscreen-toggle" icon={this.state.fullscreen ? 'fullscreen-exit' : 'fullscreen'} noink={true} />
                 <paper-icon-button onClick={ui.toggleMenu.bind(null, 'subtitles')} className={'subtitles-toggle' + (this.state.subtitlesOpen ? ' subtitles-toggle-active' : '')} icon={'av:closed-caption'} noink={true} />
+                <paper-icon-button onClick={ui.toggleMenu.bind(null, 'casting')} className={'casting-toggle' + (this.state.castingOpen ? ' casting-toggle-active' : '')} icon={'hardware:cast'} noink={true} />
 
             </div>
         );

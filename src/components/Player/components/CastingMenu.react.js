@@ -38,12 +38,23 @@ default React.createClass({
     
     selectType(idx, item) {
         if (player && player.wcjs && [3,4].indexOf(player.wcjs.state) > -1) {
-            _.defer(() => {
-                ModalActions.open({
-                    type: 'CastingScanner',
-                    method: item
+            if (item.name == 'Browser') {
+                _.defer(() => {
+                    ModalActions.open({
+                        type: 'CastingSettings',
+                        castType: 'Browser',
+                        currentItem: player.wcjs.playlist.currentItem,
+                        name: 'Browser'
+                    });
                 });
-            });
+            } else {
+                _.defer(() => {
+                    ModalActions.open({
+                        type: 'CastingScanner',
+                        method: item
+                    });
+                });
+            }
         } else {
             player.notifier.info('Error: Play Something', '', 6000);
         }
@@ -60,7 +71,10 @@ default React.createClass({
                 icon: 'https://lh3.googleusercontent.com/jjjN5fal0edeK6-kw1_GQaPnwgZQ99dcOBR-jLSJPOpT-x5dYeaoeZkfYENX8cuuXSU=w50'
             }, {
                 name: 'Airplay',
-                icon: 'https://support.apple.com/content/dam/edam/applecare/images/en_US/appletv/featured-content-airplay3-icon_2x.png'
+                icon: 'http://www.macbed.com/wp-content/uploads/2015/09/38709.png'
+            }, {
+                name: 'Browser',
+                icon: 'http://icons.iconarchive.com/icons/dtafalonso/android-lollipop/512/Browser-icon.png'
             }
         ]
         

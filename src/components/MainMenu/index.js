@@ -17,6 +17,10 @@ import path from 'path';
 import fs from 'fs';
 import player from '../Player/utils/player';
 import supported from '../../utils/isSupported';
+import {
+    ipcRenderer
+}
+from 'electron';
 
 import {
     webFrame
@@ -228,6 +232,12 @@ default React.createClass({
             });
         }
     },
+    onTop() {
+        var newValue = !player.alwaysOnTop;
+        player.alwaysOnTop = newValue;
+        ipcRenderer.send('app:alwaysOnTop', newValue);
+        this.setState({});
+    },
     render() {
         var extensionView = this.state.extensionView ? (<Plugins />) : '';
         var settingsView = this.state.settingsView ? (<Settings />) : '';
@@ -240,10 +250,16 @@ default React.createClass({
                         <div>
                             <div className="mainButtonHolder">
                                  <div className="inButtonHolder">
-                                    <paper-icon-button id="main_plugins_but" icon="extension" alt="plugins" style={{color: '#767A7B', width: '44px', height: '44px', right: '2px', position: 'absolute', marginRight: '48px', marginTop: '2px'}} onClick={this.extensionView} />
+                                 
+                                    <paper-icon-button id="main_on_top_but" icon="editor:publish" alt="on top" style={{color: player.alwaysOnTop ? '#00adeb' : '#767A7B', width: '47px', height: '47px', right: '2px', position: 'absolute', marginRight: '94px', marginTop: '1px', padding: '5px'}} onClick={this.onTop} />
+                                    <paper-tooltip for="main_on_top_but" offset="0">Always On Top</paper-tooltip>
+                                    
+                                    <paper-icon-button id="main_plugins_but" icon="extension" alt="plugins" style={{color: '#767A7B', width: '44px', height: '44px', right: '3px', position: 'absolute', marginRight: '48px', marginTop: '2px'}} onClick={this.extensionView} />
                                     <paper-tooltip for="main_plugins_but" offset="0">Plugins</paper-tooltip>
+                                    
                                     <paper-icon-button id="main_settings_but" icon="settings" alt="settings" style={{color: '#767A7B', width: '48px', height: '48px', right: '2px', position: 'absolute'}} onClick={this.settingsView} />
                                     <paper-tooltip for="main_settings_but" offset="0">Settings</paper-tooltip>
+                                    
                                 </div>
                             </div>
     
