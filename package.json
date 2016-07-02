@@ -72,6 +72,7 @@
     "growing-file": "^0.1.3",
     "png-stash": "^1.0.1",
     "universal-analytics": "^0.3.11",
+    "readdirp": "^2.1.0",
     "rc-qrcode": "https://github.com/jaruba/rc-qrcode/tarball/master",
     "airplay-js": "https://github.com/Ivshti/node-airplay-js",
     "local-storage": "https://github.com/jaruba/local-storage/tarball/master",
