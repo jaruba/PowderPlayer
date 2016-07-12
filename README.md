@@ -6,6 +6,10 @@ Powder is the future of all torrent requirements, it's a hybrid between a Torren
 
 It can do everything that a Torrent Client can, everything that a Video/Audio Player can and much more!
 
+**Download Links**:
+
+[Test out our Nightly!](https://www.reddit.com/r/PowderPlayer/comments/4ralk2/powder_player_v100_prerelease_available_for/) or [Download the latest Stable Release](https://github.com/jaruba/PowderPlayer/releases)
+
 **Building Instructions**:
 
 For Windows only, you should also first set this environment variable:
