@@ -197,13 +197,17 @@ events.opening = () => {
             } catch (e) {}
         }
 
-//        _.defer(() => {
+        _.defer(() => {
             PlayerActions.updateImage(image);
-            ProgressActions.settingChange({
-                position: 0
-            });
-            player.events.emit('setTitle', player.wcjs.playlist.items[player.wcjs.playlist.currentItem].title);
-//        });
+        });
+        _.delay(() => {
+            PlayerActions.updateImage(image);
+        }, 1000)
+
+        ProgressActions.settingChange({
+            position: 0
+        });
+        player.events.emit('setTitle', player.wcjs.playlist.items[player.wcjs.playlist.currentItem].title);
 
         player.set({
             lastItem: player.wcjs.playlist.currentItem,
@@ -233,10 +237,18 @@ events.playing = () => {
 
         player.secondPlay = true;
 
+        // i hate this, but otherwise it bugs
         _.delay(() => {
-            // i don't like it, but if a delay is not set it sometimes bugs
             PlayerActions.updateImage(player.itemDesc().setting.image);
         }, 500);
+
+        _.delay(() => {
+            PlayerActions.updateImage(player.itemDesc().setting.image);
+        }, 1000);
+
+        _.delay(() => {
+            PlayerActions.updateImage(player.itemDesc().setting.image);
+        }, 1500);
 
         // catch first play event
         prebuffering.end();
