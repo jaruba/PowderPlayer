@@ -50,7 +50,7 @@ register.torrent = () => {
         });
     } else if (process.platform == 'darwin') {
         var powderPath = process.execPath.substr(0,process.execPath.lastIndexOf("/")+1)+"../../../../Resources/app.nw/";
-        duti('media.powder.player', '.torrent');
+        duti('media.powder.player', '.torrent', 'viewer');
     } else {
         var iconPath = process.execPath;
         regFileW32('.torrent', 'powder.player.v1', 'BitTorrent Document', iconPath, [ process.execPath ]);
@@ -73,7 +73,7 @@ register.videos = () => {
     } else if (process.platform == 'darwin') {
         var powderPath = process.execPath.substr(0,process.execPath.lastIndexOf("/")+1)+"../../../../Resources/app.nw/";
         supported.ext.video.forEach( el => {
-            duti('media.powder.player', el);
+            duti('media.powder.player', el, 'viewer');
         });
     } else {
         var iconPath = process.execPath;
@@ -92,6 +92,8 @@ register.magnet = () => {
             var tempMime = 'x-scheme-handler/magnet';
             child.exec('gnome-terminal -x bash -c "echo \'Associating Files or URls with Applications requires Admin Rights\'; echo; sudo echo; sudo echo \'Authentication Successful\'; sudo echo; sudo mv -f '+desktopFile+' /usr/share/applications; sudo xdg-mime default powder.desktop '+tempMime+'; sudo gvfs-mime --set '+tempMime+' powder.desktop; echo; echo \'Association Complete! Press any key to close ...\'; read" & disown');
         });
+    } else if (process.platform == 'darwin') {
+        duti('media.powder.player', 'magnet');
     } else {
         app.setAsDefaultProtocolClient('magnet');
     }
@@ -106,6 +108,8 @@ register.powLinks = () => {
             var tempMime = 'x-scheme-handler/pow';
             child.exec('gnome-terminal -x bash -c "echo \'Associating Files or URls with Applications requires Admin Rights\'; echo; sudo echo; sudo echo \'Authentication Successful\'; sudo echo; sudo mv -f '+desktopFile+' /usr/share/applications; sudo xdg-mime default powder.desktop '+tempMime+'; sudo gvfs-mime --set '+tempMime+' powder.desktop; echo; echo \'Association Complete! Press any key to close ...\'; read" & disown');
         });
+    } else if (process.platform == 'darwin') {
+        duti('media.powder.player', 'pow');
     } else {
         app.setAsDefaultProtocolClient('pow');
     }
