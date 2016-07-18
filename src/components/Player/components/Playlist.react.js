@@ -62,21 +62,13 @@ default React.createClass({
         if (!player.wcjs.playlist) return items;
         for (var idx = 0; idx < player.wcjs.playlist.items.count; idx++) {
             var item = player.itemDesc(idx);
+            var noImage = 'images/video-placeholder.svg';
 
-            if (!item.setting) item.setting = {};
-            if (item.artworkURL) {
-                item.image = item.artworkURL;
-            } else if (item.setting.image) {
-                item.image = item.setting.image;
-            } else {
-                item.image = 'images/video-placeholder.svg';
-            }
+            !item.setting && (item.setting = {})
+
+            item.image = item.artworkURL || item.setting.image || noImage
             
-            if (typeof window.currentItem !== 'undefined') {
-                var showControls = (idx == window.currentItem);
-            } else {
-                var showControls = (idx == player.wcjs.playlist.currentItem);
-            }
+            var showControls = (typeof window.currentItem !== 'undefined') ? (idx == window.currentItem) : (idx == player.wcjs.playlist.currentItem)
             
             var miniControls = (
                 <div className="miniControls" style={{ display: showControls ? 'inline-block' : 'none' }}>
@@ -93,7 +85,7 @@ default React.createClass({
             );
 
             items.push((
-                <paper-material id={'item'+idx} className={'item' + (showControls ? ' playlist-selected' : '')} key={idx} elevation={1} style={{background: 'url(' + item.image + ') no-repeat, url(../images/video-placeholder.svg) no-repeat', borderRadius: '2px', textAlign: 'center'}}>
+                <paper-material id={'item'+idx} className={'item' + (showControls ? ' playlist-selected' : '')} key={idx} elevation={1} style={{background: 'url(' + item.image + ') no-repeat, url(' + noImage + ') no-repeat', borderRadius: '2px', textAlign: 'center'}}>
                     {miniControls}
                     <p id={'itemTitle'+idx} className="title">{(path.isAbsolute(item.title)) ? path.normalize(path.parse(item.title).name) : item.title }</p>
                     <div className="playlist-back" onClick={showControls ? ControlActions.handlePausePlay : player.playItem.bind(this,idx)} />
