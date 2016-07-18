@@ -122,9 +122,10 @@ default React.createClass({
         plugins.events.removeListener('pluginListUpdate', this.decideUpdate);
     },
     componentDidUpdate() {
-        if (!skipScroll)
-            document.querySelector('.plugin-list').scrollTop = 0;
-        else skipScroll = false;
+        if (!skipScroll) {
+            var pluginListEl = document.querySelector('.plugin-list');
+            if (pluginListEl) pluginListEl.scrollTop = 0;
+        } else skipScroll = false;
     },
     componentDidMount() {
         // add event listeners for togglers
