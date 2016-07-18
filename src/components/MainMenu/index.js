@@ -27,6 +27,8 @@ import {
 }
 from 'electron';
 
+var immuneToLeave = false;
+
 import linkUtil from '../../utils/linkUtil';
 
 import _ from 'lodash';
@@ -43,6 +45,7 @@ default React.createClass({
         }
     },
     componentWillMount() {
+        immuneToLeave = false;
         window.addEventListener('resize', this.handleResize);
         var currentWindow = remote.getCurrentWindow();
         currentWindow.setMinimumSize(410, 324);
@@ -86,7 +89,6 @@ default React.createClass({
 
     onDrop(files,e) {
         if (files && files.length) {
-
             var ext = path.extname(files[0].path);
 
             if (['.torrent', '.magnet'].indexOf(ext) > -1) {
@@ -184,13 +186,65 @@ default React.createClass({
 
             }
         }
-        document.querySelector('.wrapper .holder').classList.remove('holder-hover');
+        var holder = document.querySelector('.wrapper .holder');
+        if (holder) holder.classList.remove('holder-hover');
     },
-    onDragEnter() {
-        document.querySelector('.wrapper .holder').classList.add('holder-hover');
+    onDragEnter(e,a) {
+        var data = e && e.dataTransfer && e.dataTransfer.items ? e.dataTransfer.items : [];
+        if (process.platform == 'darwin' && data && data.length && data[0].kind != 'file') {
+            immuneToLeave = true;
+
+            var dropDummy = document.querySelector('.dropDummy');
+            dropDummy.style.display = "block";
+
+            var dropMiddleware = (e) => {
+                setTimeout(() => {
+                    if (dropDummy.value) {
+                        this.onDrop([], {
+                            dataTransfer: {
+                                getData: function() { return dropDummy.value }
+                            }
+                        })
+                        this.onDragLeave();
+                        dropDummy.style.display = "none";
+                        dropDummy.value = "";
+                    } else {
+                        this.onDrop(e.dataTransfer.files, e)
+                    }
+                }, 100)
+                dropDummy.removeEventListener('dragleave', leaveMiddleware)
+                dropDummy.removeEventListener('drop', dropMiddleware)
+            }
+
+            var leaveMiddleware = (e) => {
+                this.onDragLeave(e)
+                setTimeout(() => {
+                    dropDummy.style.display = "none";
+                    dropDummy.value = "";
+                    dropDummy.removeEventListener('dragleave', leaveMiddleware)
+                    dropDummy.removeEventListener('drop', dropMiddleware)
+                }, 150)
+            }
+
+            dropDummy.addEventListener('dragleave', leaveMiddleware)
+            dropDummy.addEventListener('drop', dropMiddleware)
+        }
+        var holder = document.querySelector('.wrapper .holder');
+        if (holder) holder.classList.add('holder-hover');
+
     },
-    onDragLeave() {
-        document.querySelector('.wrapper .holder').classList.remove('holder-hover');
+    onDragLeave(e,a) {
+        if (!immuneToLeave) {
+            var holder = document.querySelector('.wrapper .holder');
+            if (holder) holder.classList.remove('holder-hover');
+            setTimeout(() => {
+                var dropDummy = document.querySelector('.dropDummy');
+                dropDummy.style.display = "none";
+                dropDummy.value = "";
+            }, 150)
+        } else {
+            immuneToLeave = false;
+        }
     },
     extensionView() {
         var viewHolder = window.document.querySelector(".wrapper");

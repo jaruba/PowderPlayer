@@ -77,6 +77,7 @@ const Player = React.createClass({
         window.removeEventListener('mousemove', this.hover);
         var handler = document.getElementsByClassName("wcjs-player")[0];
 
+        handler.removeEventListener('dragenter', this.dragEnter)
         handler.removeEventListener('dragover', this.nullEvent);
         handler.removeEventListener('dragleave', this.nullEvent);
         handler.removeEventListener('dragend', this.nullEvent);
@@ -102,6 +103,7 @@ const Player = React.createClass({
         var handler = document.getElementsByClassName("wcjs-player")[0];
 
         handler.ondragover = handler.ondragleave = handler.ondragend = this.nullEvent;
+        handler.ondragenter = this.dragEnter;
         handler.ondrop = this.fileDrop;
 
         if (window.clFullscreen) {
@@ -117,6 +119,46 @@ const Player = React.createClass({
             this.setState({
                 uiShown: visibilityState.uiShown
             });
+        }
+    },
+    dragEnter(e) {
+        var data = e && e.dataTransfer && e.dataTransfer.items ? e.dataTransfer.items : [];
+        if (process.platform == 'darwin' && data && data.length && data[0].kind != 'file') {
+
+            var dropDummy = document.querySelector('.dropDummy');
+            dropDummy.style.display = "block";
+
+            var dropMiddleware = (e) => {
+                setTimeout(() => {
+                    if (dropDummy.value) {
+                        this.fileDrop({
+                            preventDefault: function() {},
+                            dataTransfer: {
+                                files: [],
+                                getData: function() { return dropDummy.value }
+                            }
+                        })
+                    } else {
+                        this.fileDrop(e)
+                    }
+                    dropDummy.style.display = "none";
+                    dropDummy.value = "";
+                }, 100)
+                dropDummy.removeEventListener('dragleave', leaveMiddleware)
+                dropDummy.removeEventListener('drop', dropMiddleware)
+            }
+
+            var leaveMiddleware = (e) => {
+                setTimeout(() => {
+                    dropDummy.style.display = "none";
+                    dropDummy.value = "";
+                    dropDummy.removeEventListener('dragleave', leaveMiddleware)
+                    dropDummy.removeEventListener('drop', dropMiddleware)
+                }, 150)
+            }
+
+            dropDummy.addEventListener('dragleave', leaveMiddleware)
+            dropDummy.addEventListener('drop', dropMiddleware)
         }
     },
     nullEvent() {
