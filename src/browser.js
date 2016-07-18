@@ -41,9 +41,19 @@ app.commandLine.appendSwitch('gpu-no-context-lost');
 app.commandLine.appendSwitch('ignore-gpu-blacklist');
 app.commandLine.appendSwitch('disable-speech-api');
 
+var mainWindow = null;
+var queueOpen = [];
+
+var passArgs = function(e, args) {
+   queueOpen.push(args)
+}
+
+app.on('open-file', passArgs);
+app.on('open-url', passArgs);
+
 app.on('ready', () => {
 
-    const mainWindow = new BrowserWindow({
+    mainWindow = new BrowserWindow({
         width: 653,
         height: 522,
         icon: path.join(__dirname, '../images/icons/powder-icon.png'),
@@ -80,6 +90,11 @@ app.on('ready', () => {
     });
 
     mainWindow.on('close', app.quit);
+
+    ipcMain.on('app:cmdline', (event) => {
+        event.sender.send('cmdline', JSON.stringify(queueOpen))
+        queueOpen = [];
+    })
 
     ipcMain.on('app:contextmenu', (event, template) => {
         var passActions = function(temp) {

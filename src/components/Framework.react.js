@@ -12,6 +12,9 @@ import {
     mouseTrap
 }
 from 'react-mousetrap';
+import {
+    app
+} from 'remote';
 import plugins from '../utils/plugins';
 import Modal from './Modal';
 import DarkModal from './Player/components/Modal';
@@ -29,6 +32,20 @@ import setDefaults from '../utils/defaults';
 import ls from 'local-storage';
 import Promise from 'bluebird';
 import _ from 'lodash';
+
+var attachArgs = true;
+
+var passArgs = function(e, args) {
+    if (args.startsWith('[')) {
+        JSON.parse(args).forEach(arg => {
+            clArgs.process([arg]);
+        })
+        ipcRenderer.removeListener('cmdline', passArgs)
+    } else {
+        clArgs.process([args]);
+        ipcRenderer.send('app:cmdline');
+    }
+}
 
 const Framework = React.createClass({
 
@@ -82,6 +99,15 @@ const Framework = React.createClass({
             clArgs.process(args);
         }
 
+        if (attachArgs) {
+            attachArgs = false;
+            app.on('open-file', passArgs);
+            app.on('open-url', passArgs);
+        }
+        ipcRenderer.send('app:cmdline');
+        ipcRenderer.on('cmdline', passArgs);
+
+
         // analytics
         var ua = require('universal-analytics');
         if (!ls('cid')) {
@@ -94,6 +120,7 @@ const Framework = React.createClass({
     },
 
     componentWillUnmount() {
+        ipcRenderer.removeListener('cmdline', passArgs);
         window.removeEventListener('resize', this.handleResize);
     },
 
