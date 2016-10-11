@@ -15,3 +15,22 @@ cache
 
 # IDEs
 .idea
+
+# Casting
+src/components/Player/components/Modal/components/Casting*
+
+# v0.98
+locales/*
+fonts/ionic/*
+packaging/win/*
+credits.html
+d3dcompiler_47.dl
+ffmpegsumo.dll
+d3dcompiler_47.dll
+icudtl.dat
+libEGL.dll
+libGLESv2.dll
+nw.pak
+pdf.dll
+powder.exe
+rid.exe
