@@ -91,9 +91,6 @@ class PlayerActions {
                     files: player.files.concat(data),
                     pendingSelected: selected
                 });
-
-            this.actions.togglePowerSave(true);
-
         } else {
 
             player.set({

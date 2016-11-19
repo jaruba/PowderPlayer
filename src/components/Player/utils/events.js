@@ -60,6 +60,7 @@ events.buffering = (perc) => {
 
 events.opening = () => {
 
+    PlayerActions.togglePowerSave(true);
     var itemDesc = player.itemDesc();
     var isLocal = (itemDesc.mrl && itemDesc.mrl.indexOf('file://') == 0);
 
@@ -225,9 +226,12 @@ events.stopped = () => {
         text: ''
     });
     player.events.emit('foundTrakt', false);
+    PlayerActions.togglePowerSave(false);
 }
 
 events.playing = () => {
+
+    PlayerActions.togglePowerSave(true);
 
     player.wcjs.playlist.mode = 1;
 
@@ -312,6 +316,7 @@ events.paused = () => {
     player.events.emit('playlistUpdate');
     player.events.emit('controlsUpdate');
     traktUtil.handleScrobble('pause', player.itemDesc(), player.wcjs.position);
+    PlayerActions.togglePowerSave(false);
 }
 
 events.resetUI = () => {
@@ -374,6 +379,8 @@ events.error = () => {
     var itemDesc = player.itemDesc();
 
     traktUtil.handleScrobble('stop', itemDesc, player.wcjs.position);
+    
+    PlayerActions.togglePowerSave(false);
 
     console.log(itemDesc);
 
@@ -400,6 +407,7 @@ events.ended = () => {
             player.wcjs.position = position;
         }
     }
+    PlayerActions.togglePowerSave(false);
 }
 
 events.close = () => {
