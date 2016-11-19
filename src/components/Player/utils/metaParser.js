@@ -113,8 +113,7 @@ var parserQueue = async.queue((task, cb) => {
                     var summary = traktUtil.episodeInfo;
                 }
 
-                summary(buildQuery).then(results => {
-
+                var moveMeta = results => {
                     var idx = task.idx;
 
                     var itemDesc = player.itemDesc(task.idx);
@@ -186,6 +185,28 @@ var parserQueue = async.queue((task, cb) => {
                         }, 500)
 
                     }
+                }
+
+                summary(buildQuery).then(results => {
+
+//                    console.log(results)
+//                    if (results && results.ids && !results.ids.imdb && parsedFilename.imdb) results.ids.imdb = parsedFilename.imdb
+
+                    // try to fetch background (as trakt doesn't allow image hotlinking anymore)
+                    traktUtil.getImages(results).then(imgRes => {
+                        if (imgRes && imgRes.background) {
+                            if (!results.images) results.images = {}
+                            if (!results.images.fanart) results.images.fanart = {}
+                            if (!results.images.fanart.thumb) results.images.fanart.thumb = imgRes.background
+                        }
+                        moveMeta(results)
+                    }).catch(err => {
+                        console.log('Trakt.tv Image Get Error:')
+                        if (err.message) console.log(err.message)
+                        else console.log(err)
+                        moveMeta(results)
+                    })
+
                 }).catch(err => {
                     if (!task.secondTry && parsedFilename.type == 'series') {
                         task.secondTry = true;
