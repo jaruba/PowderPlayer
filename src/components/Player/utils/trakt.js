@@ -11,8 +11,8 @@ var trakttv = new Trakt({
 	options: {
 		images: {
 			fanartApiKey: window.atob('YWQ1NjhkZTM4N2E1YWRmN2NiNWI1NTU0OWZkYzAzNGQ='),
-			tvdbApiKey: window.atob('MDU5MDFjZGVjNWZhYWQ0ZGM4MWNhYjU1NjllODUzOGM='),
-			tmdbApiKey: window.atob('ODFBNkNGMUYwQzExRDFGOQ=='),
+			tmdbApiKey: window.atob('MDU5MDFjZGVjNWZhYWQ0ZGM4MWNhYjU1NjllODUzOGM='),
+			tvdbApiKey: window.atob('ODFBNkNGMUYwQzExRDFGOQ=='),
 			smallerImages: false
 		}
 	}
