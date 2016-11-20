@@ -23,6 +23,8 @@ import sources from './sources';
 
 var events = {};
 
+var immuneToEvents = false
+
 events.buffering = (perc) => {
 
     var itemDesc = player.itemDesc();
@@ -38,10 +40,61 @@ events.buffering = (perc) => {
         var announcer = {};
 
         var engineState = engineStore.getState();
-        if (engineState.torrents && engineState.infoHash && engineState.torrents[engineState.infoHash] && engineState.torrents[engineState.infoHash].torrent && !engineState.torrents[engineState.infoHash].torrent.pieces.bank.get().downloaded && perc == 0) {
+
+        var isTorrent = (engineState.torrents && engineState.infoHash && engineState.torrents[engineState.infoHash] && engineState.torrents[engineState.infoHash].torrent);
+
+        if (isTorrent && !engineState.torrents[engineState.infoHash].torrent.pieces.bank.get().downloaded && perc == 0) {
             announcer.text = 'Prebuffering 0%';
         } else {
             announcer.text = 'Buffering ' + perc + '%';
+        }
+
+        var current = player.wcjs.playlist.currentItem;
+        if (isTorrent && current > -1 && itemDesc && itemDesc.mrl.startsWith('http://') && typeof itemDesc.setting.streamID !== 'undefined') {
+            // check if the file has been completely downloaded
+            var file = engineState.torrents[engineState.infoHash].files[itemDesc.setting.streamID];
+            if (file) {
+                var pieceInfo = engineState.torrents[engineState.infoHash].torrent.pieces.bank.get();
+                if (pieceInfo.downloaded == pieceInfo.total) {
+                    // file is completely downloaded, so it shouldn't need to buffer
+                    // this is a VLC bug and we'll solve it by switching to the local
+                    // file instead of the streaming link
+                    console.log('Fixing Excess Buffering Issue')
+
+                    var progressElem = document.querySelector('.wcjs-player .time');
+                    progressElem.className = progressElem.className.split(' smooth-progress').join('');
+                    immuneToEvents = true
+                    _.delay(() => {
+                        progressElem.className = progressElem.className + ' smooth-progress';
+                        immuneToEvents = false
+                    },1000);
+
+                    var progressState = ProgressStore.getState()
+
+                    PlayerActions.replaceMRL({
+                        autoplay: true,
+                        x: current,
+                        mrl: {
+                            title: itemDesc.setting.title || itemDesc.title,
+                            thumbnail: itemDesc.setting.image,
+                            uri: 'file:///' + itemDesc.setting.path,
+                            byteSize: itemDesc.setting.byteSize,
+                            streamID: itemDesc.setting.streamID,
+                            path: itemDesc.setting.path,
+                            torrentHash: itemDesc.setting.torrentHash
+                        }
+                    })
+                    
+                    if (itemDesc.setting && itemDesc.setting.trakt) {
+                        var shouldScrobble = traktUtil.loggedIn ? ls.isSet('traktScrobble') ? ls('traktScrobble') : true : false;
+                        if (shouldScrobble)
+                            traktUtil.handleScrobble('start', itemDesc, progressState.position);
+                    }
+
+                    var noAnnounce = true
+
+                }
+            }
         }
         clearTimeout(player.announceTimer);
 
@@ -52,13 +105,15 @@ events.buffering = (perc) => {
         } else if (player.announceEffect)
             announcer.effect = false;
 
-        if (Object.keys(announcer).length)
+        if (Object.keys(announcer).length && !noAnnounce)
             player.events.emit('announce', announcer);
     }
 
 }
 
 events.opening = () => {
+    
+    if (immuneToEvents) return
 
     PlayerActions.togglePowerSave(true);
     var itemDesc = player.itemDesc();
@@ -220,6 +275,9 @@ events.opening = () => {
 }
 
 events.stopped = () => {
+    
+    if (immuneToEvents) return
+
     console.log('Player stopped');
 
     SubtitleActions.settingChange({
@@ -230,6 +288,8 @@ events.stopped = () => {
 }
 
 events.playing = () => {
+    
+    if (immuneToEvents) return
 
     PlayerActions.togglePowerSave(true);
 
@@ -348,6 +408,8 @@ events.resetUI = () => {
 }
 
 events.mediaChanged = () => {
+    
+    if (immuneToEvents) return
 
     prebuffering.end();
     prebuffering.start(player);

@@ -179,6 +179,7 @@ class PlayerActions {
         });
 
         wcjs.playlist.add(newMRL.uri);
+        wcjs.playlist.items[wcjs.playlist.items.count - 1].parseAsync();
         if (newMRL.title)
             wcjs.playlist.items[wcjs.playlist.items.count - 1].title = newMRL.title;
 
@@ -210,6 +211,11 @@ class PlayerActions {
             newData.idx = newX;
             this.actions.setDesc(newData);
         }
+        
+        if (newMRL.byteSize) newData.byteSize = newMRL.byteSize
+        if (newMRL.streamID) newData.streamID = newMRL.streamID
+        if (newMRL.path) newData.path = newMRL.path
+        if (newMRL.torrentHash) newData.torrentHash = newMRL.torrentHash
 
         if (newObj.autoplay)
             wcjs.playlist.playItem(newObj.x);
