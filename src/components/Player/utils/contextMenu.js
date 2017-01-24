@@ -78,8 +78,8 @@ var actions = {
     downloadAll() {
         var engineState = engineStore.getState();
         var torrent = engineState.torrents[engineState.infoHash];
-        torrent.files.forEach( el => {
-            torrent.selectFile(parseInt(el.fileID));
+        torrent.files.forEach( (el, ij) => {
+            torrent.selectFile(ij);
         });
         PlayerActions.announcement('Downloading All Files');
     },

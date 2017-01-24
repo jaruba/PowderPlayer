@@ -1,4 +1,5 @@
 import torrentWorker from 'torrent-worker';
+import EngineStore from '../../stores/engineStore';
 import path from 'path';
 import {
     app
@@ -116,13 +117,30 @@ module.exports = {
                     files = sorter.naturalSort(files, 2);
                 }
             }
-
-            for (var fileID in files) {
-                var file = files[fileID];
+            
+            var torrent = EngineStore.getState().torrents[infoHash];
+            var selectedFirst = false
+            
+            function findById(fileID, action) {
+                torrent.files.some(function(el, ij) {
+                    if (el.fileID == fileID) {
+                        torrent[action](ij)
+                        return true
+                    }
+                })
+            }
+            
+            files.forEach(function(el) {
+                var file = el;
+                if (file.selected) findById(file.fileID, 'deselectFile')
                 var fileParams = path.parse(file.path);
                 var streamable = supported.is(fileParams.ext, 'allMedia');
 
                 if (streamable) {
+                    if (!selectedFirst) {
+                        if (!file.selected) findById(file.fileID, 'selectFile')
+                        selectedFirst = true
+                    }
                     if (!files_organized.ordered)
                         files_organized.ordered = [];
 
@@ -136,7 +154,7 @@ module.exports = {
                     });
                     directorys.push(fileParams.dir);
                 }
-            }
+            })
 
             directorys = directorys.filter(function(dir) {
                 return !seen.has(dir) && seen.add(dir);

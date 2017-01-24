@@ -67,16 +67,16 @@ default React.createClass({
     downloadAll() {
         var engineState = engineStore.getState();
         var torrent = engineState.torrents[engineState.infoHash];
-        torrent.files.forEach( el => {
-            torrent.selectFile(parseInt(el.fileID));
+        torrent.files.forEach( (el, ij) => {
+            torrent.selectFile(ij);
         });
         ModalActions.close();
     },
     pauseAll() {
         var engineState = engineStore.getState();
         var torrent = engineState.torrents[engineState.infoHash];
-        torrent.files.forEach( el => {
-            torrent.deselectFile(parseInt(el.fileID));
+        torrent.files.forEach( (el, ij) => {
+            torrent.deselectFile(ij);
         });
         ModalActions.close();
     },
