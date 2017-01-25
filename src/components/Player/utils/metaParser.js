@@ -189,15 +189,14 @@ var parserQueue = async.queue((task, cb) => {
 
                 summary(buildQuery).then(results => {
 
-//                    console.log(results)
 //                    if (results && results.ids && !results.ids.imdb && parsedFilename.imdb) results.ids.imdb = parsedFilename.imdb
 
                     // try to fetch background (as trakt doesn't allow image hotlinking anymore)
                     traktUtil.getImages(results).then(imgRes => {
-                        if (imgRes && imgRes.background) {
+                        if (imgRes && (imgRes.background || imgRes.episode)) {
                             if (!results.images) results.images = {}
                             if (!results.images.fanart) results.images.fanart = {}
-                            if (!results.images.fanart.thumb) results.images.fanart.thumb = imgRes.background
+                            if (!results.images.fanart.thumb) results.images.fanart.thumb = imgRes.episode || imgRes.background
                         }
                         moveMeta(results)
                     }).catch(err => {
