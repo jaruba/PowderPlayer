@@ -85,34 +85,39 @@ default React.createClass({
 
         client.on("fetch", function(){
 
-//            console.log(client);
+//            var trailer_url = ('http://m.imdb.com'+client.iframes[0]).replace(/m\.imdb/i, 'www.imdb').replace(/mobile/i, 'embed').replace('autoplay=false','autoplay=true');
 
-            var trailer_url = ('http://m.imdb.com'+client.iframes[0]).replace(/m\.imdb/i, 'www.imdb').replace(/mobile/i, 'embed').replace('autoplay=false','autoplay=true');
+            if (client && client.links && client.links.relative && client.links.relative.length) {
+                var foundId = client.links.relative.some(function(el) {
+                    if (el.startsWith('/video/imdb/')) {
+                        var videoId = el.replace('/video/imdb/', '')
+                        videoId = videoId.substr(0, videoId.indexOf('?'))
+                        var trailer_url = 'http://www.imdb.com/title/' + parsed.imdb + '/videoplayer/' + videoId + '?ref_=m_tt_ov_vi'
 
-//            console.log(trailer_url);
-            if (trailer_url == 'http://www.imdb.comundefined') {
+                        var win = new BrowserWindow({ width: 854, height: 510, show: false, 'standard-window': true, 'auto-hide-menu-bar': true, resizable: false, title: parsed.name.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()})+' Trailer - IMDB', center: true });
+        
+                        win.on('closed', function() {
+                          win = null;
+                        });
 
-                player.notifier.info('Trailer Not Found', '', 4000);
+                        win.loadUrl(trailer_url);
 
-            } else {
-
-                var win = new BrowserWindow({ width: 854, height: 510, show: false, 'standard-window': true, 'auto-hide-menu-bar': true, resizable: false, title: parsed.name.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()})+' Trailer - IMDB', center: true });
-
-                win.on('closed', function() {
-                  win = null;
-                });
-
-                win.loadUrl(trailer_url);
-
-                win.webContents.on('did-finish-load', () => {
-                    win.show();
-                    win.focus();
-                    if (player.wcjs.playing)
-                        player.wcjs.togglePause();
-                });
-                
-            }
-            
+                        win.webContents.on('did-finish-load', () => {
+                            win.show();
+                            win.focus();
+                            // should do this in a preload script
+//                            $('.sidebar-close-button').click()
+//                            $('.close-button').hide()
+                            if (player.wcjs.playing)
+                                player.wcjs.togglePause();
+                        });
+                        return true
+                    }
+                })
+                if (!foundId)
+                    player.notifier.info('Trailer Not Found', '', 4000);
+            } else
+                player.notifier.info('Trailer Not Found', '', 4000);            
         });
 
         client.on("error", function(err){
