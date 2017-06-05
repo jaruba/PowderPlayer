@@ -223,8 +223,8 @@ var contextMenu = {
 
         var isPlaying = ([3, 4].indexOf(player.wcjs.state) > -1);
 
-		var engineState = engineStore.getState();
-		var isTorrent = !!(engineState.infoHash && engineState.torrents[engineState.infoHash]);
+        var engineState = engineStore.getState();
+        var isTorrent = !!(engineState.infoHash && engineState.torrents[engineState.infoHash]);
 
         // audio tracks
         var audioTracks = [];
