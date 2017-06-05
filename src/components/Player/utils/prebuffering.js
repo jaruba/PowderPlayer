@@ -35,7 +35,7 @@ function onPiece() {
     // it takes into account file lengths, more often then not it's correct
     var file = engineState.torrents[engineState.infoHash].files[fileSel];
     var fileProgress = Math.round(engineState.torrents[engineState.infoHash].torrent.pieces.bank.filePercent(file.offset, file.length) * 100);
-    var prebuf = Math.floor( fileProgress * 45 );
+    var prebuf = Math.floor( fileProgress * 12 );
 
     var announcer = {};
     announcer.text = 'Prebuffering ' + prebuf + '%';
