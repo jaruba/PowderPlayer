@@ -22,7 +22,6 @@ import Message from './Message';
 import Header from './Header';
 import historyActions from '../actions/historyActions';
 import traktUtil from './Player/utils/trakt';
-import filmonUtil from './Player/utils/filmon';
 import request from 'request';
 import subUtil from './Player/utils/subtitles';
 import updater from './Player/utils/updates';
@@ -64,8 +63,6 @@ const Framework = React.createClass({
         updater.checkUpdates();
 
         setDefaults();
-
-        filmonUtil.init();
 
         this.props.bindShortcut('ctrl+d', () => ipcRenderer.send('app:toggleDevTools'));
 

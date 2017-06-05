@@ -5,7 +5,6 @@ import async from 'async';
 import MetaInspector from 'node-metainspector';
 import ls from 'local-storage';
 import ModalActions from '../../Modal/actions';
-import filmonUtil from '../../Player/utils/filmon';
 
 var skipScroll;
 
@@ -202,24 +201,6 @@ default React.createClass({
         }
     },
     
-    selectFilmonGroup(ij) {
-        this.setState({
-            matchWith: ij
-        });
-    },
-    
-    openFilmonPlugin(feed, ij) {
-        var targetPlugin = feed[ij];
-        targetPlugin.image = targetPlugin.extra_big_logo ? targetPlugin.extra_big_logo : targetPlugin.big_logo;
-        targetPlugin.name = targetPlugin.title;
-        targetPlugin.filmon = true;
-        if (targetPlugin.channels) targetPlugin.channels = null;
-        if (ls('myFilmonPlugins').indexOf(targetPlugin.name) > -1)
-            ModalActions.installedPlugin(targetPlugin);
-        else
-            ModalActions.plugin(targetPlugin);
-    },
-    
     openPluginModal(feed, ij) {
         var targetPlugin = feed[ij];
         var logoElem = window.document.querySelector('#feed-logo-' + ij);
@@ -342,11 +323,6 @@ default React.createClass({
                     tag: ['children', 'cartoons']
                 },
                 {
-                    label: 'Live Streams',
-                    icon: 'live-streams',
-                    filmon: true
-                },
-                {
                     label: 'Miscellaneous',
                     icon: 'misc',
                     tag: ['various']
@@ -378,47 +354,6 @@ default React.createClass({
 
             var backButton = '';
 
-        } else if (this.state.selected && this.state.selected.filmon) {
-            var feed = filmonUtil.groups();
-
-            if (!ls('adultContent'))
-                feed = _.filter(feed, el => { return ['BIKINI BABE', 'PARTY TV'].indexOf(el.name) == -1 })
-
-            var groupSelected = (this.state.matchWith != null);
-            var title = groupSelected ? this.state.selected.label +'  -  '+ titleCase(feed[this.state.matchWith].name).replace('Tv', 'TV') : this.state.selected.label;
-            if (groupSelected) {
-
-                var channels = feed[this.state.matchWith].real_channels;
-
-                if (!ls('adultContent'))
-                    channels = _.filter(channels, el => { return el.adult_content !== '1' })
-
-                var generated = _.map(channels, (el, ij) => {
-                    return (
-                        <div key={ij} className="feed-element" onClick={this.openFilmonPlugin.bind(this, channels, ij)} style={{lineHeight: '13px'}}>
-                            <div id={'feed-logo-' + ij} className="feed-logos" style={{background: 'url(' + el.big_logo + ') no-repeat center'}} />
-                            <br />
-                            <div style={{overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', display: 'block', lineHeight: '18px', marginTop: '-3px'}}>{titleCase(el.title).replace('Tv', 'TV')}</div>
-                        </div>
-                    );
-                });
-                var backButton = (
-                    <paper-icon-button onClick={this.selectFilmonGroup.bind(this, null)} className="player-close" icon={'arrow-back'} noink={true} style={{color: '#767A7B', position: 'relative', top: '-2px', marginRight: '1px', marginLeft: '-20px'}} />
-                );
-            } else {
-                var generated = _.map(feed, (el, ij) => {
-                    return (
-                        <div key={ij} className="feed-element" onClick={this.selectFilmonGroup.bind(this, ij)} style={{lineHeight: '13px'}}>
-                            <div id={'feed-logo-' + ij} className="feed-logos" style={{background: 'url(' + (el.logo_148x148_uri ? el.logo_148x148_uri : el.logo_uri) + ') no-repeat center'}} />
-                            <br />
-                            <div style={{overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', display: 'block', lineHeight: '18px', marginTop: '-3px'}}>{titleCase(el.name).replace('Tv', 'TV')}</div>
-                        </div>
-                    );
-                });
-                var backButton = (
-                    <paper-icon-button onClick={this.setSelected.bind(this, null)} className="player-close" icon={'arrow-back'} noink={true} style={{color: '#767A7B', position: 'relative', top: '-2px', marginRight: '1px', marginLeft: '-20px'}} />
-                );
-            }
         } else {
             var title = this.state.search ? this.state.search.terms : this.state.matchWith ? this.state.selected.label +'  -  '+ this.state.matchWith.label : this.state.selected.label;
             var feed = this.state.search ? this.state.search.results : plugins.matchTags(this.state.selected.tag);
@@ -449,59 +384,33 @@ default React.createClass({
             // order by installed first, then by priority
             feed.sort(function(a,b) { return (a.tags.indexOf('installed') > -1 && b.tags.indexOf('installed') == -1) ? -1 : ((a.tags.indexOf('installed') == -1 && b.tags.indexOf('installed') > -1) ? 1 : ((a.priority > b.priority) ? -1 : ((b.priority > a.priority) ? 1 : 0))); });
 
-            if (this.state.selected && this.state.selected.label == 'Installed' && ls('myFilmonPlugins').length)
-                filmonUtil.groups().forEach( el => {
-                    el.real_channels.forEach( (elm, ijm) => {
-                        if (ls('myFilmonPlugins').indexOf(titleCase(elm.title).replace('Tv', 'TV')) > -1) {
-                            if (ls('adultContent') || (!ls('adultContent') && elm.adult_content == '0')) {
-                                elm.channels = el.real_channels;
-                                elm.idx = ijm;
-                                elm.tags = [];
-                                elm.filmon = true;
-                                feed.push(elm);
-                            }
+            var generated = _.map(feed, (el, ij) => {
+                el.key = ij;
+                if (el.defaultImage) {
+                    var logoStyle = {
+                        background: 'url("' + el.defaultImage + '") no-repeat center'
+                    };
+                } else {
+                    getLogo.push(el);
+                    var logoStyle = {};
+                }
+                if (!noTags)
+                    el.tags.forEach( elm => {
+                        var index = tagMap.indexOf(elm);
+                        if (index > -1) tags[index].votes++;
+                        else {
+                            tags.push({ tag: elm, votes: 1 });
+                            tagMap.push(elm);
                         }
                     });
-                });
 
-
-            var generated = _.map(feed, (el, ij) => {
-                if (el.filmon) {
-                    return (
-                        <div key={ij} className="feed-element" onClick={this.openFilmonPlugin.bind(this, el.channels, el.idx)} style={{lineHeight: '13px'}}>
-                            <div id={'feed-logo-' + ij} className="feed-logos" style={{background: 'url(' + el.big_logo + ') no-repeat center'}} />
-                            <br />
-                            <div style={{overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', display: 'block', lineHeight: '18px', marginTop: '-3px'}}>{titleCase(el.title).replace('Tv', 'TV')}</div>
-                        </div>
-                    );
-                } else {
-                    el.key = ij;
-                    if (el.defaultImage) {
-                        var logoStyle = {
-                            background: 'url("' + el.defaultImage + '") no-repeat center'
-                        };
-                    } else {
-                        getLogo.push(el);
-                        var logoStyle = {};
-                    }
-                    if (!noTags)
-                        el.tags.forEach( elm => {
-                            var index = tagMap.indexOf(elm);
-                            if (index > -1) tags[index].votes++;
-                            else {
-                                tags.push({ tag: elm, votes: 1 });
-                                tagMap.push(elm);
-                            }
-                        });
-    
-                    return (
-                        <div key={ij} className="feed-element" onClick={this.openPluginModal.bind(this, feed, ij)} style={{lineHeight: '13px'}}>
-                            <div id={'feed-logo-' + ij} className="feed-logos" style={logoStyle} />
-                            <br />
-                            <div style={{overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', display: 'block', lineHeight: '18px', marginTop: '-3px'}}>{el.name}</div>
-                        </div>
-                    );
-                }
+                return (
+                    <div key={ij} className="feed-element" onClick={this.openPluginModal.bind(this, feed, ij)} style={{lineHeight: '13px'}}>
+                        <div id={'feed-logo-' + ij} className="feed-logos" style={logoStyle} />
+                        <br />
+                        <div style={{overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', display: 'block', lineHeight: '18px', marginTop: '-3px'}}>{el.name}</div>
+                    </div>
+                );
             });
 
             tags.sort(function(a,b) { return (a.votes > b.votes) ? -1 : ((b.votes > a.votes) ? 1 : 0); });

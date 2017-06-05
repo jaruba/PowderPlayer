@@ -15,7 +15,6 @@ var map = {
     downloadType: 0,
     playerType: false,
     adultContent: false,
-    myFilmonPlugins: [],
     torrentWarning: 1,
     casting: {},
     extPlayers: [],

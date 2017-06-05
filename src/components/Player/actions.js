@@ -144,14 +144,6 @@ class PlayerActions {
                             image: keeper.image ? keeper.image : null,
                             title: keeper.title ? keeper.title : null
                         });
-                    } else if (data[i].filmon) {
-                        this.actions.setDesc({
-                            idx: keeper.idx,
-                            filmon: true,
-                            filmonObj: keeper.filmonObj,
-                            image: keeper.image ? keeper.image : null,
-                            title: keeper.title ? keeper.title : null
-                        });
                     }
 
                 }

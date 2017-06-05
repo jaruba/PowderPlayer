@@ -6,7 +6,6 @@ import _ from 'lodash';
 import plugins from '../../../utils/plugins';
 import MessageActions from '../../Message/actions';
 import linkUtil from '../../../utils/linkUtil';
-import filmonUtil from '../../Player/utils/filmon';
 import PlayerActions from '../../Player/actions';
 import ls from 'local-storage';
 
@@ -86,15 +85,7 @@ default React.createClass({
     },
     
     uninstallPlugin(el) {
-        if (el.filmon) {
-            var filmonPlugins = [];
-            ls('myFilmonPlugins').forEach( elm => {
-                if (elm.toLowerCase() != el.name.toLowerCase())
-                    filmonPlugins.push(elm);
-            });
-            ls('myFilmonPlugins', filmonPlugins);
-        } else
-            plugins.uninstall(el.name);
+        plugins.uninstall(el.name);
 
         ModalActions.close();
         plugins.events.emit('pluginListUpdate');
@@ -103,42 +94,29 @@ default React.createClass({
     playPlugin(el) {
         ModalActions.close(true);
         ModalActions.thinking(true);
-        if (el.filmon) {
-            filmonUtil.getMrl(el, (err, mrlObj) => {
-                ModalActions.close(true);
-                if (err) {
-                    ModalActions.installedPlugin(el);
-                    MessageActions.open(err);
-                } else {
-                    mrlObj.filmon = true;
-                    mrlObj.filmonObj = el;
-                    PlayerActions.addPlaylist([mrlObj]);
-                }
-            });
-        } else {
-            var url = el.feed.replace('%p', el.search && typeof el.search.start != 'undefined' ? el.search.start : 1);
-            
-            if (el.categories) {
-                var selectedCat = Polymer.dom().querySelector('.install-plugin-cat').selectedItemLabel;
-                if (el.categories[selectedCat] instanceof Array) {
-                    url = url.replace('%c', el.categories[selectedCat][0]);
-                } else {
-                    url = url.replace('%c', el.categories[selectedCat]);
-                }
-            }
-            
-            if (el.torrent) {
-                ModalActions.torrentSelector(url);
+
+        var url = el.feed.replace('%p', el.search && typeof el.search.start != 'undefined' ? el.search.start : 1);
+        
+        if (el.categories) {
+            var selectedCat = Polymer.dom().querySelector('.install-plugin-cat').selectedItemLabel;
+            if (el.categories[selectedCat] instanceof Array) {
+                url = url.replace('%c', el.categories[selectedCat][0]);
             } else {
-    
-                linkUtil(url).then(url => {
-                    ModalActions.thinking(false);
-                }).catch(error => {
-                    ModalActions.thinking(false);
-                    ModalActions.installedPlugin(el);
-                    MessageActions.open(error.message);
-                });
+                url = url.replace('%c', el.categories[selectedCat]);
             }
+        }
+        
+        if (el.torrent) {
+            ModalActions.torrentSelector(url);
+        } else {
+
+            linkUtil(url).then(url => {
+                ModalActions.thinking(false);
+            }).catch(error => {
+                ModalActions.thinking(false);
+                ModalActions.installedPlugin(el);
+                MessageActions.open(error.message);
+            });
         }
     },
     
@@ -194,13 +172,6 @@ default React.createClass({
             var playFeed = (<div style={{display:'none'}} />);
         }
 
-        if (this.state.selected.filmon) 
-            var playFeed = (
-                <paper-button raised onClick={this.playPlugin.bind(this, this.state.selected)} style={{float: 'right', marginRight: '10px', padding: '8px 15px', fontWeight: 'bold', marginTop: '0px', textTransform: 'none', background: '#00bcd4', color: 'white'}} dialog-dismiss>
-                Play Feed
-                </paper-button>
-            );
-        
         if (this.state.selected.search) {
             var searcher = (
                 <paper-button raised onClick={this.searchPlugin.bind(this, this.state.selected)} style={{float: 'right', marginRight: '10px', padding: '8px 15px', fontWeight: 'bold', marginTop: '0px', textTransform: 'none', background: '#00bcd4', color: 'white'}} dialog-dismiss>
@@ -248,7 +219,7 @@ default React.createClass({
                 <div style={{margin: '0'}}>
                     <span style={{textDecoration: 'underline'}}>Title</span><br />
                     {this.state.selected.name}
-                    <span onClick={this.pluginShortcut} className="tag" style={{marginTop: '-6px', marginLeft: '7px'}}>{ this.state.selected.filmon ? '.' + this.state.selected.alias : this.state.selected.search && this.state.selected.search.shortcut ? this.state.selected.search.shortcut : this.state.selected.shortcut ? this.state.selected.shortcut : '' }</span>
+                    <span onClick={this.pluginShortcut} className="tag" style={{marginTop: '-6px', marginLeft: '7px'}}>{ this.state.selected.search && this.state.selected.search.shortcut ? this.state.selected.search.shortcut : this.state.selected.shortcut ? this.state.selected.shortcut : '' }</span>
                     <br /><br />
                 </div>
                 {descTemplate}

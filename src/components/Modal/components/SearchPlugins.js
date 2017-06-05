@@ -12,7 +12,6 @@ import PlayerActions from '../../Player/actions';
 import linkUtil from '../../../utils/linkUtil';
 import plugins from '../../../utils/plugins';
 import _ from 'lodash';
-import filmonUtil from '../../Player/utils/filmon';
 import ls from 'local-storage';
 
 
@@ -35,19 +34,6 @@ default React.createClass({
         var inputvalue = this.refs.urlInput.value;
         
         var results = plugins.fetchByName(inputvalue);
-        filmonUtil.groups().forEach( el => {
-            el.real_channels.forEach( (elm, ijm) => {
-                if (elm.title.toLowerCase().indexOf(inputvalue.toLowerCase()) > -1) {
-                    if (ls('adultContent') || (!ls('adultContent') && elm.adult_content == '0')) {
-                        elm.filmon = true;
-                        elm.idx = ijm;
-                        elm.channels = el.real_channels;
-                        elm.tags = [];
-                        results.push(elm);
-                    }
-                }
-            });
-        });
         if (results.length) {
             ModalActions.close();
             plugins.events.emit('pluginListUpdate', { terms: inputvalue, results: results });

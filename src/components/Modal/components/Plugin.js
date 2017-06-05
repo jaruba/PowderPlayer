@@ -70,12 +70,7 @@ default React.createClass({
             ModalActions.close(true);
             ModalActions.torrentWarning();
         } else {
-            if (el.filmon) {
-                var filmonPlugins = ls('myFilmonPlugins');
-                filmonPlugins.push(el.name);
-                ls('myFilmonPlugins', filmonPlugins);
-            } else
-                plugins.install(el.name);
+            plugins.install(el.name);
     
             ModalActions.close(true);
             ModalActions.installedPlugin(el);

@@ -12,7 +12,6 @@ import plugins from '../../../utils/plugins';
 import linkUtil from '../../../utils/linkUtil';
 import _ from 'lodash';
 
-import filmonUtil from '../../Player/utils/filmon';
 import ls from 'local-storage';
 
 
@@ -41,29 +40,11 @@ default React.createClass({
             if (shortcut) {
                 var feed = plugins.matchTags();
                 var plugin = plugins.getByShortcut(feed, shortcut);
-                if (!plugin) {
-                    filmonUtil.groups().some( el => {
-                        return el.real_channels.some( elm => {
-                            if (shortcut == '.' + elm.alias) {
-                                elm.filmon = true;
-                                plugin = elm;
-                            }
-                        });
-                    });
-                }
                 if (!ls('torrentContent') && plugin.torrent) plugin = null;
             }
 
             if (plugin) {
-                if (plugin.filmon) {
-                    if (ls('myFilmonPlugins').indexOf(plugin.name) == -1) {
-                        plugin.image = plugin.extra_big_logo ? plugin.extra_big_logo : plugin.big_logo;
-                        plugin.name = plugin.title;
-                        plugin.filmon = true;
-                        ModalActions.plugin(plugin);
-                        return;
-                    }
-                } else if (plugin.tags.indexOf('installed') == -1) {
+                if (plugin.tags.indexOf('installed') == -1) {
                     ModalActions.plugin(plugin);
                     return;
                 }
@@ -82,19 +63,6 @@ default React.createClass({
                                 inputvalue = inputvalue.replace('%c', plugin.categories[firstCat]);
                             }
                         }
-                    } else if (plugin.filmon) {
-                        filmonUtil.getMrl(plugin, (err, mrlObj) => {
-                            ModalActions.close(true);
-                            if (err) {
-                                ModalActions.installedPlugin(plugin);
-                                MessageActions.open(err);
-                            } else {
-                                mrlObj.filmon = true;
-                                mrlObj.filmonObj = plugin;
-                                PlayerActions.addPlaylist([mrlObj]);
-                            }
-                        });
-                        return;
                     }
                 } else {
                     var forceCategory;

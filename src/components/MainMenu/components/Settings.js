@@ -5,7 +5,6 @@ import async from 'async';
 import MetaInspector from 'node-metainspector';
 import ls from 'local-storage';
 import ModalActions from '../../Modal/actions';
-import filmonUtil from '../../Player/utils/filmon';
 import player from '../../Player/utils/player';
 import PlayerActions from '../../Player/actions';
 import Register from '../../../utils/registerUtil';
