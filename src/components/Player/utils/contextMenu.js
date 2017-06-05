@@ -222,11 +222,9 @@ var contextMenu = {
         e.preventDefault();
 
         var isPlaying = ([3, 4].indexOf(player.wcjs.state) > -1);
-        
-        if (isPlaying) {
-            var engineState = engineStore.getState();
-            var isTorrent = !!(engineState.infoHash && engineState.torrents[engineState.infoHash]);
-        }
+
+		var engineState = engineStore.getState();
+		var isTorrent = !!(engineState.infoHash && engineState.torrents[engineState.infoHash]);
 
         // audio tracks
         var audioTracks = [];
@@ -321,7 +319,7 @@ var contextMenu = {
         var template = [
             {
                 label: 'Torrent',
-                enabled: (isPlaying && isTorrent),
+                enabled: isTorrent,
                 submenu: [
                     {
                         label: 'Torrent Data',
