@@ -30,7 +30,8 @@ module.exports = {
                         tmp: temp,
                         buffer: (1.5 * 1024 * 1024).toString(),
                         connections: ls('maxPeers'),
-                        withResume: true
+                        withResume: true,
+                        torFile: typeof torrent === 'string' && !torrent.startsWith('magnet:') && torrent.match(/(?:\.torrent)(\?([^.]+)|$)/gi) ? torrent : null
                     };
                     if (ls.isSet('downloadFolder'))
                         opts.path = ls('downloadFolder');
