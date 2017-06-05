@@ -2,7 +2,7 @@ import _ from 'lodash';
 import ls from 'local-storage';
 
 var map = {
-    torrentContent: true,
+    torrentContent: false,
     resizeOnPlaylist: true,
     ytdlQuality: 2,
     renderFreq: 500,

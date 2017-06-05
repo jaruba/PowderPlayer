@@ -645,10 +645,6 @@ default React.createClass({
                 title: 'Adult Content',
                 tag: 'adultContent'
             }, {
-                type: 'toggle',
-                title: 'Torrent Plugins',
-                tag: 'torrentContent'
-            }, {
                 type: 'header',
                 label: 'Associations'
             }, {
