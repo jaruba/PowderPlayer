@@ -6,6 +6,10 @@ from 'react-router';
 import HeaderStore from './store';
 import HeaderActions from './actions';
 import player from '../Player/utils/player';
+import {
+    ipcRenderer
+}
+from 'electron';
 
 export
 default React.createClass({
@@ -37,6 +41,7 @@ default React.createClass({
             });
     },
     setTitle(title) {
+        ipcRenderer.send('app:title', title);
         this.setState({
             title: title
         });

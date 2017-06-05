@@ -54,11 +54,11 @@ app.on('open-url', passArgs);
 app.on('ready', () => {
 
     mainWindow = new BrowserWindow({
+        title: 'Powder Player',
         width: 653,
         height: 522,
         icon: path.join(__dirname, '../images/icons/powder-icon.png'),
         resizable: true,
-        title: 'Powder Player',
         center: true,
         frame: false,
         show: false
@@ -94,6 +94,10 @@ app.on('ready', () => {
     ipcMain.on('app:cmdline', (event) => {
         event.sender.send('cmdline', JSON.stringify(queueOpen))
         queueOpen = [];
+    })
+
+    ipcMain.on('app:title', (event, title) => {
+        mainWindow.setTitle(title);
     })
 
     ipcMain.on('app:contextmenu', (event, template) => {

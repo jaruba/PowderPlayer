@@ -70,6 +70,7 @@ default React.createClass({
         });
     },
     setTitle(title) {
+        ipcRenderer.send('app:title', title);
         this.setState({
             title: title
         });

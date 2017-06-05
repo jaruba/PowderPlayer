@@ -57,7 +57,7 @@ default React.createClass({
     },
 
     componentDidMount() {
-
+		ipcRenderer.send('app:title', 'Powder Player');
     },
 
     componentWillUnmount() {
