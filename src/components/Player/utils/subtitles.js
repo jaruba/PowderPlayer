@@ -167,6 +167,9 @@ subtitles.findLine = (subLines, trackSub, subDelay, time) => {
                             subLines[line].t = subLines[line].t.replace(/<\/?[^>]+(>|$)/g, "");
                     } else if ((subLines[line].t.match(new RegExp("<", "g")) || []).length > 2)
                         subLines[line].t = subLines[line].t.replace(/<\/?[^>]+(>|$)/g, "");
+					
+					// additional subtitle sanitizer (for safety)
+					subLines[line].t = subLines[line].t.replace(/(<([^>]+)>)/ig, "");
                         
                     resolve({
                         text: subLines[line].t,
