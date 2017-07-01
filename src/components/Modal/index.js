@@ -5,6 +5,7 @@ import ModalStore from './store';
 import ModalActions from './actions';
 
 import FileStreamSelector from './components/fileStreamSelector';
+import HistorySelector from './components/historySelector';
 import URLContents from './components/URLadd';
 import Thinking from './components/Thinking';
 import DashboardMenu from './components/dashboardMenu';
@@ -76,6 +77,9 @@ default React.createClass({
                 break;
             case 'fileSelctor':
                 return <FileStreamSelector />;
+                break;
+            case 'historySelector':
+                return <HistorySelector />;
                 break;
             case 'thinking':
                 return <Thinking />;

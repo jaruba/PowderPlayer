@@ -28,6 +28,60 @@ var player = {
 
 player.events = new events.EventEmitter();
 
+player.loadHistory = (obj) => {
+    ls('savedHistory', obj);
+    player.events.emit('dropObj', obj);
+}
+
+player.saveHistory = () => {
+
+    if (player.wcjs.playlist.currentItem > -1) {
+        
+        var savedPlaylist = [];
+        
+        var history = ls('history')
+        
+        history.some((el, ij) => {
+            if (el[0] && el[el[0].currentItem].title == player.itemDesc().title) {
+                history.splice(ij, 1);
+                return true;
+            }
+        })
+        
+        var objGenerator = function(il) {
+            var itemDesc = player.itemDesc(il);
+            var itemSetting = itemDesc.setting;
+            return {
+                idx: il,
+                title: itemDesc.title,
+                mrl: itemDesc.mrl,
+                duration: itemDesc.duration,
+                position: player.wcjs.playlist.currentItem == il ? player.wcjs.position : 0,
+                torrentHash: itemSetting && itemSetting.torrentHash ? itemSetting.torrentHash : null,
+                streamID: itemSetting && itemSetting.streamID ? itemSetting.streamID : null,
+                currentItem: player.wcjs.playlist.currentItem,
+                currentTime: player.wcjs.time,
+                currentHash: itemSetting && itemSetting.torrentHash ? itemSetting.torrentHash : null,
+                originalURL: itemSetting && itemSetting.originalURL ? itemSetting.originalURL : null
+            }
+        }
+        
+        for (var ik = 0; ik < player.wcjs.playlist.itemCount; ik++) {
+            savedPlaylist.push(objGenerator(ik));
+        }
+
+        history.push(savedPlaylist);
+
+        if (history.length > ls('historyLimit')) {
+            history.shift();
+        }
+
+        ls('history', history);
+    }
+}
+
+window.saveHistory = player.saveHistory
+
 player.loadState = () => {
 
     if (typeof player.saveState.idx != 'undefined') {

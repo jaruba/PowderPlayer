@@ -18,7 +18,9 @@ var map = {
     torrentWarning: 1,
     casting: {},
     extPlayers: [],
-    dlnaFinder: 0
+    dlnaFinder: 0,
+    history: [],
+    historyLimit: 20
 }
 
 module.exports = () => {

@@ -148,7 +148,8 @@ class PlayerActions {
 
                 }
             }
-
+    var savedHistory = ls('savedHistory');
+    if (savedHistory && savedHistory.length) return
             if (!noStart) {
                 if (selected > -1) {
                     wcjs.playlist.playItem(selected);
@@ -211,6 +212,10 @@ class PlayerActions {
 
         if (newObj.autoplay)
             wcjs.playlist.playItem(newObj.x);
+
+        if (newObj.autoplayAt)
+            wcjs.time = newObj.autoplayAt;
+
     }
 
     pulse() {

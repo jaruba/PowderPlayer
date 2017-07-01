@@ -125,6 +125,12 @@ events.opening = () => {
         })
     }
 
+    var historyStarter = 0;
+    if (historyStartAt) {
+        historyStarter = historyStartAt;
+        historyStartAt = 0;
+    }
+
     if (!isLocal) {
 
         var timestamp = new Date().getTime();
@@ -146,6 +152,7 @@ events.opening = () => {
                     _.defer(() => {
                         PlayerActions.replaceMRL({
                             autoplay: true,
+                            autoplayAt: historyStarter,
                             x: currentItem,
                             mrl: {
                                 title: info.fulltitle ? info.fulltitle : null,
@@ -287,7 +294,59 @@ events.stopped = () => {
     PlayerActions.togglePowerSave(false);
 }
 
+var historyStartAt = 0;
+
+var processingHist = false
+
+window.processHistory = () => {
+    var savedHistory = ls('savedHistory');
+    if (savedHistory && savedHistory.length) {
+        processingHist = false
+        var currentItem = savedHistory[0].currentItem;
+        if (player.wcjs && player.wcjs.playlist && savedHistory.length == player.wcjs.playlist.itemCount) {
+            
+            player.events.emit('announce', { text: '', effect: false })
+
+            var currentItem = savedHistory[0].currentItem
+            var match1 = false
+            var match2 = false
+            var saved = savedHistory[currentItem]
+            var itemDesc = player.itemDesc(currentItem)
+
+            if (saved.title == itemDesc.title) match1 = true
+            if (saved.mrl == itemDesc.mrl || saved.originalURL == itemDesc.mrl) match2 = true
+            if (!match1 && !match2) {
+                for (var jk = 0; ((jk < player.wcjs.playlist.itemCount) && !match1 && !match2); jk++) {
+                    var itemDesc = player.itemDesc(jk)
+                    if (saved.title == itemDesc.title) match1 = true
+                    if (saved.mrl == itemDesc.mrl || saved.originalURL == itemDesc.mrl) match2 = true
+                    if (match1 || match2) currentItem = jk
+                }
+            }
+            player.wcjs.playlist.playItem(currentItem);
+            player.wcjs.time = savedHistory[0].currentTime;
+            historyStartAt = savedHistory[0].currentTime;
+            ls('savedHistory', null);
+        } else {
+            if (player.wcjs && player.wcjs.input && player.wcjs.input.state != 5) player.wcjs.stop()
+            if (player.wcjs && player.wcjs.playlist)
+                player.events.emit('announce', { text: 'Loading History ' + Math.round((player.wcjs.playlist.itemCount / savedHistory.length) * 100) + '%', effect: false })
+            processingHist = setTimeout(window.processHistory, 500);
+        }
+    }
+}
+
+window.stopProcessHistory = function() {
+    if (processingHist) {
+        clearTimeout(processingHist)
+        processingHist = false
+    }
+    ls('savedHistory', null)
+}
+
 events.playing = () => {
+    
+    if (processingHist) stopProcessHistory()
     
     if (immuneToEvents) return
 

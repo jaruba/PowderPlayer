@@ -77,6 +77,10 @@ default React.createClass({
     },
     handleClose() {
 
+        player.saveHistory();
+
+        window.stopProcessHistory()
+
         player.events.emit('windowTitleUpdate', '');
 
         if (player.alwaysOnTop) {
@@ -88,7 +92,7 @@ default React.createClass({
 
         var Linky = new LinkSupport;
         Linky.stopParsing();
-        
+
         var engineState = engineStore.getState();
         
         player.wcjs.stop();
@@ -119,6 +123,9 @@ default React.createClass({
         }
     },
     handleCloseApp() {
+
+        player.saveHistory();
+
         if (player.alwaysOnTop) {
             player.set({
                 alwaysOnTop: false

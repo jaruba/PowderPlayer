@@ -88,6 +88,7 @@ const Player = React.createClass({
             document.querySelector('header').style.WebkitAppRegion = "drag"
     },
     componentDidMount() {
+        window.playerDrop = this.fileDrop
         var announcer = document.getElementsByClassName('wcjs-announce')[0];
 //        if (['', '0'].indexOf(announcer.style.opacity) > -1) {
 //            events.buffering(0);
@@ -238,6 +239,8 @@ const Player = React.createClass({
                     engine.ready(handleTorrent);
                 } else {
                     linkUtil(droppedLink).then(url => {
+                        var savedHistory = ls('savedHistory');
+                        if (savedHistory && savedHistory.length) return
                         player.notifier.info('Link Added', '', 3000);
                     }).catch(error => {
                         player.notifier.info(error.message, '', 3000);
