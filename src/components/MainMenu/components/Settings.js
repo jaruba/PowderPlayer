@@ -785,7 +785,8 @@ default React.createClass({
                 title: 'DLNA Finder',
                 tag: 'dlnaFinder',
                 default: this.state.dlnaFinders[this.state.dlnaFinder],
-                width: '110px'
+                width: '110px',
+                disabled: true
             }, {
                 type: 'selectFolder',
                 title: 'Cache Folder',
