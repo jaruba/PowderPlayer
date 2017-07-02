@@ -58,6 +58,7 @@ default React.createClass({
             renderHidden: ls('renderHidden'),
             renderFreq: ls('renderFreq'),
             removeLogic: ls('removeLogic') == 0 ? 'Always Ask' : ls('removeLogic') == 1 ? 'Always Remove' : 'Always Keep',
+            downloadAll: ls.isSet('downloadAll') ? ls('downloadAll') : false,
             downloadType: ls('downloadType') == 0 ? 'Player' : 'Dashboard',
             playerType: ls('playerType'),
 
@@ -1131,9 +1132,16 @@ default React.createClass({
                 default: !this.state.speedLimit ? 'auto' : (this.state.speedLimit + ' kb'),
                 width: '80px'
             }, {
+                type: 'header',
+                label: 'File Handling'
+            }, {
                 type: 'toggle',
                 title: 'File Selector',
                 tag: 'askFiles'
+            }, {
+                type: 'toggle',
+                title: 'Download All Files',
+                tag: 'downloadAll'
             }, {
                 type: 'select',
                 title: 'Remove Files',

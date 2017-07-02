@@ -133,12 +133,13 @@ module.exports = {
             
             files.forEach(function(el) {
                 var file = el;
-                if (file.selected) findById(file.fileID, 'deselectFile')
+                if (file.selected && !ls('downloadAll')) findById(file.fileID, 'deselectFile')
+                if (ls('downloadAll')) findById(file.fileID, 'selectFile')
                 var fileParams = path.parse(file.path);
                 var streamable = supported.is(fileParams.ext, 'allMedia');
 
                 if (streamable) {
-                    if (!selectedFirst) {
+                    if (!selectedFirst && !ls('downloadAll')) {
                         if (!file.selected) findById(file.fileID, 'selectFile')
                         selectedFirst = true
                     }

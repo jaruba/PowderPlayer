@@ -21,7 +21,8 @@ var map = {
     dlnaFinder: 0,
     history: [],
     historyLimit: 20,
-    speedLimit: 0
+    speedLimit: 0,
+	downloadAll: false
 }
 
 module.exports = () => {
