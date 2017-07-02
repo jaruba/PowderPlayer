@@ -364,6 +364,7 @@ hotkeys.attach = (props) => {
                 });
                 PlayerActions.announcement('Aspect Ratio: ' + aspectRatios[newValue]);
                 player.events.emit('resizeNow');
+                player.fields.aspect.value = aspectRatios[newValue];
                 return true;
             } else return false;
         });
@@ -386,6 +387,7 @@ hotkeys.attach = (props) => {
                 });
                 PlayerActions.announcement('Crop: ' + crops[newValue]);
                 player.events.emit('resizeNow');
+                player.fields.crop.value = crops[newValue];
                 return true;
             } else return false;
         });
@@ -408,6 +410,7 @@ hotkeys.attach = (props) => {
                 });
                 PlayerActions.announcement('Zoom: ' + zooms[newValue][0]);
                 player.events.emit('resizeNow');
+                player.fields.zoom.value = zooms[newValue][0];
                 return true;
             } else return false;
         });
