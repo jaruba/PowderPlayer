@@ -54,6 +54,7 @@ default React.createClass({
             cacheFolder: ls('cacheFolder') ? ls('cacheFolder') : 'Temp',
             bufferSize: parseInt(ls('bufferSize') / 1000).toFixed(1),
             speedPulsing: ls('speedPulsing') ? ls('speedPulsing') : 'disabled',
+            speedLimit: ls('speedLimit') ? ls('speedLimit') : 0,
             renderHidden: ls('renderHidden'),
             renderFreq: ls('renderFreq'),
             removeLogic: ls('removeLogic') == 0 ? 'Always Ask' : ls('removeLogic') == 1 ? 'Always Remove' : 'Always Keep',
@@ -134,9 +135,12 @@ default React.createClass({
                 subSize: this.refs['subSizeInput'],
                 aspect: this.refs['aspectInput'],
                 crop: this.refs['cropInput'],
-                zoom: this.refs['zoomInput']
+                zoom: this.refs['zoomInput'],
+                speedLimit: this.refs['speedLimitInput'],
+                speedPulsing: this.refs['speedPulsingToggle']
             }
         });
+
         player.events.on('settingsUpdate', this.update);
 
         // tab change logic
@@ -188,7 +192,9 @@ default React.createClass({
                 menuFlags: ls.isSet('menuFlags') ? ls('menuFlags') : true,
                 removeLogic: ls('removeLogic') == 0 ? 'Always Ask' : ls('removeLogic') == 1 ? 'Always Remove' : 'Always Keep',
                 downloadType: ls('downloadType') == 0 ? 'Player' : 'Dashboard',
-                playerType: ls('playerType')
+                playerType: ls('playerType'),
+                speedPulsing: ls('speedPulsing') ? ls('speedPulsing') : 'disabled',
+                speedLimit: ls('speedLimit') ? ls('speedLimit') : 0
             });
         }
     },
@@ -629,6 +635,13 @@ default React.createClass({
             PlayerActions.pulse();
         } else {
             PlayerActions.flood();
+            if (ls('speedLimit')) {
+                ls('speedLimit', 0)
+                _.defer(() => {
+                    this.setState({ speedLimit: 0 })
+                    this.refs['speedLimitInput'].value = 'auto';
+                })
+            }
         }
         ls('speedPulsing', toggled ? 'enabled' : 'disabled');
     },
@@ -822,6 +835,63 @@ default React.createClass({
 
         ls('renderFreq', newValue);
         this.refs['renderFreqInput'].value = newValue + 'ms';
+    },
+    
+    _handleSpeedLimit(event, direction) {
+        var newLimit = !parseInt(this.refs['speedLimitInput'].value) ? 0 : parseInt(this.refs['speedLimitInput'].value);
+
+        if (direction < 0)
+            newLimit = newLimit - 100;
+        else
+            newLimit = newLimit + 100;
+
+        if (newLimit < 0) newLimit = 0;
+        
+        if (newLimit > 0 && (!ls('speedPulsing') || ls('speedPulsing') == 'disabled')) {
+            this._handlePulsingToggle({}, true)
+            this.refs['speedPulsingToggle'].checked = true
+        }
+        
+        ls('speedLimit', newLimit);
+        if (!newLimit)
+            this.refs['speedLimitInput'].value = 'auto';
+        else
+            this.refs['speedLimitInput'].value = newLimit + ' kb';
+    },
+    
+    _handleSpeedLimitKeys(event) {
+        if (event.keyCode == 38) {
+            event.preventDefault();
+            this._handleSpeedLimit(event, 1);
+        } else if (event.keyCode == 40) {
+            event.preventDefault();
+            this._handleSpeedLimit(event, -1);
+        } else if ([13, 27].indexOf(event.keyCode) > -1) {
+            event.preventDefault();
+            this.refs['speedLimitInput'].$.input.blur();
+        }
+    },
+    
+    _handleSpeedLimitBlur(event) {
+        if (!parseInt(this.refs['speedLimitInput'].value)) {
+            ls('speedLimit', 0);
+            this.refs['speedLimitInput'].value = 'auto';
+        } else {
+            var newValue = Math.round(parseInt(this.refs['speedLimitInput'].value) / 100) * 100;
+            if (newValue < 0)
+                newValue = 0;
+
+            if (newValue > 0 && (!ls('speedPulsing') || ls('speedPulsing') == 'disabled')) {
+                this._handlePulsingToggle({}, true)
+                _.defer(() => {
+                    this.setState({ speedPulsing: 'disabled' });
+                    _.defer(() => { this.setState({ speedPulsing: 'enabled' }) })
+                })
+            }
+    
+            ls('speedLimit', newValue);
+            this.refs['speedLimitInput'].value = newValue + ' kb';
+        }
     },
     
     render() {
@@ -1055,6 +1125,12 @@ default React.createClass({
                 func: 'PulsingToggle',
                 tag: 'speedPulsing'
             }, {
+                type: 'select',
+                title: 'Speed Limit',
+                tag: 'speedLimit',
+                default: !this.state.speedLimit ? 'auto' : (this.state.speedLimit + ' kb'),
+                width: '80px'
+            }, {
                 type: 'toggle',
                 title: 'File Selector',
                 tag: 'askFiles'
@@ -1081,7 +1157,7 @@ default React.createClass({
 //                tag: 'playerType'
             }]
         };
-        
+
         var indents = {
             'General': [],
             'Audio / Subs': [],
@@ -1111,6 +1187,7 @@ default React.createClass({
 
                     indents[ij].push(
                         <paper-toggle-button
+                            ref={el.tag + 'Toggle'}
                             key={klm}
                             id={el.tag}
                             className="playerTogglers"

@@ -94,8 +94,13 @@ var actions = {
             PlayerActions.pulse();
         } else {
             PlayerActions.flood();
+            if (ls('speedLimit')) {
+                ls('speedLimit', 0)
+                player.fields.speedLimit.value = 'auto'
+            }
         }
         ls('speedPulsing', toggled ? 'enabled' : 'disabled');
+        player.fields.speedPulsing.checked = toggled
     },
     audioTrack: function(i) {
         player.wcjs.audio.track = i;

@@ -20,7 +20,8 @@ var map = {
     extPlayers: [],
     dlnaFinder: 0,
     history: [],
-    historyLimit: 20
+    historyLimit: 20,
+    speedLimit: 0
 }
 
 module.exports = () => {

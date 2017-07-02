@@ -225,7 +225,7 @@ class PlayerActions {
             var length = wcjs.length;
             var itemDesc = player.itemDesc();
             if (length && itemDesc.setting && itemDesc.setting.torrentHash && itemDesc.setting.byteSize) {
-                var newPulse = Math.round(itemDesc.setting.byteSize / (length / 1000) * 2);
+                var newPulse = ls('speedLimit') ? (ls('speedLimit') * 1000) : Math.round(itemDesc.setting.byteSize / (length / 1000) * 2);
                 torrentUtil.setPulse(itemDesc.setting.torrentHash, newPulse);
             }
         }
