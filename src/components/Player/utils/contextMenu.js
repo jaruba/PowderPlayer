@@ -81,6 +81,7 @@ var actions = {
         torrent.files.forEach( (el, ij) => {
             torrent.selectFile(ij);
         });
+        engineState.torrents[engineState.infoHash].discover();
         PlayerActions.announcement('Downloading All Files');
     },
     downloadForce() {
