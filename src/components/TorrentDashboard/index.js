@@ -103,6 +103,13 @@ default React.createClass({
             }
         }
     },
+    
+    humanReadableTime(secs) {
+        var numhours = Math.floor(((secs % 31536000) % 86400) / 3600);
+        var numminutes = Math.floor((((secs % 31536000) % 86400) % 3600) / 60);
+        var numseconds = (((secs % 31536000) % 86400) % 3600) % 60;
+        return (numhours ? (numhours + 'h ') : '') + (numminutes ? (numminutes + 'm ') : '') + (numseconds ? (numseconds + 's') : '');
+    },
 
     render() {
         var torrent = this.state.torrents[this.state.infoHash];
@@ -179,7 +186,8 @@ default React.createClass({
                             <paper-icon-button style={{color: '#cacaca'}} onClick={this.openMenu} icon="settings" />
                         </div>
                         <div style={{clear: 'both'}} /> 
-                        <div style={{textAlign: 'right', marginBottom: '5px'}}><span style={{display: 'inline-block', borderRadius: '3px', backgroundColor: ''}}>{Math.floor(( torrent.torrent.pieces.downloaded / torrent.torrent.pieces.length ) * 100) + '%'}</span></div>
+                        <div style={{textAlign: 'left', marginBottom: '5px', width: 'calc(100% - 44px)', float: 'left', overflow: 'hidden'}}><span style={{display: 'inline-block', borderRadius: '3px', whiteSpace: 'nowrap'}}>{finished ? '' : ('ETA: ' + this.humanReadableTime(Math.round((torrent.total.length - torrent.swarm.downloaded) / torrent.swarm.downloadSpeed)))}</span></div>
+                        <div style={{textAlign: 'right', marginBottom: '5px', width: '44px', float: 'right'}}><span style={{display: 'inline-block', borderRadius: '3px', backgroundColor: ''}}>{Math.floor(( torrent.torrent.pieces.downloaded / torrent.torrent.pieces.length ) * 100) + '%'}</span></div>
                         <paper-progress className="torrentProgress" value={(( torrent.torrent.pieces.downloaded / torrent.torrent.pieces.length ) * 100)} max="100" style={{width: '100%'}} />
                     </div>
                     <div style={{clear: 'both'}} />
