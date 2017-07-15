@@ -238,8 +238,7 @@ hotkeys.attach = (props) => {
         var curRate = parseFloat(player.wcjs.input.rate);
         
         if (curRate >= 0.25 && curRate <= 0.5) newRate = 0.125;
-        else if (curRate > 0.5 && curRate <= 1) newRate = 0.25;
-        else if (curRate > 1 && curRate <= 2) newRate = 0.5;
+        else if (curRate > 0.5 && curRate <= 2) newRate = 0.25;
         else if (curRate > 2 && curRate <= 4) newRate = 1;
         else if (curRate > 4) newRate = curRate /2;
 
@@ -257,8 +256,7 @@ hotkeys.attach = (props) => {
         
         if (curRate < 0.25) newRate = 0.125;
         else if (curRate >= 0.25 && curRate < 0.5) newRate = 0.125;
-        else if (curRate >= 0.5 && curRate < 1) newRate = 0.25;
-        else if (curRate >= 1 && curRate < 2) newRate = 0.5;
+        else if (curRate >= 0.5 && curRate < 2) newRate = 0.25;
         else if (curRate >= 2 && curRate < 4) newRate = 1;
         else if (curRate >= 4) newRate = curRate;
 
