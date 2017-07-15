@@ -42,6 +42,9 @@ class TimeStore {
         if (ls('speedPulsing') && ls('speedPulsing') == 'enabled')
             _.defer(PlayerActions.pulse);
 
+        if (ls('forceDownload'))
+            _.defer(PlayerActions.startForceDownload);
+
         _.defer(() => {
             this.setState({
                 length: length,

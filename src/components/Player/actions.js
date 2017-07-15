@@ -10,6 +10,9 @@ import player from './utils/player';
 import ls from 'local-storage';
 import wcjsRenderer from './utils/wcjs-renderer';
 
+var maxDownloadSpeed = 0
+var forceDownloadInterval = false
+
 class PlayerActions {
 
     announcement(obj) {
@@ -238,6 +241,38 @@ class PlayerActions {
             var itemDesc = player.itemDesc();
             if (itemDesc.setting && itemDesc.setting.torrentHash)
                 torrentUtil.flood(itemDesc.setting.torrentHash);
+        }
+    }
+    
+    startForceDownload() {
+        if (forceDownloadInterval) {
+            clearInterval(forceDownloadInterval)
+            forceDownloadInterval = false
+        }
+        var isTorrent = !!(engineState.infoHash && engineState.torrents[engineState.infoHash]);
+        if (!isTorrent) return
+        forceDownloadInterval = setInterval(() => {
+            var torrent = engineState.torrents[engineState.infoHash]
+            var progress = torrent.torrent.pieces.downloaded / torrent.torrent.pieces.length;
+            var finished = false;
+            if (progress == 1) finished = true;
+            if (finished) {
+                this.stopForceDownload()
+                return
+            }
+            if (maxDownloadSpeed < torrent.swarm.downloadSpeed) maxDownloadSpeed = torrent.swarm.downloadSpeed
+            if (torrent.swarm.downloadSpeed < maxDownloadSpeed / 2)
+                torrent.discover();
+        }, 120000) // 2 minutes
+    }
+    
+    stopForceDownload() {
+        var isTorrent = !!(engineState.infoHash && engineState.torrents[engineState.infoHash]);
+        if (!isTorrent) return
+        maxDownloadSpeed = 0
+        if (forceDownloadInterval) {
+            clearInterval(forceDownloadInterval)
+            forceDownloadInterval = false
         }
     }
 

@@ -52,6 +52,7 @@ default React.createClass({
             renderFreq: ls('renderFreq'),
             removeLogic: ls('removeLogic') == 0 ? 'Always Ask' : ls('removeLogic') == 1 ? 'Always Remove' : 'Always Keep',
             downloadAll: ls.isSet('downloadAll') ? ls('downloadAll') : false,
+            forceDownload: ls.isSet('forceDownload') ? ls('forceDownload') : false,
             downloadType: ls('downloadType') == 0 ? 'Player' : 'Dashboard',
             playerType: ls('playerType'),
 
@@ -415,6 +416,10 @@ default React.createClass({
     _handlePulsingToggle(event, toggled) {
         if (toggled) {
             PlayerActions.pulse();
+            if (ls('forceDownload')) {
+                this._handleForceDownloadToggle({}, false)
+                this.refs['forceDownloadToggle'].checked = false
+            }
         } else {
             PlayerActions.flood();
             if (ls('speedLimit')) {
@@ -426,6 +431,26 @@ default React.createClass({
             }
         }
         ls('speedPulsing', toggled ? 'enabled' : 'disabled');
+    },
+    
+    _handleForceDownloadToggle(event, toggled) {
+        if (toggled) {
+            PlayerActions.startForceDownload();
+            if (ls('speedPulsing') == 'enabled') {
+                this._handlePulsingToggle({}, false)
+                this.refs['speedPulsingToggle'].checked = false
+                if (ls('speedLimit')) {
+                    ls('speedLimit', 0)
+                    _.defer(() => {
+                        this.setState({ speedLimit: 0 })
+                        this.refs['speedLimitInput'].value = 'auto';
+                    })
+                }
+            }
+        } else {
+            PlayerActions.stopForceDownload();
+        }
+        ls('forceDownload', toggled);
     },
     
     _videoField(field, value) {
@@ -817,6 +842,11 @@ default React.createClass({
                 tag: 'download',
                 default: this.state.downloadFolder,
                 width: '280px'
+            }, {
+                type: 'toggle',
+                title: 'Forced Download',
+                func: 'ForceDownloadToggle',
+                tag: 'forcedDownload'
             }, {
                 type: 'toggle',
                 title: 'Speed Pulsing',

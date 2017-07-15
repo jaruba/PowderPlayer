@@ -22,7 +22,8 @@ var map = {
     history: [],
     historyLimit: 20,
     speedLimit: 0,
-	downloadAll: false
+	downloadAll: false,
+	forceDownload: false
 }
 
 module.exports = () => {
