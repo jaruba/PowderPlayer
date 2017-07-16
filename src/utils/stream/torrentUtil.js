@@ -33,6 +33,10 @@ module.exports = {
                         withResume: true,
                         torFile: typeof torrent === 'string' && !torrent.startsWith('magnet:') && torrent.match(/(?:\.torrent)(\?([^.]+)|$)/gi) ? torrent : null
                     };
+
+                    if (ls.isSet('torrentTrackers') && ls('torrentTrackers').length)
+                        opts.trackers = ls('torrentTrackers');
+   
                     if (ls.isSet('downloadFolder'))
                         opts.path = ls('downloadFolder');
 

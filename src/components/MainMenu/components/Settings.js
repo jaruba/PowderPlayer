@@ -55,6 +55,7 @@ default React.createClass({
             forceDownload: ls.isSet('forceDownload') ? ls('forceDownload') : false,
             downloadType: ls('downloadType') == 0 ? 'Player' : 'Dashboard',
             playerType: ls('playerType'),
+            torrentTrackers: ls.isSet('torrentTrackers') ? ls('torrentTrackers') : [],
 
             aspectRatios: ['Default','1:1','4:3','16:9','16:10','2.21:1','2.35:1','2.39:1','5:4'],
             crops: ['Default','16:10','16:9','1.85:1','2.21:1','2.35:1','2.39:1','5:3','4:3','5:4','1:1'],
@@ -163,6 +164,8 @@ default React.createClass({
             });
         }
     },
+
+    blank() {},
 
     _handleToggler(event, toggled, type) {
         ls(type, toggled);
@@ -411,6 +414,23 @@ default React.createClass({
                 this.refs['downloadInput'].value = folder[0];
             }
         });
+    },
+
+    _handleClearTorrentTrackers(event) {
+        ls.remove('torrentTrackers');
+        this.refs['torrentTrackersInput'].value = '';
+    },
+
+    _handleTorrentTrackersBlur(event) {
+        this.refs['torrentTrackersInput'].value = this.refs['torrentTrackersInput'].value.split(';').map(function(el) { return el.trim() }).join(';')
+        ls('torrentTrackers', this.refs['torrentTrackersInput'].value.split(';'))
+    },
+
+    _handleTorrentTrackersKeys(event) {
+        if ([13, 27].indexOf(event.keyCode) > -1) {
+            event.preventDefault();
+            this.refs['torrentTrackersInput'].$.input.blur();
+        }
     },
 
     _handlePulsingToggle(event, toggled) {
@@ -859,6 +879,12 @@ default React.createClass({
                 default: !this.state.speedLimit ? 'auto' : (this.state.speedLimit + ' kb'),
                 width: '80px'
             }, {
+                type: 'writable',
+                title: 'Default Trackers (separate by ";")',
+                tag: 'torrentTrackers',
+                default: this.state.torrentTrackers.join(';'),
+                width: '200px'
+            }, {
                 type: 'header',
                 label: 'File Handling'
             }, {
@@ -999,12 +1025,12 @@ default React.createClass({
                     </div>
                 );
 
-            } else if (el.type == 'selectFolder') {
+            } else if (['selectFolder','writable'].indexOf(el.type) > -1) {
 
                 if (!el.func) el.func = el.tag.charAt(0).toUpperCase() + el.tag.slice(1);
 
                 indents.push(
-                    <div key={klm} style={{height: '23px', overflow: 'hidden', width: '100%'}}>
+                    <div key={klm}>
                         <div className="sub-delay-setting">
                             <span style={{color: '#212121'}}>
                                 {el.title + ':'}
@@ -1016,10 +1042,12 @@ default React.createClass({
                                 noink={true}
                                 style={{color: '#4283A9', width: '22px', height: '22px', right: '2px', padding: '2px', float: 'right', marginTop: '-1px'}} />
                             <paper-input
-                                onClick={this['_handle' + el.func + 'Focus']}
+                                onClick={el.type == 'selectFolder' ? this['_handle' + el.func + 'Focus'] : this.blank}
+                                onBlur={el.type == 'writable' ? this['_handle' + el.func + 'Blur'] : this.blank}
+                                onKeyDown={el.type == 'writable' ? this['_handle' + el.func + 'Keys'] : this.blank}
                                 ref={el.tag + 'Input'}
                                 value={el.default}
-                                style={{float: 'right', width: el.width, top: '-5px', marginRight: '4px', textAlign: 'right', marginTop: '-2px', marginBottom: '4px'}}
+                                style={{float: 'right', width: el.width, top: '-5px', marginRight: '4px', textAlign: 'right', marginTop: '-4px', marginBottom: '4px'}}
                                 no-label-float
                                 className="dark-input dl-input" />
                         </div>
