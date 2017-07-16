@@ -137,7 +137,7 @@ default React.createClass({
 
     onDrop(files, e, fakeTorrent, cb) {
 
-        if (files && files.length) fakeTorrent = false
+        if (fakeTorrent && typeof fakeTorrent === 'object') fakeTorrent = false
 
         if (cb) {
             var fallbackCB = _.once(cb);
@@ -308,6 +308,7 @@ default React.createClass({
                     fallbackCB && fallbackCB()
                 }
             } else {
+
                 var droppedLink = e.dataTransfer.getData("text/plain");
                 if (droppedLink) {
     
