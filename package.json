@@ -42,7 +42,7 @@
     "react": "^0.14.5",
     "react-addons-pure-render-mixin": "^0.14.5",
     "react-dom": "^0.14.5",
-    "react-dropzone": "^3.2.3",
+    "react-dropzone": "3.2.3",
     "react-modal": "^0.6.1",
     "react-mousetrap": "0.0.6",
     "react-notify": "^2.0.1",
