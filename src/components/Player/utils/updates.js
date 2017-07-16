@@ -20,14 +20,14 @@ module.exports = {
                     if (vers[0] == ls('version')) {
                         ls('updateCheck', Math.floor(Date.now() / 1000));
                     } else {
-                        var iconPath = path.join(__dirname, '../../../../images/icons/powder-icon-padding.png');
-                        if (!fs.accessSync(iconPath, fs.F_OK))
-                            iconPath = path.join(__dirname, '../../../../../images/icons/powder-icon-padding.png');
+//                        var iconPath = path.join(__dirname, '../../../../images/icons/powder-icon-padding.png');
+//                        if (!fs.accessSync(iconPath, fs.F_OK))
+//                            iconPath = path.join(__dirname, '../../../../../images/icons/powder-icon-padding.png');
 
                         notifier.notify({
                             title: 'Powder v' + vers[0] + ' Available',
                             message: 'Includes awesome new features!',
-                            icon: iconPath,
+//                            icon: iconPath,
                             sound: true,
                             wait: true
                         }, (err, response) => {
