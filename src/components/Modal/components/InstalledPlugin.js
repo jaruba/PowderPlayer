@@ -219,7 +219,7 @@ default React.createClass({
                 <div style={{margin: '0'}}>
                     <span style={{textDecoration: 'underline'}}>Title</span><br />
                     {this.state.selected.name}
-                    <span onClick={this.pluginShortcut} className="tag" style={{marginTop: '-6px', marginLeft: '7px'}}>{ this.state.selected.search && this.state.selected.search.shortcut ? this.state.selected.search.shortcut : this.state.selected.shortcut ? this.state.selected.shortcut : '' }</span>
+                    <span onClick={this.pluginShortcut} className="tag" style={{marginTop: '-6px', marginLeft: '7px', display: (this.state.selected.search && this.state.selected.search.shortcut) || this.state.selected.shortcut ? 'inline-block' : 'none'}}>{ this.state.selected.search && this.state.selected.search.shortcut ? this.state.selected.search.shortcut : this.state.selected.shortcut ? this.state.selected.shortcut : '' }</span>
                     <br /><br />
                 </div>
                 {descTemplate}
