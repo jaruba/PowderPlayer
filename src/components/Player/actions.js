@@ -6,6 +6,7 @@ import {
 from 'electron';
 import HistoryStore from '../../stores/historyStore';
 import torrentUtil from '../../utils/stream/torrentUtil';
+import engineStore from '../../stores/engineStore';
 import player from './utils/player';
 import ls from 'local-storage';
 import wcjsRenderer from './utils/wcjs-renderer';
@@ -249,6 +250,7 @@ class PlayerActions {
             clearInterval(forceDownloadInterval)
             forceDownloadInterval = false
         }
+        var engineState = engineStore.getState();
         var isTorrent = !!(engineState.infoHash && engineState.torrents[engineState.infoHash]);
         if (!isTorrent) return
         forceDownloadInterval = setInterval(() => {
@@ -267,6 +269,7 @@ class PlayerActions {
     }
     
     stopForceDownload() {
+        var engineState = engineStore.getState();
         var isTorrent = !!(engineState.infoHash && engineState.torrents[engineState.infoHash]);
         if (!isTorrent) return
         maxDownloadSpeed = 0
