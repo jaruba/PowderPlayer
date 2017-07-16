@@ -75,7 +75,7 @@ module.exports = (inputvalue) => {
                                                     console.log('ytdl ending error');
                                                     reject(new Error('Error: Invalid URL'));
                                                 });
-                    
+
                                                 video.on('info', function(info) {
                                                     if (info.url) {
                                                         ModalActions.close();
@@ -103,7 +103,7 @@ module.exports = (inputvalue) => {
                                     // we have a plugin for this link (matched by domain with regex)
                                     // a perfect match is when the plugin is also matched by media
                                     perfectMatch = plugins.perfectMatch(parsed.url, plugin);
-//                                    if (perfectMatch) console.log('a perfect match');
+                                    if (perfectMatch) console.log('a perfect match');
                                 }
 
     

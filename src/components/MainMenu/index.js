@@ -137,6 +137,8 @@ default React.createClass({
 
     onDrop(files, e, fakeTorrent, cb) {
 
+        if (files && files.length) fakeTorrent = false
+
         if (cb) {
             var fallbackCB = _.once(cb);
             _.delay(fallbackCB, 2000);
