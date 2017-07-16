@@ -32,9 +32,9 @@ default React.createClass({
                 with-backdrop >
                 
                 <div style={{margin: '0', padding: '0', marginBottom: '5px', fontSize: '16px'}}>
-                    <span style={{fontSize: '21px'}}>Powder Player v1.00</span>
+                    <span style={{fontSize: '21px'}}>Powder Player v1.10</span>
                     <br />
-                    Codename: Nightingale
+                    Codename: Blue Jay
                     <br /><br />
                     <span style={{textDecoration: 'underline'}}>Author</span>
                     <br />

@@ -9,7 +9,7 @@ import {
 
 module.exports = {
     checkUpdates: () => {
-        if (!ls.isSet('version')) ls('version', '1.00');
+        ls('version', '1.10');
         if (!ls.isSet('updateCheck')) ls('updateCheck', 0);
         
         // announce update every 3 days
