@@ -79,6 +79,7 @@
     "pump": "^1.0.1",
     "range-parser": "^1.2.0",
     "lockfile": "^1.0.1",
+    "jschardet": "1.5.0",
     "torrent-stream": "https://github.com/jaruba/torrent-stream/tarball/master",
     "rc-qrcode": "https://github.com/jaruba/rc-qrcode/tarball/master",
     "airplay-js": "https://github.com/Ivshti/node-airplay-js",
