@@ -38,7 +38,7 @@
     "node-notifier": "^4.6.0",
     "opensubtitles-api": "^2.3.0",
     "parse-torrent": "^5.7.0",
-    "torrent-worker": "*",
+    "torrent-worker": "https://github.com/jaruba/torrent-worker/tarball/master",
     "react": "^0.14.5",
     "react-addons-pure-render-mixin": "^0.14.5",
     "react-dom": "^0.14.5",
