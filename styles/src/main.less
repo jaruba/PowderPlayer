@@ -309,3 +309,43 @@ body {
   95% {left: 120%;}
   to {left: 100%;}
 }
+
+div.boxclose {
+  display: block;
+  box-sizing: border-box;
+  width: 20px;
+  height: 20px;
+  border-width: 3px;
+  border-radius: 100%;
+  background: -webkit-linear-gradient(-45deg, transparent 0, transparent 46%, hsl(0, 0%, 60%) 46%, hsl(0, 0%, 60%) 56%, transparent 56%, transparent 100%),-webkit-linear-gradient(45deg, transparent 0, transparent 46%, hsl(0, 0%, 60%) 46%, hsl(0, 0%, 60%) 56%, transparent 56%, transparent 100%);
+  transition: all .3s ease;
+  float: right;
+  cursor: pointer;
+  margin-right: -9px;
+}
+
+div.boxclose:hover {
+  background: -webkit-linear-gradient(-45deg, transparent 0, transparent 46%, #00adeb 46%, #00adeb 56%, transparent 56%, transparent 100%),-webkit-linear-gradient(45deg, transparent 0, transparent 46%, #00adeb 46%, #00adeb 56%, transparent 56%, transparent 100%);
+}
+
+.historyFile:hover {
+  background: rgba(0,0,0,0.05)
+}
+
+.historyDelete {
+  color: #767A7B;
+  width: 38px;
+  height: 47px;
+  float: right;
+  padding: 5px;
+  cursor: pointer;
+  display: none;
+}
+
+.historyFile:hover .historyDelete {
+  display: block;
+}
+
+.historyDelete:hover {
+  color: #00adeb;
+}
