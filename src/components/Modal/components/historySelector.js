@@ -19,6 +19,14 @@ default React.createClass({
         };
     },
 
+    componentDidMount() {
+        this.refs.dialog.open();
+    },
+
+    componentDidUpdate() {
+        this.refs.dialog.open();
+    },
+
     componentWillMount() {
         ModalStore.listen(this.update);
     },
