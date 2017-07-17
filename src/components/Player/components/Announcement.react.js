@@ -18,10 +18,29 @@ default React.createClass({
     componentWillMount() {
         VisibilityStore.listen(this.update);
         player.events.on('announce', this.announcement);
+        player.events.on('fixAnnouncer', this.fixAnnouncement);
     },
     componentWillUnmount() {
         VisibilityStore.unlisten(this.update);
         player.events.removeListener('announce', this.announcement);
+        player.events.removeListener('fixAnnouncer', this.fixAnnouncement);
+    },
+    fixAnnouncement() {
+        if ([3,4,6].indexOf(player.wcjs.state) == -1) return
+        if (this.state.text == 'Opening Media' || this.state.text.startsWith('Buffering') || this.state.text.startsWith('Prebuffering')) {
+
+            var announcer = { text: '' };
+
+            if (player.announceEffect) {
+                announcer.effect = false;
+                player.set({ announceEffect: false });
+            }
+
+            clearTimeout(player.announceTimer);
+
+            this.setState(announcer)
+
+        }
     },
     announcement(obj) {
         if (typeof obj.effect !== 'undefined')

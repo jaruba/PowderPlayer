@@ -345,7 +345,9 @@ window.stopProcessHistory = function() {
 }
 
 events.playing = () => {
-    
+
+	setTimeout(function() { player.events.emit('fixAnnouncer', {}) }, 700)
+
     if (processingHist) stopProcessHistory()
     
     if (immuneToEvents) return
