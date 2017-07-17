@@ -49,7 +49,7 @@ hotkeys.attach = (props) => {
     });
 
     props.bindShortcut('ctrl+right', (event) => {
-        if (["ended","stopping","error"].indexOf(player.wcjs.state) == -1) {
+        if ([5,6,7].indexOf(player.wcjs.state) == -1) {
             if (player.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
             else var wjsDelay = 700;
             ProgressActions.delayTime({
@@ -60,7 +60,7 @@ hotkeys.attach = (props) => {
     });
 
     props.bindShortcut('ctrl+left', (event) => {
-        if (["ended","stopping","error"].indexOf(player.wcjs.state) == -1) {
+        if ([5,6,7].indexOf(player.wcjs.state) == -1) {
             if (player.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
             else var wjsDelay = 700;
             ProgressActions.delayTime({
@@ -71,7 +71,7 @@ hotkeys.attach = (props) => {
     });
 
     props.bindShortcut('alt+right', (event) => {
-        if (["ended","stopping","error"].indexOf(player.wcjs.state) == -1) {
+        if ([5,6,7].indexOf(player.wcjs.state) == -1) {
             if (player.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
             else var wjsDelay = 700;
             ProgressActions.delayTime({
@@ -82,7 +82,7 @@ hotkeys.attach = (props) => {
     });
 
     props.bindShortcut('alt+left', (event) => {
-        if (["ended","stopping","error"].indexOf(player.wcjs.state) == -1) {
+        if ([5,6,7].indexOf(player.wcjs.state) == -1) {
             if (player.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
             else var wjsDelay = 700;
             ProgressActions.delayTime({
@@ -93,7 +93,7 @@ hotkeys.attach = (props) => {
     });
     
     props.bindShortcut('shift+right', (event) => {
-        if (["ended","stopping","error"].indexOf(player.wcjs.state) == -1) {
+        if ([5,6,7].indexOf(player.wcjs.state) == -1) {
             if (player.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
             else var wjsDelay = 700;
             ProgressActions.delayTime({
@@ -104,7 +104,7 @@ hotkeys.attach = (props) => {
     });
 
     props.bindShortcut('shift+left', (event) => {
-        if (["ended","stopping","error"].indexOf(player.wcjs.state) == -1) {
+        if ([5,6,7].indexOf(player.wcjs.state) == -1) {
             if (player.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
             else var wjsDelay = 700;
             ProgressActions.delayTime({
@@ -115,7 +115,7 @@ hotkeys.attach = (props) => {
     });
     
     props.bindShortcut('right', (event) => {
-        if (["ended","stopping","error"].indexOf(player.wcjs.state) == -1) {
+        if ([5,6,7].indexOf(player.wcjs.state) == -1) {
             if (player.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
             else var wjsDelay = 700;
             ProgressActions.delayTime({
@@ -126,7 +126,7 @@ hotkeys.attach = (props) => {
     });
 
     props.bindShortcut('left', (event) => {
-        if (["ended","stopping","error"].indexOf(player.wcjs.state) == -1) {
+        if ([5,6,7].indexOf(player.wcjs.state) == -1) {
             if (player.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
             else var wjsDelay = 700;
             ProgressActions.delayTime({
@@ -138,7 +138,7 @@ hotkeys.attach = (props) => {
 
     props.bindShortcut('e', (event) => {
         var wjsPlayer = PlayerStore.getState();
-        if (["ended","stopping","error"].indexOf(player.wcjs.state) == -1) {
+        if ([5,6,7].indexOf(player.wcjs.state) == -1) {
             if (player.wcjs.playing)
                 player.wcjs.togglePause();
             ProgressActions.delayTime({
