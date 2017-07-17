@@ -317,7 +317,7 @@ module.exports = function(grunt) {
         grunt.registerTask('release', ['clean:build', 'clean:dist', 'babel', 'less', 'copy:dev', 'npm-command:release', 'electron:windows', 'copy:videoWin', 'compress:windows']);
     }
     if (process.platform === 'darwin') {
-        grunt.registerTask('release', ['clean:build', 'clean:dist', 'babel', 'less', 'copy:dev', 'npm-command:release', 'electron:osx', 'copy:releaseOSX', 'shell:zip']);
+        grunt.registerTask('release', ['clean:build', 'clean:dist', 'babel', 'less', 'copy:dev', 'npm-command:release', 'electron:osx', 'copy:releaseOSX']);
     }
     if (process.platform === 'linux') {
         grunt.registerTask('release', ['clean:build', 'clean:dist', 'babel', 'less', 'copy:dev', 'npm-command:release', 'electron:linux', 'compress:linux']);
