@@ -346,7 +346,7 @@ window.stopProcessHistory = function() {
 
 events.playing = () => {
 
-	setTimeout(function() { player.events.emit('fixAnnouncer', {}) }, 700)
+    setTimeout(function() { player.events.emit('fixAnnouncer', {}) }, 700)
 
     if (processingHist) stopProcessHistory()
     
@@ -374,6 +374,11 @@ events.playing = () => {
         _.delay(() => {
             PlayerActions.updateImage(player.itemDesc().setting.image);
         }, 1500);
+
+        // still saw this god forsaken bug on osx, adding one more
+        _.delay(() => {
+            PlayerActions.updateImage(player.itemDesc().setting.image);
+        }, 3000);
 
         // catch first play event
         prebuffering.end();
