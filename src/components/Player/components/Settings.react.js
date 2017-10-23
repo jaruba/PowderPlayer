@@ -39,6 +39,7 @@ default React.createClass({
             autoSub: ls.isSet('autoSub') ? ls('autoSub') : true,
             menuFlags: ls.isSet('menuFlags') ? ls('menuFlags') : true,
             resizeOnPlaylist: ls.isSet('resizeOnPlaylist') ? ls('resizeOnPlaylist') : true,
+            startFullscreen: ls.isSet('startFullscreen') ? ls.isSet('startFullscreen') : false,
             subDelay: player.subDelay,
             speed: player.speed,
             audioChannel: player.audioChannel,
@@ -179,6 +180,7 @@ default React.createClass({
                 clickPause: ls.isSet('clickPause') ? ls('clickPause') : true,
                 playerRippleEffects: ls.isSet('playerRippleEffects') ? ls('playerRippleEffects') : true,
                 resizeOnPlaylist: ls.isSet('resizeOnPlaylist') ? ls('resizeOnPlaylist') : true,
+                startFullscreen: ls.isSet('startFullscreen') ? ls.isSet('startFullscreen') : false,
                 trakt: traktUtil.loggedIn ? true : false,
                 audioDelay: player.audioDelay,
                 subDelay: player.subDelay,
@@ -1008,6 +1010,10 @@ default React.createClass({
                 type: 'toggle',
                 title: 'Resize on Playlist',
                 tag: 'resizeOnPlaylist'
+            }, {
+                type: 'toggle',
+                title: 'Start in Fullscreen',
+                tag: 'startFullscreen'
             }, {
                 type: 'select',
                 title: 'Zoom Level',

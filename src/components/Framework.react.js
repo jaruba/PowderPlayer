@@ -85,6 +85,9 @@ const Framework = React.createClass({
 
         request('https://www.google.com'); // Connect once to avoid cloggage
 
+        if (ls('startFullscreen'))
+             window.clFullscreen = true;
+
         // login trakt
         if (ls('traktTokens'))
             traktUtil.autoLogin();

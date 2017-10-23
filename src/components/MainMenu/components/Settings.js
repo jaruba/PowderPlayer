@@ -39,6 +39,7 @@ default React.createClass({
             subColor: ls.isSet('subColor') ? ls('subColor') : 0,
             encoding: ls.isSet('selectedEncoding') ? ls('selectedEncoding') : 0,
             resizeOnPlaylist: ls.isSet('resizeOnPlaylist') ? ls('resizeOnPlaylist') : true,
+            startFullscreen: ls.isSet('startFullscreen') ? ls.isSet('startFullscreen') : false,
             cacheFolder: ls('cacheFolder') ? ls('cacheFolder') : 'Temp',
             dlnaFinder: ls('dlnaFinder'),
             dlnaFinders: ['ssdp-js', 'node-ssdp', 'renderer-finder'],
@@ -161,6 +162,7 @@ default React.createClass({
                 removeLogic: ls('removeLogic') == 0 ? 'Always Ask' : ls('removeLogic') == 1 ? 'Always Remove' : 'Always Keep',
                 downloadType: ls('downloadType') == 0 ? 'Player' : 'Dashboard',
                 resizeOnPlaylist: ls.isSet('resizeOnPlaylist') ? ls('resizeOnPlaylist') : true,
+                startFullscreen: ls.isSet('startFullscreen') ? ls.isSet('startFullscreen') : false,
                 playerType: ls('playerType'),
                 playerCmdArgs: ls('playerCmdArgs')
             });
@@ -831,6 +833,10 @@ default React.createClass({
                 type: 'toggle',
                 title: 'Resize on Playlist',
                 tag: 'resizeOnPlaylist'
+            }, {
+                type: 'toggle',
+                title: 'Start in Fullscreen',
+                tag: 'startFullscreen'
             }, {
                 type: 'header',
                 label: 'Performance'
