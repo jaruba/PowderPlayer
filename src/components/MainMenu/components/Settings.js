@@ -55,6 +55,7 @@ default React.createClass({
             forceDownload: ls.isSet('forceDownload') ? ls('forceDownload') : false,
             downloadType: ls('downloadType') == 0 ? 'Player' : 'Dashboard',
             playerType: ls('playerType'),
+            playerCmdArgs: ls('playerCmdArgs'),
             torrentTrackers: ls.isSet('torrentTrackers') ? ls('torrentTrackers') : [],
 
             aspectRatios: ['Default','1:1','4:3','16:9','16:10','2.21:1','2.35:1','2.39:1','5:4'],
@@ -160,7 +161,8 @@ default React.createClass({
                 removeLogic: ls('removeLogic') == 0 ? 'Always Ask' : ls('removeLogic') == 1 ? 'Always Remove' : 'Always Keep',
                 downloadType: ls('downloadType') == 0 ? 'Player' : 'Dashboard',
                 resizeOnPlaylist: ls.isSet('resizeOnPlaylist') ? ls('resizeOnPlaylist') : true,
-                playerType: ls('playerType')
+                playerType: ls('playerType'),
+                playerCmdArgs: ls('playerCmdArgs')
             });
         }
     },
@@ -382,6 +384,11 @@ default React.createClass({
         ls.remove('cacheFolder');
         this.refs['cacheFolderInput'].value = 'Temp';
     },
+    
+    _handleClearPlayerType(event) {
+        ls.remove('playerType');
+        this.refs['playerTypeInput'].value = 'Choose Player';
+    },
 
     _handleCacheFolderFocus(event) {
         event.preventDefault();
@@ -393,6 +400,20 @@ default React.createClass({
             if (folder && folder.length) {
                 ls('cacheFolder', folder[0]);
                 this.refs['cacheFolderInput'].value = folder[0];
+            }
+        });
+    },
+
+    _handlePlayerTypeFocus(event) {
+        event.preventDefault();
+        this.refs['playerTypeInput'].$.input.blur();
+        dialog.showOpenDialog({
+            title: 'Select player',
+            properties: ['openFile']
+        }, (file) => {
+            if (file && file.length) {
+                ls('playerType', file[0]);
+                this.refs['playerTypeInput'].value = file[0];
             }
         });
     },
@@ -430,6 +451,23 @@ default React.createClass({
         if ([13, 27].indexOf(event.keyCode) > -1) {
             event.preventDefault();
             this.refs['torrentTrackersInput'].$.input.blur();
+        }
+    },
+
+    _handleClearPlayerCmdArgs(event) {
+        ls.remove('playerCmdArgs');
+        this.refs['playerCmdArgsInput'].value = '';
+    },
+
+    _handlePlayerCmdArgsBlur(event) {
+        this.refs['playerCmdArgsInput'].value = this.refs['playerCmdArgsInput'].value.trim()
+        ls('playerCmdArgs', this.refs['playerCmdArgsInput'].value.split(';'))
+    },
+
+    _handlePlayerCmdArgsKeys(event) {
+        if ([13, 27].indexOf(event.keyCode) > -1) {
+            event.preventDefault();
+            this.refs['playerCmdArgsInput'].$.input.blur();
         }
     },
 
@@ -913,6 +951,17 @@ default React.createClass({
                 width: '120px',
                 disabled: true
             }, {
+                type: 'selectFile',
+                title: 'Use External Player',
+                default: this.state.playerType || 'Choose Player',
+                tag: 'playerType'
+            }, {
+                type: 'writable',
+                title: 'External Player Options',
+                tag: 'playerCmdArgs',
+                default: this.state.playerCmdArgs,
+                width: '200px'
+            }, {
                 type: 'header',
                 label: 'Casting'
             }, {
@@ -928,10 +977,6 @@ default React.createClass({
                 tag: 'cacheFolder',
                 default: this.state.cacheFolder,
                 width: '280px'
-//            }, {
-//                type: 'toggle',
-//                title: 'Use External Player',
-//                tag: 'playerType'
             }
         ];
         
@@ -1045,6 +1090,34 @@ default React.createClass({
                                 onClick={el.type == 'selectFolder' ? this['_handle' + el.func + 'Focus'] : this.blank}
                                 onBlur={el.type == 'writable' ? this['_handle' + el.func + 'Blur'] : this.blank}
                                 onKeyDown={el.type == 'writable' ? this['_handle' + el.func + 'Keys'] : this.blank}
+                                ref={el.tag + 'Input'}
+                                value={el.default}
+                                style={{float: 'right', width: el.width, top: '-5px', marginRight: '4px', textAlign: 'right', marginTop: '-4px', marginBottom: '4px'}}
+                                no-label-float
+                                className="dark-input dl-input" />
+                        </div>
+                        <div style={{clear: 'both'}} />
+                    </div>
+                );
+
+            } else if (['selectFile'].indexOf(el.type) > -1) {
+
+                if (!el.func) el.func = el.tag.charAt(0).toUpperCase() + el.tag.slice(1);
+
+                indents.push(
+                    <div key={klm}>
+                        <div className="sub-delay-setting">
+                            <span style={{color: '#212121'}}>
+                                {el.title + ':'}
+                            </span>
+                            <paper-icon-button
+                                icon="clear"
+                                onClick={this['_handleClear' + el.func]}
+                                alt="Clear"
+                                noink={true}
+                                style={{color: '#4283A9', width: '22px', height: '22px', right: '2px', padding: '2px', float: 'right', marginTop: '-1px'}} />
+                            <paper-input
+                                onClick={el.type == 'selectFile' ? this['_handle' + el.func + 'Focus'] : this.blank}
                                 ref={el.tag + 'Input'}
                                 value={el.default}
                                 style={{float: 'right', width: el.width, top: '-5px', marginRight: '4px', textAlign: 'right', marginTop: '-4px', marginBottom: '4px'}}

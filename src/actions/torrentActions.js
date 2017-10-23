@@ -13,6 +13,9 @@ import ls from 'local-storage';
 import parser from '../components/Player/utils/parser';
 import player from '../components/Player/utils/player';
 import metaParser from '../components/Player/utils/metaParser';
+import {
+    app
+} from 'remote';
 
 class torrentActions {
 
@@ -50,7 +53,7 @@ class torrentActions {
                 return TorrentUtil.getContents(instance.files, instance.infoHash);
             })
             .then((files) => {
-               if (ls('askFiles') && files.files_total > 1) {
+                if (ls('askFiles') && files.files_total > 1) {
                     ModalActions.fileSelector(files);
                     ipcRenderer.send('app:bitchForAttention');
                 } else {
@@ -84,10 +87,30 @@ class torrentActions {
                         // start with internal player
                         PlayerActions.addPlaylist(newFiles);
                     } else if (ls('downloadType') == 1 || ls('playerType')) {
-                        if (ls('playerType') && ls('playerPath')) {
-                            // start with external player
-                            // player.generatePlaylist(newFiles);
-                        }
+
+                        var playerExec = '"' + ls('playerType') + '"';
+                        var os = require('os');
+                        var newM3U = "#EXTM3U";
+                        var fs = require('fs');
+                        newFiles.forEach((el) => {
+                            newM3U += os.EOL+"#EXTINF:0,"+el.title+os.EOL+el.uri;
+                        })
+                        var playlistPath = path.join(app.getPath('userData'), 'vlc_playlist.m3u');
+                        fs.exists(playlistPath, function(exists) {
+                            var playerCmdArgs = '';
+                            if (ls('playerCmdArgs'))
+                                playerCmdArgs = ' '+ls('playerCmdArgs');
+        
+                            if (exists) fs.unlink(playlistPath, function() {
+                                fs.writeFile(playlistPath, newM3U, function() {
+                                    require('child_process').exec(playerExec+' "'+playlistPath+'"'+playerCmdArgs);
+                                });
+                            });
+                            else fs.writeFile(playlistPath, newM3U, function() {
+                                require('child_process').exec(playerExec+' "'+playlistPath+'"'+playerCmdArgs);
+                            });
+                        });
+
                         // start torrent dashboard
                         var newData = { noStart: true, files: newFiles };
     

@@ -62,6 +62,7 @@ default React.createClass({
             forceDownload: ls.isSet('forceDownload') ? ls('forceDownload') : false,
             downloadType: ls('downloadType') == 0 ? 'Player' : 'Dashboard',
             playerType: ls('playerType'),
+            playerCmdArgs: ls('playerCmdArgs'),
             torrentTrackers: ls.isSet('torrentTrackers') ? ls('torrentTrackers') : [],
 
             dlnaFinder: ls('dlnaFinder'),
@@ -196,6 +197,7 @@ default React.createClass({
                 removeLogic: ls('removeLogic') == 0 ? 'Always Ask' : ls('removeLogic') == 1 ? 'Always Remove' : 'Always Keep',
                 downloadType: ls('downloadType') == 0 ? 'Player' : 'Dashboard',
                 playerType: ls('playerType'),
+                playerCmdArgs: ls('playerCmdArgs'),
                 speedPulsing: ls('speedPulsing') ? ls('speedPulsing') : 'disabled',
                 speedLimit: ls('speedLimit') ? ls('speedLimit') : 0
             });
@@ -599,6 +601,11 @@ default React.createClass({
         ls.remove('cacheFolder');
         this.refs['cacheFolderInput'].value = 'Temp';
     },
+    
+    _handleClearPlayerType(event) {
+        ls.remove('playerType');
+        this.refs['playerTypeInput'].value = 'Choose Player';
+    },
 
     _handleCacheFolderFocus(event) {
         event.preventDefault();
@@ -610,6 +617,20 @@ default React.createClass({
             if (folder && folder.length) {
                 ls('cacheFolder', folder[0]);
                 this.refs['cacheFolderInput'].value = folder[0];
+            }
+        });
+    },
+
+    _handlePlayerTypeFocus(event) {
+        event.preventDefault();
+        this.refs['playerTypeInput'].$.input.blur();
+        dialog.showOpenDialog({
+            title: 'Select player',
+            properties: ['openFile']
+        }, (file) => {
+            if (file && file.length) {
+                ls('playerType', file[0]);
+                this.refs['playerTypeInput'].value = file[0];
             }
         });
     },
@@ -649,7 +670,24 @@ default React.createClass({
             this.refs['torrentTrackersInput'].$.input.blur();
         }
     },
-    
+
+    _handleClearPlayerCmdArgs(event) {
+        ls.remove('playerCmdArgs');
+        this.refs['playerCmdArgsInput'].value = '';
+    },
+
+    _handlePlayerCmdArgsBlur(event) {
+        this.refs['playerCmdArgsInput'].value = this.refs['playerCmdArgsInput'].value.trim()
+        ls('playerCmdArgs', this.refs['playerCmdArgsInput'].value.split(';'))
+    },
+
+    _handlePlayerCmdArgsKeys(event) {
+        if ([13, 27].indexOf(event.keyCode) > -1) {
+            event.preventDefault();
+            this.refs['playerCmdArgsInput'].$.input.blur();
+        }
+    },
+
     _handlePulsingToggle(event, toggled) {
         if (toggled) {
             PlayerActions.pulse();
@@ -1213,10 +1251,19 @@ default React.createClass({
                 default: this.state.downloadType,
                 width: '120px',
                 disabled: true
-//            }, {
-//                type: 'toggle',
-//                title: 'Use External Player',
-//                tag: 'playerType'
+            }, {
+                type: 'selectFile',
+                title: 'Use External Player',
+                default: this.state.playerType || 'Choose Player',
+                tag: 'playerType',
+                topCorrection: '-6px'
+            }, {
+                type: 'writable',
+                title: 'External Player Options',
+                tag: 'playerCmdArgs',
+                default: this.state.playerCmdArgs,
+                width: '200px',
+                topCorrection: '-4px'
             }]
         };
 
@@ -1322,7 +1369,7 @@ default React.createClass({
                     if (!el.func) el.func = el.tag.charAt(0).toUpperCase() + el.tag.slice(1);
 
                     indents[ij].push(
-                        <div key={klm}>
+                        <div key={klm} style={{ position: 'relative', top: el.topCorrection || '0px' }}>
                             <div className="sub-delay-setting">
                                 <span style={{color: '#fff'}}>
                                     {el.title + ':'}
@@ -1347,7 +1394,35 @@ default React.createClass({
                         </div>
                     );
 
-                } else if (el.type == 'button') {
+                } else if (['selectFile'].indexOf(el.type) > -1) {
+
+                if (!el.func) el.func = el.tag.charAt(0).toUpperCase() + el.tag.slice(1);
+
+                indents[ij].push(
+                    <div key={klm} style={{ position: 'relative', top: el.topCorrection || '0px' }}>
+                        <div className="sub-delay-setting">
+                            <span style={{color: '#fff'}}>
+                                {el.title + ':'}
+                            </span>
+                            <paper-icon-button
+                                icon="clear"
+                                onClick={this['_handleClear' + el.func]}
+                                alt="Clear"
+                                noink={true}
+                                style={{color: '#0097a7', width: '22px', height: '22px', right: '2px', padding: '2px', float: 'right', marginTop: '-1px'}} />
+                            <paper-input
+                                onClick={el.type == 'selectFile' ? this['_handle' + el.func + 'Focus'] : this.blank}
+                                ref={el.tag + 'Input'}
+                                value={el.default}
+                                style={{float: 'right', width: el.width, top: '-5px', marginRight: '4px', textAlign: 'right', marginTop: '-4px', marginBottom: '4px'}}
+                                no-label-float
+                                className="dark-input dl-input" />
+                        </div>
+                        <div style={{clear: 'both'}} />
+                    </div>
+                );
+
+            } else if (el.type == 'button') {
                     
                     indents[ij].push(
                         <paper-button
