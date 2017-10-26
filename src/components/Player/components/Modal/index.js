@@ -8,6 +8,8 @@ import TraktCode from './components/TraktCode';
 import TraktInfo from './components/TraktInfo';
 import TraktSearch from './components/TraktSearch';
 
+import StreamLan from './components/StreamLAN';
+
 import CastingScanner from './components/Casting-dummy';
 import CastingSettings from './components/Casting-dummy';
 import CastingControls from './components/Casting-dummy';
@@ -76,6 +78,9 @@ default React.createClass({
                 break;
             case 'TraktSearch':
                 return <TraktSearch />;
+                break;
+            case 'StreamLAN':
+                return <StreamLan />;
                 break;
             case 'CastingScanner':
                 return <CastingScanner />;

@@ -103,6 +103,12 @@ var actions = {
         ls('speedPulsing', toggled ? 'enabled' : 'disabled');
         player.fields.speedPulsing.checked = toggled
     },
+	streamToLan() {
+		ModalActions.open({
+			type: 'StreamLAN',
+            currentItem: player.wcjs.playlist.currentItem
+		});
+	},
     audioTrack: function(i) {
         player.wcjs.audio.track = i;
         player.set({
@@ -348,7 +354,11 @@ var contextMenu = {
                         type: 'checkbox',
                         checked: !!(ls('speedPulsing') == 'enabled'),
                         click: 'actions.speedPulsing()'
-                    }
+                    },
+					{
+						label: 'Stream to LAN',
+						click: 'actions.streamToLan()'
+					}
                 ]
             },
             {

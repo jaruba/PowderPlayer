@@ -17,6 +17,7 @@ cache
 .idea
 
 # Casting
+src/components/Player/utils/ums/*
 src/components/Player/components/Modal/components/Casting*
 
 # v0.98
