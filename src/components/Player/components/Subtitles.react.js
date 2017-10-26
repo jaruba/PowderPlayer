@@ -10,6 +10,9 @@ import VisibilityStore from './Visibility/store';
 import VisibilityActions from './Visibility/actions';
 import player from '../utils/player';
 import path from 'path';
+import {
+    dialog
+} from 'remote';
 
 const lang2country = {
     en: 'us',
@@ -63,6 +66,28 @@ default React.createClass({
     },
     
     select(idx, item, itemId) {
+		if (itemId == 2) {
+			dialog.showOpenDialog({
+				title: 'Select player',
+				properties: ['openFile'],
+				filters: [ {name: 'Subtitles', extensions: ['srt', 'vtt', 'sub']} ]
+			}, (file) => {
+				if (file && file.length) {
+					var subs = player.itemDesc().setting.subtitles || {};
+					subs[path.basename(file[0])] = file[0];
+					PlayerActions.setDesc({
+						subtitles: subs
+					});
+					player.wcjs.subtitles.track = 0;
+					SubtitleActions.loadSub(file[0]);
+					SubtitleActions.settingChange({
+						selectedSub: _.size(subs) + (player.wcjs.subtitles.count || 1) +1,
+					});
+					player.notifier.info('Subtitle Loaded', '', 3000);
+				}
+			});
+			return
+		}
         ls('lastLanguage', idx);
         player.wcjs.subtitles.track = 0;
         if (item) {
@@ -119,6 +144,15 @@ default React.createClass({
                     </paper-item-body>
                 </paper-item>
             );
+			itemId++
+			var browseForSub = (
+                <paper-item key={itemId} style={{backgroundColor: '#303030', color: 'white', padding: '4px 12px'}} onClick={this.select.bind(this, 'browse', '', 2)} className={'sub-menu-item' + (this.state.playlistSelected == itemId ? ' iron-selected' : '')}>
+                      <span style={{width: '38px', height: '38px', borderRadius: '25px', backgroundColor: '#242424', margin: '4px', marginLeft: '0', marginRight: '15px'}} />
+                    <paper-item-body>
+                    Browse
+                    </paper-item-body>
+                </paper-item>
+            );
         } else {
             var none = (
                 <paper-item key={itemId} style={{backgroundColor: '#303030', color: 'white', padding: '4px 22px'}} onClick={this.select.bind(this, 'none', '', 1)} className={'sub-menu-item' + (this.state.playlistSelected == itemId ? ' iron-selected' : '')}>
@@ -127,11 +161,20 @@ default React.createClass({
                 </paper-item-body>
                 </paper-item>
             );
+			itemId++
+            var browseForSub = (
+                <paper-item key={itemId} style={{backgroundColor: '#303030', color: 'white', padding: '4px 22px'}} onClick={this.select.bind(this, 'browse', '', 2)} className={'sub-menu-item' + (this.state.playlistSelected == itemId ? ' iron-selected' : '')}>
+                <paper-item-body>
+                    Browse
+                </paper-item-body>
+                </paper-item>
+            );
         }
         return (
             <div className={this.state.open ? 'subtitle-list show' : 'subtitle-list'}>
             <div style={{backgroundColor: '#303030', padding: '0'}}>
                 {none}
+				{browseForSub}
                 {
                         _.map(this.getInternalSubs(), (item, idx) => {
                             itemId++;
