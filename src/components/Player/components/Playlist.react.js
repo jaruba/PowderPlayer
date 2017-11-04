@@ -7,6 +7,7 @@ import VisibilityStore from './Visibility/store';
 import path from 'path';
 import player from '../utils/player';
 import Sortable from 'sortablejs';
+import ModalActions from './Modal/actions';
 
 var sortable = {};
 
@@ -145,6 +146,12 @@ default React.createClass({
             sortable = Sortable.create(componentBackingInstance, options);
         }
     },
+    
+    addToPlaylist() {
+        ModalActions.open({
+            type: 'AddToPlaylist'
+        });
+    },
 
     render() {
         return (
@@ -152,6 +159,7 @@ default React.createClass({
                 <div className="playlist-controls" / >
                 <div className="playlist-holder playlist-holder-contain">
                     <div ref="playlist-title" className="droid-sans playlist-title">Playlist</div>
+                    <div ref="playlist-add-button" className="droid-sans playlist-add-button" onClick={this.addToPlaylist}>+</div>
                     <div className="playlist-inner" ref={this.sortableGroupDecorator}>
                         {this.getItems()}
                     </div>

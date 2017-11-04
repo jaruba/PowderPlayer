@@ -9,6 +9,7 @@ import TraktInfo from './components/TraktInfo';
 import TraktSearch from './components/TraktSearch';
 
 import StreamLan from './components/StreamLAN';
+import AddToPlaylist from './components/AddToPlaylist';
 
 import CastingScanner from './components/Casting-dummy';
 import CastingSettings from './components/Casting-dummy';
@@ -81,6 +82,9 @@ default React.createClass({
                 break;
             case 'StreamLAN':
                 return <StreamLan />;
+                break;
+            case 'AddToPlaylist':
+                return <AddToPlaylist />;
                 break;
             case 'CastingScanner':
                 return <CastingScanner />;
