@@ -34,14 +34,14 @@ hotkeys.attach = (props) => {
         player.wcjs.togglePause();
     });
 
-    props.bindShortcut('ctrl+up', (event) => {
+    props.bindShortcut('up', (event) => {
         var volume = Math.round((player.wcjs.volume + 5) / 5) * 5;
         if (volume > 200) volume = 200;
         VolumeActions.setVolume(volume);
         PlayerActions.announcement('Volume '+volume+'%');
     });
 
-    props.bindShortcut('ctrl+down', (event) => {
+    props.bindShortcut('down', (event) => {
         var volume = Math.round((player.wcjs.volume - 5) / 5) * 5;
         if (volume < 0) volume = 0;
         VolumeActions.setVolume(volume);
