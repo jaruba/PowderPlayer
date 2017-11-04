@@ -73,6 +73,7 @@ default React.createClass({
             zooms: [['Default',1],['2x Double',2],['0.25x Quarter',0.25],['0.5x Half',0.5]],
             subColors: ['White', 'Yellow', 'Green', 'Cyan', 'Blue'],
             audioChannels: ['Error', 'Stereo', 'Reverse Stereo', 'Left', 'Right', 'Dolby'],
+            peerID: ls('peerID'),
             subEncodings: [
                 ['Auto Detect', 'auto'],
                 ['Universal (UTF-8)', 'utf8'],
@@ -201,7 +202,8 @@ default React.createClass({
                 playerType: ls('playerType'),
                 playerCmdArgs: ls('playerCmdArgs'),
                 speedPulsing: ls('speedPulsing') ? ls('speedPulsing') : 'disabled',
-                speedLimit: ls('speedLimit') ? ls('speedLimit') : 0
+                speedLimit: ls('speedLimit') ? ls('speedLimit') : 0,
+                peerID: ls('peerID')
             });
         }
     },
@@ -670,6 +672,39 @@ default React.createClass({
         if ([13, 27].indexOf(event.keyCode) > -1) {
             event.preventDefault();
             this.refs['torrentTrackersInput'].$.input.blur();
+        }
+    },
+
+
+    _handleClearPeerID(event) {
+        ls('peerID', 'PP0110');
+        this.refs['peerIDInput'].value = ls('peerID');
+    },
+
+    _handlePeerIDBlur(event) {
+        var letters = this.refs['peerIDInput'].value.replace(/[^a-zA-Z]+/g, '')
+        var numbers = this.refs['peerIDInput'].value.replace(/[^0-9]+/g, '')
+        if (letters.length < 2) {
+            if (letters.length == 1) letters += 'A'
+            else letters = 'AA'
+        }
+        if (numbers.length < 4) {
+            if (numbers.length == 3) numbers += '0'
+            else if (numbers.length == 2) numbers += '00'
+            else if (numbers.length == 1) numbers += '000'
+            else numbers = '0000'
+        }
+        this.refs['peerIDInput'].value = letters.substring(0,2).toUpperCase() + numbers.substring(0,4)
+        ls('peerID', this.refs['peerIDInput'].value)
+    },
+
+    _handlePeerIDKeys(event) {
+        if ([13, 27].indexOf(event.keyCode) > -1) {
+            event.preventDefault();
+            this.refs['peerIDInput'].$.input.blur();
+        } else if ((event.keyCode > 8 && event.keyCode < 37) || (event.keyCode > 40 && event.keyCode < 48) || (event.keyCode > 90 && event.keyCode < 96) || event.keyCode > 105) {
+            // block everything except letters, numbers and arrow keys
+            event.preventDefault()
         }
     },
 
@@ -1270,6 +1305,15 @@ default React.createClass({
                 default: this.state.playerCmdArgs,
                 width: '200px',
                 topCorrection: '-4px'
+            }, {
+                type: 'header',
+                label: 'Identity'
+            }, {
+                type: 'writable',
+                title: 'Peer ID (2 letters + 4 digits)',
+                tag: 'peerID',
+                default: this.state.peerID,
+                width: '200px'
             }]
         };
 

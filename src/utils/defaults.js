@@ -22,8 +22,9 @@ var map = {
     history: [],
     historyLimit: 20,
     speedLimit: 0,
-	downloadAll: false,
-	forceDownload: false
+    downloadAll: false,
+    forceDownload: false,
+    peerID: 'PP0110'
 }
 
 module.exports = () => {
