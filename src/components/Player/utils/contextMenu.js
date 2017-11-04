@@ -14,11 +14,12 @@ import ModalActions from '../components/Modal/actions';
 import {
     dialog
 } from 'remote';
+import supported from '../../../utils/isSupported';
 
 import path from 'path';
 
 import {
-    ipcRenderer, shell
+    ipcRenderer, shell, clipboard
 }
 from 'electron';
 
@@ -185,6 +186,45 @@ var actions = {
                 internalSubs.push(wcjs.subtitles[i]);
             return internalSubs;
         } else return [];
+    },
+    addFromURL() {
+        window.playerDrop({ preventDefault: () => {}, dataTransfer: { files: [], getData: function() { return clipboard.readText('text/plain') } } })
+    },
+    addFromFile() {
+        
+        var filters = [{
+            name: 'All Supported',
+            extensions: supported.ext['torrent'].concat(supported.ext['video']).concat(supported.ext['audio']).map( el => { return el.substr(1).toUpperCase() })
+        }, {
+            name: 'Torrents',
+            extensions: supported.ext['torrent'].map( el => { return el.substr(1).toUpperCase() })
+        }, {
+            name: 'Videos',
+            extensions: supported.ext['video'].map( el => { return el.substr(1).toUpperCase() })
+        }, {
+            name: 'Audio',
+            extensions: supported.ext['audio'].map( el => { return el.substr(1).toUpperCase() })
+        }]
+
+        dialog.showOpenDialog({
+            title: 'Select file',
+            properties: ['openFile', 'createDirectory', 'multiSelections'],
+            filters: filters
+        }, (filename) => {
+            if (filename && filename.length) {
+                var files = []
+                filename.forEach((el) => {
+                    files.push({
+                        path: el,
+                        name: el.replace(/^.*[\\\/]/, '')
+                    })
+                })
+    
+                window.playerDrop({ dataTransfer: { files: files }, preventDefault: () => {} })
+                
+            }
+        })
+
     },
     changeAspect(ij) {
         const aspectRatios = ['Default','1:1','4:3','16:9','16:10','2.21:1','2.35:1','2.39:1','5:4'];
@@ -405,6 +445,20 @@ var contextMenu = {
                 label: 'Subtitles',
                 enabled: isPlaying,
                 submenu: subtitles
+            },
+            {
+                label: 'Playlist',
+                enabled: true,
+                submenu: [
+                    {
+                        label: 'Add URL From Clipboard',
+                        click: 'actions.addFromURL()'
+                    },
+                    {
+                        label: 'Add From File',
+                        click: 'actions.addFromFile()'
+                    }
+                ]
             },
             {
                 type: 'separator'
