@@ -64,7 +64,15 @@ class SubtitleActions {
         ControlActions.settingChange({
             foundSubs: true
         });
-        var prevSubs = player.itemDesc(idx).setting.subtitles || {};
+        
+        var prevSubs = {};
+
+        if (player && player.itemDesc) {
+            var itemDesc = player.itemDesc(idx)
+            if (itemDesc.setting && itemDesc.setting.subtitles)
+                prevSubs = itemDesc.setting.subtitles
+        }
+
         subs = _.extend({}, prevSubs, subs);
         PlayerActions.setDesc({
             idx: idx,

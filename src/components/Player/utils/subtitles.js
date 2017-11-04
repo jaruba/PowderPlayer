@@ -70,7 +70,7 @@ subtitles.processSub = (srt, extension, cb) => {
     } else {
         subParser = new worker('../../js/components/Player/workers/subtitles/parse.js', true);
     }
-    
+
     subParser.addEventListener('message', msg => {
         if (msg.data) {
             if (msg.data == 'null') {

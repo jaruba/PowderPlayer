@@ -12,6 +12,12 @@ import ls from 'local-storage';
 import ModalActions from '../components/Modal/actions';
 
 import {
+    dialog
+} from 'remote';
+
+import path from 'path';
+
+import {
     ipcRenderer, shell
 }
 from 'electron';
@@ -103,12 +109,12 @@ var actions = {
         ls('speedPulsing', toggled ? 'enabled' : 'disabled');
         player.fields.speedPulsing.checked = toggled
     },
-	streamToLan() {
-		ModalActions.open({
-			type: 'StreamLAN',
+    streamToLan() {
+        ModalActions.open({
+            type: 'StreamLAN',
             currentItem: player.wcjs.playlist.currentItem
-		});
-	},
+        });
+    },
     audioTrack: function(i) {
         player.wcjs.audio.track = i;
         player.set({
@@ -116,13 +122,34 @@ var actions = {
         });
         player.fields.audioTrack.value = player.wcjs.audio[i];
     },
+    selectSubFile: function() {
+        dialog.showOpenDialog({
+            title: 'Select Subtitle',
+            properties: ['openFile'],
+            filters: [ {name: 'Subtitles', extensions: ['srt', 'vtt', 'sub']} ]
+        }, (file) => {
+            if (file && file.length) {
+                var subs = player.itemDesc().setting.subtitles || {};
+                subs[path.basename(file[0])] = file[0];
+                PlayerActions.setDesc({
+                    subtitles: subs
+                });
+                player.wcjs.subtitles.track = 0;
+                SubtitleActions.loadSub(file[0]);
+                SubtitleActions.settingChange({
+                    selectedSub: _.size(subs) + (player.wcjs.subtitles.count || 1) +1,
+                });
+                player.notifier.info('Subtitle Loaded', '', 3000);
+            }
+        });
+    },
     selectExternal: function(idx, item, itemId) {
         ls('lastLanguage', idx);
         player.wcjs.subtitles.track = 0;
         if (item) {
             SubtitleActions.loadSub(item);
             SubtitleActions.settingChange({
-                selectedSub: itemId,
+                selectedSub: itemId + 1,
             });
         } else {
             SubtitleActions.settingChange({
@@ -138,9 +165,9 @@ var actions = {
         if (item && (itemId - 1) < wcjs.subtitles.count) {
             wcjs.subtitles.track = idx;
             SubtitleActions.settingChange({
-                selectedSub: itemId,
+                selectedSub: itemId + 1,
                 subtitle: [],
-                subText: ''
+                text: ''
             });
         }
     },
@@ -257,7 +284,7 @@ var contextMenu = {
             return {
                 label: item,
                 type: 'checkbox',
-                checked: (playlistSelected == itemId),
+                checked: (playlistSelected == itemId + 1),
                 click: 'actions.selectInternal(' + (idx + 1) + ', "' + item + '", ' + itemId + ')'
             }
         })
@@ -267,8 +294,8 @@ var contextMenu = {
             return {
                 label: lang[0],
                 type: 'checkbox',
-                checked: (playlistSelected == itemId),
-                click: 'actions.selectExternal("' + idx + '", "' + item + '", ' + itemId + ')'
+                checked: (playlistSelected == itemId + 1),
+                click: 'actions.selectExternal("' + idx + '", "' + item.split("\\").join("\\\\") + '", ' + itemId + ')'
             }
         })
         
@@ -278,11 +305,16 @@ var contextMenu = {
                 type: 'checkbox',
                 checked: (playlistSelected == 1),
                 click: 'actions.selectExternal(\'none\', \'\', 1)'
+            },
+            {
+                label: 'Browse For File',
+                type: 'checkbox',
+                checked: false,
+                click: 'actions.selectSubFile()'
             }
         ];
         
         subtitles = subtitles.concat(internalSubs).concat(externalSubs);
-        
         // aspect ratio
         const aspectRatios = ['Default','1:1','4:3','16:9','16:10','2.21:1','2.35:1','2.39:1','5:4'];
         const aspectRatio = player.aspect;
@@ -355,10 +387,10 @@ var contextMenu = {
                         checked: !!(ls('speedPulsing') == 'enabled'),
                         click: 'actions.speedPulsing()'
                     },
-					{
-						label: 'Stream to LAN',
-						click: 'actions.streamToLan()'
-					}
+                    {
+                        label: 'Stream to LAN',
+                        click: 'actions.streamToLan()'
+                    }
                 ]
             },
             {
