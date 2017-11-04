@@ -19,6 +19,8 @@ import sorter from './utils/sort';
 import fs from 'fs';
 import supported from '../../utils/isSupported';
 
+import torrentActions from '../../actions/torrentActions';
+
 import {
     webFrame
 } from 'electron';
@@ -37,7 +39,7 @@ import torrentStream from 'torrent-stream';
 import torrentUtil from '../../utils/stream/torrentUtil';
 import linkUtil from '../../utils/linkUtil';
 import readTorrent from 'read-torrent';
-import getPort from 'get-port';
+import hat from 'hat';
 
 import ReactNotify from 'react-notify';
 
@@ -165,18 +167,33 @@ const Player = React.createClass({
     nullEvent() {
         return false;
     },
-    fileDrop(e) {
+    
+    droppedTorrent(torrentLink) {
 
-        e.preventDefault();
+        // works with torrent file paths and magnet links
 
-        if (window.immuneToDrop) return false;
-
-        var files = e.dataTransfer.files;
+        var torrentMeta = (torFile) => {
+            player.notifier.info('Parsing Torrent', '', 3000);
+            readTorrent(torFile, (err, parsedTorrent) => {
+                if (err) {
+                    player.notifier.info(err.message, '', 3000);
+                } else {
+                    
+                    // we're using torrent-stream to get torrent's file list only
+                    var engine = new torrentStream(parsedTorrent, {
+                        connections: 30,
+                        id: '-' + ls('peerID') + '-' + hat(48)
+                    });
+    
+                    engine.ready(() => {
+                        handleTorrent(engine, parsedTorrent)
+                    });
+                }
+            });
+        }
         
-        var engine = {};
-        
-        var handleTorrent = () => {
-            torrentUtil.getContents(engine.torrent.files, engine.torrent.infoHash).then( files => {
+        var handleTorrent = (engine, parsedTorrent) => {
+            torrentUtil.getContents(engine.files, engine.infoHash).then( files => {
                 var fileSelectorData = _.omit(files, ['files_total', 'folder_status']);
                 var folder = fileSelectorData[Object.keys(fileSelectorData)[0]];
                 var file = folder[Object.keys(folder)[0]];
@@ -184,21 +201,21 @@ const Player = React.createClass({
                 var queueParser = [];
 
                 if (files.ordered.length) {
-                    var port = getPort();
                     var ij = player.wcjs.playlist.itemCount;
                     files.ordered.forEach( file => {
                         if (file.name.toLowerCase().replace("sample","") == file.name.toLowerCase() && file.name != "ETRG.mp4" && file.name.toLowerCase().substr(0,5) != "rarbg") {
                             newFiles.push({
                                 title: parser(file.name).name(),
-                                uri: 'http://127.0.0.1:' + port + '/' + file.id,
+                                uri: file.infoHash + '/' + file.id,
                                 byteSize: file.size,
                                 torrentHash: file.infoHash,
                                 streamID: file.id,
-                                path: file.path
+                                path: file.path,
+                                announce: parsedTorrent && parsedTorrent.announce ? parsedTorrent.announce : null 
                             });
                             queueParser.push({
                                 idx: ij,
-                                url: 'http://127.0.0.1:' + port + '/' + file.id,
+                                url: file.infoHash + '/' + file.id,
                                 filename: file.name
                             });
                             ij++;
@@ -225,18 +242,30 @@ const Player = React.createClass({
             });
             
             engine.remove( () => {
-                engine.destroy();
+//                console.log('removed torrent meta')
+                engine.destroy( () => {
+//                    console.log('destroyed torrent meta')
+                });
             });
         }
+
+        torrentMeta(torrentLink)
+
+    },
+    
+    fileDrop(e) {
+
+        e.preventDefault();
+
+        if (window.immuneToDrop) return false;
+
+        var files = e.dataTransfer.files;
+        
         if (!files.length) {
             var droppedLink = e.dataTransfer.getData("text/plain");
             if (droppedLink) {
                 if (droppedLink.startsWith('magnet:')) {
-                    engine = new torrentStream(droppedLink, {
-                        connections: 30
-                    });
-    
-                    engine.ready(handleTorrent);
+                    this.droppedTorrent(droppedLink)
                 } else {
                     linkUtil(droppedLink).then(url => {
                         var savedHistory = ls('savedHistory');
@@ -266,17 +295,8 @@ const Player = React.createClass({
                 return false;
             } else if (supported.is(files[0].path, 'torrent')) {
 
-                readTorrent(files[0].path, (err, parsedTorrent) => {
-                    if (err) {
-                        player.notifier.info(err.message, '', 3000);
-                    } else {
-                        engine = new torrentStream(parsedTorrent, {
-                            connections: 30
-                        });
-        
-                        engine.ready(handleTorrent);
-                    }
-                });
+                this.droppedTorrent(files[0].path)
+
                 return false;
 
             }

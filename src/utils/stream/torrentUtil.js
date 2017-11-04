@@ -15,6 +15,8 @@ import sorter from '../../components/Player/utils/sort';
 import parser from '../../components/Player/utils/parser';
 import supported from '../isSupported';
 
+import hat from 'hat';
+
 const temp = path.join(app.getPath('temp'), 'Powder-Player');
 
 module.exports = {
@@ -31,7 +33,8 @@ module.exports = {
                         buffer: (1.5 * 1024 * 1024).toString(),
                         connections: ls('maxPeers'),
                         withResume: true,
-                        torFile: typeof torrent === 'string' && !torrent.startsWith('magnet:') && torrent.match(/(?:\.torrent)(\?([^.]+)|$)/gi) ? torrent : null
+                        torFile: typeof torrent === 'string' && !torrent.startsWith('magnet:') && torrent.match(/(?:\.torrent)(\?([^.]+)|$)/gi) ? torrent : null,
+                        id: '-' + ls('peerID') + '-' + hat(48)
                     };
 
                     if (ls.isSet('torrentTrackers') && ls('torrentTrackers').length)
@@ -45,6 +48,7 @@ module.exports = {
                         engine = worker.process(torrentInfo, opts);
 
                     engine.on('listening', () => {
+                        engine.amListening = true
                         that.streams[engine.infoHash]['stream-port'] = engine.server.address().port;
 //                        engine = null;
                     });
@@ -100,7 +104,6 @@ module.exports = {
     },
     getContents(files, infoHash) {
         return new Promise((resolve) => {
-
             var seen = new Set();
             var directorys = [];
             var files_total = files.length;
@@ -127,6 +130,10 @@ module.exports = {
             var selectedFirst = false
             
             function findById(fileID, action) {
+
+                // there's a bigger bug here, infohash is 0 and torrent is undefined
+                if (!torrent) return
+
                 torrent.files.some(function(el, ij) {
                     if (el.fileID == fileID) {
                         torrent[action](ij)
@@ -135,6 +142,8 @@ module.exports = {
                 })
             }
             
+            var anyStreamable = false
+
             files.forEach(function(el) {
                 var file = el;
                 if (file.selected && !ls('downloadAll')) findById(file.fileID, 'deselectFile')
@@ -143,6 +152,7 @@ module.exports = {
                 var streamable = supported.is(fileParams.ext, 'allMedia');
 
                 if (streamable) {
+                    anyStreamable = true
                     if (!selectedFirst && !ls('downloadAll')) {
                         if (!file.selected) findById(file.fileID, 'selectFile')
                         selectedFirst = true
@@ -156,11 +166,29 @@ module.exports = {
                         name: file.name,
                         streamable: true,
                         infoHash: infoHash,
-                        path: ls.isSet('downloadFolder') ? path.join(ls('downloadFolder'), file.path) : path.join(temp, 'torrent-stream', infoHash, file.path)
+                        path: ls.isSet('downloadFolder') ? path.join(ls('downloadFolder'), file.path) : path.join(temp, 'Powder-Player', infoHash, file.path)
                     });
                     directorys.push(fileParams.dir);
                 }
             })
+            
+            if (!anyStreamable) {
+                files_organized.ordered = []
+                files.forEach(function(el) {
+                    var fileParams = path.parse(file.path);
+
+                    files_organized.ordered.push({
+                        size: file.length,
+                        id: file.fileID,
+                        name: file.name,
+                        streamable: true,
+                        infoHash: infoHash,
+                        path: ls.isSet('downloadFolder') ? path.join(ls('downloadFolder'), file.path) : path.join(temp, 'Powder-Player', infoHash, file.path)
+                    })
+
+                    directorys.push(fileParams.dir);
+                })
+            }
 
             directorys = directorys.filter(function(dir) {
                 return !seen.has(dir) && seen.add(dir);

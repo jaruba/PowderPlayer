@@ -24,6 +24,7 @@ import sources from './sources';
 var events = {};
 
 var immuneToEvents = false
+var immuneToFix = false
 
 events.buffering = (perc) => {
 
@@ -52,10 +53,17 @@ events.buffering = (perc) => {
         var current = player.wcjs.playlist.currentItem;
         if (isTorrent && current > -1 && itemDesc && itemDesc.mrl.startsWith('http://') && typeof itemDesc.setting.streamID !== 'undefined') {
             // check if the file has been completely downloaded
-            var file = engineState.torrents[engineState.infoHash].files[itemDesc.setting.streamID];
+            var engineInstance = engineState.torrents[engineState.infoHash]
+            var file = engineInstance.files[itemDesc.setting.streamID]
             if (file) {
-                var pieceInfo = engineState.torrents[engineState.infoHash].torrent.pieces.bank.get();
-                if (pieceInfo.downloaded == pieceInfo.total) {
+                var fileProgress = engineInstance.torrent.pieces.bank.filePercent(file.offset, file.length)
+
+                // if we get freezes on video loading, it may be because we need to stop using
+                // this fix when player.wcjs.position == 0
+
+//                if (fileProgress >= 1 && player.wcjs.position) {
+
+                if (fileProgress >= 1 && !immuneToFix) {
                     // file is completely downloaded, so it shouldn't need to buffer
                     // this is a VLC bug and we'll solve it by switching to the local
                     // file instead of the streaming link
@@ -81,10 +89,11 @@ events.buffering = (perc) => {
                             byteSize: itemDesc.setting.byteSize,
                             streamID: itemDesc.setting.streamID,
                             path: itemDesc.setting.path,
-                            torrentHash: itemDesc.setting.torrentHash
+                            torrentHash: itemDesc.setting.torrentHash,
+                            announce: itemDesc.setting.announce || null
                         }
                     })
-                    
+
                     if (itemDesc.setting && itemDesc.setting.trakt) {
                         var shouldScrobble = traktUtil.loggedIn ? ls.isSet('traktScrobble') ? ls('traktScrobble') : true : false;
                         if (shouldScrobble)
@@ -117,7 +126,9 @@ events.opening = () => {
 
     PlayerActions.togglePowerSave(true);
     var itemDesc = player.itemDesc();
-    var isLocal = (itemDesc.mrl && itemDesc.mrl.indexOf('file://') == 0);
+    var isTorrent = (itemDesc && itemDesc.setting.torrentHash && itemDesc.setting.torrentHash != engineStore.getState().infoHash);
+    var isLocal = !isTorrent ? (itemDesc.mrl && itemDesc.mrl.indexOf('file://') == 0) : false;
+     
 
     if (itemDesc.artworkURL && !itemDesc.setting.image) {
         PlayerActions.setDesc({
@@ -167,9 +178,15 @@ events.opening = () => {
 
             return;
             
-        } else if (itemDesc && itemDesc.setting.torrentHash && itemDesc.setting.torrentHash != engineStore.getState().infoHash) {
+        } else if (isTorrent) {
 
             window.nextHash = itemDesc.setting.torrentHash;
+            
+            if (itemDesc.setting.announce)
+                window.nextAnnounce = itemDesc.setting.announce;
+
+            if (itemDesc.setting.title)
+                window.nextTitle = itemDesc.setting.title;
 
             window.currentItem = player.wcjs.playlist.currentItem;
 
@@ -178,10 +195,25 @@ events.opening = () => {
             player.events.emit('playlistUpdate');
 
             player.wcjs.stop();
+            
+            var generateMagnet = () => {
+                if (window.nextHash) {
+                    var mag = 'magnet:?xt=urn:btih:' + window.nextHash
+                    if (window.nextTitle)
+                        mag += '&dn=' + encodeURIComponent(window.nextTitle.replace(new RegExp(' ', 'g'),'.'))
+                    if (window.nextAnnounce && window.nextAnnounce.length)
+                        window.nextAnnounce.forEach((el) => {
+                            mag += '&tr=' + encodeURIComponent(el)
+                        })
+                    delete window.nextAnnounce;
+                    delete window.nextTitle;
+                    return mag
+                } else return false
+            }
 
             var callback = () => {
                 torrentActions.clear();
-                torrentUtil.init('magnet:?xt=urn:btih:' + window.nextHash).then( instance => {
+                torrentUtil.init(generateMagnet()).then( instance => {
                     var listener = () => {
                         
                         if (instance.infoHash == engineStore.getState().infoHash) {
@@ -195,23 +227,75 @@ events.opening = () => {
                             }
                         } else {
                             torrentActions.add(instance);
-                            for (var i = 0; i < player.wcjs.playlist.itemCount; i++) {
-                                var pItemDesc = player.itemDesc(i);
-                                if (pItemDesc.setting && pItemDesc.setting.torrentHash && pItemDesc.setting.torrentHash == window.nextHash) {
-                                    PlayerActions.replaceMRL({
-                                        autoplay: (window.currentItem == i),
-                                        x: i,
-                                        mrl: {
-                                            title: pItemDesc.setting.title,
-                                            thumbnail: pItemDesc.setting.image,
-                                            uri: 'http://127.0.0.1:' + instance.server.port + '/' + pItemDesc.setting.streamID
+                            
+                            var verified = (downloaded, pieceInfo) => {
+
+                                for (var i = 0; i < player.wcjs.playlist.itemCount; i++) {
+                                    var pItemDesc = player.itemDesc(i);
+                                    if (pItemDesc.setting && pItemDesc.setting.torrentHash && pItemDesc.setting.torrentHash == window.nextHash) {
+                                        if (window.currentItem == i) {
+                                            var wNextHash = window.nextHash
+                                            var wCurItem = window.currentItem
+                                            window.resetPrebufMap = () => {
+                                                prebuffering.resetMap(wNextHash, wCurItem)
+                                            }
                                         }
-                                    })
+
+                                        if (downloaded) {
+                                            var uriToPlay = 'file:///' + pItemDesc.setting.path
+                                        } else {
+                                            var file = instance.files[pItemDesc.setting.streamID];
+                                            var fileProgress = instance.torrent.pieces.bank.filePercent(file.offset, file.length)
+                                            if (fileProgress >= 1)
+                                                var uriToPlay = 'file:///' + pItemDesc.setting.path
+                                            else {
+                                                var uriToPlay = 'http://127.0.0.1:' + instance.server.port + '/' + (pItemDesc.setting.streamID || 0)
+                                                
+                                                if (window.currentItem == i) {
+                                                    // this case should never happen, but we set it as a precaution
+                                                    // if we get 2 replaceMRL() on the same item in a short time
+                                                    // the app freezes
+                                                    immuneToFix = true
+                                                    _.delay(() => {
+                                                        immuneToFix = false
+                                                    }, 2000)
+                                                }
+                                            }
+                                        }
+    
+                                        PlayerActions.replaceMRL({
+                                            autoplay: (window.currentItem == i),
+                                            x: i,
+                                            mrl: {
+                                                title: pItemDesc.setting.title,
+                                                thumbnail: pItemDesc.setting.image,
+                                                uri: uriToPlay,
+                                                announce: pItemDesc.setting.announce || null,
+                                                byteSize: pItemDesc.setting.byteSize || null,
+                                                torrentHash: pItemDesc.setting.torrentHash || null,
+                                                streamID: pItemDesc.setting.streamID || null,
+                                                path: pItemDesc.setting.path || null
+                                            }
+                                        })
+    
+                                    }
                                 }
+                                delete window.currentItem;
+                                delete window.nextHash;
                             }
-                            delete window.currentItem;
+                            
+                            var initVerified = _.once(verified);
+
+                            var engineState = engineStore.getState()
+
+                            var pieceInfo = engineState.torrents[engineState.infoHash].torrent.pieces.bank.get();
+
+                            pieceInfo.ev.on('completed', () => { initVerified(true) })
+
+                            _.delay(() => { initVerified(false, pieceInfo) }, 1000) 
                         }
                     };
+
                     if (instance.server && instance.server.port) listener();
                     else instance.on('listening', listener);
                 })
@@ -302,12 +386,11 @@ window.processHistory = () => {
     var savedHistory = ls('savedHistory');
     if (savedHistory && savedHistory.length) {
         processingHist = false
-        var currentItem = savedHistory[0].currentItem;
-        if (player.wcjs && player.wcjs.playlist && savedHistory.length == player.wcjs.playlist.itemCount) {
+        if (player.wcjs && player.wcjs.playlist && (savedHistory.length == player.wcjs.playlist.itemCount || savedHistory[0].currentHash)) {
             
             player.events.emit('announce', { text: '', effect: false })
 
-            var currentItem = savedHistory[0].currentItem
+            var currentItem = savedHistory[0].currentHash ? 0 : savedHistory[0].currentItem
             var match1 = false
             var match2 = false
             var saved = savedHistory[currentItem]
@@ -350,7 +433,18 @@ events.playing = () => {
 
     if (processingHist) stopProcessHistory()
     
-    if (immuneToEvents) return
+    if (immuneToEvents) {
+
+        PlayerActions.togglePowerSave(true);
+    
+        player.wcjs.playlist.mode = 1;
+
+        player.wcjs.subtitles.track = 0;
+
+        player.fields.audioTrack.value = player.wcjs.audio[1];
+
+        return
+    }
 
     PlayerActions.togglePowerSave(true);
 
@@ -363,22 +457,33 @@ events.playing = () => {
         player.secondPlay = true;
 
         // i hate this, but otherwise it bugs
-        _.delay(() => {
-            PlayerActions.updateImage(player.itemDesc().setting.image);
-        }, 500);
-
-        _.delay(() => {
-            PlayerActions.updateImage(player.itemDesc().setting.image);
-        }, 1000);
-
-        _.delay(() => {
-            PlayerActions.updateImage(player.itemDesc().setting.image);
-        }, 1500);
-
-        // still saw this god forsaken bug on osx, adding one more
-        _.delay(() => {
-            PlayerActions.updateImage(player.itemDesc().setting.image);
-        }, 3000);
+        var itemDesc = player.itemDesc()
+        if (itemDesc && itemDesc.setting && itemDesc.setting.image) {
+            _.delay(() => {
+                itemDesc = player.itemDesc()
+                if (itemDesc && itemDesc.setting && itemDesc.setting.image)
+                    PlayerActions.updateImage(player.itemDesc().setting.image);
+            }, 500);
+    
+            _.delay(() => {
+                itemDesc = player.itemDesc()
+                if (itemDesc && itemDesc.setting && itemDesc.setting.image)
+                    PlayerActions.updateImage(player.itemDesc().setting.image);
+            }, 1000);
+    
+            _.delay(() => {
+                itemDesc = player.itemDesc()
+                if (itemDesc && itemDesc.setting && itemDesc.setting.image)
+                    PlayerActions.updateImage(player.itemDesc().setting.image);
+            }, 1500);
+    
+            // still saw this god forsaken bug on osx, adding one more
+            _.delay(() => {
+                itemDesc = player.itemDesc()
+                if (itemDesc && itemDesc.setting && itemDesc.setting.image)
+                    PlayerActions.updateImage(player.itemDesc().setting.image);
+            }, 3000);
+        }
 
         // catch first play event
         prebuffering.end();
@@ -478,6 +583,10 @@ events.mediaChanged = () => {
     if (immuneToEvents) return
 
     prebuffering.end();
+    if (window.resetPrebufMap) {
+        window.resetPrebufMap()
+        delete window.resetPrebufMap
+    }
     prebuffering.start(player);
 
     events.resetUI();
@@ -517,7 +626,7 @@ events.error = () => {
 events.ended = () => {
     console.log('Playback ended');
 
-    var position = ProgressStore.getState().position;
+    var position = ProgressStore.getState().position || player.wcjs.position;
 
     player.events.emit('foundTrakt', false);
     traktUtil.handleScrobble('stop', player.itemDesc(), position);

@@ -65,7 +65,7 @@ player.saveHistory = () => {
                 originalURL: itemSetting && itemSetting.originalURL ? itemSetting.originalURL : null
             }
         }
-        
+
         for (var ik = 0; ik < player.wcjs.playlist.itemCount; ik++) {
             savedPlaylist.push(objGenerator(ik));
         }

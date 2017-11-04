@@ -11,7 +11,7 @@ function isDefined(param) {
 }
 
 function isFileFromTorrent() {
-    return player && current !== null && isDefined(current) && isDefined(player.itemDesc(current).setting.streamID) ? true : false;
+    return player && current !== null && isDefined(current) && isDefined(player.itemDesc(current).setting) && isDefined(player.itemDesc(current).setting.streamID) ? true : false;
 }
 
 // end helper functions
@@ -57,6 +57,10 @@ function onPiece() {
 }
 
 var prebuffering = {
+    resetMap: (iHash, curItem) => {
+        if (prebufMap[iHash] && prebufMap[iHash][curItem])
+            delete prebufMap[iHash][curItem]
+    },
     start: (playerObj) => {
 
         player = playerObj;
