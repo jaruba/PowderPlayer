@@ -49,6 +49,8 @@ player.saveHistory = () => {
         })
         
         var objGenerator = function(il) {
+            var engineState = engineStore.getState();
+
             var itemDesc = player.itemDesc(il);
             var itemSetting = itemDesc.setting;
             return {
@@ -61,8 +63,11 @@ player.saveHistory = () => {
                 streamID: itemSetting && itemSetting.streamID ? itemSetting.streamID : null,
                 currentItem: player.wcjs.playlist.currentItem,
                 currentTime: player.wcjs.time,
-                currentHash: itemSetting && itemSetting.torrentHash ? itemSetting.torrentHash : null,
-                originalURL: itemSetting && itemSetting.originalURL ? itemSetting.originalURL : null
+                currentHash: engineState.torrents && engineState.infoHash ? engineState.infoHash : null,
+                originalURL: itemSetting && itemSetting.originalURL ? itemSetting.originalURL : null,
+                torFilePath: itemSetting && itemSetting.path ? itemSetting.path : null,
+                byteSize: itemSetting && itemSetting.byteSize ? itemSetting.byteSize : null,
+                announce: itemSetting && itemSetting.announce ? itemSetting.announce : null
             }
         }
 

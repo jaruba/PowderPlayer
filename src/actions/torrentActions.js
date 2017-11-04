@@ -63,6 +63,8 @@ class torrentActions {
                     var newFiles = [];
                     var queueParser = [];
 
+                    var counter = 0
+
                     if (files.ordered.length) {
                         files.ordered.forEach( (file, ij) => {
                             if (file.name.toLowerCase().replace("sample","") == file.name.toLowerCase() && file.name != "ETRG.mp4" && file.name.toLowerCase().substr(0,5) != "rarbg") {
@@ -75,10 +77,11 @@ class torrentActions {
                                     path: file.path
                                 });
                                 queueParser.push({
-                                    idx: ij,
+                                    idx: counter,
                                     url: 'http://127.0.0.1:' + EngineStore.state.torrents[file.infoHash].server.address().port + '/' + file.id,
                                     filename: file.name
                                 });
+                                counter++
                             }
                         });
                     }
@@ -118,7 +121,6 @@ class torrentActions {
 
                         HistoryStore.getState().history.replaceState(null, 'torrentDashboard');
                     }
-
 
                     // start searching for thumbnails after 1 second
                     _.delay(() => {

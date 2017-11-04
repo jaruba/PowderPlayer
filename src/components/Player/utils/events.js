@@ -127,6 +127,7 @@ events.opening = () => {
     PlayerActions.togglePowerSave(true);
     var itemDesc = player.itemDesc();
     var isTorrent = (itemDesc && itemDesc.setting.torrentHash && itemDesc.setting.torrentHash != engineStore.getState().infoHash);
+    var isYoutubeDl = (itemDesc.setting.youtubeDL && itemDesc.setting.timestamp < timestamp -1000);
     var isLocal = !isTorrent ? (itemDesc.mrl && itemDesc.mrl.indexOf('file://') == 0) : false;
      
 
@@ -137,16 +138,22 @@ events.opening = () => {
     }
 
     var historyStarter = 0;
-    if (historyStartAt) {
-        historyStarter = historyStartAt;
-        historyStartAt = 0;
+    if (historyStartAt && historyStartIdx == player.wcjs.playlist.currentItem) {
+        if (!isLocal && isYoutubeDl) {
+            historyStarter = historyStartAt;
+            historyStartAt = 0;
+            historyStartIdx = 0;
+        } else if (!isLocal) {
+            player.wcjs.time = historyStartAt
+            // do not reset historyStartAt here, torrent triggers `opening` 2 times
+        }
     }
 
     if (!isLocal) {
 
         var timestamp = new Date().getTime();
 
-        if (itemDesc && itemDesc.setting.youtubeDL && itemDesc.setting.timestamp < timestamp -1000) {
+        if (isYoutubeDl) {
             // this is a youtube-dl supported link, let's refresh it to make sure the link didn't expire
             
             var currentItem = player.wcjs.playlist.currentItem;
@@ -379,18 +386,20 @@ events.stopped = () => {
 }
 
 var historyStartAt = 0;
+var historyStartIdx = 0;
 
 var processingHist = false
 
 window.processHistory = () => {
     var savedHistory = ls('savedHistory');
+
     if (savedHistory && savedHistory.length) {
         processingHist = false
         if (player.wcjs && player.wcjs.playlist && (savedHistory.length == player.wcjs.playlist.itemCount || savedHistory[0].currentHash)) {
-            
+           
             player.events.emit('announce', { text: '', effect: false })
 
-            var currentItem = savedHistory[0].currentHash ? 0 : savedHistory[0].currentItem
+            var currentItem = savedHistory[0].currentItem
             var match1 = false
             var match2 = false
             var saved = savedHistory[currentItem]
@@ -406,9 +415,11 @@ window.processHistory = () => {
                     if (match1 || match2) currentItem = jk
                 }
             }
+
             player.wcjs.playlist.playItem(currentItem);
             player.wcjs.time = savedHistory[0].currentTime;
             historyStartAt = savedHistory[0].currentTime;
+            historyStartIdx = currentItem
             ls('savedHistory', null);
         } else {
             if (player.wcjs && player.wcjs.input && player.wcjs.input.state != 5) player.wcjs.stop()
@@ -428,6 +439,11 @@ window.stopProcessHistory = function() {
 }
 
 events.playing = () => {
+
+    if (historyStartAt || historyStartIdx) {
+        historyStartAt = 0
+        historyStartIdx = 0
+    }
 
     setTimeout(function() { player.events.emit('fixAnnouncer', {}) }, 700)
 
@@ -579,7 +595,7 @@ events.resetUI = () => {
 }
 
 events.mediaChanged = () => {
-    
+
     if (immuneToEvents) return
 
     prebuffering.end();
