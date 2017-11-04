@@ -43,18 +43,30 @@ module.exports = {
                     if (ls.isSet('downloadFolder'))
                         opts.path = ls('downloadFolder');
 
-                    var that = this,
-                        worker = new torrentWorker(),
+                    var worker = new torrentWorker(),
                         engine = worker.process(torrentInfo, opts);
+                        
+                    var killedEngine = false
+                    var engineDestroyer = () => {
+                        killedEngine = true
+                    }
+                        
+                    window.destroyer.on('destroy-engine', engineDestroyer)
 
                     engine.on('listening', () => {
+                        if (killedEngine) return
                         engine.amListening = true
-                        that.streams[engine.infoHash]['stream-port'] = engine.server.address().port;
+                        this.streams[engine.infoHash]['stream-port'] = engine.server.address().port;
 //                        engine = null;
                     });
 
                     engine.on('ready', () => {
-                        that.streams[engine.infoHash] = engine;
+                        if (killedEngine) {
+                            worker.peerSocket.emit('engineDestroy')
+                            window.destroyer.removeListener('destroy-engine', engineDestroyer)
+                            return
+                        }
+                        this.streams[engine.infoHash] = engine
                         resolve(engine);
                     });
 

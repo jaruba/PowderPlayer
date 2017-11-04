@@ -5,6 +5,10 @@ import ModalStore from '../store';
 import _ from 'lodash';
 import LinkSupport from './../../Player/utils/supportedLinks';
 
+var EventEmitter = require('events');
+
+window.destroyer = new EventEmitter;
+
 export
 default React.createClass({
     
@@ -40,9 +44,10 @@ default React.createClass({
         ModalStore.unlisten(this.update);
     },
 
-    handelCancel() {
+    handleCancel() {
         var Linky = new LinkSupport;
         Linky.stopParsing();
+        window.destroyer.emit('destroy-engine')
     },
 
     update() {
@@ -86,7 +91,7 @@ default React.createClass({
                 <div style={{width: '394px', overflow: 'hidden', position: 'relative', marginBottom: '15px'}}>
                     <paper-progress indeterminate style={{width: '100%'}}></paper-progress>
                 </div>
-                <paper-button raised onClick={this.handelCancel} style={{float: 'right', marginRight: '22px', padding: '8px 15px', fontWeight: 'bold', marginTop: '0px', textTransform: 'none'}} dialog-dismiss>Cancel</paper-button>
+                <paper-button raised onClick={this.handleCancel} style={{float: 'right', marginRight: '22px', padding: '8px 15px', fontWeight: 'bold', marginTop: '0px', textTransform: 'none'}} dialog-dismiss>Cancel</paper-button>
                 {statusText}
             </paper-dialog>
         );
