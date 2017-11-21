@@ -152,7 +152,7 @@ default React.createClass({
                 <paper-item key={itemId} style={{backgroundColor: '#303030', color: 'white', padding: '4px 12px'}} onClick={this.select.bind(this, 'browse', '', 2)} className={'sub-menu-item' + (this.state.playlistSelected == itemId ? ' iron-selected' : '')}>
                     <span style={{width: '38px', height: '38px', borderRadius: '25px', backgroundImage: 'url(./images/icons/browse-subtitle-icon.png)', margin: '4px', marginLeft: '0', marginRight: '15px', backgroundSize: 'cover', backgroundPosition: 'center'}} />
                     <paper-item-body>
-                    Browse
+                    Browse for File
                     </paper-item-body>
                 </paper-item>
             );
