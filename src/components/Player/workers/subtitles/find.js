@@ -27,7 +27,7 @@ subtitles.tryLater = hashMs => {
     }, hashMs);
 }
 
-subtitles.byExactHash = (hash, fileSize, tag) => {
+subtitles.byExactHash = (hash, fileSize, tag, limit) => {
     subtitles.os.login().then( token => {
         var filename = objective.filename;
         
@@ -36,7 +36,8 @@ subtitles.byExactHash = (hash, fileSize, tag) => {
             extensions: ['srt','sub','vtt'],
             hash: hash,
             size: fileSize,
-            filename: filename
+            filename: filename,
+            limit: limit
         };
         
         if (parser(filename).shortSzEp()) {
@@ -58,9 +59,17 @@ subtitles.byExactHash = (hash, fileSize, tag) => {
                 }
                 var result = {};
                 async.each(subData, (item, callback) => {
-                    var vrf = item.url.substr(item.url.indexOf('vrf-'));
-                    vrf = vrf.substr(0,vrf.indexOf('/'));
-                    result[item.langName+'[lg]'+item.lang] = 'http://dl.opensubtitles.org/en/download/subencoding-utf8/'+vrf+'/file/'+item.url.split('/').pop();
+                    if (Array.isArray(item)) {
+                        item.forEach((el, ij) => {
+                            var vrf = el.url.substr(el.url.indexOf('vrf-'));
+                            vrf = vrf.substr(0,vrf.indexOf('/'));
+                            result[el.langName+ (ij ? ' ' + (ij+1) : '') + '[lg]'+el.lang] = 'http://dl.opensubtitles.org/en/download/subencoding-utf8/'+vrf+'/file/'+el.url.split('/').pop();
+                        })
+                    } else {
+                        var vrf = item.url.substr(item.url.indexOf('vrf-'));
+                        vrf = vrf.substr(0,vrf.indexOf('/'));
+                        result[item.langName+'[lg]'+item.lang] = 'http://dl.opensubtitles.org/en/download/subencoding-utf8/'+vrf+'/file/'+item.url.split('/').pop();
+                    }
                     callback();
                 }, err => {
                     objective.cb(result);
@@ -92,7 +101,7 @@ subtitles.fetchSubs = newObjective => {
     
     needle.get(url, (err, res) => {
         if (!err && res && res.body && objective.byteLength && JSON.parse(res.body).filehash) {
-            subtitles.byExactHash(res.filehash, objective.byteLength, objective.filename);
+            subtitles.byExactHash(res.filehash, objective.byteLength, objective.filename, objective.limit);
         } else {
             subtitles.stopTrying();
             subtitles.findHash();
@@ -105,7 +114,8 @@ subtitles.findHash = () => {
         byteLength = objective.byteLength,
         torrentHash = objective.torrentHash,
         isFinished = objective.isFinished,
-        filename = objective.filename;
+        filename = objective.filename,
+        limit = objective.limit;
 
     if (!checkedFiles[filename])
         checkedFiles[filename] = {};
@@ -114,7 +124,7 @@ subtitles.findHash = () => {
         subtitles.os.extractInfo(filepath).then(infos => {
             var hash = infos.moviehash;
             if (isFinished) {
-                if (byteLength) subtitles.byExactHash(hash, byteLength, filename);
+                if (byteLength) subtitles.byExactHash(hash, byteLength, filename, limit);
             } else {
                 if (!checkedFiles[filename][hash]) {
                     checkedFiles[filename][hash] = 1;
@@ -126,7 +136,7 @@ subtitles.findHash = () => {
                     if (checkedFiles[filename][hash] >= 1) {
                         checkedFiles[filename][hash]++;
                         if (byteLength)
-                            subtitles.byExactHash(hash, byteLength, filename);
+                            subtitles.byExactHash(hash, byteLength, filename, limit);
                         
                     } else checkedFiles[filename][hash]++;
                 }
@@ -137,12 +147,12 @@ subtitles.findHash = () => {
             if (!byteLength && filepath) {
                 fs.stat(filepath, (err, stats) => {
                     if (stats && stats.size)
-                        subtitles.byExactHash(infos.moviehash, stats.size, filename);
+                        subtitles.byExactHash(infos.moviehash, stats.size, filename, limit);
                 })
                 byteLength = fs.statSync(filepath).size;
             } else {
                 if (!byteLength) byteLength = 0;
-                subtitles.byExactHash(infos.moviehash, byteLength, filename);
+                subtitles.byExactHash(infos.moviehash, byteLength, filename, limit);
             }
         });
     }

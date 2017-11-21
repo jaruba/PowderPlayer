@@ -37,6 +37,7 @@ default React.createClass({
             findSubs: ls.isSet('findSubs') ? ls('findSubs') : true,
             askFiles: ls.isSet('askFiles') ? ls('askFiles') : false,
             autoSub: ls.isSet('autoSub') ? ls('autoSub') : true,
+            subLimit: ls('subLimit'),
             menuFlags: ls.isSet('menuFlags') ? ls('menuFlags') : true,
             resizeOnPlaylist: ls.isSet('resizeOnPlaylist') ? ls('resizeOnPlaylist') : true,
             startFullscreen: ls.isSet('startFullscreen') ? ls.isSet('startFullscreen') : false,
@@ -196,6 +197,7 @@ default React.createClass({
                 findSubs: ls.isSet('findSubs') ? ls('findSubs') : true,
                 askFiles: ls.isSet('askFiles') ? ls('askFiles') : false,
                 autoSub: ls.isSet('autoSub') ? ls('autoSub') : true,
+                subLimit: ls('subLimit'),
                 menuFlags: ls.isSet('menuFlags') ? ls('menuFlags') : true,
                 removeLogic: ls('removeLogic') == 0 ? 'Always Ask' : ls('removeLogic') == 1 ? 'Always Remove' : 'Always Keep',
                 downloadType: ls('downloadType') == 0 ? 'Player' : 'Dashboard',
@@ -493,6 +495,18 @@ default React.createClass({
         ls('subEncoding', this.state.subEncodings[newEncoding][1]);
         
         this.refs['subEncodingInput'].value = this.state.subEncodings[newEncoding][0];
+    },
+    
+    _handleSubLimit(event, direction) {
+        if (direction == -1) {
+            if (ls('subLimit') == 0) ls('subLimit', ls('subLimits').length -1)
+            else ls('subLimit', ls('subLimit') -1)
+        } else {
+            if (ls('subLimit') == ls('subLimits').length -1) ls('subLimit', 0)
+            else ls('subLimit', ls('subLimit') +1)
+        }
+
+        this.refs['subLimitInput'].value = ls('subLimits')[ls('subLimit')]
     },
     
     _handlePort(event, direction) {
@@ -1182,6 +1196,14 @@ default React.createClass({
                 title: 'Find Subtitles',
                 tag: 'findSubs'
             }, {
+                type: 'select',
+                title: 'Find Subtitles Limit',
+                tag: 'subLimit',
+                width: '50px',
+                disabled: true,
+                height: '24px',
+                default: ls('subLimits')[ls('subLimit')]
+            }, {
                 type: 'toggle',
                 title: 'Auto-select Subtitle',
                 tag: 'autoSub'
@@ -1206,6 +1228,7 @@ default React.createClass({
                 title: 'Subtitle Color',
                 tag: 'subColor',
                 width: '60px',
+                height: '24px',
                 disabled: true,
                 default: this.state.subColors[this.state.subColor]
             }, {
@@ -1361,19 +1384,23 @@ default React.createClass({
 
                     if (!el.func) el.func = el.tag.charAt(0).toUpperCase() + el.tag.slice(1);
 
-                    if (el.disabled)
+                    if (el.disabled) {
+
+                        var style = {float: 'right', height: '32px', width: el.width, top: '-5px', marginRight: '4px', textAlign: 'right' }
+    
+                        if (el.height) style.height = el.height
 
                         var newTextField = (
                             <paper-input
                                 ref={el.tag + 'Input'}
                                 value={el.default}
-                                style={{float: 'right', height: '32px', width: el.width, top: '-5px', marginRight: '4px', textAlign: 'right'}}
+                                style={style}
                                 no-label-float
                                 disabled={true}
                                 className="dark-input" />
                         );
 
-                    else
+                    } else
 
                         var newTextField = (
                             <paper-input

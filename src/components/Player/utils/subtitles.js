@@ -37,11 +37,12 @@ subtitles.fetchOsCookie = retryCookie => {
 subtitles.fetchSubs = (newObjective) => {
     objective = newObjective;
     objective.filename = parser(objective.filepath).filename();
+    objective.limit = ls('subLimits')[ls('subLimit')]
     
     if (subFinder) subFinder.terminate();
     
     if (process.env['devMode']) {
-        subFinder = new worker('../../build/js/components/Player/workers/subtitles/find.js', true);
+        subFinder = new worker('../../js/components/Player/workers/subtitles/find.js', true);
     } else {
         subFinder = new worker('../../js/components/Player/workers/subtitles/find.js', true);
     }
@@ -57,7 +58,7 @@ subtitles.fetchSubs = (newObjective) => {
             subFinder = false;
         }
     });
-    
+
     subFinder.postMessage(objective);
 }
 
@@ -66,7 +67,8 @@ subtitles.processSub = (srt, extension, cb) => {
     if (subParser) subParser.terminate();
 
     if (process.env['devMode']) {
-        subParser = new worker('../../build/js/components/Player/workers/subtitles/parse.js', true);
+//        subParser = new worker('../../build/js/components/Player/workers/subtitles/parse.js', true);
+        subParser = new worker('../../js/components/Player/workers/subtitles/parse.js', true);
     } else {
         subParser = new worker('../../js/components/Player/workers/subtitles/parse.js', true);
     }
@@ -167,9 +169,9 @@ subtitles.findLine = (subLines, trackSub, subDelay, time) => {
                             subLines[line].t = subLines[line].t.replace(/<\/?[^>]+(>|$)/g, "");
                     } else if ((subLines[line].t.match(new RegExp("<", "g")) || []).length > 2)
                         subLines[line].t = subLines[line].t.replace(/<\/?[^>]+(>|$)/g, "");
-					
-					// additional subtitle sanitizer (for safety)
-					subLines[line].t = subLines[line].t.replace(/(<([^>]+)>)/ig, "");
+                    
+                    // additional subtitle sanitizer (for safety)
+                    subLines[line].t = subLines[line].t.replace(/(<([^>]+)>)/ig, "");
                         
                     resolve({
                         text: subLines[line].t,

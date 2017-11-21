@@ -24,7 +24,9 @@ var map = {
     speedLimit: 0,
     downloadAll: false,
     forceDownload: false,
-    peerID: 'PP0110'
+    peerID: 'PP0110',
+    subLimits: ['best', 'all', 3, 4 ,5],
+    subLimit: 0
 }
 
 module.exports = () => {
