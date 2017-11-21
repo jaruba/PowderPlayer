@@ -91,26 +91,8 @@ module.exports = {
     read(torrent) {
         return new Promise((resolve, reject) => {
             readTorrent(torrent, (err, parsedTorrent) => {
-                if (!err && require('path').isAbsolute(torrent)) {
-                    var trackers = '';
-
-                    if (parsedTorrent) {
-                        
-                        if (parsedTorrent.name)
-                            trackers += '&dn=' + parsedTorrent.name.toLowerCase().split(' ').join('+');
-                    
-                        if (parsedTorrent.announce && parsedTorrent.announce.length)
-                            for (var ldf = 0; parsedTorrent.announce[ldf]; ldf++)
-                                trackers += '&tr=' + encodeURIComponent(parsedTorrent.announce[ldf]);
-
-                    }
-                    
-                    readTorrent("magnet:?xt=urn:btih:" + parsedTorrent.infoHash + trackers, (err, parsedTorrent) => {
-                        return (err || !parsedTorrent) ? reject(err) : resolve(parsedTorrent);
-                    });
-                } else {
-                    return (err || !parsedTorrent) ? reject(err) : resolve(parsedTorrent);
-                }
+                if (!err && parsedTorrent) resolve(parsedTorrent)
+                else reject(err)
             });
         });
     },
@@ -193,7 +175,7 @@ module.exports = {
                         size: file.length,
                         id: file.fileID,
                         name: file.name,
-                        streamable: true,
+                        streamable: false,
                         infoHash: infoHash,
                         path: ls.isSet('downloadFolder') ? path.join(ls('downloadFolder'), file.path) : path.join(temp, 'Powder-Player', infoHash, file.path)
                     })
