@@ -52,6 +52,18 @@ default React.createClass({
     searchTrakt() {
         var t = this.refs['searchInput'].$.input.value;
         var isSuggestion = false;
+        var setting = player.itemDesc().setting;
+        var type
+        if (setting) {
+            if (setting.parsed && setting.parsed.type)
+                type = setting.parsed.type
+            else if (setting.trakt && (setting.trakt.season || setting.trakt.number))
+                type = 'series'
+            else if (setting.trakt)
+                type = 'movie'
+            
+            if (type == 'series') type = 'show'
+        }
         results.forEach( el => {
             if (el == t) isSuggestion = true;
         });
@@ -61,7 +73,7 @@ default React.createClass({
             document.querySelector('#input-remote').suggestions([]);
         } else {
             var that = this;
-            traktUtil.search({ query: t }).then( res => {
+            traktUtil.search({ query: t, type: type }).then( res => {
                 var resObj = [];
                 var optsObj = {};
     
@@ -136,64 +148,77 @@ default React.createClass({
                     
                 summary(buildQuery).then( results => {
 
-                    var idx = player.wcjs.playlist.currentItem;
-
-                    if (idx > -1 && results && results.title) {
-                                    
-                        var newObj = {
-                            idx: idx
-                        };
-                        try {
-                            // this is the episode title for series
-                            newObj.title = parsed.name.split(' ').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
-                        } catch(e) {
-                            newObj.title = results.title;
-                        }
-                        
-                        if (results.season && results.number) {
-                            newObj.title += ' S' + ('0' + results.season).slice(-2) + 'E' + ('0' + results.number).slice(-2);
-                        } else if (results.year) {
-                            newObj.title += ' ' + results.year;
-                        }
-                        
-                        if (results.images) {
-                            if (results.images.screenshot && results.images.screenshot.thumb) {
-                                newObj.image = results.images.screenshot.thumb;
-                            } else if (results.images.fanart && results.images.fanart.thumb) {
-                                newObj.image = results.images.fanart.thumb;
+                    function moveMeta(results) {
+                        var idx = player.wcjs.playlist.currentItem;
+    
+                        if (idx > -1 && results && results.title) {
+                                        
+                            var newObj = {
+                                idx: idx
+                            };
+                            try {
+                                // this is the episode title for series
+                                newObj.title = parsed.name.split(' ').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
+                            } catch(e) {
+                                newObj.title = results.title;
+                            }
+                            
+                            if (results.season && results.number) {
+                                newObj.title += ' S' + ('0' + results.season).slice(-2) + 'E' + ('0' + results.number).slice(-2);
+                            } else if (results.year) {
+                                newObj.title += ' ' + results.year;
+                            }
+                            
+                            if (results.images) {
+                                if (results.images.screenshot && results.images.screenshot.thumb) {
+                                    newObj.image = results.images.screenshot.thumb;
+                                } else if (results.images.fanart && results.images.fanart.thumb) {
+                                    newObj.image = results.images.fanart.thumb;
+                                } else {
+                                    newObj.image = '';
+                                }
                             } else {
                                 newObj.image = '';
                             }
-                        } else {
-                            newObj.image = '';
-                        }
-
-                        newObj.parsed = parsed;
-                        newObj.trakt = results;
-
-                        PlayerActions.setDesc(newObj);
-
-                        player.events.emit('setTitle', newObj.title);
-
-                        ModalActions.close();
-                        ModalActions.open({
-                            title: 'Trakt Info',
-                            type: 'TraktInfo',
-                            theme: 'DarkRawTheme'
-                        });
-                        if (traktUtil.loggedIn) {
-                            var shouldScrobble = ls.isSet('traktScrobble') ? ls('traktScrobble') : true;
-                            if (shouldScrobble) {
-                                var newType = '';
-                                if (prevTrakt)
-                                    traktUtil.scrobble('stop', player.wcjs.position, prevTrakt);
-
-                                if (results)
-                                    traktUtil.scrobble('start', player.wcjs.position, results);
+    
+                            newObj.parsed = parsed;
+                            newObj.trakt = results;
+    
+                            PlayerActions.setDesc(newObj);
+    
+                            player.events.emit('setTitle', newObj.title);
+    
+                            ModalActions.close();
+                            ModalActions.open({
+                                title: 'Trakt Info',
+                                type: 'TraktInfo',
+                                theme: 'DarkRawTheme'
+                            });
+                            if (traktUtil.loggedIn) {
+                                var shouldScrobble = ls.isSet('traktScrobble') ? ls('traktScrobble') : true;
+                                if (shouldScrobble) {
+                                    var newType = '';
+                                    if (prevTrakt)
+                                        traktUtil.scrobble('stop', player.wcjs.position, prevTrakt);
+    
+                                    if (results)
+                                        traktUtil.scrobble('start', player.wcjs.position, results);
+                                }
                             }
+                            player.events.emit('foundTrakt', true);
                         }
-                        player.events.emit('foundTrakt', true);
                     }
+                                        // try to fetch background (as trakt doesn't allow image hotlinking anymore)
+                    traktUtil.getImages(results).then(imgRes => {
+                        if (imgRes && (imgRes.background || imgRes.episode)) {
+                            if (!results.images) results.images = {}
+                            if (!results.images.fanart) results.images.fanart = {}
+                            if (!results.images.fanart.thumb) results.images.fanart.thumb = imgRes.episode || imgRes.background
+                        }
+                        moveMeta(results)
+                    }).catch(err => {
+                        moveMeta(results)
+                    })
                 }).catch( err => {
                     console.log('Error: '+ err.message);
                 });

@@ -7,15 +7,15 @@ import ls from 'local-storage';
 var trakttv = new Trakt({
     client_id: window.atob('MTBkYTI2ZGYwYmI4NzQ5MTY5OTQ4YzU3ODJjYmEyZjMxZDJlNWQ0N2I1NzNlNGFjZDE1MzgwN2U3NjFlZWRjYQ=='),
     client_secret: window.atob('MGE4Y2E2ZjIxNGUzN2JiYmIwOTcxOGI5MGU2NjE0YzRlZDlmYmIxZDkwZmEwOWVlZjZiMmE1MTcwMTY4YWQ5MA=='),
-	plugins: ['images'],
-	options: {
-		images: {
-			fanartApiKey: window.atob('YWQ1NjhkZTM4N2E1YWRmN2NiNWI1NTU0OWZkYzAzNGQ='),
-			tmdbApiKey: window.atob('MDU5MDFjZGVjNWZhYWQ0ZGM4MWNhYjU1NjllODUzOGM='),
-			tvdbApiKey: window.atob('ODFBNkNGMUYwQzExRDFGOQ=='),
-			smallerImages: false
-		}
-	}
+    plugins: ['images'],
+    options: {
+        images: {
+            fanartApiKey: window.atob('YWQ1NjhkZTM4N2E1YWRmN2NiNWI1NTU0OWZkYzAzNGQ='),
+            tmdbApiKey: window.atob('MDU5MDFjZGVjNWZhYWQ0ZGM4MWNhYjU1NjllODUzOGM='),
+            tvdbApiKey: window.atob('ODFBNkNGMUYwQzExRDFGOQ=='),
+            smallerImages: false
+        }
+    }
 }, true);
 var trakt = {};
     
@@ -112,11 +112,11 @@ trakt.handleScrobble = (state, desc, progress) => {
 // todo: parse here?
 // todo: cleanse 'query' before searching?
 trakt.search = query => {
-    return trakttv.search(query);
+    return trakttv.search.text(query);
 }
 
 trakt.getImages = query => {
-	return trakttv.images.get(query)
+    return trakttv.images.get(query)
 }
 
 trakt.movieInfo = trakttv.movies.summary;
