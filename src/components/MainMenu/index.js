@@ -22,11 +22,6 @@ import player from '../Player/utils/player';
 import supported from '../../utils/isSupported';
 import ls from 'local-storage';
 
-import torrentStream from 'torrent-stream';
-import torrentUtil from '../../utils/stream/torrentUtil';
-import readTorrent from 'read-torrent';
-import getPort from 'get-port';
-
 import async from 'async';
 
 import {
@@ -43,8 +38,11 @@ import linkUtil from '../../utils/linkUtil';
 
 import _ from 'lodash';
 
+import request from 'request';
+
 var historyQueue = null;
 var loadedTorrents = [];
+var mainMsg = '';
 
 export
 default React.createClass({
@@ -54,7 +52,8 @@ default React.createClass({
             dropBorderColor: '#ccc',
             lastZoom: 0,
             extensionView: false,
-            settingsView: false
+            settingsView: false,
+            mainText: ''
         }
     },
     componentWillMount() {
@@ -67,11 +66,32 @@ default React.createClass({
         currentWindow.setSize(currentSize[0], currentSize[1]);
         this.handleResize();
         player.events.on('dropObj', this.historyLoad);
+        if (mainMsg) {
+            _.defer(() => {
+                this.setState({
+                    mainText: mainMsg
+                })
+            })
+        } else {
+            request('http://powder.media/maintext.txt', (error, response, body) => {
+                if (!error && body) {
+                    mainMsg = body
+                    this.setState({
+                        mainText: body
+                    })
+                }
+            })
+        }
+    },
+    
+    printMainText() {
+        return {__html: this.state.mainText}
     },
 
     componentDidMount() {
         ipcRenderer.send('app:title', 'Powder Player');
         window.historyLoad = this.historyLoad
+        window.mainmenuDrop = this.onDrop
     },
 
     componentWillUnmount() {
@@ -151,7 +171,6 @@ default React.createClass({
         }
         
         if (fakeTorrent) {
-            
             PlayerActions.addPlaylist([fakeTorrent]);
 
             metaParser.push({
@@ -391,6 +410,8 @@ default React.createClass({
                                     </span>
                                 </paper-button>
                             </div>
+                            <br />
+                            <div style={{ marginTop: '107px', padding: '0 30px', fontFamily: 'Droid Sans', fontSize: '16px', fontWeight: '500', color: '#767a7b', lineHeight: '23px' }} dangerouslySetInnerHTML={this.printMainText()} />
                         </div>
                     </Dropzone>
                </center>
