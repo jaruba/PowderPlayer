@@ -67,7 +67,7 @@ class torrentActions {
 
                     if (files.ordered.length) {
                         files.ordered.forEach( (file, ij) => {
-                            if (file.name.toLowerCase().replace("sample","") == file.name.toLowerCase() && file.name != "ETRG.mp4" && file.name.toLowerCase().substr(0,5) != "rarbg") {
+                            if (file.name.toLowerCase().replace("sample","") == file.name.toLowerCase() && file.name != "ETRG.mp4" && file.name.toLowerCase().substr(0,5) != "rarbg" && file.streamable) {
                                 newFiles.push({
                                     title: parser(file.name).name(),
                                     uri: 'http://127.0.0.1:' + EngineStore.state.torrents[file.infoHash].server.address().port + '/' + file.id,
@@ -86,10 +86,10 @@ class torrentActions {
                         });
                     }
 
-                    if (ls('downloadType') == 0 && !ls('playerType')) {
+                    if (ls('downloadType') == 0 && !ls('playerType') && newFiles.length) {
                         // start with internal player
                         PlayerActions.addPlaylist(newFiles);
-                    } else if (ls('downloadType') == 1 || ls('playerType')) {
+                    } else if (ls('downloadType') == 1 || ls('playerType') || !newFiles.length) {
 
                         var playerExec = '"' + ls('playerType') + '"';
                         var os = require('os');
