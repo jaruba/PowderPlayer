@@ -212,7 +212,7 @@ class supportedLinks {
                                 video.on('error', function(err) {
                                     next();
                                 });
-    
+
                                 video.on('info', function(info) {
                                     if (!(info['display_id'] && uniqueIDs.indexOf(info['display_id']) > -1) && info.url) {
                                         info['display_id'] && uniqueIDs.push(info['display_id']);
@@ -223,7 +223,7 @@ class supportedLinks {
                                         };
                                         var file = {
                                             originalURL: el,
-                                            uri: parsed.url,
+                                            uri: info.url,
                                             youtubeDL: true,
                                             image: info.thumbnail,
                                             title: info.fulltitle
