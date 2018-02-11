@@ -51,10 +51,12 @@ events.buffering = (perc) => {
         }
 
         var current = player.wcjs.playlist.currentItem;
+
         if (isTorrent && current > -1 && itemDesc && itemDesc.mrl.startsWith('http://') && typeof itemDesc.setting.streamID !== 'undefined') {
             // check if the file has been completely downloaded
             var engineInstance = engineState.torrents[engineState.infoHash]
             var file = engineInstance.files[itemDesc.setting.streamID]
+
             if (file) {
                 var fileProgress = engineInstance.torrent.pieces.bank.filePercent(file.offset, file.length)
 
@@ -62,6 +64,9 @@ events.buffering = (perc) => {
                 // this fix when player.wcjs.position == 0
 
 //                if (fileProgress >= 1 && player.wcjs.position) {
+
+                // ^ this was a bug that matched the cache of a different file
+                // (unless proven otherwise)
 
                 if (fileProgress >= 1 && !immuneToFix) {
                     // file is completely downloaded, so it shouldn't need to buffer
@@ -71,6 +76,7 @@ events.buffering = (perc) => {
 
                     var progressElem = document.querySelector('.wcjs-player .time');
                     progressElem.className = progressElem.className.split(' smooth-progress').join('');
+
                     immuneToEvents = true
                     _.delay(() => {
                         progressElem.className = progressElem.className + ' smooth-progress';
@@ -251,7 +257,9 @@ events.opening = () => {
                                         if (downloaded) {
                                             var uriToPlay = 'file:///' + pItemDesc.setting.path
                                         } else {
+
                                             var file = instance.files[pItemDesc.setting.streamID];
+
                                             var fileProgress = instance.torrent.pieces.bank.filePercent(file.offset, file.length)
                                             if (fileProgress >= 1)
                                                 var uriToPlay = 'file:///' + pItemDesc.setting.path
