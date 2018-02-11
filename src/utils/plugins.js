@@ -175,7 +175,7 @@ var plugins = {
                 var updated = 0;
                 pluginPaths.forEach( el => {
                     request('http://powder.media/plugins/' + el + '.js', function (error, response, body) {
-                        if (!error && response.statusCode == 200)
+                        if (!error && response.statusCode == 200 && body && body.startsWith('module.exports'))
                             fs.writeFile(path.join(userData, 'plugins', el + '.js'), body, function (err) {
                                 if (!err) updated++;
                                 if (updated == pluginPaths.length) {

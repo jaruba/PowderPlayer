@@ -74,10 +74,10 @@ default React.createClass({
             })
         } else {
             request('http://powder.media/maintext.txt', (error, response, body) => {
-                if (!error && body) {
-                    mainMsg = body
+                if (!error && body && body.startsWith('[main-text]')) {
+                    mainMsg = body.replace('[main-text]', '')
                     this.setState({
-                        mainText: body
+                        mainText: mainMsg
                     })
                 }
             })
