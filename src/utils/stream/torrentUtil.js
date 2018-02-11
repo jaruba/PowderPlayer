@@ -67,6 +67,7 @@ module.exports = {
                             return
                         }
                         this.streams[engine.infoHash] = engine
+
                         resolve(engine);
                     });
 
@@ -102,24 +103,25 @@ module.exports = {
             var directorys = [];
             var files_total = files.length;
             var files_organized = {};
-            var files_firstName;
+
+            var anyShortSz
 
             for (var fileID in files) {
                 var file = files[fileID];
-                if (!files_firstName)
-                    files_firstName = file.name;
+                if (!anyShortSz && parser(file.name).shortSzEp())
+                    anyShortSz = true
 
                 files[fileID].fileID = fileID;
             }
 
             if (files_total > 1) {
-                if (parser(files_firstName).shortSzEp()) {
+                if (anyShortSz) {
                     files = sorter.episodes(files, 2);
                 } else {
                     files = sorter.naturalSort(files, 2);
                 }
             }
-            
+
             var torrent = EngineStore.getState().torrents[infoHash];
             var selectedFirst = false
             
@@ -165,7 +167,7 @@ module.exports = {
                     directorys.push(fileParams.dir);
                 }
             })
-            
+
             if (!anyStreamable) {
                 files_organized.ordered = []
                 files.forEach(function(el) {

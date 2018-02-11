@@ -302,7 +302,12 @@ const Player = React.createClass({
             }
         }
 
-        if (parser(files[0].name).shortSzEp())
+        var anyShortSz = files.some(function(el) {
+            if (parser(el.name).shortSzEp())
+                return true
+        })
+
+        if (anyShortSz)
             files = sorter.episodes(files, 2);
         else
             files = sorter.naturalSort(files, 2);
@@ -335,7 +340,12 @@ const Player = React.createClass({
         var addDir = (filePath) => {
             var newFiles = fs.readdirSync(filePath);
 
-            if (parser(newFiles[0]).shortSzEp())
+            var anyShortSz = newFiles.some(function(el) {
+                if (parser(el).shortSzEp())
+                    return true
+            })
+
+            if (anyShortSz)
                 newFiles = sorter.episodes(newFiles, 1);
             else
                 newFiles = sorter.naturalSort(newFiles, 1);

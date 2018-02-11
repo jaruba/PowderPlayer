@@ -66,8 +66,13 @@ module.exports = {
 
                 var newFiles = [];
                 var queueParser = [];
-                
-                if (parser(files[0].name).shortSzEp())
+
+                var anyShortSz = files.some(function(el) {
+                    if (parser(el.name).shortSzEp())
+                        return true
+                })
+
+                if (anyShortSz)
                     files = sorter.episodes(files, 2);
                 else
                     files = sorter.naturalSort(files, 2);

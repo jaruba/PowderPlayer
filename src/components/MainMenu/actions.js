@@ -58,8 +58,13 @@ class MainMenuActions {
             if (filename && filename.length) {
                 
                 if (filters[0].name == 'Videos') {
-                
-                    if (parser(filename[0]).shortSzEp()) {
+
+                    var anyShortSz = filename.some(function(el) {
+                        if (parser(el).shortSzEp())
+                            return true
+                    })
+
+                    if (anyShortSz) {
                         filename = sorter.episodes(filename, 1);
                     } else {
                         filename = sorter.naturalSort(filename, 1);
