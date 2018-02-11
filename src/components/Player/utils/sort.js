@@ -17,60 +17,71 @@ var sorter = {
     parser: require('./parser'),
 
     episodes: (results, logic) => {
+        if (results[0] && results[0].constructor == File) {
+            var newResults = convertFileToObj(results);
+        } else {
+            // if it's not a file, then it may the a torrent file list
+            // we need to clone it otherwise it fucks up the list
+            var newResults = JSON.parse(JSON.stringify(results))
+        }
+
         logic = typeof logic !== 'undefined' ? logic : 1; // 1 - episode sort, 2 - episode sort (by .name)
         var perfect = false;
 
-        if (results[0] && results[0].constructor == File)
-            results = convertFileToObj(results);
-
         while (!perfect) {
             perfect = true;
-            _.forEach(results, (el, ij) => {
+            _.forEach(newResults, (el, ij) => {
                 if (ij > 0) {
                     if (logic == 1) {
                         var clean = sorter.parser(el);
-                        var prev = sorter.parser(results[ij-1]);
+                        var prev = sorter.parser(newResults[ij-1]);
                     } else if (logic == 2) {
                         var clean = sorter.parser(el.name);
-                        var prev = sorter.parser(results[ij-1].name);
+                        var prev = sorter.parser(newResults[ij-1].name);
                     }
 
                     if ((clean.season() == prev.season() && clean.episode() < prev.episode()) || (clean.season() < prev.season())) {
-                        results[ij] = results[ij-1];
-                        results[ij-1] = el;
+                        newResults[ij] = newResults[ij-1];
+                        newResults[ij-1] = el;
                         perfect = false;
                     }
                 }
             });
         }
-        return results;
+        return newResults;
     },
 
     naturalSort: (arr, logic) => {
+
+        if (arr[0] && arr[0].constructor == File) {
+            var newResults = convertFileToObj(newResults)
+        } else {
+            // if it's not a file, then it may the a torrent file list
+            // we need to clone it otherwise it fucks up the list
+            var newResults = JSON.parse(JSON.stringify(arr))
+        }
+
         // natural sort order function for playlist and library
         logic = typeof logic !== 'undefined' ? logic : 1; // 1 - natural sort, 2 - natural sort (by .name)
 
-        if (arr[0] && arr[0].constructor == File)
-            arr = convertFileToObj(arr);
-
-        if (arr.length > 1) {
+        if (newResults.length > 1) {
             var perfect = false;
             while (!perfect) {
                 perfect = true;
-                _.forEach(arr, (el, ij) => {
-                    if (arr[ij+1]) {
-                        if (logic == 1) var difference = sorter._alphanumCase(sorter.parser(el).name(),sorter.parser(arr[ij+1]).name());
-                        else if (logic == 2) var difference = sorter._alphanumCase(sorter.parser(el.name).name(),sorter.parser(arr[ij+1].name).name());
+                _.forEach(newResults, (el, ij) => {
+                    if (newResults[ij+1]) {
+                        if (logic == 1) var difference = sorter._alphanumCase(sorter.parser(el).name(),sorter.parser(newResults[ij+1]).name());
+                        else if (logic == 2) var difference = sorter._alphanumCase(sorter.parser(el.name).name(),sorter.parser(newResults[ij+1].name).name());
                         if (difference > 0) {
                             perfect = false;
-                            arr[ij] = arr[ij+1];
-                            arr[ij+1] = el;
+                            newResults[ij] = newResults[ij+1];
+                            newResults[ij+1] = el;
                         }
                     }
                 });
             }
         }
-        return arr;
+        return newResults;
     },
 
     _alphanumCase: (a, b) => {
