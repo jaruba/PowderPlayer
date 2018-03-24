@@ -3,7 +3,8 @@ function toSeconds(t){
     if (t) {
         var p = t.split(':');
         t.split(':').forEach( el => {
-            s = s * 60 + parseFloat( el.replace(',', '.') );
+            if (el)
+                s = s * 60 + parseFloat( el.replace(',', '.') );
         });
     }
     return s;
@@ -11,6 +12,11 @@ function toSeconds(t){
 
 var processSub = (srt, extension, cb) => {
     
+    if (!srt) {
+        cb(null)
+        return
+    }
+
     var parsedSub = [];
     
     if (extension.toLowerCase() == "srt" || extension.toLowerCase() == "vtt") {

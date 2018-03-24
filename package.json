@@ -2,15 +2,18 @@
   "name": "Powder-Player",
   "version": "1.2.0",
   "author": "Branza Victor-Alexandru <branza.alex@gmail.com>",
-  "contributors": [{
-    "name": "Luigi Poole",
-    "email": "luigi@violently.sexy"
-  },{
-    "name": "Jean van Kasteel",
-    "email": "vankasteelj@gmail.com"
-  }],
+  "contributors": [
+    {
+      "name": "Luigi Poole",
+      "email": "luigi@violently.sexy"
+    },
+    {
+      "name": "Jean van Kasteel",
+      "email": "vankasteelj@gmail.com"
+    }
+  ],
   "description": "Powder is the future of all torrent requirements, it's a hybrid between a Torrent Client (Peerflix) and a Customized Player (WebChimera.js).",
-  "relese-name": "Kingfisher",
+  "relese-name": "Nightingale",
   "homepage": "http://powder.media/",
   "main": "js/browser.js",
   "repository": {
@@ -36,7 +39,7 @@
     "name-to-imdb": "^1.0.1",
     "needle": "^0.11.0",
     "node-notifier": "^4.6.0",
-    "opensubtitles-api": "^2.3.0",
+    "opensubtitles-api": "https://github.com/jaruba/opensubtitles-api",
     "parse-torrent": "^5.7.0",
     "torrent-worker": "https://github.com/jaruba/torrent-worker/tarball/master",
     "react": "^0.14.5",
@@ -91,7 +94,7 @@
     "youtube-dl": "https://github.com/jaruba/node-youtube-dl/tarball/master",
     "easy-ffmpeg": "https://github.com/jaruba/easy-ffmpeg/tarball/master",
     "multipass-torrent": "https://github.com/DavyBavy/multipass-torrent/tarball/master",
-	"hat": "0.0.3"
+    "hat": "0.0.3"
   },
   "devDependencies": {
     "babel": "^6.3.13",
