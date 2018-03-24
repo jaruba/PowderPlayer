@@ -28,6 +28,16 @@ module.exports = {
                         window.clSub = getParam(el, '--sub-file');
                     } else if (el.startsWith('--title=')) {
                         window.clTitle = getParam(el, '--title');
+                        if (window.getExtendedDetails) {
+                            window.extendedTitle = window.clTitle
+                        }
+                    } else if (el.startsWith('--no-update-check')) {
+                        window.noUpdate = true
+                    } else if (el == '--get-extended') {
+                        if (window.clTitle) {
+                            window.extendedTitle = window.clTitle
+                        }
+                        window.getExtendedDetails = true
                     }
                 } else {
                     if (path.isAbsolute(el)) {
@@ -53,6 +63,18 @@ module.exports = {
         
                         linkUtil(el).then(url => {
                             ModalActions.close();
+                            if (window.getExtendedDetails) {
+
+                                if (window.extendedTitle) {
+
+                                    var extTitle = window.extendedTitle
+                                    _.delay(() => {
+                                        metaParser.push({ idx: 0, filename: extTitle + '.mp4' });
+                                    },1000);
+
+                                }
+
+                            }
                         }).catch(error => {
                             ModalActions.close();
                             MessageActions.open(error.message);

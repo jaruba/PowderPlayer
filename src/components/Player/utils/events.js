@@ -529,13 +529,21 @@ events.playing = () => {
             }
         }
 
+        var itemMrl = itemDesc.mrl
+
         var itemDesc = itemDesc.setting;
 
         if (itemDesc.subtitles) {
             ControlActions.settingChange({ foundSubs: true });
             SubtitleActions.foundSubs(itemDesc.subtitles, false);
-        } else if (itemDesc.path && (!ls.isSet('findSubs') || ls('findSubs')))
+        } else if (itemDesc.path && (!ls.isSet('findSubs') || ls('findSubs'))) {
             SubtitleActions.findSubs(itemDesc);
+        } else if (itemMrl && window.getExtendedDetails && (!ls.isSet('findSubs') || ls('findSubs'))) {
+            setTimeout(function() {
+                itemDesc = player.itemDesc().setting
+                SubtitleActions.findSubs(itemDesc);
+            }, 2000) // give some time for itemDesc.parsed to finish
+        }
 
         if (window.clSub) {
             // if subtitle command line arg set, load it

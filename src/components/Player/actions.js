@@ -70,6 +70,7 @@ class PlayerActions {
     }
     
     addPlaylist(data) {
+
         if (!player.wcjs) {
             player.wcjsInit();
         }
@@ -90,12 +91,13 @@ class PlayerActions {
         var wcjs = player.wcjs;
 
         if (!wcjs) {
-            if (data.length)
+            if (data.length) {
                 player.set({
                     pendingFiles: data,
                     files: player.files.concat(data),
                     pendingSelected: selected
                 });
+            }
         } else {
 
             player.set({
@@ -108,8 +110,17 @@ class PlayerActions {
             for (var i = 0; data[i]; i++) {
                 if (typeof data[i] === 'string') {
                     wcjs.playlist.add(data[i]);
-                    wcjs.playlist.items[wcjs.playlist.items.count - 1].parseAsync();
+                    var lastIdx = wcjs.playlist.items.count - 1;
+                    wcjs.playlist.items[lastIdx].parseAsync();
+                    if (window.clTitle) {
+                        this.actions.setDesc({
+                            idx: lastIdx,
+                            title:  window.clTitle || null
+                        });
+                        delete window.clTitle;
+                    }
                 } else if (data[i].uri) {
+
                     wcjs.playlist.add(data[i].uri);
                     if (data[i].title)
                         wcjs.playlist.items[wcjs.playlist.items.count - 1].title = data[i].title;

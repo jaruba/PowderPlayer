@@ -29,10 +29,34 @@ class SubtitleActions {
 
     findSubs(itemDesc, cb, idx) {
 
-        var subQuery = {
-            filepath: itemDesc.path,
-            fps: player.wcjs.input.fps
-        };
+        var subQuery = {}
+
+        if (player.wcjs.input.fps)
+            subQuery.fps = player.wcjs.input.fps
+
+        if (itemDesc.path)
+            subQuery.filepath = itemDesc.path
+
+        if (window.getExtendedDetails) {
+            if (itemDesc.parsed) {
+
+                if (itemDesc.parsed.imdb)
+                    subQuery.imdbid = itemDesc.parsed.imdb
+
+                if (itemDesc.parsed.name)
+                    subQuery.query = itemDesc.parsed.name
+
+                if (itemDesc.parsed.season)
+                    subQuery.season = itemDesc.parsed.season + ''
+
+                if (itemDesc.parsed.episode && itemDesc.parsed.episode[0])
+                    subQuery.episode = itemDesc.parsed.episode[0] + ''
+
+            } else if (window.extendedTitle) {
+                subQuery.query = window.extendedTitle
+            }
+            window.getExtendedDetails = null
+        }
 
         if (itemDesc.byteSize)
             subQuery.byteLength = itemDesc.byteSize;
