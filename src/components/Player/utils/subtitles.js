@@ -36,7 +36,8 @@ subtitles.fetchOsCookie = retryCookie => {
 
 subtitles.fetchSubs = (newObjective) => {
     objective = newObjective;
-    objective.filename = parser(objective.filepath).filename();
+    if (objective.filepath)
+        objective.filename = parser(objective.filepath).filename();
     objective.limit = ls('subLimits')[ls('subLimit')]
     
     if (subFinder) subFinder.terminate();
