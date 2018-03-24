@@ -68,6 +68,8 @@ default React.createClass({
             !item.setting && (item.setting = {})
 
             item.image = item.artworkURL || item.setting.image || noImage
+
+            item.image = item.image.replace('https://assets.fanart.tv', 'http://assets.fanart.tv')
             
             var showControls = (typeof window.currentItem !== 'undefined') ? (idx == window.currentItem) : (idx == player.wcjs.playlist.currentItem)
             

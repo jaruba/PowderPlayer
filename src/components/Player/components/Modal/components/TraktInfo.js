@@ -46,7 +46,7 @@ default React.createClass({
             parsedRating: (Math.round(setting.trakt.rating * 100) / 100)+' / 10 (' + setting.trakt.votes + ')',
             trakt: setting.trakt,
             parsed: setting.parsed,
-            image: setting.image
+            image: setting.image.replace('https://assets.fanart.tv', 'http://assets.fanart.tv')
         });
     },
     
@@ -143,7 +143,6 @@ default React.createClass({
             <paper-dialog
                 ref="dialog"
                 style={{width: '900px', textAlign: 'left', borderRadius: '3px', maxWidth: '90%', backgroundColor: '#303030', padding: '20px', overflowX: 'auto'}}
-                entry-animation="slide-from-top-animation"
                 opened={false}
                 className="trakt-info-dialog"
                 with-backdrop >
