@@ -179,7 +179,6 @@ default React.createClass({
 				<paper-dialog
 					ref="dialog"
 					style={{width: '400px', textAlign: 'left', borderRadius: '3px', maxWidth: '90%', backgroundColor: '#303030', padding: '20px', overflowX: 'auto'}}
-					entry-animation="fade-in-animation"
 					opened={false}
 					className="trakt-info-dialog"
 					modal={true} >

@@ -115,7 +115,6 @@ default React.createClass({
             <paper-dialog
                 ref="dialog"
                 style={{width: '440px', textAlign: 'left', borderRadius: '3px', maxWidth: '90%', backgroundColor: '#303030', padding: '0px', width: '200px', overflowX: 'auto'}}
-                entry-animation="slide-from-top-animation"
                 className="trakt-info-dialog"
                 opened={false}
                 with-backdrop >

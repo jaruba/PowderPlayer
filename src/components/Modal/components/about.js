@@ -27,7 +27,6 @@ default React.createClass({
                 ref="dialog"
                 className="trakt-info-dialog"
                 style={{width: '231px', textAlign: 'left', borderRadius: '3px', maxWidth: '90%', backgroundColor: '#303030', color: 'white', padding: '20px', overflowY: 'auto'}}
-                entry-animation="slide-from-top-animation"
                 opened={true}
                 with-backdrop >
                 

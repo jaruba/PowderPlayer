@@ -82,7 +82,7 @@ default React.createClass({
 
     render() {
         return (
-            <paper-dialog ref="dialog" className="pluginModal" style={{width: '440px', textAlign: 'left', borderRadius: '3px'}} entry-animation="fade-in-animation" opened={false} with-backdrop>
+            <paper-dialog ref="dialog" className="pluginModal" style={{width: '440px', textAlign: 'left', borderRadius: '3px'}} opened={false} with-backdrop>
                 <h2>Warning</h2><br />
                 <span style={{ display: 'block', marginTop: '0', textAlign: 'justify' }}>
                     <span style={{ display: 'inline-block', margin: '0', padding: '0', width: '10px', heigh: '1px' }} />You are about to install a torrent plugin. As this type of plugin gets feeds from websites that are user driven and not always well regulated, you might be in danger of downloading harmful software or copyrighted content.<br /><br />

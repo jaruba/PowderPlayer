@@ -211,7 +211,7 @@ default React.createClass({
         }
 
         return (
-            <paper-dialog ref="dialog" className="pluginModal" style={{width: '440px', textAlign: 'left', borderRadius: '3px'}} entry-animation="slide-from-top-animation" opened={false} with-backdrop>
+            <paper-dialog ref="dialog" className="pluginModal" style={{width: '440px', textAlign: 'left', borderRadius: '3px'}} opened={false} with-backdrop>
                 <div style={{width: '100%', position: 'relative', marginBottom: '15px', textAlign: 'center', padding: '0', marginBottom: '0'}}>
                     <img src={this.state.selected.image || image} style={{maxHeight: '120px', maxWidth: '90%'}} />
                 </div>

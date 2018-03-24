@@ -77,7 +77,6 @@ default React.createClass({
             <paper-dialog
                 ref="dialog"
                 style={{width: '440px', textAlign: 'left', borderRadius: '3px', overflowX: 'hidden'}}
-                entry-animation="slide-from-top-animation"
                 className="prettyScrollWhite"
                 opened={true}
                 with-backdrop >

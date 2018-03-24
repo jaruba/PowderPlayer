@@ -460,7 +460,6 @@ multipass.import(this.state.parseLink);
                 ref="dialog"
                 id="torrentSelDialog"
                 style={{width: '440px', textAlign: 'left', borderRadius: '3px', overflowX: 'auto'}}
-                entry-animation="slide-from-top-animation"
                 className="prettyScrollWhite"
                 opened={true}
                 with-backdrop >

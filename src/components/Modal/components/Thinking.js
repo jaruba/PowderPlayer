@@ -87,7 +87,7 @@ default React.createClass({
     render() {
         var statusText = this.state.stats.peers.total ? <p className="peers" >Connected to {this.state.stats.peers.total} Peers</p> : <p className="peers">Processing URL</p>;
         return (
-            <paper-dialog ref="dialog" style={{width: '440px', textAlign: 'left', borderRadius: '3px'}} entry-animation="slide-from-top-animation" opened={false} with-backdrop>
+            <paper-dialog ref="dialog" style={{width: '440px', textAlign: 'left', borderRadius: '3px'}} opened={false} with-backdrop>
                 <div style={{width: '394px', overflow: 'hidden', position: 'relative', marginBottom: '15px'}}>
                     <paper-progress indeterminate style={{width: '100%'}}></paper-progress>
                 </div>
