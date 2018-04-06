@@ -10,55 +10,57 @@ function resizeInBounds(newWidth, newHeight) {
 //    var scr = screen.getDisplayNearestPoint(screen.getCursorScreenPoint());
 
 // get screen where the window is
-    var scr = screen.getDisplayNearestPoint({ x: bounds.x, y: bounds.y });
+    setTimeout(function() {
+        var scr = screen.getDisplayNearestPoint({ x: bounds.x, y: bounds.y });
 
-    if (scr) {
-    
-        if (newWidth >= scr.workArea.width) {
-            if (newHeight >= scr.workArea.height) {
-                // width and height are larger then the screen
-                // resize to window screen size
-                win.setSize(scr.workArea.width, scr.workArea.height);
-                win.setPosition(scr.bounds.x, scr.bounds.y);
-            } else {
-                // width is larger then the screen width
-                // resize to window width size, vertically center height
-                win.setSize(scr.workArea.width, newHeight);
-                win.setPosition(scr.bounds.x, (scr.workArea.height - newHeight) /2);
-            }
-        } else {
-            if (bounds.x == scr.bounds.x + ((scr.workArea.width - bounds.width) /2) && bounds.y == scr.bounds.y + ((scr.workArea.height - bounds.height) /2)) {
-                // if perfectly centered, keep it centered
-                win.setPosition(scr.bounds.x + ((scr.workArea.width - newWidth) /2), scr.bounds.y + (scr.workArea.height - newHeight)/2);
-                win.setSize(newWidth, newHeight);
-            } else {
-                // resize the window, but keep it in bounds
+        if (scr) {
+        
+            if (newWidth >= scr.workArea.width) {
                 if (newHeight >= scr.workArea.height) {
-                    win.setSize(newWidth, scr.workArea.height);
-                    win.setPosition(scr.bounds.x+((scr.workArea.width - newWidth)/2), scr.bounds.y);
+                    // width and height are larger then the screen
+                    // resize to window screen size
+                    win.setSize(scr.workArea.width, scr.workArea.height);
+                    win.setPosition(scr.bounds.x, scr.bounds.y);
                 } else {
+                    // width is larger then the screen width
+                    // resize to window width size, vertically center height
+                    win.setSize(scr.workArea.width, newHeight);
+                    win.setPosition(scr.bounds.x, (scr.workArea.height - newHeight) /2);
+                }
+            } else {
+                if (bounds.x == scr.bounds.x + ((scr.workArea.width - bounds.width) /2) && bounds.y == scr.bounds.y + ((scr.workArea.height - bounds.height) /2)) {
+                    // if perfectly centered, keep it centered
+                    win.setPosition(scr.bounds.x + ((scr.workArea.width - newWidth) /2), scr.bounds.y + (scr.workArea.height - newHeight)/2);
                     win.setSize(newWidth, newHeight);
-                    if (bounds.x + newWidth > scr.bounds.x + scr.workArea.width) {
-                        if (bounds.y + newHeight > scr.workArea.height) {
-                            win.setPosition((scr.bounds.x + scr.workArea.width - newWidth), (scr.workArea.height - newHeight));
-                        } else if (bounds.y < scr.bounds.y) {
-                            win.setPosition((scr.bounds.x + scr.workArea.width - newWidth), scr.bounds.y);
-                        } else {
-                            win.setPosition((scr.bounds.x + scr.workArea.width - newWidth), bounds.y);
-                        }
+                } else {
+                    // resize the window, but keep it in bounds
+                    if (newHeight >= scr.workArea.height) {
+                        win.setSize(newWidth, scr.workArea.height);
+                        win.setPosition(scr.bounds.x+((scr.workArea.width - newWidth)/2), scr.bounds.y);
                     } else {
-                        if ((bounds.y + newHeight) > scr.workArea.height) {
-                            win.setPosition(bounds.x < scr.bounds.x ? scr.bounds.x : bounds.x, (scr.workArea.height - newHeight));
-                        } else if (bounds.y < scr.bounds.y) {
-                            win.setPosition(bounds.x < scr.bounds.x ? scr.bounds.x : bounds.x, scr.bounds.y);
-                        } else if (bounds.x < scr.bounds.x) {
-                            win.setPosition(scr.bounds.x, bounds.y);
+                        win.setSize(newWidth, newHeight);
+                        if (bounds.x + newWidth > scr.bounds.x + scr.workArea.width) {
+                            if (bounds.y + newHeight > scr.workArea.height) {
+                                win.setPosition((scr.bounds.x + scr.workArea.width - newWidth), (scr.workArea.height - newHeight));
+                            } else if (bounds.y < scr.bounds.y) {
+                                win.setPosition((scr.bounds.x + scr.workArea.width - newWidth), scr.bounds.y);
+                            } else {
+                                win.setPosition((scr.bounds.x + scr.workArea.width - newWidth), bounds.y);
+                            }
+                        } else {
+                            if ((bounds.y + newHeight) > scr.workArea.height) {
+                                win.setPosition(bounds.x < scr.bounds.x ? scr.bounds.x : bounds.x, (scr.workArea.height - newHeight));
+                            } else if (bounds.y < scr.bounds.y) {
+                                win.setPosition(bounds.x < scr.bounds.x ? scr.bounds.x : bounds.x, scr.bounds.y);
+                            } else if (bounds.x < scr.bounds.x) {
+                                win.setPosition(scr.bounds.x, bounds.y);
+                            }
                         }
                     }
                 }
             }
         }
-    }
+    })
 
 }
 function Texture(gl) {
