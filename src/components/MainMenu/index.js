@@ -22,6 +22,8 @@ import player from '../Player/utils/player';
 import supported from '../../utils/isSupported';
 import ls from 'local-storage';
 
+import plugins from '../../utils/plugins';
+import pickMessage from '../../utils/pickMessage';
 import async from 'async';
 
 import {
@@ -40,9 +42,13 @@ import _ from 'lodash';
 
 import request from 'request';
 
+import {
+    shell
+} from 'electron';
+
 var historyQueue = null;
 var loadedTorrents = [];
-var mainMsg = '';
+var mainMsg = pickMessage();
 
 export
 default React.createClass({
@@ -53,7 +59,7 @@ default React.createClass({
             lastZoom: 0,
             extensionView: false,
             settingsView: false,
-            mainText: ''
+            mainText: mainMsg
         }
     },
     componentWillMount() {
@@ -66,22 +72,6 @@ default React.createClass({
         currentWindow.setSize(currentSize[0], currentSize[1]);
         this.handleResize();
         player.events.on('dropObj', this.historyLoad);
-        if (mainMsg) {
-            _.defer(() => {
-                this.setState({
-                    mainText: mainMsg
-                })
-            })
-        } else {
-            request('http://powder.media/maintext.txt', (error, response, body) => {
-                if (!error && body && body.startsWith('[main-text]')) {
-                    mainMsg = body.replace('[main-text]', '')
-                    this.setState({
-                        mainText: mainMsg
-                    })
-                }
-            })
-        }
     },
     
     printMainText() {
@@ -92,6 +82,88 @@ default React.createClass({
         ipcRenderer.send('app:title', 'Powder Player');
         window.historyLoad = this.historyLoad
         window.mainmenuDrop = this.onDrop
+        window.openExternalPluginShortcuts = () => {
+            shell.openExternal('https://github.com/jaruba/PowderPlayer/wiki/Plugin-Shortcuts')
+        }
+        window.openExternalDonate = () => {
+            shell.openExternal('http://powder.media/donate')
+        }
+        window.openExternalReddit = () => {
+            shell.openExternal('https://www.reddit.com/r/PowderPlayer/')
+        }
+        window.openPlugin = (inputvalue) => {
+            if (inputvalue.includes(' ')) {
+                var shortcut = inputvalue.substr(0, inputvalue.indexOf(' '));
+                var searchTerm = inputvalue.replace(shortcut + ' ', '');
+            } else {
+                var shortcut = inputvalue;
+            }
+            if (shortcut) {
+                var feed = plugins.matchTags();
+                var plugin = plugins.getByShortcut(feed, shortcut);
+                if (!ls('torrentContent') && plugin.torrent) plugin = null;
+            }
+
+            if (plugin) {
+                if (plugin.tags.indexOf('installed') == -1) {
+                    ModalActions.plugin(plugin);
+                    return;
+                }
+
+                if (!plugin.search && searchTerm)
+                    searchTerm = false;
+
+                if (!searchTerm) {
+                    if (plugin.feed) {
+                        inputvalue = plugin.feed.replace('%p', plugin.search && typeof plugin.search.start != 'undefined' ? plugin.search.start : 1);
+                        if (plugin.categories) {
+                            for (var firstCat in plugin.categories) break;
+                            if (plugin.categories[firstCat] instanceof Array) {
+                                inputvalue = inputvalue.replace('%c', plugin.categories[firstCat][0]);
+                            } else {
+                                inputvalue = inputvalue.replace('%c', plugin.categories[firstCat]);
+                            }
+                        }
+                    }
+                } else {
+                    var forceCategory;
+                    if (plugin.categories) {
+                        _.some( plugin.categories, (el, ij) => {
+                            if (ij.toLowerCase() == searchTerm.toLowerCase().trim()) {
+                                forceCategory = ij;
+                                return true;
+                            }
+                        });
+                    }
+                    if (forceCategory) {
+                        var inputvalue = plugin.feed.replace('%p', plugin.search && typeof plugin.search.start != 'undefined' ? plugin.search.start : 1);
+                        if (plugin.categories[forceCategory] instanceof Array) {
+                            inputvalue = inputvalue.replace('%c', plugin.categories[forceCategory][0]);
+                        } else {
+                            inputvalue = inputvalue.replace('%c', plugin.categories[forceCategory]);
+                        }
+                    } else {
+                        if (plugin.search && plugin.search.searcher) {
+                            inputvalue = plugin.search.searcher.replace('%p', plugin.search && typeof plugin.search.start != 'undefined' ? plugin.search.start : 1);
+                            if (plugin.categories) {
+                                for (var firstCat in plugin.categories) break;
+                                if (plugin.categories[firstCat] instanceof Array) {
+                                    inputvalue = inputvalue.replace('%c', plugin.categories[firstCat][1]);
+                                } else {
+                                    inputvalue = inputvalue.replace('%c', plugin.categories[firstCat]);
+                                }
+                            }
+                            inputvalue = inputvalue.replace('%s', encodeURIComponent(searchTerm).split('%20').join(plugin.search.separate));
+    
+                        }
+                    }
+                }
+                if (inputvalue) {
+                    window.mainmenuDrop(null, { preventDefault: () => {}, dataTransfer: { files: [], getData: function() { return inputvalue } } })
+                }
+
+            }
+        }
     },
 
     componentWillUnmount() {
