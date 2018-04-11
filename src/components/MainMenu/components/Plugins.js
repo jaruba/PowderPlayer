@@ -66,7 +66,7 @@ var getLogo = async.queue( (el, next) => {
     
     if (url) {
         
-        if (ls('pluginLogos')[url]) {
+        if (ls('pluginLogos')[url] && ls('pluginLogos')[url] != 'https://s.ytimg.com/yts/img/avatar_720-vflYJnzBZ.png') {
             updateImage(el.key, ls('pluginLogos')[url]);
             next();
         } else {
