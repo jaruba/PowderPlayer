@@ -1,6 +1,8 @@
 
 var donateMsg = '<div style="height: 13px"></div>Powder Player is open-source, please <span style="cursor: pointer; color: #1ca8ed" onclick="window.openExternalDonate()">Donate</span> to help it\'s development.'
 
+var tipsMsg = 'Check out Powder Player\'s Tips & Tricks <span style="cursor: pointer; color: #1ca8ed" onclick="window.openExternalFAQ()">on this page</span>, it may<br />fix issues your experiencing.'
+
 var mainMessages = [
     '<div style="height: 13px"></div><span style="color: rgba(0,0,0,0.6); font-family: \'Roboto\',sans-serif">Pro Tip</span>: Use <span style="color: rgba(0,0,0,0.6); font-family: \'Roboto\',sans-serif">T</span> to see the progress of videos while watching.',
     '<div style="height: 13px"></div><span style="color: rgba(0,0,0,0.6); font-family: \'Roboto\',sans-serif">Pro Tip</span>: Use <span style="color: rgba(0,0,0,0.6); font-family: \'Roboto\',sans-serif">N</span> in the player to skip to the next playlist item.',
@@ -13,6 +15,7 @@ var mainMessages = [
     '<span style="color: rgba(0,0,0,0.6); font-family: \'Roboto\',sans-serif">Pro Tip</span>: If a lower seeded torrent video is buffering a lot, using<br /><span style="color: rgba(0,0,0,0.6); font-family: \'Roboto\',sans-serif">Torrent</span> > <span style="color: rgba(0,0,0,0.6); font-family: \'Roboto\',sans-serif">Force Download</span> might help the download speed!',
 
     donateMsg,
+    tipsMsg,
 
     '<span style="color: rgba(0,0,0,0.6); font-family: \'Roboto\',sans-serif">Pro Tip</span>: There is a Sleep Timer in the Right Click menu of the player to pause playback!',
     '<span style="color: rgba(0,0,0,0.6); font-family: \'Roboto\',sans-serif">Pro Tip</span>: Use <span style="color: rgba(0,0,0,0.6); font-family: \'Roboto\',sans-serif">Help</span> > <span style="color: rgba(0,0,0,0.6); font-family: \'Roboto\',sans-serif">Hotkeys</span> in the Right Click menu of the player to discover all the player\'s hotkeys.',
@@ -25,6 +28,7 @@ var mainMessages = [
     '<span style="color: rgba(0,0,0,0.6); font-family: \'Roboto\',sans-serif">Pro Tip</span>: Powder Player can be Associated with<br />Magnet Links from the Settings.',
 
     donateMsg,
+    tipsMsg,
 
     '<span style="color: rgba(0,0,0,0.6); font-family: \'Roboto\',sans-serif">Pro Tip</span>: You can use any player you want and Powder Player will handle the torrent downloading for it, set <span style="color: rgba(0,0,0,0.6); font-family: \'Roboto\',sans-serif">External Player</span> in Settings.',
     '<span style="color: rgba(0,0,0,0.6); font-family: \'Roboto\',sans-serif">Pro Tip</span>: Private torrent sites can block torrent downloaders by Peer ID, in Powder Player you can customize the Peer ID from the Settings.',
@@ -37,6 +41,7 @@ var mainMessages = [
     'Just when I discovered the meaning of life, they changed it.<br /><span style="cursor: pointer; color: #1ca8ed" onclick="window.mainmenuDrop(null, { preventDefault: () => {}, dataTransfer: { files: [], getData: function() { return \'https://www.youtube.com/watch?v=bqW8riZ7lQg\' } } })">George Carlin</span> (Comedian 1937-2008)',
 
     donateMsg,
+    tipsMsg,
 
     '<span style="color: rgba(0,0,0,0.6); font-family: \'Roboto\',sans-serif">Pro Tip</span>: Use <span style="color: rgba(0,0,0,0.6); font-family: \'Roboto\',sans-serif">Torrent</span> > <span style="color: rgba(0,0,0,0.6); font-family: \'Roboto\',sans-serif">Download All</span> in the Right Click menu of the player to pre-download all files from a multi video torrent.',
     '<div style="height: 13px"></div><span style="cursor: pointer; color: #1ca8ed" onclick="window.openPlugin(\'.imdb\')">Watch the Newest Trailers</span> with the IMDB Plugin.',

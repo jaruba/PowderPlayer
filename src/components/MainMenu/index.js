@@ -85,6 +85,9 @@ default React.createClass({
         window.openExternalPluginShortcuts = () => {
             shell.openExternal('https://github.com/jaruba/PowderPlayer/wiki/Plugin-Shortcuts')
         }
+        window.openExternalFAQ = () => {
+            shell.openExternal('https://github.com/jaruba/PowderPlayer/wiki/Tips-%26-Tricks')
+        }
         window.openExternalDonate = () => {
             shell.openExternal('http://powder.media/donate')
         }
