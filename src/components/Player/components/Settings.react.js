@@ -1065,16 +1065,16 @@ default React.createClass({
                 title: 'Start in Fullscreen',
                 tag: 'startFullscreen'
             }, {
+                type: 'toggle',
+                title: 'Save History',
+                tag: 'doHistory'
+            }, {
                 type: 'select',
                 title: 'Zoom Level',
                 tag: 'zoomLevel',
                 default: this.state.zoomLevel + '',
                 disabled: true,
                 width: '30px'
-            }, {
-                type: 'toggle',
-                title: 'Save History',
-                tag: 'doHistory'
             }, {
                 type: 'header',
                 label: 'Performance'
