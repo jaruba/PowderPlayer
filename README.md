@@ -8,7 +8,7 @@ It can do everything that a Torrent Client can, everything that a Video/Audio Pl
 
 **Download Links**:
 
-[Test out our Nightly!](https://www.reddit.com/r/PowderPlayer/comments/4ralk2/powder_player_v100_prerelease_available_for/) or [Download the latest Stable Release](https://github.com/jaruba/PowderPlayer/releases)
+[Download the latest Stable Release](http://powder.media/download)
 
 **Building Instructions**:
 
@@ -30,7 +30,7 @@ For Windows only, you should also first set this environment variable:
 
      grunt release
 
-**Screenshots of v1.0 (nightly):**
+**Screenshots of v1.0+:**
 
 ![powder-1](https://cloud.githubusercontent.com/assets/1777923/12089348/91da628c-b2ec-11e5-9244-47e4e350d35a.png)
 
