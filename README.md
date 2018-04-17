@@ -30,7 +30,7 @@ For Windows only, you should also first set this environment variable:
 
      grunt release
 
-**Screenshots of v1.0 (nightly):**
+**Screenshots of v1.0+:**
 
 ![powder-1](https://cloud.githubusercontent.com/assets/1777923/12089348/91da628c-b2ec-11e5-9244-47e4e350d35a.png)
 
