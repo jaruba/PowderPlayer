@@ -46,7 +46,7 @@ default React.createClass({
             parsedRating: (Math.round(setting.trakt.rating * 100) / 100)+' / 10 (' + setting.trakt.votes + ')',
             trakt: setting.trakt,
             parsed: setting.parsed,
-            image: setting.image.replace('https://assets.fanart.tv', 'http://assets.fanart.tv')
+            image: setting.image ? setting.image.replace('https://assets.fanart.tv', 'http://assets.fanart.tv') : ''
         });
     },
     
