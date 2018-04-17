@@ -36,6 +36,8 @@ player.loadHistory = (obj) => {
 player.saveHistory = () => {
 
     if (player.wcjs.playlist.currentItem > -1) {
+
+        if (!ls('doHistory')) return
         
         var savedPlaylist = [];
         

@@ -72,7 +72,7 @@ default React.createClass({
         );
     },
     render() {
-        let content = ls('history').reverse();
+        let content = ls('doHistory') ? ls('history').reverse() : [];
         return (
             <paper-dialog
                 ref="dialog"

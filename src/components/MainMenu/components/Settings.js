@@ -108,7 +108,8 @@ default React.createClass({
                 ['Hong-Kong Supplementary (HKSCS)', 'Big5-HKSCS'],
                 ['Vietnamese (VISCII)', 'viscii'],
                 ['Vietnamese (Windows-1258)', 'windows1258']
-            ]
+            ],
+            doHistory: ls('doHistory')
         }
     },
     
@@ -885,6 +886,10 @@ default React.createClass({
                 type: 'toggle',
                 title: 'Start in Fullscreen',
                 tag: 'startFullscreen'
+            }, {
+                type: 'toggle',
+                title: 'Save History',
+                tag: 'doHistory'
             }, {
                 type: 'header',
                 label: 'Performance'

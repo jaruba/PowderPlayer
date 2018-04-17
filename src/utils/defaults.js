@@ -21,6 +21,7 @@ var map = {
     dlnaFinder: 0,
     history: [],
     historyLimit: 20,
+    doHistory: true,
     speedLimit: 0,
     downloadAll: false,
     forceDownload: false,

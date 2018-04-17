@@ -119,6 +119,7 @@ default React.createClass({
                 ['Vietnamese (VISCII)', 'viscii'],
                 ['Vietnamese (Windows-1258)', 'windows1258']
             ],
+            doHistory: ls('doHistory')
         }
     },
     componentWillMount() {
@@ -1070,6 +1071,10 @@ default React.createClass({
                 default: this.state.zoomLevel + '',
                 disabled: true,
                 width: '30px'
+            }, {
+                type: 'toggle',
+                title: 'Save History',
+                tag: 'doHistory'
             }, {
                 type: 'header',
                 label: 'Performance'
