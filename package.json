@@ -41,7 +41,7 @@
     "node-notifier": "^4.6.0",
     "opensubtitles-api": "https://github.com/jaruba/opensubtitles-api",
     "parse-torrent": "^5.7.0",
-    "torrent-worker": "https://github.com/jaruba/torrent-worker/tarball/master",
+    "torrent-worker": "jaruba/torrent-worker#3b286561a8f544e2210298dccc2c84dd0d41f378",
     "react": "^0.14.5",
     "react-addons-pure-render-mixin": "^0.14.5",
     "react-dom": "^0.14.5",
@@ -83,7 +83,7 @@
     "range-parser": "^1.2.0",
     "lockfile": "^1.0.1",
     "jschardet": "1.5.0",
-    "torrent-stream": "https://github.com/jaruba/torrent-stream/tarball/master",
+    "torrent-stream": "jaruba/torrent-stream#25eaf0d4a73716308eda51be233dd5c3ec46d2de",
     "rc-qrcode": "https://github.com/jaruba/rc-qrcode/tarball/master",
     "airplay-js": "https://github.com/Ivshti/node-airplay-js",
     "local-storage": "https://github.com/jaruba/local-storage/tarball/master",
@@ -93,7 +93,6 @@
     "duti-prebuilt": "https://github.com/jaruba/duti-prebuilt/tarball/master",
     "youtube-dl": "https://github.com/jaruba/node-youtube-dl/tarball/master",
     "easy-ffmpeg": "https://github.com/jaruba/easy-ffmpeg/tarball/master",
-    "multipass-torrent": "https://github.com/DavyBavy/multipass-torrent/tarball/master",
     "hat": "0.0.3"
   },
   "devDependencies": {

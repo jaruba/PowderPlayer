@@ -70,7 +70,7 @@ if (isLocked) {
     var newDbName = dbName(parseLink);
 }
 
-var multipass = require('multipass-torrent/cli/multipass');
+//var multipass = require('multipass-torrent/cli/multipass');
 
 multipass.init({
     dbPath: require("path").join(require("os").tmpdir(), newDbName),

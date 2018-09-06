@@ -5,6 +5,7 @@ release
 dist
 bin
 node_modules
+bower_components
 npm-debug.log
 
 # Cache
