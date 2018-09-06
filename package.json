@@ -39,7 +39,7 @@
     "name-to-imdb": "^1.0.1",
     "needle": "^0.11.0",
     "node-notifier": "^4.6.0",
-    "opensubtitles-api": "https://github.com/jaruba/opensubtitles-api",
+    "opensubtitles-api": "jaruba/opensubtitles-api#853c7135a9731891c11333dff5c4ff4fc744c900",
     "parse-torrent": "^5.7.0",
     "torrent-worker": "jaruba/torrent-worker#3b286561a8f544e2210298dccc2c84dd0d41f378",
     "react": "^0.14.5",
