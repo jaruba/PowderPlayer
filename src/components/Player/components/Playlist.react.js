@@ -51,6 +51,9 @@ default React.createClass({
 
     removeItem(idx) {
         player.wcjs.playlist.removeItem(idx);
+        setTimeout(() => {
+            this.updateUI()
+        })
     },
 
     handleOpenPlaylist() {
