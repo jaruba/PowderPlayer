@@ -180,12 +180,10 @@ const Player = React.createClass({
                 } else {
                     
                     // we're using torrent-stream to get torrent's file list only
-                    var engine = new torrentStream(parsedTorrent, {
+                    new torrentStream(parsedTorrent, {
                         connections: 30,
                         id: '-' + ls('peerID') + '-' + hat(48)
-                    });
-    
-                    engine.ready(() => {
+                    }, (engine) => {
                         handleTorrent(engine, parsedTorrent)
                     });
                 }
@@ -193,7 +191,7 @@ const Player = React.createClass({
         }
         
         var handleTorrent = (engine, parsedTorrent) => {
-            torrentUtil.getContents(engine.files, engine.infoHash).then( files => {
+            torrentUtil.getContents(engine.torrent.files || engine.files, engine.infoHash).then( files => {
                 var fileSelectorData = _.omit(files, ['files_total', 'folder_status']);
                 var folder = fileSelectorData[Object.keys(fileSelectorData)[0]];
                 var file = folder[Object.keys(folder)[0]];
