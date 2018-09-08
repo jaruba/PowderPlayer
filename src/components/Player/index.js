@@ -259,7 +259,7 @@ const Player = React.createClass({
 
         var files = e.dataTransfer.files;
         
-        if (!files.length) {
+        if (!_.size(files)) {
             var droppedLink = e.dataTransfer.getData("text/plain");
             if (droppedLink) {
                 if (droppedLink.startsWith('magnet:')) {
@@ -277,7 +277,7 @@ const Player = React.createClass({
             return false;
         }
 
-        if (files.length == 1 && files[0].path) {
+        if (_.size(files) == 1 && files[0].path) {
             if (supported.is(files[0].path, 'subs')) {
                 var subs = player.itemDesc().setting.subtitles || {};
                 subs[path.basename(files[0].path)] = files[0].path;
@@ -300,7 +300,7 @@ const Player = React.createClass({
             }
         }
 
-        var anyShortSz = files.some(function(el) {
+        var anyShortSz = _.some(files, function(el) {
             if (parser(el.name).shortSzEp())
                 return true
         })
