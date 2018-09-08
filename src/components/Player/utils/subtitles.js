@@ -36,14 +36,19 @@ subtitles.fetchOsCookie = retryCookie => {
 
 subtitles.fetchSubs = (newObjective) => {
     objective = newObjective;
-    if (objective.filepath)
+    if (objective.filepath) {
+        if (process.platform == 'win32' && !objective.filepath.includes('\\\\')) {
+            objective.filepath = objective.filepath.split('\\').join('\\\\')
+        }
         objective.filename = parser(objective.filepath).filename();
+    }
+
     objective.limit = ls('subLimits')[ls('subLimit')]
     
     if (subFinder) subFinder.terminate();
     
     if (process.env['devMode']) {
-        subFinder = new worker('../../js/components/Player/workers/subtitles/find.js', true);
+        subFinder = new worker('../../build/js/components/Player/workers/subtitles/find.js', true);
     } else {
         subFinder = new worker('../../js/components/Player/workers/subtitles/find.js', true);
     }
@@ -68,8 +73,7 @@ subtitles.processSub = (srt, extension, cb) => {
     if (subParser) subParser.terminate();
 
     if (process.env['devMode']) {
-//        subParser = new worker('../../build/js/components/Player/workers/subtitles/parse.js', true);
-        subParser = new worker('../../js/components/Player/workers/subtitles/parse.js', true);
+        subParser = new worker('../../build/js/components/Player/workers/subtitles/parse.js', true);
     } else {
         subParser = new worker('../../js/components/Player/workers/subtitles/parse.js', true);
     }

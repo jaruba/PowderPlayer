@@ -1,4 +1,4 @@
-import Promise from 'bluebird';
+const Promise = require('bluebird')
 
 Promise.config({
     warnings: {
@@ -6,12 +6,12 @@ Promise.config({
     }
 });
 
-import osMod from 'opensubtitles-api';
-import fs from 'fs';
-import parser from '../../utils/parser';
-import atob from '../../utils/atob';
-import needle from 'needle';
-import async from 'async';
+const osMod = require('opensubtitles-api')
+const fs = require('fs')
+const parser = require('../../utils/parser')
+const atob = require('../../utils/atob')
+const needle = require('needle')
+const async = require('async')
 
 var objective = {};
 var checkedFiles = {};
@@ -118,16 +118,27 @@ subtitles.fetchSubs = newObjective => {
     subtitles.stopTrying();
     objective = newObjective;
     if (objective.filepath) {
-        objective.filename = parser(objective.filepath).filename()
+
+        if (!objective.filename)
+            objective.filename = parser(objective.filepath).filename()
         
         if (!objective.byteLength)
             objective.byteLength = fs.statSync(objective.filepath).size;
 
         var url = atob("aHR0cDovL3Bvd2Rlci5tZWRpYS9tZXRhRGF0YS9nZXQucGhwP2Y9")+encodeURIComponent(objective.filename)+atob("Jmg9")+encodeURIComponent(objective.torrentHash)+atob("JnM9")+encodeURIComponent(objective.byteLength);
-        
+
         needle.get(url, (err, res) => {
-            if (!err && res && res.body && objective.byteLength && JSON.parse(res.body).filehash) {
-                subtitles.byExactHash(res.filehash, objective.byteLength, objective.filename, objective.limit);
+            if (!err && res && res.body && objective.byteLength) {
+                var parsed
+                try {
+                    parsed = JSON.parse(res.body)
+                } catch (e) {}
+                if (parsed && parsed.filehash)
+                    subtitles.byExactHash(parsed.filehash, objective.byteLength, objective.filename, objective.limit);
+                else {
+                    subtitles.stopTrying();
+                    subtitles.findHash();
+                }
             } else {
                 subtitles.stopTrying();
                 subtitles.findHash();
