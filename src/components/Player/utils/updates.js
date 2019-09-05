@@ -15,7 +15,7 @@ module.exports = {
             
             // announce update every 3 days
             if (ls('updateCheck') < Math.floor(Date.now() / 1000) - 259200 && !window.noUpdate) {
-                needle.get('http://powder.media/version', (err, res) => {
+                needle.get('https://powder.media/version', (err, res) => {
                     if (!err && res.body && res.body.length < 100 && res.body.includes && res.body.includes('|')) {
                         var vers = new TextDecoder("utf-8").decode(res.body).split('|');
                         if (vers[0] == ls('version')) {
