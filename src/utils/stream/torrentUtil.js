@@ -162,7 +162,7 @@ module.exports = {
                         name: file.name,
                         streamable: true,
                         infoHash: infoHash,
-                        path: ls.isSet('downloadFolder') ? path.join(ls('downloadFolder'), file.path) : path.join(temp, 'Powder-Player', infoHash, file.path)
+                        path: ls.isSet('downloadFolder') ? path.join(ls('downloadFolder'), file.path) : path.join(temp, 'torrent-stream', infoHash, file.path)
                     });
                     directorys.push(fileParams.dir);
                 }
@@ -179,7 +179,7 @@ module.exports = {
                         name: file.name,
                         streamable: false,
                         infoHash: infoHash,
-                        path: ls.isSet('downloadFolder') ? path.join(ls('downloadFolder'), file.path) : path.join(temp, 'Powder-Player', infoHash, file.path)
+                        path: ls.isSet('downloadFolder') ? path.join(ls('downloadFolder'), file.path) : path.join(temp, 'torrent-stream', infoHash, file.path)
                     })
 
                     directorys.push(fileParams.dir);
