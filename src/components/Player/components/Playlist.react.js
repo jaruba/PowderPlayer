@@ -9,6 +9,9 @@ import player from '../utils/player';
 import Sortable from 'sortablejs';
 import ModalActions from './Modal/actions';
 
+import sorter from './../utils/sort';
+import parser from './../utils/parser';
+
 var sortable = {};
 
 export
@@ -144,6 +147,7 @@ default React.createClass({
                     player.wcjs.playlist.advanceItem(oldId, newId - oldId);
 
                     reArrange[oldId] = oldSort[newId];
+
                     sortable.sort(reArrange);
                     this.update();
                 },
@@ -158,13 +162,107 @@ default React.createClass({
         });
     },
 
+    sorter(type) {
+
+        var sorted = false
+
+        var reArrange = sortable.toArray()
+
+        const replaceLoc = (oldId, newId) => {
+
+            var oldItem = reArrange[oldId]
+            reArrange[oldId] = reArrange[newId]
+            reArrange[newId] = oldItem
+
+            player.wcjs.playlist.advanceItem(oldId, newId - oldId)
+
+            return false
+
+        }
+
+        let sortLogic = false
+
+        if (type == 'default') {
+
+            // re-using default sorting logic of ./../utils/sort.js
+
+            function anyShortSz() {
+                for (var idx = 0; idx < player.wcjs.playlist.items.count; idx++)
+                    if (parser(player.itemDesc(idx).title || '').shortSzEp())
+                        return true
+                return false
+            }
+
+            if (anyShortSz()) {
+
+                // episode sort
+
+                sortLogic = function(a, b) {
+                    const prevItem = sorter.parser((a || {}).title || '')
+                    const item = sorter.parser((b || {}).title || '')
+                    return ((item.season() == prevItem.season() && item.episode() < prevItem.episode()) || (item.season() < prevItem.season()))
+                }
+
+            } else {
+
+                // natural sort
+
+                sortLogic = function(a, b) {
+                    var prevItem = sorter.parser((a || {}).title || '').name()
+                    var item = sorter.parser((b || {}).title || '').name() 
+                    return sorter._alphanumCase(prevItem,item)
+                }
+
+            }
+
+        } else if (type == 'alpha') {
+
+            // alpha numerical sort
+
+            sortLogic = function(a, b) {
+                return a.title > b.title
+            }
+
+        }
+
+        if (sortLogic) {
+            player.notifier.info('Sorting Playlist', '', 3000)
+            var sorted = true
+            const iterateList = idx => {
+                var prevItem = player.itemDesc(idx-1);
+                var item = player.itemDesc(idx);
+                if (sortLogic(prevItem, item))
+                    sorted = replaceLoc(idx, idx-1)
+                if (idx < player.wcjs.playlist.items.count) {
+                    setTimeout(() => { iterateList(idx+1) }, 250)
+                } else {
+                    if (!sorted) {
+                        sorted = true
+                        iterateList(1)
+                    } else {
+                        sortable.sort(reArrange)
+                        this.update()
+                        player.notifier.info('Playlist Sorted', '', 3000)
+                    }
+                }
+            }
+            iterateList(1)
+        }
+    },
+
     render() {
         return (
             <div className={this.state.uiHidden ? 'playlist-container' : this.state.open ? 'playlist-container show' : 'playlist-container'}>
                 <div className="playlist-controls" / >
                 <div className="playlist-holder playlist-holder-contain">
-                    <div ref="playlist-title" className="droid-sans playlist-title">Playlist</div>
-                    <div ref="playlist-add-button" className="droid-sans playlist-add-button" onClick={this.addToPlaylist}>+</div>
+                    <div style={{width: "70vw"}}>
+                        <div style={{float: "right", fontSize: "20px"}}>
+                            <paper-icon-button className="playlist-add-button playlist-sort" icon={'icons:sort'} noink={true} onClick={this.sorter.bind(this, 'default')} />
+                            <paper-icon-button className="playlist-add-button playlist-sort" icon={'av:sort-by-alpha'} noink={true} onClick={this.sorter.bind(this, 'alpha')} />
+                        </div>
+                        <div ref="playlist-title" className="droid-sans playlist-title">Playlist</div>
+                        <div ref="playlist-add-button" className="droid-sans playlist-add-button" onClick={this.addToPlaylist}>+</div>
+                    </div>
                     <div className="playlist-inner" ref={this.sortableGroupDecorator}>
                         {this.getItems()}
                     </div>
