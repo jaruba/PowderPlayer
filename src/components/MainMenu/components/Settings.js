@@ -60,6 +60,7 @@ default React.createClass({
             playerCmdArgs: ls('playerCmdArgs'),
             torrentTrackers: ls.isSet('torrentTrackers') ? ls('torrentTrackers') : [],
             peerID: ls('peerID'),
+            fastResume: ls.isSet('fastResume') ? ls('fastResume') : true,
 
             aspectRatios: ['Default','1:1','4:3','16:9','16:10','2.21:1','2.35:1','2.39:1','5:4'],
             crops: ['Default','16:10','16:9','1.85:1','2.21:1','2.35:1','2.39:1','5:3','4:3','5:4','1:1'],
@@ -169,7 +170,8 @@ default React.createClass({
                 startFullscreen: ls.isSet('startFullscreen') ? ls.isSet('startFullscreen') : false,
                 playerType: ls('playerType'),
                 playerCmdArgs: ls('playerCmdArgs'),
-                peerID: ls('peerID')
+                peerID: ls('peerID'),
+                fastResume: ls.isSet('fastResume') ? ls('fastResume') : true,
             });
         }
     },
@@ -181,6 +183,10 @@ default React.createClass({
     },
 
     _handleClickPause(event, toggled, type) {
+        ls(type, toggled);
+    },
+
+    _handleFastResume(event, toggled, type) {
         ls(type, toggled);
     },
 
@@ -972,6 +978,11 @@ default React.createClass({
                 title: 'Forced Download',
                 func: 'ForceDownloadToggle',
                 tag: 'forcedDownload'
+            }, {
+                type: 'toggle',
+                title: 'Fast Resume',
+                tag: 'fastResume',
+                func: 'FastResume'
             }, {
                 type: 'toggle',
                 title: 'Speed Pulsing',

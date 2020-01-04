@@ -66,6 +66,7 @@ default React.createClass({
             playerType: ls('playerType'),
             playerCmdArgs: ls('playerCmdArgs'),
             torrentTrackers: ls.isSet('torrentTrackers') ? ls('torrentTrackers') : [],
+            fastResume: ls.isSet('fastResume') ? ls('fastResume') : true,
 
             dlnaFinder: ls('dlnaFinder'),
             dlnaFinders: ['ssdp-js', 'node-ssdp', 'renderer-finder'],
@@ -206,7 +207,8 @@ default React.createClass({
                 playerCmdArgs: ls('playerCmdArgs'),
                 speedPulsing: ls('speedPulsing') ? ls('speedPulsing') : 'disabled',
                 speedLimit: ls('speedLimit') ? ls('speedLimit') : 0,
-                peerID: ls('peerID')
+                peerID: ls('peerID'),
+                fastResume: ls.isSet('fastResume') ? ls('fastResume') : true,
             });
         }
     },
@@ -245,6 +247,10 @@ default React.createClass({
     _handleClickPause(event, toggled, type) {
         ls(type, toggled);
         player.events.emit('rendererUpdate');
+    },
+
+    _handleFastResume(event, toggled, type) {
+        ls(type, toggled);
     },
 
     _handleRippleEffects(event, toggled, type) {
@@ -1275,6 +1281,11 @@ default React.createClass({
                 title: 'Forced Download',
                 func: 'ForceDownloadToggle',
                 tag: 'forceDownload'
+            }, {
+                type: 'toggle',
+                title: 'Fast Resume',
+                tag: 'fastResume',
+                func: 'FastResume'
             }, {
                 type: 'toggle',
                 title: 'Speed Pulsing',

@@ -43,6 +43,8 @@ module.exports = {
                     if (ls.isSet('downloadFolder'))
                         opts.path = ls('downloadFolder');
 
+                    opts.fastresume = ls.isSet('fastResume') ? !!(ls('fastResume')) : true
+
                     var worker = new torrentWorker(),
                         engine = worker.process(torrentInfo, opts);
                         
