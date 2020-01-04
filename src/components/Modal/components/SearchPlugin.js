@@ -36,7 +36,9 @@ default React.createClass({
         var inputvalue = this.refs.urlInput.value;
         url = url.replace('%s', encodeURIComponent(inputvalue).split('%20').join(el.search.separate));
         if (el.torrent) {
-            ModalActions.torrentSelector(url);
+            ModalActions.close(true)
+            MessageActions.open('Parsing torrent pages no longer supported')
+//            ModalActions.torrentSelector(url);
         } else {
             ModalActions.thinking(true);
             this.refs.urlInput.value = '';

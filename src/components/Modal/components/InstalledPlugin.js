@@ -107,7 +107,11 @@ default React.createClass({
         }
         
         if (el.torrent) {
-            ModalActions.torrentSelector(url);
+            setTimeout(() => {
+                ModalActions.close(true)
+                MessageActions.open('Parsing torrent pages no longer supported')
+            })
+//            ModalActions.torrentSelector(url);
         } else {
 
             linkUtil(url).then(url => {

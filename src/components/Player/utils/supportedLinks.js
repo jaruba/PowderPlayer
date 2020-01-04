@@ -8,6 +8,7 @@ import async from 'async';
 import ytdlSupported from './ytdl-extractor';
 import plugins from '../../../utils/plugins'
 import BaseModalActions from '../../Modal/actions';
+import MessageActions from '../../Message/actions';
 import ls from 'local-storage';
 
 var fullStop = false;
@@ -71,7 +72,9 @@ class supportedLinks {
                     if (hasChildren(client.torrents) || hasChildren(client.links.absolute.magnet)) {
                         // has torrents
                         fullStop = true;
-                        BaseModalActions.torrentSelector(parsed.url);
+                        BaseModalActions.close(true)
+                        MessageActions.open('Parsing torrent pages no longer supported')
+//                        BaseModalActions.torrentSelector(parsed.url);
                         return;
                     }
                     console.log(client);
