@@ -273,11 +273,6 @@ default React.createClass({
                     tag: ['music']
                 },
                 {
-                    label: 'Torrents',
-                    icon: 'torrent',
-                    tag: ['torrents']
-                },
-                {
                     label: 'Science',
                     icon: 'science',
                     tag: ['science']
