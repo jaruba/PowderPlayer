@@ -52,9 +52,9 @@ var getIcon = (html, url) => {
 }
 
 var updateImage = (key, image) => {
-    var logoElem = window.document.querySelector('#feed-logo-' + key);
+    var logoElem = window.document.querySelector('#feed-logo-' + key + ' img');
     if (logoElem) {
-        logoElem.style.background = 'url(' + image + ') no-repeat center';
+        logoElem.src = image;
     }
 }
 
@@ -386,14 +386,16 @@ default React.createClass({
 
             var generated = _.map(feed, (el, ij) => {
                 el.key = ij;
+                var logoImg
                 if (el.defaultImage) {
-                    var logoStyle = {
-                        background: 'url("' + el.defaultImage + '") no-repeat center'
-                    };
+                    logoImg = el.defaultImage
                 } else {
                     getLogo.push(el);
-                    var logoStyle = {};
                 }
+
+                if (!logoImg)
+                    logoImg = 'images/plugin-placeholder.png'
+
                 if (!noTags)
                     el.tags.forEach( elm => {
                         var index = tagMap.indexOf(elm);
@@ -406,7 +408,9 @@ default React.createClass({
 
                 return (
                     <div key={ij} className="feed-element" onClick={this.openPluginModal.bind(this, feed, ij)} style={{lineHeight: '13px'}}>
-                        <div id={'feed-logo-' + ij} className="feed-logos" style={logoStyle} />
+                        <div id={'feed-logo-' + ij} className="feed-logos">
+                            <img src={logoImg} style={{ maxWidth: '100%', maxHeight: '100%' }} onError={(e)=>{e.target.onerror = null; e.target.src="images/plugin-placeholder.png"}} />
+                        </div>
                         <br />
                         <div style={{overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', display: 'block', lineHeight: '18px', marginTop: '-3px'}}>{el.name}</div>
                     </div>
