@@ -95,7 +95,8 @@
     "youtube-dl": "https://github.com/jaruba/node-youtube-dl/tarball/master",
     "easy-ffmpeg": "https://github.com/jaruba/easy-ffmpeg/tarball/master",
     "hat": "0.0.3",
-    "zip": "https://github.com/Ivshti/zip/tarball/master"
+    "zip": "https://github.com/Ivshti/zip/tarball/master",
+    "atv-pairing": "https://github.com/jaruba/node-appletv-pairing/tarball/packed"
   },
   "devDependencies": {
     "babel": "^6.3.13",
