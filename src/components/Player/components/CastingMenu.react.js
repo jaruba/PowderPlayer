@@ -65,16 +65,16 @@ default React.createClass({
         var type = [
             {
                 name: 'DLNA',
-                icon: 'http://forum.serviio.org/download/file.php?avatar=4671_1327617310.png'
+                icon: 'images/dlna.png'
             }, {
                 name: 'Chromecast',
-                icon: 'https://lh3.googleusercontent.com/jjjN5fal0edeK6-kw1_GQaPnwgZQ99dcOBR-jLSJPOpT-x5dYeaoeZkfYENX8cuuXSU=w50'
+                icon: 'images/chromecast.png'
             }, {
                 name: 'Airplay',
-                icon: 'http://www.macbed.com/wp-content/uploads/2015/09/38709.png'
+                icon: 'images/airplay.png'
             }, {
                 name: 'Browser',
-                icon: 'http://icons.iconarchive.com/icons/dtafalonso/android-lollipop/512/Browser-icon.png'
+                icon: 'images/browser.png'
             }
         ]
         
