@@ -49,11 +49,13 @@ var mainMessages = [
 
     donateMsg,
 
-    '<div style="height: 13px"></div><span style="cursor: pointer; color: #1ca8ed" onclick="window.openPlugin(\'.criterion\')">Watch Classical Movie Trailers</span> with the Criterion Plugin.',
     '<div style="height: 13px"></div><span style="cursor: pointer; color: #1ca8ed" onclick="window.openPlugin(\'.standup\')">Laugh a Little</span> with the Stand-Up Plugin.',
     '<div style="height: 13px"></div><span style="cursor: pointer; color: #1ca8ed" onclick="window.openPlugin(\'.badlip\')">Laugh a Little</span> with the Bad Lip Reading Plugin.',
+    '<div style="height: 13px"></div>Powder Player was first released on March 7, 2015.',
 
-]
+    'Powder Player is the passion project of one dedicated developer:<br /><span style="cursor: pointer; color: #1ca8ed" onclick="window.openExternalMe()">Alexandru Branza</span>',
+
+ ]
 
 module.exports = () => {
     return mainMessages[Math.floor(Math.random()*mainMessages.length)]

@@ -91,6 +91,9 @@ default React.createClass({
         window.openExternalDonate = () => {
             shell.openExternal('http://powder.media/donate')
         }
+        window.openExternalMe = () => {
+            shell.openExternal('https://github.com/jaruba')
+        }
         window.openExternalReddit = () => {
             shell.openExternal('https://www.reddit.com/r/PowderPlayer/')
         }
