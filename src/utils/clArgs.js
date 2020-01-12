@@ -40,7 +40,7 @@ function startWebApi(el) {
             } else err()
         })
 
-        app.get('/togglePause', (req, res) => {
+        app.get('/toggle_pause', (req, res) => {
             if (((player || {}).wcjs || {}).togglePause) {
                 player.wcjs.togglePause()
                 res.send('success')
