@@ -92,11 +92,27 @@ function startWebApi(el) {
             } else err()
         })
 
+        app.get('/set_progress', (req, res) => {
+            if (req.query.value && ((player || {}).wcjs || {}).position) {
+                player.wcjs.position = parseFloat(req.query.value)
+
+                res.send('success')
+            } else err()
+        })
+
         app.get('/time', (req, res) => {
             if (((player || {}).wcjs || {}).time) {
                 res.setHeader('Content-Type', 'application/json; charset=utf-8')
 
                 res.send(JSON.stringify({ time: player.wcjs.time }))
+            } else err()
+        })
+
+        app.get('/set_time', (req, res) => {
+            if (req.query.value && ((player || {}).wcjs || {}).time) {
+                player.wcjs.time = parseInt(req.query.value)
+
+                res.send('success')
             } else err()
         })
 
