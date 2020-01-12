@@ -116,6 +116,14 @@ function startWebApi(el) {
             } else err()
         })
 
+        app.get('/duration', (req, res) => {
+            if (((player || {}).wcjs || {}).length) {
+                res.setHeader('Content-Type', 'application/json; charset=utf-8')
+
+                res.send(JSON.stringify({ duration: player.wcjs.length }))
+            } else err()
+        })
+
         app.get('/state', (req, res) => {
             if (((player || {}).wcjs || {}).state) {
                 const states = ['NothingSpecial', 'Opening', 'Buffering', 'Playing', 'Paused', 'Stopped', 'Ended', 'Error']
