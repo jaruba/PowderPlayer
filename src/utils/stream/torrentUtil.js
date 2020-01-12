@@ -24,11 +24,11 @@ module.exports = {
 
     init(torrent) {
         return new Promise((resolve, reject) => {
-            Promise.all([this.read(torrent), getPort()])
+            Promise.all([this.read(torrent), getPort({ port: ls.isSet('peerPort') && ls('peerPort') ? ls('peerPort') : 5050 })])
                 .spread((torrentInfo, port) => {
                     var opts = {
                         tracker: true,
-                        port: ls.isSet('peerPort') && ls('peerPort') != '6881' ? ls('peerPort') : port,
+                        port: port,
                         tmp: temp,
                         buffer: (1.5 * 1024 * 1024).toString(),
                         connections: ls('maxPeers'),
