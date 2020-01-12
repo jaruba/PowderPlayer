@@ -518,8 +518,8 @@ default React.createClass({
     
     _handlePort(event, direction) {
         var newValue = parseInt(this.refs['portInput'].value) + direction;
-        if (newValue < 1)
-            newValue = 1;
+        if (newValue < 0)
+            newValue = 0;
         if (newValue > 65535)
             newValue = 65535;
         
@@ -543,8 +543,8 @@ default React.createClass({
     
     _handlePortBlur(event) {
         var newValue = parseInt(this.refs['portInput'].value);
-        if (isNaN(newValue) || newValue < 1)
-            newValue = 1;
+        if (isNaN(newValue) || newValue < 0)
+            newValue = 0;
         if (newValue > 65535)
             newValue = 65535;
 
