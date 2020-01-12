@@ -6,6 +6,8 @@ Powder is the future of all torrent requirements, it's a hybrid between a Torren
 
 It can do everything that a Torrent Client can, everything that a Video/Audio Player can and much more!
 
+Powder Player's development relies solely on donations, so if you enjoy this player, please consider [becoming a patron](https://www.patreon.com/powder_tech) or [donating](https://powder.media/donate) to ensure it's continued survival.
+
 **Download Links**:
 
 [Download the latest Stable Release](http://powder.media/download)
