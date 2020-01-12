@@ -138,7 +138,7 @@ function startWebApi(el) {
         console.error(err)
     })
 }
-startWebApi('')
+
 module.exports = {
     process: (args) => {
         if (args.length) {
