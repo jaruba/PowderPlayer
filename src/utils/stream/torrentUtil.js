@@ -45,8 +45,12 @@ module.exports = {
 
                     opts.fastresume = ls.isSet('fastResume') ? !!(ls('fastResume')) : true
 
+                    function torrentErr(code) {
+                        reject(Error('Error: Torrent could not be started'))
+                    }
+
                     var worker = new torrentWorker(),
-                        engine = worker.process(torrentInfo, opts);
+                        engine = worker.process(torrentInfo, opts, torrentErr);
                         
                     var killedEngine = false
                     var engineDestroyer = () => {

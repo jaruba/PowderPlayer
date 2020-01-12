@@ -1,4 +1,5 @@
 import ModalActions from '../components/Modal/actions';
+import MessageActions from '../components/Message/actions';
 import PlayerActions from '../components/Player/actions';
 import EngineStore from '../stores/engineStore';
 import HistoryStore from '../stores/historyStore';
@@ -135,7 +136,8 @@ class torrentActions {
                 }
             })
             .catch(err => {
-                //ModalActions.close();
+                ModalActions.close();
+                MessageActions.open((err || {}).message || 'Error: Torrent could not be started');
                 console.error(err);
             });
     }
