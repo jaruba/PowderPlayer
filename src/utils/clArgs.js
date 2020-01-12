@@ -84,6 +84,31 @@ function startWebApi(el) {
             } else err()
         })
 
+        app.get('/progress', (req, res) => {
+            if (((player || {}).wcjs || {}).position) {
+                res.setHeader('Content-Type', 'application/json; charset=utf-8')
+
+                res.send(JSON.stringify({ position: player.wcjs.position }))
+            } else err()
+        })
+
+        app.get('/time', (req, res) => {
+            if (((player || {}).wcjs || {}).time) {
+                res.setHeader('Content-Type', 'application/json; charset=utf-8')
+
+                res.send(JSON.stringify({ time: player.wcjs.time }))
+            } else err()
+        })
+
+        app.get('/state', (req, res) => {
+            if (((player || {}).wcjs || {}).state) {
+                const states = ['NothingSpecial', 'Opening', 'Buffering', 'Playing', 'Paused', 'Stopped', 'Ended', 'Error']
+                res.setHeader('Content-Type', 'application/json; charset=utf-8')
+
+                res.send(JSON.stringify({ state: states[player.wcjs.state] }))
+            } else err()
+        })
+
         app.get('/add_playlist', (req, res) => {
             if (req.query.url) {
 
@@ -113,7 +138,7 @@ function startWebApi(el) {
         console.error(err)
     })
 }
-
+startWebApi('')
 module.exports = {
     process: (args) => {
         if (args.length) {
