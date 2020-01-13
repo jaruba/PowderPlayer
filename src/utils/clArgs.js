@@ -21,7 +21,7 @@ function startWebApi(el) {
         const app = express()
         const player = require('../components/Player/utils/player')
 
-        function err(msg) {
+        function err(res, msg) {
             res.writeHead(500)
             res.send(msg || 'api error')
         }
@@ -30,35 +30,35 @@ function startWebApi(el) {
             if (((player || {}).wcjs || {}).play) {
                 player.wcjs.play()
                 res.send('success')
-            } else err()
+            } else err(res)
         })
 
         app.get('/pause', (req, res) => {
             if (((player || {}).wcjs || {}).pause) {
                 player.wcjs.pause()
                 res.send('success')
-            } else err()
+            } else err(res)
         })
 
         app.get('/toggle_pause', (req, res) => {
             if (((player || {}).wcjs || {}).togglePause) {
                 player.wcjs.togglePause()
                 res.send('success')
-            } else err()
+            } else err(res)
         })
 
         app.get('/next', (req, res) => {
             if ((player || {}).next) {
                 player.next()
                 res.send('success')
-            } else err()
+            } else err(res)
         })
 
         app.get('/prev', (req, res) => {
             if ((player || {}).prev) {
                 player.prev()
                 res.send('success')
-            } else err()
+            } else err(res)
         })
 
         app.get('/item_data', (req, res) => {
@@ -68,7 +68,7 @@ function startWebApi(el) {
 
                 res.send(JSON.stringify(player.itemDesc()))
 
-            } else err()
+            } else err(res)
         })
 
         app.get('/playlist', (req, res) => {
@@ -81,7 +81,7 @@ function startWebApi(el) {
                 res.setHeader('Content-Type', 'application/json; charset=utf-8')
 
                 res.send(JSON.stringify(items))
-            } else err()
+            } else err(res)
         })
 
         app.get('/progress', (req, res) => {
@@ -89,7 +89,7 @@ function startWebApi(el) {
                 res.setHeader('Content-Type', 'application/json; charset=utf-8')
 
                 res.send(JSON.stringify({ position: player.wcjs.position }))
-            } else err()
+            } else err(res)
         })
 
         app.get('/set_progress', (req, res) => {
@@ -97,7 +97,7 @@ function startWebApi(el) {
                 player.wcjs.position = parseFloat(req.query.value)
 
                 res.send('success')
-            } else err()
+            } else err(res)
         })
 
         app.get('/time', (req, res) => {
@@ -105,7 +105,7 @@ function startWebApi(el) {
                 res.setHeader('Content-Type', 'application/json; charset=utf-8')
 
                 res.send(JSON.stringify({ time: player.wcjs.time }))
-            } else err()
+            } else err(res)
         })
 
         app.get('/set_time', (req, res) => {
@@ -113,7 +113,7 @@ function startWebApi(el) {
                 player.wcjs.time = parseInt(req.query.value)
 
                 res.send('success')
-            } else err()
+            } else err(res)
         })
 
         app.get('/duration', (req, res) => {
@@ -121,7 +121,47 @@ function startWebApi(el) {
                 res.setHeader('Content-Type', 'application/json; charset=utf-8')
 
                 res.send(JSON.stringify({ duration: player.wcjs.length }))
-            } else err()
+            } else err(res)
+        })
+
+        app.get('/volume', (req, res) => {
+            if (typeof ((player || {}).wcjs || {}).volume !== 'undefined') {
+                res.setHeader('Content-Type', 'application/json; charset=utf-8')
+
+                res.send(JSON.stringify({ volume: player.wcjs.volume }))
+            } else err(res)
+        })
+
+        app.get('/set_volume', (req, res) => {
+            if (req.query.value && typeof ((player || {}).wcjs || {}).volume !== 'undefined') {
+                player.wcjs.volume = parseInt(req.query.value)
+
+                res.send('success')
+            } else err(res)
+        })
+
+        app.get('/muted', (req, res) => {
+            if (typeof ((player || {}).wcjs || {}).mute !== 'undefined') {
+                res.setHeader('Content-Type', 'application/json; charset=utf-8')
+
+                res.send(JSON.stringify({ muted: player.wcjs.mute }))
+            } else err(res)
+        })
+
+        app.get('/set_mute', (req, res) => {
+            if (req.query.value && typeof ((player || {}).wcjs || {}).mute !== 'undefined') {
+                player.wcjs.mute = req.query.value == 'false' ? false : true
+
+                res.send('success')
+            } else err(res)
+        })
+
+        app.get('/toggle_mute', (req, res) => {
+            if (((player || {}).wcjs || {}).toggleMute) {
+                player.wcjs.toggleMute()
+
+                res.send('success')
+            } else err(res)
         })
 
         app.get('/state', (req, res) => {
@@ -130,7 +170,7 @@ function startWebApi(el) {
                 res.setHeader('Content-Type', 'application/json; charset=utf-8')
 
                 res.send(JSON.stringify({ state: states[player.wcjs.state] }))
-            } else err()
+            } else err(res)
         })
 
         app.get('/add_playlist', (req, res) => {
@@ -153,7 +193,7 @@ function startWebApi(el) {
 
                 res.send('success')
 
-            } else err()
+            } else err(res)
         })
 
         app.listen(port, () => console.log(`Web API listening on port ${port}!`))
