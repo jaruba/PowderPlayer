@@ -6,10 +6,9 @@ import ModalActions from './../components/Modal/actions';
 import torrentActions from './../actions/torrentActions';
 import Promise from 'bluebird';
 import _ from 'lodash';
-import ytdl from 'youtube-dl';
+import sources from './../components/Player/utils/sources.js';
 import ytdlSupported from './../components/Player/utils/ytdl-extractor';
 import plugins from './plugins';
-import ls from 'local-storage';
 
 module.exports = (inputvalue) => {
     return new Promise((resolve, reject) => {
@@ -60,36 +59,24 @@ module.exports = (inputvalue) => {
                                                 }), 1000);
                                             } else {
                                                 // try youtube-dl with it, use media scanner as a fallback
-                                                var ytdlArgs = ['-g'];
-    
-                                                if (ls('ytdlQuality') < 4) {
-                                                    var qualities = [360, 480, 720, 1080];
-                                                    ytdlArgs.push('-f');
-                                                    ytdlArgs.push('[height <=? ' + qualities[ls('ytdlQuality')] + ']');
-                                                }
-                                                
-                                                var video = ytdl(parsed.url, ytdlArgs);
-                    
-                                                video.on('error', function(err) {
-                                                    ModalActions.close();
-                                                    console.log('ytdl ending error');
-                                                    reject(new Error('Error: Invalid URL'));
-                                                });
-
-                                                video.on('info', function(info) {
+                                                sources.youtubeDL(parsed.url, function(info) {
                                                     if (info.url) {
                                                         ModalActions.close();
                                                         console.log(info);
                                                         PlayerActions.addPlaylist([{
                                                             originalURL: inputvalue,
-                                                            uri: parsed.url,
+                                                            uri: info.url,
                                                             youtubeDL: true,
                                                             image: info.thumbnail,
                                                             title: info.fulltitle
                                                         }]);
                                                         resolve(parsed.url);
                                                     } else parseLinks(plugin && plugin.checkFor ? plugin : null);
-                                                });
+                                                }, function(err) {
+                                                    ModalActions.close();
+                                                    console.log('ytdl ending error');
+                                                    reject(new Error('Error: Invalid URL'));
+                                                })
                                             }
                                             
                                         }
@@ -110,26 +97,22 @@ module.exports = (inputvalue) => {
                                 if (perfectMatch || ytdlSupported(parsed.url)) {
                                     // a perfect match or a youtube-dl regex match should be
                                     // sent directly to youtube-dl for processing
-                                    var video = ytdl(parsed.url, ['-g']);
-        
-                                    video.on('error', function(err) {
-                                        parseLinks(plugin && plugin.checkFor ? plugin : null);
-                                    });
-        
-                                    video.on('info', function(info) {
+                                    sources.youtubeDL(parsed.url, function(info) {
                                         if (info.url) {
                                             ModalActions.close();
                                             console.log(info);
                                             PlayerActions.addPlaylist([{
                                                 originalURL: inputvalue,
-                                                uri: parsed.url,
+                                                uri: info.url,
                                                 youtubeDL: true,
                                                 image: info.thumbnail,
                                                 title: info.fulltitle
                                             }]);
                                             resolve(parsed.url);
                                         } else parseLinks(plugin && plugin.checkFor ? plugin : null);
-                                    });
+                                    }, function(err) {
+                                        parseLinks(plugin && plugin.checkFor ? plugin : null);
+                                    })
 
                                 } else {
                                     parseLinks(plugin && plugin.checkFor ? plugin : null);

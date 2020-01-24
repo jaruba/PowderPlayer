@@ -2,7 +2,7 @@ import ytdl from 'youtube-dl';
 import ls from 'local-storage';
 
 module.exports = {
-    youtubeDL: (link, cb) => {
+    youtubeDL: (link, cb, errCb) => {
         var ytdlArgs = ['-g'];
 
         if (ls('ytdlQuality') < 4) {
@@ -12,6 +12,9 @@ module.exports = {
         }
 
         var video = ytdl(link, ytdlArgs);
+
+        if (errCb)
+            video.on('error', errCb);
 
         video.on('info', cb);
     },

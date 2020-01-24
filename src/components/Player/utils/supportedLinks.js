@@ -3,13 +3,12 @@ import PlayerActions from '../actions';
 import PlayerStore from '../store';
 import needle from 'needle';
 import _ from 'lodash';
-import ytdl from 'youtube-dl';
 import async from 'async';
 import ytdlSupported from './ytdl-extractor';
+import sources from './sources.js';
 import plugins from '../../../utils/plugins'
 import BaseModalActions from '../../Modal/actions';
 import MessageActions from '../../Message/actions';
-import ls from 'local-storage';
 
 var fullStop = false;
 
@@ -202,21 +201,7 @@ class supportedLinks {
                             var shouldPass = plugin ? plugins.perfectMatch(el, plugin) : ytdlSupported(el);
                             if (shouldPass) {
 
-                                var ytdlArgs = ['-g'];
-
-                                if (ls('ytdlQuality') < 4) {
-                                    var qualities = [360, 480, 720, 1080];
-                                    ytdlArgs.push('-f');
-                                    ytdlArgs.push('[height <=? ' + qualities[ls('ytdlQuality')] + ']');
-                                }
-                                
-                                var video = ytdl(el, ytdlArgs);
-
-                                video.on('error', function(err) {
-                                    next();
-                                });
-
-                                video.on('info', function(info) {
+                                sources.youtubeDL(el, function(info) {
                                     if (!(info['display_id'] && uniqueIDs.indexOf(info['display_id']) > -1) && info.url) {
                                         info['display_id'] && uniqueIDs.push(info['display_id']);
                                         console.log(info);
@@ -239,7 +224,10 @@ class supportedLinks {
                                         }
                                     }
                                     next();
+                                }, function(err) {
+                                    next();
                                 });
+
                             } else next();
                         } else next();
                     };
