@@ -1,6 +1,6 @@
 {
   "name": "Powder-Player",
-  "version": "1.5.0",
+  "version": "1.5.5",
   "author": "Branza Victor-Alexandru <branza.alex@gmail.com>",
   "contributors": [
     {
@@ -13,7 +13,7 @@
     }
   ],
   "description": "Powder is the future of all torrent requirements, it's a hybrid between a Torrent Client (Peerflix) and a Customized Player (WebChimera.js).",
-  "relese-name": "Hummingbird",
+  "relese-name": "Kiwi",
   "homepage": "http://powder.media/",
   "main": "js/browser.js",
   "repository": {
