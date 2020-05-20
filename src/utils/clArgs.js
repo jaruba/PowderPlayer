@@ -116,6 +116,36 @@ function startWebApi(el) {
             } else err(res)
         })
 
+        app.get('/jump_forward', (req, res) => {
+            if (req.query.value && ((player || {}).wcjs || {}).time && player.wcjs.length) {
+                const jumpTime = parseInt(req.query.value)
+
+                const newTime = player.wcjs.time + jumpTime
+
+                if (newTime < player.wcjs.length)
+                    player.wcjs.time = newTime
+                else
+                    player.wcjs.time = player.wcjs.length - 1000
+
+                res.send('success')
+            } else err(res)
+        })
+
+        app.get('/jump_backward', (req, res) => {
+            if (req.query.value && ((player || {}).wcjs || {}).time && player.wcjs.length) {
+                const jumpTime = parseInt(req.query.value)
+
+                const newTime = player.wcjs.time - jumpTime
+
+                if (newTime > 0)
+                    player.wcjs.time = newTime
+                else
+                    player.wcjs.time = 0
+
+                res.send('success')
+            } else err(res)
+        })
+
         app.get('/duration', (req, res) => {
             if (((player || {}).wcjs || {}).length) {
                 res.setHeader('Content-Type', 'application/json; charset=utf-8')
@@ -210,6 +240,8 @@ function startWebApi(el) {
         console.error(err)
     })
 }
+
+startWebApi('--web-api')
 
 module.exports = {
     process: (args) => {
