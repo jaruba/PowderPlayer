@@ -175,6 +175,7 @@ default React.createClass({
     componentWillUnmount() {
         player.events.removeListener('dropObj', this.historyLoad);
         window.removeEventListener('resize', this.handleResize);
+        window.mainmenuDrop = false
     },
 
     handleResize() {

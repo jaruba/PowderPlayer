@@ -174,9 +174,14 @@ function startWebApi(el) {
         })
 
         app.get('/add_playlist', (req, res) => {
+            const isPlayer = !!(player && player.wcjs && player.wcjs.playlist && player.wcjs.playlist.itemCount)
             if (req.query.url) {
 
-                window.playerDrop({ preventDefault: () => {}, dataTransfer: { files: [], getData: function() { return req.query.url } } })
+                if (isPlayer)
+                    window.playerDrop({ preventDefault: () => {}, dataTransfer: { files: [], getData: function() { return req.query.url } } })
+                else
+                    window.mainmenuDrop(null, { preventDefault: () => {}, dataTransfer: { files: [], getData: function() { return req.query.url } } })
+
 
                 res.send('success')
 
@@ -189,7 +194,10 @@ function startWebApi(el) {
                     name: req.query.file.replace(/^.*[\\\/]/, '')
                 })
 
-                window.playerDrop({ dataTransfer: { files: files }, preventDefault: () => {} })
+                if (isPlayer)
+                    window.playerDrop({ dataTransfer: { files: files }, preventDefault: () => {} })
+                else
+                    window.mainmenuDrop(files)
 
                 res.send('success')
 
