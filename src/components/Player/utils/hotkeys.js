@@ -119,6 +119,10 @@ hotkeys.attach = (props) => {
 
             var jumpDiff = ls.isSet('hotkeyJumpSec') ? ls('hotkeyJumpSec') : 20;
 
+            // if jump difference set to 0, then disable hotkey
+            if (!jumpDiff)
+                return
+
             if (player.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
             else var wjsDelay = 700;
 
@@ -133,6 +137,10 @@ hotkeys.attach = (props) => {
         if ([5,6,7].indexOf(player.wcjs.state) == -1) {
 
             var jumpDiff = ls.isSet('hotkeyJumpSec') ? ls('hotkeyJumpSec') : 20;
+
+            // if jump difference set to 0, then disable hotkey
+            if (!jumpDiff)
+                return
 
             if (player.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
 
