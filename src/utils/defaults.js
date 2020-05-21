@@ -27,7 +27,8 @@ var map = {
     forceDownload: false,
     peerID: 'PP0110',
     subLimits: ['best', 'all', 3, 4 ,5],
-    subLimit: 0
+    subLimit: 0,
+    hotkeyJumpSec: 20
 }
 
 module.exports = () => {

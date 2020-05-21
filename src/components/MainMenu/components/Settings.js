@@ -41,6 +41,7 @@ default React.createClass({
             encoding: ls.isSet('selectedEncoding') ? ls('selectedEncoding') : 0,
             resizeOnPlaylist: ls.isSet('resizeOnPlaylist') ? ls('resizeOnPlaylist') : true,
             startFullscreen: ls.isSet('startFullscreen') ? ls.isSet('startFullscreen') : false,
+            hotkeyJumpSec: ls.isSet('hotkeyJumpSec') ? ls('hotkeyJumpSec') : 20,
             cacheFolder: ls('cacheFolder') ? ls('cacheFolder') : 'Temp',
             dlnaFinder: ls('dlnaFinder'),
             dlnaFinders: ['ssdp-js', 'node-ssdp', 'renderer-finder'],
@@ -703,6 +704,42 @@ default React.createClass({
         
         this.refs['downloadTypeInput'].value = newLabel;
     },
+
+    _handleHotkeyJumpSec(event, direction) {
+        var newJump = parseInt(this.refs['hotkeyJumpSecInput'].value);
+
+        if (direction < 0)
+            newJump = newJump - 1;
+        else
+            newJump = newJump + 1;
+
+        if (newJump < 0) newJump = 0;
+        
+        ls('hotkeyJumpSec', newJump);
+        this.refs['hotkeyJumpSecInput'].value = newJump + ' sec';
+    },
+    
+    _handleHotkeyJumpSecKeys(event) {
+        if (event.keyCode == 38) {
+            event.preventDefault();
+            this._handlehotkeyJumpSec(event, 1);
+        } else if (event.keyCode == 40) {
+            event.preventDefault();
+            this._handlehotkeyJumpSec(event, -1);
+        } else if ([13, 27].indexOf(event.keyCode) > -1) {
+            event.preventDefault();
+            this.refs['hotkeyJumpSecInput'].$.input.blur();
+        }
+    },
+    
+    _handleHotkeyJumpSecBlur(event) {
+        var newValue = parseInt(this.refs['hotkeyJumpSecInput'].value);
+        if (newValue < 0)
+            newValue = 0;
+
+        ls('hotkeyJumpSec', newValue);
+        this.refs['hotkeyJumpSecInput'].value = newValue + ' sec';
+    },
    
     _handleRenderFreq(event, direction) {
         var newFreq = parseInt(this.refs['renderFreqInput'].value);
@@ -896,6 +933,12 @@ default React.createClass({
                 type: 'toggle',
                 title: 'Save History',
                 tag: 'doHistory'
+            }, {
+                type: 'select',
+                title: 'Arrow Hotkeys Jump',
+                tag: 'hotkeyJumpSec',
+                default: this.state.hotkeyJumpSec + ' sec',
+                width: '80px'
             }, {
                 type: 'header',
                 label: 'Performance'

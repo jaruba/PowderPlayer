@@ -116,10 +116,14 @@ hotkeys.attach = (props) => {
     
     props.bindShortcut('right', (event) => {
         if ([5,6,7].indexOf(player.wcjs.state) == -1) {
+
+            var jumpDiff = ls.isSet('hotkeyJumpSec') ? ls('hotkeyJumpSec') : 20;
+
             if (player.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
             else var wjsDelay = 700;
+
             ProgressActions.delayTime({
-                jump: (player.wcjs.length / 60),
+                jump: (jumpDiff * 1000),
                 delay: wjsDelay
             });
         }
@@ -127,10 +131,14 @@ hotkeys.attach = (props) => {
 
     props.bindShortcut('left', (event) => {
         if ([5,6,7].indexOf(player.wcjs.state) == -1) {
+
+            var jumpDiff = ls.isSet('hotkeyJumpSec') ? ls('hotkeyJumpSec') : 20;
+
             if (player.itemDesc().mrl.startsWith('file:///')) var wjsDelay = 200;
+
             else var wjsDelay = 700;
             ProgressActions.delayTime({
-                jump: (-1) * (player.wcjs.length / 60),
+                jump: (-1) * (jumpDiff * 1000),
                 delay: wjsDelay
             });
         }
