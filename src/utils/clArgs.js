@@ -241,8 +241,6 @@ function startWebApi(el) {
     })
 }
 
-startWebApi('--web-api')
-
 module.exports = {
     process: (args) => {
         if (args.length) {
