@@ -1113,12 +1113,6 @@ default React.createClass({
                 tag: 'doHistory'
             }, {
                 type: 'select',
-                title: 'Arrow Hotkeys Jump',
-                tag: 'hotkeyJumpSec',
-                default: this.state.hotkeyJumpSec + ' sec',
-                width: '80px'
-            }, {
-                type: 'select',
                 title: 'Zoom Level',
                 tag: 'zoomLevel',
                 default: this.state.zoomLevel + '',
@@ -1152,6 +1146,12 @@ default React.createClass({
                 tag: 'bufferSize',
                 default: this.state.bufferSize+' sec',
                 width: '60px'
+            }, {
+                type: 'select',
+                title: 'Arrow Hotkeys Jump',
+                tag: 'hotkeyJumpSec',
+                default: this.state.hotkeyJumpSec + ' sec',
+                width: '80px'
             }, {
                 type: 'header',
                 label: 'Video'
