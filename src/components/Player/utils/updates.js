@@ -10,7 +10,7 @@ import {
 module.exports = {
     checkUpdates: () => {
         setTimeout(function() {
-            ls('version', '1.55');
+            ls('version', '1.60');
             if (!ls.isSet('updateCheck')) ls('updateCheck', 0);
             
             // announce update every 3 days
