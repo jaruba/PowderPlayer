@@ -85,6 +85,11 @@ const Framework = React.createClass({
 
         request('https://www.google.com'); // Connect once to avoid cloggage
 
+        // there are issues with port 6881 (in particular) on OSX
+        // as 6881 was previously the default port we will change it
+        if (ls('peerPort') == 6881)
+            ls('peerPort', 6882)
+
         if (ls('startFullscreen'))
              window.clFullscreen = true;
 

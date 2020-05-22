@@ -8,7 +8,7 @@ var map = {
     renderFreq: 500,
     renderHidden: true,
     subEncoding: 'auto',
-    peerPort: 6881,
+    peerPort: 6882,
     maxPeers: 200,
     bufferSize: 7000,
     removeLogic: 0,
