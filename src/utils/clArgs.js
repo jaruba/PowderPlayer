@@ -200,7 +200,7 @@ function startWebApi(el) {
                 res.setHeader('Content-Type', 'application/json; charset=utf-8')
 
                 res.send(JSON.stringify({ state: states[player.wcjs.state] }))
-            } else err(res)
+            } else res.send(JSON.stringify({ state: 'NothingSpecial' }))
         })
 
         app.get('/add_playlist', (req, res) => {
