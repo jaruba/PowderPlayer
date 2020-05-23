@@ -22,8 +22,7 @@ function startWebApi(el) {
         const player = require('../components/Player/utils/player')
 
         function err(res, msg) {
-            res.writeHead(500)
-            res.send(msg || 'api error')
+            res.status(500).send(msg || 'api error')
         }
 
         app.get('/play', (req, res) => {
