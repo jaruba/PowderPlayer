@@ -89,7 +89,7 @@ function startWebApi(el) {
             if (((((player || {}).wcjs || {}).playlist || {}).items || [])[0]) {
                 var items = []
 
-                for (i = 0; i < player.wcjs.playlist.items.count; i++)
+                for (var i = 0; i < player.wcjs.playlist.items.count; i++)
                     items.push(player.itemDesc(i))
 
                 success(res, items)
