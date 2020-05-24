@@ -14,6 +14,8 @@ var getParam = (el, arg) => {
     return el.replace(arg + '=', '').split('"').join('');
 }
 
+var webApiCors = false
+
 function startWebApi(el) {
     const getPort = require('get-port')
     getPort({ port: (el.includes('=') ? parseInt(el.split('=')[1]) : 5090) }).then(port => {
@@ -22,50 +24,63 @@ function startWebApi(el) {
         const player = require('../components/Player/utils/player')
 
         function err(res, msg) {
-            res.status(500).send(msg || 'api error')
+            if (webApiCors)
+                res.setHeader('Access-Control-Allow-Origin', '*')
+            res.setHeader('Content-Type', 'application/json; charset=utf-8')
+            const resp = { error: true }
+            resp.reason = msg || 'api error'
+            res.status(500).send(JSON.stringify(resp))
+        }
+
+        function success(res, msg) {
+            if (webApiCors)
+                res.setHeader('Access-Control-Allow-Origin', '*')
+            res.setHeader('Content-Type', 'application/json; charset=utf-8')
+            const resp = { success: true }
+            if (msg)
+                resp.response = msg
+            res.status(200).send(JSON.stringify(resp))
         }
 
         app.get('/play', (req, res) => {
             if (((player || {}).wcjs || {}).play) {
                 player.wcjs.play()
-                res.send('success')
+                success(res)
             } else err(res)
         })
 
         app.get('/pause', (req, res) => {
             if (((player || {}).wcjs || {}).pause) {
                 player.wcjs.pause()
-                res.send('success')
+                success(res)
             } else err(res)
         })
 
         app.get('/toggle_pause', (req, res) => {
             if (((player || {}).wcjs || {}).togglePause) {
                 player.wcjs.togglePause()
-                res.send('success')
+                success(res)
             } else err(res)
         })
 
         app.get('/next', (req, res) => {
             if ((player || {}).next) {
                 player.next()
-                res.send('success')
+                success(res)
             } else err(res)
         })
 
         app.get('/prev', (req, res) => {
             if ((player || {}).prev) {
                 player.prev()
-                res.send('success')
+                success(res)
             } else err(res)
         })
 
         app.get('/item_data', (req, res) => {
             if ((player || {}).itemDesc && ((((player || {}).wcjs || {}).playlist || {}).items || [])[0]) {
 
-                res.setHeader('Content-Type', 'application/json; charset=utf-8')
-
-                res.send(JSON.stringify(player.itemDesc()))
+                success(res, player.itemDesc())
 
             } else err(res)
         })
@@ -77,17 +92,13 @@ function startWebApi(el) {
                 for (i = 0; i < player.wcjs.playlist.items.count; i++)
                     items.push(player.itemDesc(i))
 
-                res.setHeader('Content-Type', 'application/json; charset=utf-8')
-
-                res.send(JSON.stringify(items))
+                success(res, items)
             } else err(res)
         })
 
         app.get('/progress', (req, res) => {
             if (((player || {}).wcjs || {}).position) {
-                res.setHeader('Content-Type', 'application/json; charset=utf-8')
-
-                res.send(JSON.stringify({ position: player.wcjs.position }))
+                success(res, { position: player.wcjs.position })
             } else err(res)
         })
 
@@ -95,15 +106,13 @@ function startWebApi(el) {
             if (req.query.value && ((player || {}).wcjs || {}).position) {
                 player.wcjs.position = parseFloat(req.query.value)
 
-                res.send('success')
+                success(res)
             } else err(res)
         })
 
         app.get('/time', (req, res) => {
             if (((player || {}).wcjs || {}).time) {
-                res.setHeader('Content-Type', 'application/json; charset=utf-8')
-
-                res.send(JSON.stringify({ time: player.wcjs.time }))
+                success(res, { time: player.wcjs.time })
             } else err(res)
         })
 
@@ -111,7 +120,7 @@ function startWebApi(el) {
             if (req.query.value && ((player || {}).wcjs || {}).time) {
                 player.wcjs.time = parseInt(req.query.value)
 
-                res.send('success')
+                success(res)
             } else err(res)
         })
 
@@ -126,7 +135,7 @@ function startWebApi(el) {
                 else
                     player.wcjs.time = player.wcjs.length - 1000
 
-                res.send('success')
+                success(res)
             } else err(res)
         })
 
@@ -141,23 +150,19 @@ function startWebApi(el) {
                 else
                     player.wcjs.time = 0
 
-                res.send('success')
+                success(res)
             } else err(res)
         })
 
         app.get('/duration', (req, res) => {
             if (((player || {}).wcjs || {}).length) {
-                res.setHeader('Content-Type', 'application/json; charset=utf-8')
-
-                res.send(JSON.stringify({ duration: player.wcjs.length }))
+                success(res, { duration: player.wcjs.length })
             } else err(res)
         })
 
         app.get('/volume', (req, res) => {
             if (typeof ((player || {}).wcjs || {}).volume !== 'undefined') {
-                res.setHeader('Content-Type', 'application/json; charset=utf-8')
-
-                res.send(JSON.stringify({ volume: player.wcjs.volume }))
+                success(res, { volume: player.wcjs.volume })
             } else err(res)
         })
 
@@ -165,15 +170,13 @@ function startWebApi(el) {
             if (req.query.value && typeof ((player || {}).wcjs || {}).volume !== 'undefined') {
                 player.wcjs.volume = parseInt(req.query.value)
 
-                res.send('success')
+                success(res)
             } else err(res)
         })
 
         app.get('/muted', (req, res) => {
             if (typeof ((player || {}).wcjs || {}).mute !== 'undefined') {
-                res.setHeader('Content-Type', 'application/json; charset=utf-8')
-
-                res.send(JSON.stringify({ muted: player.wcjs.mute }))
+                success(res, { muted: player.wcjs.mute })
             } else err(res)
         })
 
@@ -181,7 +184,7 @@ function startWebApi(el) {
             if (req.query.value && typeof ((player || {}).wcjs || {}).mute !== 'undefined') {
                 player.wcjs.mute = req.query.value == 'false' ? false : true
 
-                res.send('success')
+                success(res)
             } else err(res)
         })
 
@@ -189,17 +192,15 @@ function startWebApi(el) {
             if (((player || {}).wcjs || {}).toggleMute) {
                 player.wcjs.toggleMute()
 
-                res.send('success')
+                success(res)
             } else err(res)
         })
 
         app.get('/state', (req, res) => {
             if (((player || {}).wcjs || {}).state) {
                 const states = ['NothingSpecial', 'Opening', 'Buffering', 'Playing', 'Paused', 'Stopped', 'Ended', 'Error']
-                res.setHeader('Content-Type', 'application/json; charset=utf-8')
-
-                res.send(JSON.stringify({ state: states[player.wcjs.state] }))
-            } else res.send(JSON.stringify({ state: 'NothingSpecial' }))
+                success(res, { state: states[player.wcjs.state] })
+            } else success(res, { state: 'NothingSpecial' })
         })
 
         app.get('/add_playlist', (req, res) => {
@@ -212,7 +213,7 @@ function startWebApi(el) {
                     window.mainmenuDrop(null, { preventDefault: () => {}, dataTransfer: { files: [], getData: function() { return req.query.url } } })
 
 
-                res.send('success')
+                success(res)
 
             } else if (req.query.file) {
 
@@ -228,7 +229,7 @@ function startWebApi(el) {
                 else
                     window.mainmenuDrop(files)
 
-                res.send('success')
+                success(res)
 
             } else err(res)
         })
@@ -264,6 +265,8 @@ module.exports = {
                             window.extendedTitle = window.clTitle
                         }
                         window.getExtendedDetails = true
+                    } else if (el == '--web-api-cors') {
+                        webApiCors = true
                     } else if (el.startsWith('--web-api')) {
                         startWebApi(el)
                     }
