@@ -42,8 +42,7 @@ class SubtitleActions {
 
                 if (itemDesc.parsed.imdb)
                     subQuery.imdbid = itemDesc.parsed.imdb
-
-                if (itemDesc.parsed.name)
+                else if (itemDesc.parsed.name)
                     subQuery.query = itemDesc.parsed.name
 
                 if (itemDesc.parsed.season)
