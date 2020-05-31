@@ -12,6 +12,7 @@ const parser = require('../../utils/parser')
 const atob = require('../../utils/atob')
 const needle = require('needle')
 const async = require('async')
+const parseVideo = require('video-name-parser')
 
 var objective = {};
 var checkedFiles = {};
@@ -101,9 +102,13 @@ subtitles.byExactHash = (hash, fileSize, tag, limit) => {
     if (objective.query)
         searcher.query = objective.query
 
-    if (parser(filename).shortSzEp()) {
-        searcher.season = parser(filename).season().toString();
-        searcher.episode = parser(filename).episode().toString();
+    if (filename) {
+        var parsedFilename = parseVideo(filename);
+        if (parsedFilename.type == 'series' && parsedFilename.season && (parsedFilename.episode || []).length) {
+            searcher.season = parsedFilename.season + '';
+            searcher.episode = parsedFilename.episode[0] + '';
+        }
+
     }
     
     if (objective.fps) searcher.fps = objective.fps;
