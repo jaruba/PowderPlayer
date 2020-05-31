@@ -22,7 +22,16 @@ const lang2country = {
     el: 'gr',
     uk: 'ua',
     fa: 'ir',
-    vi: 'vn'
+    vi: 'vn',
+    ja: 'jp',
+    zh: 'cn',
+    zt: 'cn',
+    ze: 'cn',
+    da: 'dk',
+    ko: 'kr',
+    hi: 'in',
+    ta: 'in',
+    sq: 'al',
 }
 
 export
