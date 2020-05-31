@@ -5,7 +5,10 @@ import ControlActions from '../Controls/actions';
 import subUtil from '../../utils/subtitles';
 import ls from 'local-storage';
 import _ from 'lodash';
+import nameToImdb from 'name-to-imdb';
+import parseVideo from 'video-name-parser';
 import player from '../../utils/player';
+import parser from '../../utils/parser';
 
 class SubtitleActions {
 
@@ -37,6 +40,24 @@ class SubtitleActions {
         if (itemDesc.path)
             subQuery.filepath = itemDesc.path
 
+        if (itemDesc.byteSize)
+            subQuery.byteLength = itemDesc.byteSize;
+
+        if (itemDesc.torrentHash) {
+            subQuery.torrentHash = itemDesc.torrentHash;
+            subQuery.isFinished = false;
+        }
+
+        subQuery.cb = subs => {
+            if (!subs) {
+                if (!ls.isSet('playerNotifs') || ls('playerNotifs'))
+                    player.notifier.info('Subtitles Not Found', '', 6000);
+                cb && cb(false);
+            } else {
+                this.actions.foundSubs(subs, true, idx, cb);
+            }
+        }
+
         if (window.getExtendedDetails) {
             if (itemDesc.parsed) {
 
@@ -55,23 +76,23 @@ class SubtitleActions {
                 subQuery.query = window.extendedTitle
             }
             window.getExtendedDetails = null
-        }
+        } else if (subQuery.filepath) {
+            var filename = parser(subQuery.filepath).filename();
+            var parsedFilename = parseVideo(filename);
+            if (parsedFilename) {
+                nameToImdb(parsedFilename, function(err, res, inf) {
+                    if (res) {
+                        subQuery.imdbid = res;
 
-        if (itemDesc.byteSize)
-            subQuery.byteLength = itemDesc.byteSize;
+                        if (parsedFilename.type == 'series' && parsedFilename.season && (parsedFilename.episode || []).length) {
+                            subQuery.season = parsedFilename.season + '';
+                            subQuery.episode = parsedFilename.episode[0] + '';
+                        }
+                    }
 
-        if (itemDesc.torrentHash) {
-            subQuery.torrentHash = itemDesc.torrentHash;
-            subQuery.isFinished = false;
-        }
-
-        subQuery.cb = subs => {
-            if (!subs) {
-                if (!ls.isSet('playerNotifs') || ls('playerNotifs'))
-                    player.notifier.info('Subtitles Not Found', '', 6000);
-                cb && cb(false);
-            } else {
-                this.actions.foundSubs(subs, true, idx, cb);
+                    subUtil.fetchSubs(subQuery);
+                })
+                return
             }
         }
 
